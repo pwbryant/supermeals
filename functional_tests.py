@@ -1,7 +1,19 @@
 from selenium import webdriver
+from selenium.webdriver import ActionChains
 import unittest
+import time
 
 class NewVistorTest(unittest.TestCase):
+
+	def check_tab_info_and_action(tab,goal_tab_title,goal_tab_header):
+		tab_id = 'id_' + tab + '_tab_label'
+		tab_header_id = 'id_' + tab + '_header'
+		tab = self.browser.find_element_by_id(tab_id)
+		tab.click()
+		header_text = self.browser.find_element_by_id(tab_header_id).text
+		self.assertEqual(goal_tab_title,tab.text)
+		self.assertEqual(goal_tab_header,header_text)
+
 
 	def setUp(self):
 		self.browser = webdriver.Firefox()
@@ -9,7 +21,7 @@ class NewVistorTest(unittest.TestCase):
 	def tearDown(self):
 		self.browser.quit()
 
-	def test_new_user_can_access_as_guest(self):
+	def test_new_user_can_access_as_guest_can_create_account_and_log_in_out(self):
 		#Joe wants to find his macros and meals that fit them 
 		#so he visits a page he heard of that does just that
 		self.browser.get('http://localhost:8000')
@@ -37,13 +49,22 @@ class NewVistorTest(unittest.TestCase):
 		guest_button = self.browser.find_element_by_id('id_as_guest')
 		self.assertEqual("Continue As Guest",guest_button.text)
 		
-		self.fail('Finish the test!')
 		#He decides to just check it out and so he clicks the 
 		#sign in as guest button.
+		guest_button.click()
 		
-		#He is directed to a page with four tabs
-		# 'Calculate Macros', 'My Macros', 'Meal Maker', 'My Meals', 'Add Recipe', & 'Add Food'
+		#He is directed to a page with the head line "Calculate Your Macros
+		# and the tabs'Calculate Macros', 'My Macros', 'Meal Maker', 'My Meals', 
+		#'Add Recipe', & 'Add Food'
 		#He notices he is on 'Calculate Macros' tab
+		check_tab_info_and_action('calc_macros','Calculate Macros','Calculate Your Macros')
+		check_tab_info_and_action('my_macros','My Macros','My Macros')
+		check_tab_info_and_action('meal_maker','Meal Maker','Meal Maker')
+		check_tab_info_and_action('my_meals','My Meals','My Meals')
+		check_tab_info_and_action('add_recipes','Add Recipes','Add Recipes')
+		check_tab_info_and_action('add_food','Add Food to Database','Add New Food to Database')
+
+		self.fail('Finish the test!')
 
 	def xtest_can_calculate_and_view_macros(self):
 		pass	
@@ -347,9 +368,6 @@ class NewVistorTest(unittest.TestCase):
 		#but as he gets to mayo, he decides it is gross, so he hits the Cancel button
 		#and notices that the ingredients disappear and all the form inputs clear.
 
-	def xtest_create_an_account_log_off_log_in(self):
-		pass	
-		#?
 
 if __name__ == '__main__':
 	unittest.main(warnings='ignore')

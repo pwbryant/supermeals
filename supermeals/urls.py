@@ -19,5 +19,6 @@ from meals import views
 
 urlpatterns = [
 	url(r'^$', views.home_page, name='home'),
+	url(r'^meal_maker$', views.meal_maker, name='meal_maker'),
 ]
 	

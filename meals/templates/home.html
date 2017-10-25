@@ -2,11 +2,21 @@
 	<head>
 		<title>Meal Maker</title>
 	</head>
+	<style>
+		a.button {
+			-webkit-appearance: button;
+			-moz-appearance: button;
+			appearance: button;
+
+			text-decoration:none;
+			color: initial;
+		}
+	</style>
 	<body>
 		<h1>Meal Maker</h1>
 		<input id='id_user_name' placeholder='Username' />
 		<input id='id_password' placeholder='Password' />
 		<button id='id_create_account' >Create Account</button>
-		<button id='id_as_guest' >Continue As Guest</button>
+		<a id='id_as_guest' href="/meal_maker" class="button">Continue As Guest</a>
 	</body>
 </html>
