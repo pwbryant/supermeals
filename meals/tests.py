@@ -9,5 +9,5 @@ from meals.views import home_page
 class HomePageTest(TestCase):
 
 	def test_uses_home_template(self):
-		found = resolve('/')
+		response = self.client.get('/')
 		self.assertTemplateUsed(response, 'home.html')
