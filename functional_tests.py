@@ -16,18 +16,31 @@ class NewVistorTest(unittest.TestCase):
 
 		#the home page title mentions Meal Maker
 		self.assertIn('Meal Maker', self.browser.title)
-		self.fail("Finish the test!")
+
+		#He sees the header "Meal Maker"
+		header_text = self.browser.find_element_by_tag_name('h1').text
+		self.assertIn('Meal Maker', header_text)
 
 		#He notices he is on a log-in page, where he can sign-in
 		#with a user name and password.  
-
+		user_name_input = self.browser.find_element_by_id('id_user_name')
+		self.assertEqual("Username",user_name_input.get_attribute('placeholder'))
+		
+		password_input = self.browser.find_element_by_id('id_password')
+		self.assertEqual("Password",password_input.get_attribute('placeholder'))
+		
 		#Or create an account
+		create_account_button = self.browser.find_element_by_id('id_create_account')
+		self.assertEqual("Create Account",create_account_button.text)
 
 		#Or sign-in as guest.
-
+		guest_button = self.browser.find_element_by_id('id_as_guest')
+		self.assertEqual("Continue As Guest",guest_button.text)
+		
+		self.fail('Finish the test!')
 		#He decides to just check it out and so he clicks the 
 		#sign in as guest button.
-
+		
 		#He is directed to a page with four tabs
 		# 'Calculate Macros', 'My Macros', 'Meal Maker', 'My Meals', 'Add Recipe', & 'Add Food'
 		#He notices he is on 'Calculate Macros' tab
