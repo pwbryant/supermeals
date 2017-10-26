@@ -11,8 +11,14 @@
 		<script src="static/bootstrap/js/bootstrap.min.js"></script>
 	</head>
 	<body>
+		<div id='id_header_bar'>
+			<a id="id_sign_up" type="button" href="/signup">Sign up</a>
+			<a id="id_login" type="button" href="/login">Login</a>
+		</div>
+		
 		<ul class="nav nav-tabs">
-			<li id="id_calc_macros_tab_label" class="active"><a data-toggle="tab" href="#id_calc_macros_tab">Calculate Macros</a></li>
+			<li id="id_home_tab_label" class='active'><a data-toggle="tab" href="#id_home_tab">Home</a></li>
+			<li id="id_calc_macros_tab_label"><a data-toggle="tab" href="#id_calc_macros_tab">Calculate Macros</a></li>
 			<li id="id_my_macros_tab_label"><a data-toggle="tab" href="#id_my_macros_tab">My Macros</a></li>
 			<li id="id_meal_maker_tab_label"><a data-toggle="tab" href="#id_meal_maker_tab">Meal Maker</a></li>
 			<li id="id_my_meals_tab_label"><a data-toggle="tab" href="#id_my_meals_tab">My Meals</a></li>
@@ -21,9 +27,13 @@
 		</ul>
 		
 		<div class="tab-content">
-			<div id="id_calc_macros_tab" class="tab-pane fade in active">
+			<div id="id_home_tab" class="tab-pane fade in active">
+				<h1 id="id_home_header">Home</h1>
+			</div>			
+			<div id="id_calc_macros_tab" class="tab-pane">
 				<h1 id="id_calc_macros_header">Calculate Your Macros</h1>
 			</div>
+
 			<div id="id_my_macros_tab" class="tab-pane">
 				<h1 id="id_my_macros_header">My Macros</h1>
 			</div>

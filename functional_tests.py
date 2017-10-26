@@ -1,11 +1,12 @@
 from selenium import webdriver
 from selenium.webdriver import ActionChains
+from selenium.webdriver.common.keys import Keys
 import unittest
 import time
 
 class NewVistorTest(unittest.TestCase):
 
-	def check_tab_info_and_action(tab,goal_tab_title,goal_tab_header):
+	def check_tab_info_and_action(self,tab,goal_tab_title,goal_tab_header):
 		tab_id = 'id_' + tab + '_tab_label'
 		tab_header_id = 'id_' + tab + '_header'
 		tab = self.browser.find_element_by_id(tab_id)
@@ -53,18 +54,57 @@ class NewVistorTest(unittest.TestCase):
 		#sign in as guest button.
 		guest_button.click()
 		
-		#He is directed to a page with the head line "Calculate Your Macros
+		#He is directed to a page with the head line "Meal Maker"
 		# and the tabs'Calculate Macros', 'My Macros', 'Meal Maker', 'My Meals', 
 		#'Add Recipe', & 'Add Food'
-		#He notices he is on 'Calculate Macros' tab
-		check_tab_info_and_action('calc_macros','Calculate Macros','Calculate Your Macros')
-		check_tab_info_and_action('my_macros','My Macros','My Macros')
-		check_tab_info_and_action('meal_maker','Meal Maker','Meal Maker')
-		check_tab_info_and_action('my_meals','My Meals','My Meals')
-		check_tab_info_and_action('add_recipes','Add Recipes','Add Recipes')
-		check_tab_info_and_action('add_food','Add Food to Database','Add New Food to Database')
+		self.check_tab_info_and_action('home','Home','Home')
+		self.check_tab_info_and_action('calc_macros','Calculate Macros','Calculate Your Macros')
+		self.check_tab_info_and_action('my_macros','My Macros','My Macros')
+		self.check_tab_info_and_action('meal_maker','Meal Maker','Meal Maker')
+		self.check_tab_info_and_action('my_meals','My Meals','My Meals')
+		self.check_tab_info_and_action('add_recipes','Add Recipes','Add Recipes')
+		self.check_tab_info_and_action('add_food','Add Food to Database','Add New Food to Database')
+		#He also sees in the upper right 'Login' & 'Sign up' buttons
+		login_button_text = self.browser.find_element_by_id('id_login').text
+		self.assertEqual(login_button_text,'Login')
+		sign_up_button_text = self.browser.find_element_by_id('id_sign_up').text
+		self.assertEqual(sign_up_button_text,'Sign up')
+		
+		#Joe likes what his sees so he decides he wants to create an account so he
+		#clicks the 'Sign up' button and is taken to a sign up page with a form having 'Username',
+		#'Email', and 'Password' inputs, with  "Create Account" and "Cancel" buttons 
+		self.browser.find_element_by_id('id_sign_up').click()
+		user_name_placeholder = self.browser.find_element_by_id('id_user_name').get_attribute('placeholder')
+		self.assertEqual(user_name_placeholder,'Username')
+		email_placeholder = self.browser.find_element_by_id('id_user_name').get_attribute('placeholder')
+		self.assertEqual(email_placeholder,'Email')
+		password_placeholder = self.browser.find_element_by_id('id_password').get_attribute('placeholder')
+		self.assertEqual(password_placeholder,'Password')
 
+		create_account_button_text = self.browser.find_element_by_id('id_create').text
+		self.assertEqual(create_account_button_text,'Create Account')
+		cancel_button_text = self.browser.find_element_by_id('id_cancel').text
+		self.assertEqual(cancel_button_text,'Cancel')
+	
+		#Joe but accidently hits the "Cancel" button and is taken back to the main page"
+		self.browser.find_element_by_id('id_cancel').click()
+		self.check_tab_info_and_action('home','Home','Home')
+
+		#Joe clicks the 'Sign up' button again and is take back to the sign up page where he enters
+		#"j_bone", "joe@joemail.com", and "joepass" and then goes to hit the 'Create Account' button
+		self.browser.find_element_by_id('id_sign_up').click()
+		user_name_input = self.browser.find_element_by_id('id_user_name')
+		user_name_input.send_keys('j_bone')
+		email_input = self.browser.find_element_by_id('id_email')
+		email_input.send_keys('joe@joemail.com')
+		password_input = self.browser.find_element_by_id('id_password')
+		password_input.send_keys('joepass')
+		self.browser.find_element_by_id('id_create').click()
+
+		#Joe notices he is back on the main page on the main page
+		self.check_tab_info_and_action('home','Home','Home')
 		self.fail('Finish the test!')
+
 
 	def xtest_can_calculate_and_view_macros(self):
 		pass	
