@@ -19,7 +19,13 @@ class MealLabPageTest(TestCase):
 		response = self.client.get('/meal_lab')
 		self.assertTemplateUsed(response, 'meal_lab.html')
 
+
+class LoginCreateAccontTest(TestCase):
+
 	def test_sign_up_button_leads_to_correct_template(self):
 		response = self.client.get('/sign_up')
 		self.assertTemplateUsed(response, 'sign_up.html')
-
+	
+	def test_can_save_POST_request(self):
+		response = self.client.post('/create_account', data={'user_name':'Joe', 'email':'joe@joemail.com','password':'password'})
+		self.assertEqual('1',response.content.decode())

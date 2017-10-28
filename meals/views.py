@@ -10,3 +10,7 @@ def meal_lab(request):
 
 def sign_up(request):
 	return render(request, 'sign_up.html')
+
+def create_account(request):
+	
+	return HttpResponse('1') 

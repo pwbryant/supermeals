@@ -6,19 +6,31 @@
 
 		<title>Meal Lab Sign Up</title>
 		<link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<script src"http://code.jquery.com/jquery.js"></script>
+		<script src="http://code.jquery.com/jquery.js"></script>
 		<script src="/static/bootstrap/js/bootstrap.min.js"></script>
 		<script>
 			function go_back_home() {
 				location.href = "/meal_lab";
 			}
+			
+			function create_account() {
+				var post_data = {'user_name':$('#id_user_name').val(),
+						'email':$('#id_email').val(),
+						'password':$('#id_password').val(),
+						'csrfmiddlwaretoken':'{{ csrf_token }}'};
+
+				$.post('/create_account', post_data, function(data) {
+					go_back_home()
+				});
+			}
+			
 		</script>
 	</head>
 	<body>
 		<input id='id_user_name' type='text' placeholder="Username"/>
 		<input id='id_email' type='text' placeholder="Email"/>
 		<input id='id_password' type='text' placeholder="Password"/>
-		<button id='id_create' type='button' class="btn">Create Account</button>
+		<button id='id_create' type='button' class="btn" onclick="create_account()">Create Account</button>
 		<button id='id_cancel' type='button' class="btn" onclick="go_back_home()">Cancel</button>
 	</body>
 

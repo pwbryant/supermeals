@@ -105,6 +105,9 @@ class NewVistorTest(unittest.TestCase):
 		self.browser.find_element_by_id('id_create').click()
 
 		#Joe notices he is back on the main page on the main page
+		home_headline = self.browser.find_element_by_id('id_home_headline').text
+		self.assertEqual('Meal Lab',home_headline)
+
 		self.fail('Finish the test!')
 
 

@@ -21,5 +21,6 @@ urlpatterns = [
 	url(r'^$', views.home_page, name='home'),
 	url(r'^meal_lab$', views.meal_lab, name='meal_lab'),
 	url(r'^sign_up$', views.sign_up, name='sign_up'),
+	url(r'^create_account$', views.create_account, name='create_account'),
 ]
 	
