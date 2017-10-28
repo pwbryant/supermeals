@@ -19,6 +19,7 @@ from meals import views
 
 urlpatterns = [
 	url(r'^$', views.home_page, name='home'),
-	url(r'^meal_maker$', views.meal_maker, name='meal_maker'),
+	url(r'^meal_lab$', views.meal_lab, name='meal_lab'),
+	url(r'^sign_up$', views.sign_up, name='sign_up'),
 ]
 	

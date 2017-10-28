@@ -5,5 +5,8 @@ from django.http import HttpResponse
 def home_page(request):
 	return render(request, 'home.html') 
 
-def meal_maker(request):
-	return render(request, 'meal_maker.html')
+def meal_lab(request):
+	return render(request, 'meal_lab.html')
+
+def sign_up(request):
+	return render(request, 'sign_up.html')

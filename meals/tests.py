@@ -3,7 +3,7 @@ from django.urls import resolve
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 
-from meals.views import home_page
+from meals.views import home_page,meal_lab
 
 # Create your tests here.
 class HomePageTest(TestCase):
@@ -13,9 +13,13 @@ class HomePageTest(TestCase):
 		self.assertTemplateUsed(response, 'home.html')
 
 
-class MealMakerPageTest(TestCase):
+class MealLabPageTest(TestCase):
 
-	def test_uses_meal_maker_template(self):
-		response = self.client.get('/meal_maker')
-		self.assertTemplateUsed(response, 'meal_maker.html')
+	def test_uses_meal_lab_template(self):
+		response = self.client.get('/meal_lab')
+		self.assertTemplateUsed(response, 'meal_lab.html')
+
+	def test_sign_up_button_leads_to_correct_template(self):
+		response = self.client.get('/sign_up')
+		self.assertTemplateUsed(response, 'sign_up.html')
 

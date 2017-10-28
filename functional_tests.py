@@ -27,12 +27,12 @@ class NewVistorTest(unittest.TestCase):
 		#so he visits a page he heard of that does just that
 		self.browser.get('http://localhost:8000')
 
-		#the home page title mentions Meal Maker
-		self.assertIn('Meal Maker', self.browser.title)
+		#the home page title mentions Meal Lab
+		self.assertIn('Meal Lab', self.browser.title)
 
-		#He sees the header "Meal Maker"
+		#He sees the header "Meal Lab"
 		header_text = self.browser.find_element_by_tag_name('h1').text
-		self.assertIn('Meal Maker', header_text)
+		self.assertIn('Meal Lab', header_text)
 
 		#He notices he is on a log-in page, where he can sign-in
 		#with a user name and password.  
@@ -41,10 +41,9 @@ class NewVistorTest(unittest.TestCase):
 		
 		password_input = self.browser.find_element_by_id('id_password')
 		self.assertEqual("Password",password_input.get_attribute('placeholder'))
-		
-		#Or create an account
-		create_account_button = self.browser.find_element_by_id('id_create_account')
-		self.assertEqual("Create Account",create_account_button.text)
+
+		login_button_text = self.browser.find_element_by_id('id_login').text
+		self.assertEqual("Login",login_button_text)
 
 		#Or sign-in as guest.
 		guest_button = self.browser.find_element_by_id('id_as_guest')
@@ -54,16 +53,13 @@ class NewVistorTest(unittest.TestCase):
 		#sign in as guest button.
 		guest_button.click()
 		
-		#He is directed to a page with the head line "Meal Maker"
-		# and the tabs'Calculate Macros', 'My Macros', 'Meal Maker', 'My Meals', 
-		#'Add Recipe', & 'Add Food'
-		self.check_tab_info_and_action('home','Home','Home')
-		self.check_tab_info_and_action('calc_macros','Calculate Macros','Calculate Your Macros')
-		self.check_tab_info_and_action('my_macros','My Macros','My Macros')
-		self.check_tab_info_and_action('meal_maker','Meal Maker','Meal Maker')
-		self.check_tab_info_and_action('my_meals','My Meals','My Meals')
-		self.check_tab_info_and_action('add_recipes','Add Recipes','Add Recipes')
-		self.check_tab_info_and_action('add_food','Add Food to Database','Add New Food to Database')
+		#He is directed to a page with the head line "Meal Lab"
+		# and the tabs 'My Macros', 'Meal Maker', 'My Meals', 
+		#'Add Recipe', & 'Add Food' and he scrolls through them
+		home_headline = self.browser.find_element_by_id('id_home_headline').text
+		self.assertEqual('Meal Lab',home_headline)
+		tabs = {'my_macros':'My Macros','meal_maker':'Meal Maker','my_meals':'My Meals','add_recipes':'Add Recipes','add_food':'Add Food to Database'}
+		[self.assertEqual(tabs[key],self.browser.find_element_by_id('id_' + key + '_tab_label').text) for key in tabs.keys()]
 		#He also sees in the upper right 'Login' & 'Sign up' buttons
 		login_button_text = self.browser.find_element_by_id('id_login').text
 		self.assertEqual(login_button_text,'Login')
@@ -71,12 +67,18 @@ class NewVistorTest(unittest.TestCase):
 		self.assertEqual(sign_up_button_text,'Sign up')
 		
 		#Joe likes what his sees so he decides he wants to create an account so he
-		#clicks the 'Sign up' button and is taken to a sign up page with a form having 'Username',
-		#'Email', and 'Password' inputs, with  "Create Account" and "Cancel" buttons 
+		#clicks the 'Sign up' button is taken to a sign up page. 		
 		self.browser.find_element_by_id('id_sign_up').click()
+		
+		#the sign page title mentions Meal Lab Sign Up
+		self.assertIn('Meal Lab Sign Up', self.browser.title)
+	
+		#He sees a form having 'Username',
+		#'Email', and 'Password' inputs, with  "Create Account" and "Cancel" buttons 
+
 		user_name_placeholder = self.browser.find_element_by_id('id_user_name').get_attribute('placeholder')
 		self.assertEqual(user_name_placeholder,'Username')
-		email_placeholder = self.browser.find_element_by_id('id_user_name').get_attribute('placeholder')
+		email_placeholder = self.browser.find_element_by_id('id_email').get_attribute('placeholder')
 		self.assertEqual(email_placeholder,'Email')
 		password_placeholder = self.browser.find_element_by_id('id_password').get_attribute('placeholder')
 		self.assertEqual(password_placeholder,'Password')
@@ -88,7 +90,8 @@ class NewVistorTest(unittest.TestCase):
 	
 		#Joe but accidently hits the "Cancel" button and is taken back to the main page"
 		self.browser.find_element_by_id('id_cancel').click()
-		self.check_tab_info_and_action('home','Home','Home')
+		home_headline = self.browser.find_element_by_id('id_home_headline').text
+		self.assertEqual('Meal Lab',home_headline)
 
 		#Joe clicks the 'Sign up' button again and is take back to the sign up page where he enters
 		#"j_bone", "joe@joemail.com", and "joepass" and then goes to hit the 'Create Account' button
@@ -102,8 +105,8 @@ class NewVistorTest(unittest.TestCase):
 		self.browser.find_element_by_id('id_create').click()
 
 		#Joe notices he is back on the main page on the main page
-		self.check_tab_info_and_action('home','Home','Home')
 		self.fail('Finish the test!')
+
 
 
 	def xtest_can_calculate_and_view_macros(self):
