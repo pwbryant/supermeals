@@ -1,10 +1,10 @@
+from django.test import LiveServerTestCase
 from selenium import webdriver
-from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 import unittest
 import time
 
-class NewVistorTest(unittest.TestCase):
+class NewVistorTest(LiveServerTestCase):
 
 	def setUp(self):
 		self.browser = webdriver.Firefox()
@@ -15,7 +15,7 @@ class NewVistorTest(unittest.TestCase):
 	def test_new_user_can_access_as_guest_can_create_account_and_log_in_out(self):
 		#Joe wants to find his macros and meals that fit them 
 		#so he visits a page he heard of that does just that
-		self.browser.get('http://localhost:8000')
+		self.browser.get(self.live_server_url)
 
 		#the home page title mentions Meal Lab
 		self.assertIn('Meal Lab', self.browser.title)
@@ -26,8 +26,8 @@ class NewVistorTest(unittest.TestCase):
 
 		#He notices he is on a log-in page, where he can sign-in
 		#with a user name and password.  
-		user_name_input = self.browser.find_element_by_id('id_user_name')
-		self.assertEqual("Username",user_name_input.get_attribute('placeholder'))
+		user_name_input = self.browser.find_element_by_id('id_username_email')
+		self.assertEqual("Username/Email",user_name_input.get_attribute('placeholder'))
 		
 		password_input = self.browser.find_element_by_id('id_password')
 		self.assertEqual("Password",password_input.get_attribute('placeholder'))
@@ -66,7 +66,7 @@ class NewVistorTest(unittest.TestCase):
 		#He sees a form having 'Username',
 		#'Email', and 'Password' inputs, with  "Create Account" and "Cancel" buttons 
 
-		user_name_placeholder = self.browser.find_element_by_id('id_user_name').get_attribute('placeholder')
+		user_name_placeholder = self.browser.find_element_by_id('id_username').get_attribute('placeholder')
 		self.assertEqual(user_name_placeholder,'Username')
 		email_placeholder = self.browser.find_element_by_id('id_email').get_attribute('placeholder')
 		self.assertEqual(email_placeholder,'Email')
@@ -86,7 +86,7 @@ class NewVistorTest(unittest.TestCase):
 		#Joe clicks the 'Sign up' button again and is take back to the sign up page where he enters
 		#"j_bone", "joe@joemail.com", and "joepass" and then goes to hit the 'Create Account' button
 		self.browser.find_element_by_id('id_sign_up').click()
-		user_name_input = self.browser.find_element_by_id('id_user_name')
+		user_name_input = self.browser.find_element_by_id('id_username')
 		user_name_input.send_keys('j_bone')
 		email_input = self.browser.find_element_by_id('id_email')
 		email_input.send_keys('joe@joemail.com')
@@ -421,5 +421,3 @@ class NewVistorTest(unittest.TestCase):
 		#and notices that the ingredients disappear and all the form inputs clear.
 
 
-if __name__ == '__main__':
-	unittest.main(warnings='ignore')
