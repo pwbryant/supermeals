@@ -6,16 +6,6 @@ import time
 
 class NewVistorTest(unittest.TestCase):
 
-	def check_tab_info_and_action(self,tab,goal_tab_title,goal_tab_header):
-		tab_id = 'id_' + tab + '_tab_label'
-		tab_header_id = 'id_' + tab + '_header'
-		tab = self.browser.find_element_by_id(tab_id)
-		tab.click()
-		header_text = self.browser.find_element_by_id(tab_header_id).text
-		self.assertEqual(goal_tab_title,tab.text)
-		self.assertEqual(goal_tab_header,header_text)
-
-
 	def setUp(self):
 		self.browser = webdriver.Firefox()
 
@@ -61,7 +51,7 @@ class NewVistorTest(unittest.TestCase):
 		tabs = {'my_macros':'My Macros','meal_maker':'Meal Maker','my_meals':'My Meals','add_recipes':'Add Recipes','add_food':'Add Food to Database'}
 		[self.assertEqual(tabs[key],self.browser.find_element_by_id('id_' + key + '_tab_label').text) for key in tabs.keys()]
 		#He also sees in the upper right 'Login' & 'Sign up' buttons
-		login_button_text = self.browser.find_element_by_id('id_login').text
+		login_button_text = self.browser.find_element_by_id('id_log_in_off').text
 		self.assertEqual(login_button_text,'Login')
 		sign_up_button_text = self.browser.find_element_by_id('id_sign_up').text
 		self.assertEqual(sign_up_button_text,'Sign up')
@@ -107,6 +97,22 @@ class NewVistorTest(unittest.TestCase):
 		#Joe notices he is back on the main page on the main page
 		home_headline = self.browser.find_element_by_id('id_home_headline').text
 		self.assertEqual('Meal Lab',home_headline)
+		
+		#He also notices that the 'Login' button is now a 'Logoff' button and the 
+		#'Sign up' button is gone
+		try:
+			self.browser.find_element_by_id('id_sign_up')
+			assert False
+		except AssertionError as e:
+			e.args += ('Element should not exist!!!',)
+			raise
+			
+		logoff_button_text = self.browser.find_element_by_id('id_log_in_off').text
+		self.assertEqual(login_button_text,'Logoff')
+		
+		#Happy that he made an account, Joe hits the 'Logoff' button and finds himself back on the 
+		#initial Login page
+
 
 		self.fail('Finish the test!')
 
