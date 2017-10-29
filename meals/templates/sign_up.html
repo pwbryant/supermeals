@@ -9,29 +9,53 @@
 		<script src="http://code.jquery.com/jquery.js"></script>
 		<script src="/static/bootstrap/js/bootstrap.min.js"></script>
 		<script>
+
+
+			function getCookie(name) {
+			    var cookieValue = null;
+			    if (document.cookie && document.cookie !== '') {
+				var cookies = document.cookie.split(';');
+				for (var i = 0; i < cookies.length; i++) {
+				    var cookie = jQuery.trim(cookies[i]);
+				    // Does this cookie string begin with the name we want?
+				    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				    }
+				}
+			    }
+			    return cookieValue;
+			}
+
 			function go_back_home() {
 				location.href = "/meal_lab";
 			}
 			
 			function create_account() {
-				var post_data = {'user_name':$('#id_user_name').val(),
-						'email':$('#id_email').val(),
-						'password':$('#id_password').val(),
-						'csrfmiddlwaretoken':'{{ csrf_token }}'};
-
+				var csrftoken = $('input[name=csrfmiddlewaretoken]').val(),
+				username=$('#id_username').val(),
+				email=$('#id_email').val(),
+				password =$('#id_password').val(),
+				post_data = {'username':username,'email':email,'password':password,'csrfmiddlewaretoken':csrftoken};
 				$.post('/create_account', post_data, function(data) {
-					go_back_home()
+					console.log(data);
+					if (data === '1') {					
+						go_back_home()
+					}
 				});
 			}
 			
 		</script>
 	</head>
 	<body>
-		<input id='id_user_name' type='text' placeholder="Username"/>
-		<input id='id_email' type='text' placeholder="Email"/>
-		<input id='id_password' type='text' placeholder="Password"/>
-		<button id='id_create' type='button' class="btn" onclick="create_account()">Create Account</button>
-		<button id='id_cancel' type='button' class="btn" onclick="go_back_home()">Cancel</button>
+		<form id='id_create_account_form'>
+			<input id='id_user_name' type='text' placeholder="Username"/>
+			<input id='id_email' type='text' placeholder="Email"/>
+			<input id='id_password' type='text' placeholder="Password"/>
+			<button id='id_create' type='button' class="btn" onclick="create_account()">Create Account</button>
+			<button id='id_cancel' type='button' class="btn" onclick="go_back_home()">Cancel</button>
+			{% csrf_token %}
+		</form>
 	</body>
 
 </html>

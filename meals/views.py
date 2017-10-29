@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from meals.models import User
 
 # Create your views here.
 def home_page(request):
@@ -13,4 +14,11 @@ def sign_up(request):
 
 def create_account(request):
 	
+	user = User()
+	user.username = request.POST.get('username','')
+	user.email = request.POST.get('email','')
+	user.password = request.POST.get('password','')
+	user.save()
+
 	return HttpResponse('1') 
+
