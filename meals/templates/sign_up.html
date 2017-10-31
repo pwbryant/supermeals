@@ -11,7 +11,7 @@
 		<script>
 
 			function go_back_home() {
-				location.href = "/meal_lab";
+				location.href = "/";
 			}
 			
 			function create_account() {
@@ -23,8 +23,9 @@
 				$.post('/create_account', post_data, function(data) {
 					console.log(data);
 					if (data === '1') {					
-						go_back_home()
+						location.href = '/';
 					}
+
 				});
 			}
 			

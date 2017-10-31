@@ -25,7 +25,6 @@
 					post_data = {'username':username, 'password':password,'csrfmiddlewaretoken':csrftoken};
 					
 					$.post('/logging_in',post_data, function(data) {
-						console.log(data);
 						
 						if (data === '1') {
 							location.href = '/'					

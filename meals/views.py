@@ -19,12 +19,12 @@ def to_login(request):
 
 
 def logging_in(request):
-	print('logging in')
+
 	username,password = request.POST['username'],request.POST['password']
 	user = authenticate(request,username=username,password=password)
-	print(user)
 	if user is not None:
 		login(request, user)
+		#return redirect('/')
 		return HttpResponse('1')
 	else:
 		return HttpResponse('0')
@@ -33,16 +33,21 @@ def logging_in(request):
 def meal_lab(request):
 	return render(request, 'meal_lab.html')
 
+
 def sign_up(request):
 	return render(request, 'sign_up.html')
 
+
 def create_account(request):
 	
-	user = MM_user()
-	user.username = request.POST.get('username','')
-	user.email = request.POST.get('email','')
-	user.password = request.POST.get('password','')
-	user.save()
+	try:
+		user = User()
+		user.username = request.POST.get('username','')
+		user.email = request.POST.get('email','')
+		user.password = request.POST.get('password','')
+		user.save()
+		login(request, user)
 
-	return HttpResponse('1') 
-
+		return HttpResponse('1')
+	except: 
+		return HttpResponse('0')
