@@ -1,6 +1,7 @@
 from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from django.contrib.auth.models import User
 import unittest
 import time
 
@@ -15,19 +16,19 @@ class NewVistorTest(LiveServerTestCase):
 	def test_new_user_can_access_as_guest_can_create_account_and_log_in_out(self):
 		#Joe wants to find his macros and meals that fit them 
 		#so he visits a page he heard of that does just that
-		self.browser.get(self.live_server_url)
+		self.browser.get(self.live_server_url)		
 
-		#the home page title mentions Meal Lab
+		#the  login page title mentions Meal Lab
 		self.assertIn('Meal Lab', self.browser.title)
 
 		#He sees the header "Meal Lab"
-		header_text = self.browser.find_element_by_tag_name('h1').text
+		header_text = self.browser.find_element_by_id('id_login_header').text
 		self.assertIn('Meal Lab', header_text)
 
 		#He notices he is on a log-in page, where he can sign-in
 		#with a user name and password.  
-		user_name_input = self.browser.find_element_by_id('id_username_email')
-		self.assertEqual("Username/Email",user_name_input.get_attribute('placeholder'))
+		user_name_input = self.browser.find_element_by_id('id_username')
+		self.assertEqual("Username",user_name_input.get_attribute('placeholder'))
 		
 		password_input = self.browser.find_element_by_id('id_password')
 		self.assertEqual("Password",password_input.get_attribute('placeholder'))
@@ -36,13 +37,14 @@ class NewVistorTest(LiveServerTestCase):
 		self.assertEqual("Login",login_button_text)
 
 		#Or sign-in as guest.
+		guest_user = User.objects.create_user(username='guest',password='password')
 		guest_button = self.browser.find_element_by_id('id_as_guest')
 		self.assertEqual("Continue As Guest",guest_button.text)
-		
+
 		#He decides to just check it out and so he clicks the 
 		#sign in as guest button.
 		guest_button.click()
-		
+
 		#He is directed to a page with the head line "Meal Lab"
 		# and the tabs 'My Macros', 'Meal Maker', 'My Meals', 
 		#'Add Recipe', & 'Add Food' and he scrolls through them
@@ -50,6 +52,7 @@ class NewVistorTest(LiveServerTestCase):
 		self.assertEqual('Meal Lab',home_headline)
 		tabs = {'my_macros':'My Macros','meal_maker':'Meal Maker','my_meals':'My Meals','add_recipes':'Add Recipes','add_food':'Add Food to Database'}
 		[self.assertEqual(tabs[key],self.browser.find_element_by_id('id_' + key + '_tab_label').text) for key in tabs.keys()]
+
 		#He also sees in the upper right 'Login' & 'Sign up' buttons
 		login_button_text = self.browser.find_element_by_id('id_log_in_off').text
 		self.assertEqual(login_button_text,'Login')
@@ -93,7 +96,7 @@ class NewVistorTest(LiveServerTestCase):
 		password_input = self.browser.find_element_by_id('id_password')
 		password_input.send_keys('joepass')
 		self.browser.find_element_by_id('id_create').click()
-
+		time.sleep(.5)
 		#Joe notices he is back on the main page on the main page
 		home_headline = self.browser.find_element_by_id('id_home_headline').text
 		self.assertEqual('Meal Lab',home_headline)

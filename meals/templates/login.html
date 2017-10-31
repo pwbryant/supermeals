@@ -1,0 +1,60 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="ID-edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>Meal Lab Login</title>
+		<link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+		<script src="http://code.jquery.com/jquery.js"></script>
+		<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+		<script>
+			function try_log(login_type) {
+				
+				var csrftoken = $('input[name=csrfmiddlewaretoken]').val();
+				if (login_type === 'guest') {
+					var username = 'guest',
+					password = 'password';
+				} else {
+					var username = $('#id_username').val(),
+					password = $('#id_password').val();
+				}
+				if (username != 'guest' && (username.length === 0 || password.length === 0)) {
+					console.log('bad input')
+				} else {
+					post_data = {'username':username, 'password':password,'csrfmiddlewaretoken':csrftoken};
+					
+					$.post('/logging_in',post_data, function(data) {
+						console.log(data);
+						
+						if (data === '1') {
+							location.href = '/'					
+						}
+						
+					});
+				}
+			}
+		</script>
+
+	</head>
+	<style>
+		a.button {
+			-webkit-appearance: button;
+			-moz-appearance: button;
+			appearance: button;
+
+			text-decoration:none;
+			color: initial;
+		}
+	</style>
+	<body>
+		<form id="id_login_form">
+		<h1 id="id_login_header">Meal Lab</h1>
+		<input id='id_username' placeholder='Username' />
+		<input id='id_password' placeholder='Password' />
+		{% csrf_token %}
+		</form>
+		<button id='id_login' class="btn" onclick="try_log('user')">Login</button>
+		<button id='id_as_guest' class="btn" onclick="try_log('guest')">Continue As Guest</button>
+	</body>
+</html>

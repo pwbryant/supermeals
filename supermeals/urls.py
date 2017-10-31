@@ -18,8 +18,9 @@ from django.contrib import admin
 from meals import views
 
 urlpatterns = [
-	url(r'^$', views.home_page, name='home'),
-	url(r'^meal_lab$', views.meal_lab, name='meal_lab'),
+	url(r'^$', views.home_or_login, name='home_or_login'),
+	url(r'^login$', views.to_login, name='to_login'),
+	url(r'^logging_in$', views.logging_in, name='logging_in'),
 	url(r'^sign_up$', views.sign_up, name='sign_up'),
 	url(r'^create_account$', views.create_account, name='create_account'),
 ]

@@ -1,22 +1,29 @@
-<html>
-	<head>
-		<title>Meal Lab</title>
-	</head>
-	<style>
-		a.button {
-			-webkit-appearance: button;
-			-moz-appearance: button;
-			appearance: button;
+{% extends 'base.html' %}
+{% block body %}
+<ul class="nav nav-tabs">
+	<li id="id_my_macros_tab_label"><a data-toggle="tab" href="#id_my_macros_tab">My Macros</a></li>
+	<li id="id_meal_maker_tab_label"><a data-toggle="tab" href="#id_meal_maker_tab">Meal Maker</a></li>
+	<li id="id_my_meals_tab_label"><a data-toggle="tab" href="#id_my_meals_tab">My Meals</a></li>
+	<li id="id_add_recipes_tab_label"><a data-toggle="tab" href="#id_add_recipes_tab">Add Recipes</a></li>
+	<li id="id_add_food_tab_label"><a data-toggle="tab" href="#id_add_food_tab">Add Food to Database</a></li>
+</ul>
 
-			text-decoration:none;
-			color: initial;
-		}
-	</style>
-	<body>
-		<h1>Meal Lab</h1>
-		<input id='id_username_email' placeholder='Username/Email' />
-		<input id='id_password' placeholder='Password' />
-		<button id='id_login' >Login</button>
-		<a id='id_as_guest' href="/meal_lab" class="button">Continue As Guest</a>
-	</body>
-</html>
+<div class="tab-content">
+	<div id="id_my_macros_tab" class="tab-pane">
+		<h1 id="id_my_macros_header">My Macros</h1>
+	</div>
+	<div id="id_meal_maker_tab" class="tab-pane">
+		<h1 id="id_meal_maker_header">Meal Maker</h1>
+	</div>
+	<div id="id_my_meals_tab" class="tab-pane">
+		<h1 id="id_my_meals_header">My Meals</h1>
+	</div>
+	<div id="id_add_recipes_tab" class="tab-pane">
+		<h1 id="id_add_recipes_header">Add Recipes</h1>
+	</div>
+	<div id="id_add_food_tab" class="tab-pane">
+		<h1 id="id_add_food_header">Add New Food to Database</h1>
+	</div>
+</div>
+<h1 id='id_home_headline'>Meal Lab</h1>
+{% endblock %}
