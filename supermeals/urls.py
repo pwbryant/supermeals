@@ -24,5 +24,6 @@ urlpatterns = [
 	url(r'^logging_off$', views.logging_off, name='logging_off'),
 	url(r'^sign_up$', views.sign_up, name='sign_up'),
 	url(r'^create_account$', views.create_account, name='create_account'),
+	url(r'^admin/', admin.site.urls),
 ]
 	

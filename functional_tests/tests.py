@@ -23,7 +23,7 @@ class NewVistorTest(LiveServerTestCase):
 		self.assertIn('Meal Lab', self.browser.title)
 
 		#He sees the header "Meal Lab"
-		header_text = self.browser.find_element_by_id('id_login_header').text
+		header_text = self.browser.find_element_by_id('id_login_headline').text
 		self.assertIn('Meal Lab', header_text)
 
 		#He notices he is on a log-in page, where he can sign-in
@@ -37,14 +37,12 @@ class NewVistorTest(LiveServerTestCase):
 		login_button_text = self.browser.find_element_by_id('id_login').text
 		self.assertEqual("Login",login_button_text)
 
-		#Or sign-in as guest.
+		#Or sign-in as guest,which he does.
 		guest_user = User.objects.create_user(username='guest',password='password')
 		guest_button = self.browser.find_element_by_id('id_as_guest')
 		self.assertEqual("Continue As Guest",guest_button.text)
-
-		#He decides to just check it out and so he clicks the 
-		#sign in as guest button.
 		guest_button.click()
+
 		#He is directed to a page with the head line "Meal Lab"
 		# and the tabs 'My Macros', 'Meal Maker', 'My Meals', 
 		#'Add Recipe', & 'Add Food' and he scrolls through them
@@ -54,7 +52,7 @@ class NewVistorTest(LiveServerTestCase):
 		[self.assertEqual(tabs[key],self.browser.find_element_by_id('id_' + key + '_tab_label').text) for key in tabs.keys()]
 
 		#He also sees in the upper right 'Login' & 'Sign up' buttons
-		login_button_text = self.browser.find_element_by_id('id_log_in_off').text
+		login_button_text = self.browser.find_element_by_id('id_login').text
 		self.assertEqual(login_button_text,'Login')
 		sign_up_button_text = self.browser.find_element_by_id('id_sign_up').text
 		self.assertEqual(sign_up_button_text,'Sign up')
@@ -83,8 +81,7 @@ class NewVistorTest(LiveServerTestCase):
 	
 		#Joe but accidently hits the "Cancel" button and is taken back to the main page"
 		self.browser.find_element_by_id('id_cancel').click()
-		home_headline = self.browser.find_element_by_id('id_home_headline').text
-		self.assertEqual('Meal Lab',home_headline)
+		self.browser.find_element_by_id('id_home_headline')
 
 		#Joe clicks the 'Sign up' button again and is take back to the sign up page where he enters
 		#"j_bone", "joe@joemail.com", and "joepass" and then goes to hit the 'Create Account' button
@@ -98,11 +95,10 @@ class NewVistorTest(LiveServerTestCase):
 		self.browser.find_element_by_id('id_create').click()
 		
 		#Joe notices he is back on the main page on the main page
-		home_headline = self.browser.find_element_by_id('id_home_headline').text
-		self.assertEqual('Meal Lab',home_headline)
+		self.browser.find_element_by_id('id_home_headline')
 		
 		#He also notices that the 'Login' button is now a 'Logoff' button 
-		logoff_button = self.browser.find_element_by_id('id_log_in_off')
+		logoff_button = self.browser.find_element_by_id('id_logoff')
 		self.assertEqual(logoff_button.text,'Logoff')
 		#and the 'Sign up' button is gone
 		try:
@@ -116,14 +112,20 @@ class NewVistorTest(LiveServerTestCase):
 		
 		#Happy that he made an account, Joe hits the 'Logoff' button and finds himself back on the 
 		#initial Login page
-		
 		logoff_button.click()
-		header_text = self.browser.find_element_by_id('id_login_header').text
-		self.assertIn('Meal Lab', header_text)
+		self.browser.find_element_by_id('id_login_headline')
 		
-		
-		self.fail('Finish the test!')
+		#He logs in as a guest to quickly check something out		
+		#guest_user = User.objects.create_user(username='guest',password='password')
+		self.browser.find_element_by_id('id_as_guest').click()
+		self.browser.find_element_by_id('id_home_headline')
 
+		#He decides he wants to login for real so he clicks the login button which takes
+		#him to the home login page
+		self.browser.find_element_by_id('id_login').click()
+		self.browser.find_element_by_id('id_login_headline')
+
+		self.fail('Finish the test!')
 
 
 	def xtest_can_calculate_and_view_macros(self):
