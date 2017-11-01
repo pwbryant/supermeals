@@ -1,6 +1,7 @@
 from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 from django.contrib.auth.models import User
 import unittest
 import time
@@ -44,7 +45,6 @@ class NewVistorTest(LiveServerTestCase):
 		#He decides to just check it out and so he clicks the 
 		#sign in as guest button.
 		guest_button.click()
-
 		#He is directed to a page with the head line "Meal Lab"
 		# and the tabs 'My Macros', 'Meal Maker', 'My Meals', 
 		#'Add Recipe', & 'Add Food' and he scrolls through them
@@ -96,27 +96,32 @@ class NewVistorTest(LiveServerTestCase):
 		password_input = self.browser.find_element_by_id('id_password')
 		password_input.send_keys('joepass')
 		self.browser.find_element_by_id('id_create').click()
-		time.sleep(15)
+		
 		#Joe notices he is back on the main page on the main page
 		home_headline = self.browser.find_element_by_id('id_home_headline').text
 		self.assertEqual('Meal Lab',home_headline)
 		
-		#He also notices that the 'Login' button is now a 'Logoff' button and the 
-		#'Sign up' button is gone
+		#He also notices that the 'Login' button is now a 'Logoff' button 
+		logoff_button = self.browser.find_element_by_id('id_log_in_off')
+		self.assertEqual(logoff_button.text,'Logoff')
+		#and the 'Sign up' button is gone
 		try:
 			self.browser.find_element_by_id('id_sign_up')
 			assert False
 		except AssertionError as e:
 			e.args += ('Element should not exist!!!',)
 			raise
-			
-		logoff_button_text = self.browser.find_element_by_id('id_log_in_off').text
-		self.assertEqual(login_button_text,'Logoff')
+		except NoSuchElementException as e:
+			pass
 		
 		#Happy that he made an account, Joe hits the 'Logoff' button and finds himself back on the 
 		#initial Login page
-
-
+		
+		logoff_button.click()
+		header_text = self.browser.find_element_by_id('id_login_header').text
+		self.assertIn('Meal Lab', header_text)
+		
+		
 		self.fail('Finish the test!')
 
 

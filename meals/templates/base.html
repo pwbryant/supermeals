@@ -12,8 +12,13 @@
 	</head>
 	<body>
 		<div id='id_header_bar'>
-			<a id="id_sign_up" type="button" href="/sign_up">Sign up</a>
-			<a id="id_log_in_off" type="button" href="/login">Login</a>
+			{% if user.is_authenticated and user.get_username != 'guest' %}
+				{{ user }}
+				<a id="id_log_in_off" type="button" href="/logging_off">Logoff</a>
+			{% else %}
+				<a id="id_sign_up" type="button" href="/sign_up">Sign up</a>
+				<a id="id_log_in_off" type="button" href="/logging_in">Login</a>
+			{% endif %}
 		</div>
 		{% block body %}
 		{% endblock %}		
