@@ -1,4 +1,4 @@
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 import unittest
 import time
 
-class NewVistorTest(LiveServerTestCase):
+class NewVistorTest(StaticLiveServerTestCase):
 
 	def setUp(self):
 		self.browser = webdriver.Firefox()
@@ -38,7 +38,7 @@ class NewVistorTest(LiveServerTestCase):
 		self.assertEqual("Login",login_button_text)
 
 		#Or sign-in as guest,which he does.
-		guest_user = User.objects.create_user(username='guest',password='password')
+		guest_user = User.objects.create_user(username='guest',password='321!beware')
 		guest_button = self.browser.find_element_by_id('id_as_guest')
 		self.assertEqual("Continue As Guest",guest_button.text)
 		guest_button.click()

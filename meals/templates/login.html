@@ -8,32 +8,7 @@
 		<link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 		<script src="http://code.jquery.com/jquery.js"></script>
 		<script src="/static/bootstrap/js/bootstrap.min.js"></script>
-		<script>
-			function try_log(login_type) {
-				
-				var csrftoken = $('input[name=csrfmiddlewaretoken]').val();
-				if (login_type === 'guest') {
-					var username = 'guest',
-					password = 'password';
-				} else {
-					var username = $('#id_username').val(),
-					password = $('#id_password').val();
-				}
-				if (username != 'guest' && (username.length === 0 || password.length === 0)) {
-					console.log('bad input')
-				} else {
-					post_data = {'username':username, 'password':password,'csrfmiddlewaretoken':csrftoken};
-					
-					$.post('/logging_in',post_data, function(data) {
-						
-						if (data === '1') {
-							location.href = '/'					
-						}
-						
-					});
-				}
-			}
-		</script>
+		<script src="/static/meals.js"></script>
 
 	</head>
 	<style>
