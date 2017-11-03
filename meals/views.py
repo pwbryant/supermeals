@@ -11,7 +11,7 @@ def home_or_login(request):
 	if request.user.is_authenticated:
 		return render(request, 'home.html') 
 	else:
-		return redirect('/login')
+		return redirect('meals/login/')
 
 
 def to_login(request):
@@ -36,10 +36,6 @@ def logging_off(request):
 
 	logout(request)
 	return redirect('/')	
-
-def meal_lab(request):
-
-	return render(request, 'meal_lab.html')
 
 
 def sign_up(request):

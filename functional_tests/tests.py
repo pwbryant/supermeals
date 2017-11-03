@@ -60,7 +60,6 @@ class NewVistorTest(StaticLiveServerTestCase):
 		#Joe likes what his sees so he decides he wants to create an account so he
 		#clicks the 'Sign up' button is taken to a sign up page. 		
 		self.browser.find_element_by_id('id_sign_up').click()
-		
 		#the sign page title mentions Meal Lab Sign Up
 		self.assertIn('Meal Lab Sign Up', self.browser.title)
 	

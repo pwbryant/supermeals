@@ -14,12 +14,12 @@
 		<div id='id_header_bar'>
 			{% if user.is_authenticated and user.get_username != 'guest' %}
 				{{ user }}
-				<a id="id_logoff" type="button" href="/logging_off">Logoff</a>
+				<a id="id_logoff" type="button" href="/meals/logging_off/">Logoff</a>
 			{% else %}
-				<a id="id_sign_up" type="button" href="/sign_up">Sign up</a>
+				<a id="id_sign_up" type="button" href="/meals/sign_up/">Sign up</a>
 				<!--this is supposed to go to /loggin_off so that the guest user gets logged of and page
 				gets redirected to the login page-->
-				<a id="id_login" type="button" href="/logging_off">Login</a>
+				<a id="id_login" type="button" href="/meals/logging_off">Login</a>
 			{% endif %}
 		</div>
 		{% block body %}
