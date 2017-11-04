@@ -1,14 +1,10 @@
 from django.test import TestCase
 from django.urls import resolve
 from django.http import HttpRequest
-from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
 
-from meals.models import MM_user
-
 # Create your tests here.
-
 
 class LoginLogoffCreateAccountTest(TestCase):
 
