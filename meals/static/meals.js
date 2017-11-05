@@ -18,6 +18,8 @@ function try_log(login_type) {
 			
 			if (data === '1') {
 				location.href = '/'					
+			} else {
+				console.log('error');
 			}
 			
 		});
@@ -32,11 +34,11 @@ function create_account() {
 	password =$('#id_password').val(),
 	post_data = {'username':username,'email':email,'password':password,'csrfmiddlewaretoken':csrftoken};
 	$.post('/meals/create_account', post_data, function(data) {
-		console.log(data);
 		if (data === '1') {					
 			location.href = '/';
+		} else {
+			$('.has-error').html(data);
 		}
-
 	});
 }
 

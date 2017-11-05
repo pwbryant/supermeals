@@ -18,6 +18,9 @@
 			<button id='id_create' type='button' class="btn" onclick="create_account()">Create Account</button>
 			<button id='id_cancel' type='button' class="btn" onclick="location.href='/'">Cancel</button>
 			{% csrf_token %}
+			<div class='form-group'>
+				<span class='help-block has-error'></span>
+			</div>
 		</form>
 	</body>
 

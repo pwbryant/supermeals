@@ -49,7 +49,7 @@ class LoginLogoffCreateAccountTest(TestCase):
 		response = self.client.get('/meals/sign_up/')
 		self.assertTemplateUsed(response, 'sign_up.html')
 	
-	def test_can_save_POST_request(self):
+	def test_can_save_POST_and_create_user_account(self):
 		username, email, password = "Joe Schmoe", "joe@joepass.com", "joepass"
 		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
 		self.assertEqual(User.objects.count(),1)
@@ -59,4 +59,10 @@ class LoginLogoffCreateAccountTest(TestCase):
 		self.assertEqual(new_user.password,password)
 		self.assertEqual(response.content.decode(), '1')
 
+	def tests_sign_in_displays_error_for_duplicate_username(self):
+		username, email, password = "Joe Schmoe", "joe@joepass.com", "joepass"
+		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
 
+		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+
+		self.assertEqual(response.content.decode(), 'This username is already taken')

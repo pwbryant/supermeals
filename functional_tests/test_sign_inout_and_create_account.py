@@ -115,9 +115,29 @@ class SignInOutCreateAccountTest(FunctionalTest):
 		self.browser.find_element_by_id('id_as_guest').click()
 		self.browser.find_element_by_id('id_home_headline')
 
+		#He forgets that he already signed up so when he goes to the sign up page and
+		#and enters the same username and password, he gets an error message "Username 
+		#already taken
+		self.browser.find_element_by_id('id_sign_up').click()
+		user_name_input = self.browser.find_element_by_id('id_username')
+		user_name_input.send_keys('j_bone')
+		email_input = self.browser.find_element_by_id('id_email')
+		email_input.send_keys('joe@joemail.com')
+		password_input = self.browser.find_element_by_id('id_password')
+		password_input.send_keys('joepass')
+		self.browser.find_element_by_id('id_create').click()
+		error_message = self.browser.find_element_by_css_selector('.has-error').text
+		self.assertEqual(error_message,'This username is already taken')
+		#Seeing this he hits the Cancel button
+		self.browser.find_element_by_id('id_cancel').click()
+
 		#He decides he wants to login for real so he clicks the login button which takes
 		#him to the home login page
 		self.browser.find_element_by_id('id_login').click()
 		self.browser.find_element_by_id('id_login_headline')
 
-
+		#He then tries to login
+		#but he failed to enter his username and password so when he 
+		#hits the 'Login' button he sees and error "Enter Username & Password"
+		self.fail('finish test')
+		#self.browser.find_element_by_css_selector('.has-error').text
