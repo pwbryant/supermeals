@@ -59,13 +59,12 @@ class LoginLogoffCreateAccountTest(TestCase):
 		self.assertTemplateUsed(response, 'sign_up.html')
 	
 	def test_can_save_POST_and_create_user_account(self):
+		request = HttpRequest()
 		username, email, password = "Joe Schmoe", "joe@joepass.com", "joepass"
 		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
 		self.assertEqual(User.objects.count(),1)
 		new_user = User.objects.first()
-		self.assertEqual(new_user.username,username)
-		self.assertEqual(new_user.email,email)
-		self.assertEqual(new_user.password,password)
+		self.assertTrue(authenticate(request,username=username,password=password) is not None)
 
 		self.assertEqual(response.status_code, 302)
 		self.assertEqual(response['location'], '/')
