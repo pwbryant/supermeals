@@ -8,3 +8,6 @@ class FunctionalTest(StaticLiveServerTestCase):
 
 	def tearDown(self):
 		self.browser.quit()
+	
+	def fill_input(self,element_id,value):
+		self.browser.find_element_by_id(element_id).send_keys(value)

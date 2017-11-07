@@ -8,7 +8,6 @@
 		<link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 		<script src="http://code.jquery.com/jquery.js"></script>
 		<script src="/static/bootstrap/js/bootstrap.min.js"></script>
-		<script src="/static/meals.js"></script>
 
 	</head>
 	<style>
@@ -23,12 +22,23 @@
 	</style>
 	<body>
 		<h1 id="id_login_headline">Meal Lab</h1>
-		<form id="id_login_form">
-		<input id='id_username' placeholder='Username' />
-		<input id='id_password' placeholder='Password' />
+		<form id="id_user_login_form" method="POST" action="/meals/logging_in">
+		<input id='id_username' name='username' class='form-control input-lg' placeholder='Username' />
+		<input id='id_password' name='password' class='form-control input-lg' placeholder='Password' />
+		<input id='id_login' type='submit' class="btn" value="Login">
 		{% csrf_token %}
+		{% if error %}
+			<div class='form-group has-error'>
+				<span class='help-block'>{{ error }}</span>
+			</div>
+		{% endif %}
 		</form>
-		<button id='id_login' class="btn" onclick="try_log('user')">Login</button>
-		<button id='id_as_guest' class="btn" onclick="try_log('guest')">Continue As Guest</button>
+
+		<form id="id_guest_login_form" method="POST" action="/meals/logging_in">
+		{% csrf_token %}
+		<input id='id_as_guest' name='guest' type='submit' class="btn" value="Continue as Guest">
+		</form>
+		
+
 	</body>
 </html>

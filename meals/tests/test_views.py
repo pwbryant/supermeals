@@ -14,22 +14,31 @@ class LoginLogoffCreateAccountTest(TestCase):
 		self.assertEqual(response['location'], 'meals/login/')
 
 	def test_can_login_as_authenticated_user(self):
-		guest_username,guest_password = 'joe','joes_password'
+		username,password = 'joe','joes_password'
+		user = User.objects.create_user(username=username,password=password)
+		response = self.client.post('/meals/logging_in', data={'username':username, 'password':password})
+		
+		self.assertEqual(response.status_code, 302)
+		self.assertEqual(response['location'], '/')
+
+	def test_can_login_as_guest(self):
+		guest_username,guest_password = 'guest','321!beware'
 		guest_user = User.objects.create_user(username=guest_username,password=guest_password)
 		response = self.client.post('/meals/logging_in', data={'username':guest_username, 'password':guest_password})
-		self.assertEqual(response.content.decode(), '1')
 		
-		response = self.client.get('/')
-		self.assertTemplateUsed(response, 'home.html')
+		self.assertEqual(response.status_code, 302)
+		self.assertEqual(response['location'], '/')
+
 
 	def test_cant_login_as_unauthenticated_user(self):
 		guest_username,guest_password = 'bad_man','bad_password'
 		response = self.client.post('/meals/logging_in', data={'username':guest_username, 'password':guest_password})
-		self.assertEqual(response.content.decode(), '0')
 		
-		response = self.client.get('/')
-		self.assertEqual(response.status_code, 302)
-		self.assertEqual(response['location'], 'meals/login/')
+		self.assertEqual(response.status_code,200)
+		self.assertTemplateUsed(response,'login.html')
+
+		expected_error = "Username or Password incorrect"
+		self.assertContains(response,expected_error)
 
 	def test_logoff(self):
 		guest_username,guest_password = 'joe','crapman'
@@ -57,12 +66,17 @@ class LoginLogoffCreateAccountTest(TestCase):
 		self.assertEqual(new_user.username,username)
 		self.assertEqual(new_user.email,email)
 		self.assertEqual(new_user.password,password)
-		self.assertEqual(response.content.decode(), '1')
+
+		self.assertEqual(response.status_code, 302)
+		self.assertEqual(response['location'], '/')
 
 	def tests_sign_in_displays_error_for_duplicate_username(self):
 		username, email, password = "Joe Schmoe", "joe@joepass.com", "joepass"
 		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
 
 		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
-
-		self.assertEqual(response.content.decode(), 'This username is already taken')
+		
+		self.assertEqual(response.status_code,200)
+		self.assertTemplateUsed(response,'sign_up.html')
+		expected_error = "This username is already taken"
+		self.assertContains(response,expected_error)

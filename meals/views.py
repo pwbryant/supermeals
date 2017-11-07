@@ -22,16 +22,18 @@ def to_login(request):
 
 
 def logging_in(request):
-
-	username,password = request.POST['username'],request.POST['password']
-	if username == 'guest':
+	if request.POST.get('guest'):
+		username = 'guest'
 		password = '321!beware'	
+	else:
+		username,password = request.POST.get('username'),request.POST.get('password')
 	user = authenticate(request,username=username,password=password)
 	if user is not None:
 		login(request, user)
-		return HttpResponse('1')
+		return redirect('/')	
 	else:
-		return HttpResponse('0')
+		error = 'Username or Password incorrect'
+		return render(request,'login.html',{"error":error})
 
 
 def logging_off(request):
@@ -51,11 +53,12 @@ def create_account(request):
 		user = User()
 		user.username = request.POST.get('username','')
 		user.email = request.POST.get('email','')
-		user.password = request.POST.get('password','')
+		user.set_password(request.POST.get('password',''))
 		user.save()
 		login(request, user)
+		return redirect('/')	
 
-		return HttpResponse('1')
 	except IntegrityError: 
-		return HttpResponse("This username is already taken")
+		
+		return render(request,'sign_up.html',{"error":"This username is already taken"})
 		
