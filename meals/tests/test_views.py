@@ -68,6 +68,14 @@ class LoginLogoffCreateAccountTest(TestCase):
 
 		self.assertEqual(response.status_code, 302)
 		self.assertEqual(response['location'], '/')
+	
+	def test_create_user_account_does_not_allow_blank_inputs(self):
+
+		request = HttpRequest()
+		username, email, password = "", "joe@joepass.com", "joepass"
+		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		self.assertEqual(User.objects.count(),0)
+
 
 	def tests_sign_in_displays_error_for_duplicate_username(self):
 		username, email, password = "Joe Schmoe", "joe@joepass.com", "joepass"

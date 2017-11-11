@@ -6,14 +6,12 @@
 
 		<title>Meal Lab Sign Up</title>
 		<link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<script src="http://code.jquery.com/jquery.js"></script>
-		<script src="/static/bootstrap/js/bootstrap.min.js"></script>
 	</head>
 	<body>
 		<form id='id_create_account_form' method="POST" action="/meals/create_account">
-			<input id='id_username' name='username' class='form-control input-lg' placeholder="Username"/>
-			<input id='id_email'   name='email' class='form-control input-lg' placeholder="Email"/>
-			<input id='id_password'  name='password' class='form-control input-lg' placeholder="Password"/>
+			<input id='id_username' type="text" name='username' class='form-control input-lg' placeholder="Username"/>
+			<input id='id_email' type="text" name='email' class='form-control input-lg' placeholder="Email"/>
+			<input id='id_password' type="text"  name='password' class='form-control input-lg' placeholder="Password"/>
 			<input id='id_create' type='submit' class="btn" value="Create Account">
 			<button id='id_cancel' type='button' class="btn" onclick="location.href='/'">Cancel</button>
 			{% csrf_token %}
@@ -23,6 +21,12 @@
 				</div>
 			{% endif %}
 		</form>
+		<script src="http://code.jquery.com/jquery.js"></script>
+		<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+		<script src="/static/meals.js"></script>
+		<script>
+			initialize();
+		</script>
 	</body>
 
 </html>

@@ -9,7 +9,6 @@ from meals.models import MM_user
 
 # Create your views here.
 def home_or_login(request):
-
 	if request.user.is_authenticated:
 		return render(request, 'home.html') 
 	else:
@@ -50,10 +49,14 @@ def sign_up(request):
 def create_account(request):
 	
 	try:
+		username = request.POST.get('username','')
+		email = request.POST.get('email','')
+		password = request.POST.get('password','')
+		assert '' not in [username,email,password]
 		user = User()
-		user.username = request.POST.get('username','')
-		user.email = request.POST.get('email','')
-		user.set_password(request.POST.get('password',''))
+		user.username = username
+		user.email = email
+		user.set_password(password)
 		user.save()
 		login(request, user)
 		return redirect('/')	
@@ -62,3 +65,6 @@ def create_account(request):
 		
 		return render(request,'sign_up.html',{"error":"This username is already taken"})
 		
+	except AssertionError:		
+
+		return render(request,'sign_up.html',{"error":"Invalid Form Entry"})

@@ -20,9 +20,9 @@ class SignInOutCreateAccountTest(FunctionalTest):
 		#the  login page title mentions Meal Lab
 		self.assertIn('Meal Lab', self.browser.title)
 
-		#He sees the header "Meal Lab"
-		header_text = self.browser.find_element_by_id('id_login_headline').text
-		self.assertIn('Meal Lab', header_text)
+		#He sees the headline "Meal Lab"
+		headline_text = self.browser.find_element_by_id('id_login_headline').text
+		self.assertIn('Meal Lab', headline_text)
 
 		#He notices he is on a log-in page, where he can sign-in
 		#with a user name and password.  
@@ -84,9 +84,8 @@ class SignInOutCreateAccountTest(FunctionalTest):
 		#"j_bone", "joe@joemail.com", and "joepass" and then goes to hit the 'Create Account' button
 		self.browser.find_element_by_id('id_sign_up').click()
 		time.sleep(.25)
-		self.fill_input('id_username','j_bone')
-		self.fill_input('id_email','joe@joemail.com')
-		self.fill_input('id_password','joepass')
+		signup_ids,signup_values = ['id_username','id_email','id_password'], ['j_bone','joe@joemail.com','joepass']
+		self.fill_input(signup_ids,signup_values)
 		self.browser.find_element_by_id('id_create').click()
 		
 		#Joe notices he is back on the main page on the main page
@@ -121,13 +120,24 @@ class SignInOutCreateAccountTest(FunctionalTest):
 		#and enters the same username and password, he gets an error message "Username 
 		#already taken
 		self.browser.find_element_by_id('id_sign_up').click()
-		self.fill_input('id_username','j_bone')
-		self.fill_input('id_email','joe@joemail.com')
-		self.fill_input('id_password','joepass')
+		
+		#Without thinking Joe hits the "Create Account button" and he recieves an "Invalid Form Entry"
+		#error message
+
+		self.browser.find_element_by_id('id_create').click()
+		error_message = self.browser.find_element_by_css_selector('.has-error').text
+		self.assertEqual(error_message,'Invalid Form Entry')
+	
+		#As he fills out the form, he notices that the error values disappear, but since he 
+		#he enters all the same info,after hitting Create Account he gets a "This username is already taken" error
+		self.fill_input(signup_ids,signup_values)
+		error_message = self.browser.find_element_by_css_selector('.has-error').text
+		self.assertEqual(error_message,'')
+
 		self.browser.find_element_by_id('id_create').click()
 		error_message = self.browser.find_element_by_css_selector('.has-error').text
 		self.assertEqual(error_message,'This username is already taken')
-
+		
 		#Seeing this he hits the Cancel button
 		self.browser.find_element_by_id('id_cancel').click()
 
@@ -138,16 +148,14 @@ class SignInOutCreateAccountTest(FunctionalTest):
 
 		#He then tries to login
 		#but he failed to enter his username and password so when he 
-		self.browser.find_element_by_id('id_login').click()
-
+		self.login_user('','')
 		#hits the 'Login' button he sees and error "Username or Password incorrect"
 		error_message = self.browser.find_element_by_css_selector('.has-error').text
 		self.assertEqual(error_message,'Username or Password incorrect')
 
 		#So he puts in his info and logs in
-		self.fill_input('id_username','j_bone')
-		self.fill_input('id_password','joepass')
-		self.browser.find_element_by_id('id_login').click()
+		self.login_user('j_bone','joepass')
 		self.browser.find_element_by_id('id_home_headline')
 
 		self.fail('finish test')
+

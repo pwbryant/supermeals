@@ -1,15 +1,24 @@
 from .base import FunctionalTest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+import time
 
 class CalcAndViewMacros(FunctionalTest):
 
 	def test_can_calculate_and_view_macros(self):
-		pass	
-		#self.fail('Finish the test!')
-		#self.browser.get('http://localhost:8000')
-		#On this a form there is a titled 'Calculate Daily Calories'
-
+		
+		#Joe signs in as guest to calc his macros
+		self.browser.get(self.live_server_url)
+		self.login_user('guest','321!beware')
+		#Joe, signed in as a guest, got to the Calculate Macros tab and sees the header
+		#'Total Daily Energy Expenditure (TDEE)'
+		self.browser.find_element_by_id('id_my_macros_tab_label').click()
+		macro_header = self.browser.find_element_by_id('id_my_macros_headline').text
+		self.assertEqual(macro_header,'Find Total Daily Energy Expenditure (TDEE)')
+		self.fail('Finish the test!')
+		#He also notices that the home page header has disapearred
+		#home_header = self.browser.find_element_by_id('id_home_headline').text
+		#self.assertEqual(home_header,'')
 		#The form has fields for:
 		#Age, Sex, Weight, Height, and a series of radio button specifying 
 		#activity level, with a 'Calculate' button on the bottom.

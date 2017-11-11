@@ -6,8 +6,6 @@
 
 		<title>Meal Lab Login</title>
 		<link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<script src="http://code.jquery.com/jquery.js"></script>
-		<script src="/static/bootstrap/js/bootstrap.min.js"></script>
 
 	</head>
 	<style>
@@ -23,8 +21,8 @@
 	<body>
 		<h1 id="id_login_headline">Meal Lab</h1>
 		<form id="id_user_login_form" method="POST" action="/meals/logging_in">
-		<input id='id_username' name='username' class='form-control input-lg' placeholder='Username' />
-		<input id='id_password' name='password' class='form-control input-lg' placeholder='Password' />
+		<input id='id_username' type="text" name='username' class='form-control input-lg' placeholder='Username' />
+		<input id='id_password'  type="text" name='password' class='form-control input-lg' placeholder='Password' />
 		<input id='id_login' type='submit' class="btn" value="Login">
 		{% csrf_token %}
 		{% if error %}
@@ -40,5 +38,12 @@
 		</form>
 		
 
+		<script src="http://code.jquery.com/jquery.js"></script>
+		<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+		<script src="/static/meals.js"></script>
+		<script>
+			initialize();
+			console.log('hello world');
+		</script>
 	</body>
 </html>
