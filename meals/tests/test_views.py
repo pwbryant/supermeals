@@ -3,7 +3,7 @@ from django.urls import resolve
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
-from meals.forms import LoginForm
+from meals.forms import LoginForm, SignUpForm
 
 # Create your tests here.
 
@@ -13,6 +13,10 @@ class LoginLogoffCreateAccountTest(TestCase):
 		response = self.client.get('/')
 		self.assertEqual(response.status_code, 302)
 		self.assertEqual(response['location'], 'meals/login/')
+
+	def test_login_page_uses_login_form(self):
+		response = self.client.get('/meals/login/')
+		self.assertIsInstance(response.context['form'], LoginForm)
 
 	def test_can_login_as_authenticated_user(self):
 		username,password = 'joe','joes_password'
@@ -37,7 +41,7 @@ class LoginLogoffCreateAccountTest(TestCase):
 		
 		self.assertEqual(response.status_code,200)
 		self.assertTemplateUsed(response,'login.html')
-
+		self.assertIsInstance(response.context['form'], LoginForm)
 		expected_error = "Username or Password incorrect"
 		self.assertContains(response,expected_error)
 
@@ -59,6 +63,10 @@ class LoginLogoffCreateAccountTest(TestCase):
 		response = self.client.get('/meals/sign_up/')
 		self.assertTemplateUsed(response, 'sign_up.html')
 	
+	def test_sing_up_page_uses_sign_up_form(self):
+		response = self.client.get('/meals/sign_up/')
+		self.assertIsInstance(response.context['form'], SignUpForm)
+
 	def test_can_save_POST_and_create_user_account(self):
 		request = HttpRequest()
 		username, email, password = "Joe Schmoe", "joe@joepass.com", "joepass"
@@ -86,9 +94,8 @@ class LoginLogoffCreateAccountTest(TestCase):
 		
 		self.assertEqual(response.status_code,200)
 		self.assertTemplateUsed(response,'sign_up.html')
+		self.assertIsInstance(response.context['form'], SignUpForm)
+
 		expected_error = "This username is already taken"
 		self.assertContains(response,expected_error)
 	
-	def test_login_page_uses_login_form(self):
-		response = self.client.get('/meals/login/')
-		self.assertIsInstance(response.context['form'], LoginForm)

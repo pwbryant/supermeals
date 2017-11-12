@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.db.utils import IntegrityError
 import json
-from meals.forms import LoginForm
+from meals.forms import LoginForm, SignUpForm
 
 # Create your views here.
 def home_or_login(request):
@@ -42,7 +42,7 @@ def logging_off(request):
 
 def sign_up(request):
 
-	return render(request, 'sign_up.html')
+	return render(request, 'sign_up.html', {"form":SignUpForm()})
 
 
 def create_account(request):
@@ -62,8 +62,8 @@ def create_account(request):
 
 	except IntegrityError: 
 		
-		return render(request,'sign_up.html',{"error":"This username is already taken"})
+		return render(request,'sign_up.html',{"error":"This username is already taken","form":SignUpForm()})
 		
 	except AssertionError:		
 
-		return render(request,'sign_up.html',{"error":"Invalid Form Entry"})
+		return render(request,'sign_up.html',{"error":"Email is Missing","form":SignUpForm()})

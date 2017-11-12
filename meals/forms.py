@@ -4,11 +4,10 @@ from crispy_forms.layout import Submit, Fieldset, ButtonHolder, Layout, Field
 from django.contrib.auth.models import User
 
 EMPTY_USERNAME_ERROR = 'Username Missing'
+EMPTY_EMAIL_ERROR = 'Email Missing'
 EMPTY_PASSWORD_ERROR = 'Password Missing'
 
 class LoginForm(forms.models.ModelForm):
-
-
 	
 	class Meta:
 
@@ -31,6 +30,33 @@ class LoginForm(forms.models.ModelForm):
 			'password': {'required': EMPTY_PASSWORD_ERROR}
 		}
 
+
+class SignUpForm(forms.models.ModelForm):
+	
+	class Meta:
+
+		model = User
+		fields = ('username','email','password',)
+		widgets = {
+			'username': forms.fields.TextInput(attrs = {
+				'placeholder': 'Username',
+				'class': 'form-control input-sm',
+			}),
+			'email': forms.fields.TextInput(attrs = {
+				'placeholder': 'Email',
+				'class': 'form-control input-sm',
+			}),
+			'password': forms.fields.TextInput(attrs = {
+				'placeholder': 'Password',
+				'class': 'form-control input-sm',
+			}),
+		}
+
+		#error constants
+		error_messages = {
+			'username': {'required': EMPTY_USERNAME_ERROR},
+			'password': {'required': EMPTY_PASSWORD_ERROR}
+		}
 
 class GuestLoginForm(forms.Form):
 
