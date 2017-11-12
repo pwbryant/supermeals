@@ -3,6 +3,7 @@ from django.urls import resolve
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
+from meals.forms import LoginForm
 
 # Create your tests here.
 
@@ -87,3 +88,7 @@ class LoginLogoffCreateAccountTest(TestCase):
 		self.assertTemplateUsed(response,'sign_up.html')
 		expected_error = "This username is already taken"
 		self.assertContains(response,expected_error)
+	
+	def test_login_page_uses_login_form(self):
+		response = self.client.get('/meals/login/')
+		self.assertIsInstance(response.context['form'], LoginForm)

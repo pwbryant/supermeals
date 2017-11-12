@@ -4,8 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.db.utils import IntegrityError
 import json
-
-from meals.models import MM_user
+from meals.forms import LoginForm
 
 # Create your views here.
 def home_or_login(request):
@@ -17,7 +16,7 @@ def home_or_login(request):
 
 def to_login(request):
 	
-	return render(request, 'login.html') 
+	return render(request, 'login.html', {'form': LoginForm()}) 
 
 
 def logging_in(request):
@@ -32,7 +31,7 @@ def logging_in(request):
 		return redirect('/')	
 	else:
 		error = 'Username or Password incorrect'
-		return render(request,'login.html',{"error":error})
+		return render(request,'login.html',{"error":error,"form":LoginForm()})
 
 
 def logging_off(request):

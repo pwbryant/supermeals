@@ -21,8 +21,8 @@
 	<body>
 		<h1 id="id_login_headline">Meal Lab</h1>
 		<form id="id_user_login_form" method="POST" action="/meals/logging_in">
-		<input id='id_username' type="text" name='username' class='form-control input-lg' placeholder='Username' />
-		<input id='id_password'  type="text" name='password' class='form-control input-lg' placeholder='Password' />
+		{{ form.username }}
+		{{ form.password }}
 		<input id='id_login' type='submit' class="btn" value="Login">
 		{% csrf_token %}
 		{% if error %}

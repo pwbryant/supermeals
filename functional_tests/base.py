@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.http import HttpRequest
 from selenium import webdriver
+import time
 
 class FunctionalTest(StaticLiveServerTestCase):
 
@@ -16,12 +17,10 @@ class FunctionalTest(StaticLiveServerTestCase):
 		for i in range(len(element_ids)):
 			self.browser.find_element_by_id(element_ids[i]).send_keys(values[i])
 
+
 	def login_user(self,username,password = False):
 
 		if '' not in [username,password]:
-			user = authenticate(username=username,password=password)
-			if user == None:
-				User.objects.create_user(username=username,password=password)
 			
 			if username == 'guest':
 				login_button_id = 'id_as_guest'
