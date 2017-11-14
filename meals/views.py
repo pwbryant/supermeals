@@ -47,11 +47,11 @@ def sign_up(request):
 
 def create_account(request):
 	
-	try:
-		username = request.POST.get('username','')
-		email = request.POST.get('email','')
-		password = request.POST.get('password','')
-		assert '' not in [username,email,password]
+	username = request.POST.get('username','')
+	email = request.POST.get('email','')
+	password = request.POST.get('password','')
+	form = SignUpForm(data=request.POST)
+	if form.is_valid():
 		user = User()
 		user.username = username
 		user.email = email
@@ -59,11 +59,6 @@ def create_account(request):
 		user.save()
 		login(request, user)
 		return redirect('/')	
+	
+	return render(request,'sign_up.html',{"form":form})
 
-	except IntegrityError: 
-		
-		return render(request,'sign_up.html',{"error":"This username is already taken","form":SignUpForm()})
-		
-	except AssertionError:		
-
-		return render(request,'sign_up.html',{"error":"Email is Missing","form":SignUpForm()})

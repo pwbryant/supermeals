@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 EMPTY_USERNAME_ERROR = 'Username Missing'
 EMPTY_EMAIL_ERROR = 'Email Missing'
 EMPTY_PASSWORD_ERROR = 'Password Missing'
+DUPLICATE_USERNAME_ERROR = 'Username taken'
+INVALID_USERNAME_ERROR = 'Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters.'
 
 class LoginForm(forms.models.ModelForm):
 	
@@ -54,7 +56,7 @@ class SignUpForm(forms.models.ModelForm):
 
 		#error constants
 		error_messages = {
-			'username': {'required': EMPTY_USERNAME_ERROR},
+			'username': {'required': EMPTY_USERNAME_ERROR,'unique':DUPLICATE_USERNAME_ERROR},
 			'password': {'required': EMPTY_PASSWORD_ERROR}
 		}
 

@@ -15,9 +15,10 @@
 			<input id='id_create' type='submit' class="btn" value="Create Account">
 			<button id='id_cancel' type='button' class="btn" onclick="location.href='/'">Cancel</button>
 			{% csrf_token %}
-			{% if error %}
+			{% if form.errors %}
 				<div class='form-group has-error'>
-					<span class='help-block'>{{ error }}</span>
+					<span class='help-block'>{{ form.username.errors }}</span>
+					<span class='help-block'>{{ form.password.errors }}</span>
 				</div>
 			{% endif %}
 		</form>
