@@ -3,12 +3,14 @@ from django.urls import resolve
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
-from meals.forms import LoginForm, SignUpForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR
+from meals.forms import LoginForm, SignUpForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR
 
 # Create your tests here.
 
 USERNAME,EMAIL,PASSWORD = 'JoeSchmoe','joe@joemail.com','321pass123!'
 GUEST_USERNAME,GUEST_PASSWORD = 'guest','321!beware'
+BAD_USERNAME,BAD_PASSWORD = 'bad','badpass'
+
 class LoginLogoffTest(TestCase):
 	
 	def test_anonymous_user_home_redirects_to_login_template(self):
@@ -36,14 +38,23 @@ class LoginLogoffTest(TestCase):
 		self.assertEqual(response.status_code, 302)
 		self.assertEqual(response['location'], '/')
 
-
-	def test_cant_login_as_unauthenticated_user(self):
-		bad_username,bad_password = 'bad_man','bad_password'
+	def test_login_error_renders_login_page(self):
+		bad_username,bad_password = BAD_USERNAME,BAD_PASSWORD
 		response = self.client.post('/meals/logging_in', data={'username':bad_username, 'password':bad_password})
 		
 		self.assertEqual(response.status_code,200)
 		self.assertTemplateUsed(response,'login.html')
+
+	def test_login_error_login_page_gets_back_login_form(self):
+		bad_username,bad_password = BAD_USERNAME,BAD_PASSWORD
+		response = self.client.post('/meals/logging_in', data={'username':bad_username, 'password':bad_password})
+		
 		self.assertIsInstance(response.context['form'], LoginForm)
+
+	def test_login_error_shows_up_on_login_page(self):
+		bad_username,bad_password = BAD_USERNAME,BAD_PASSWORD
+		response = self.client.post('/meals/logging_in', data={'username':bad_username, 'password':bad_password})
+		
 		expected_error = "Username or Password incorrect"
 		self.assertContains(response,expected_error)
 
@@ -84,14 +95,32 @@ class CreateAccountTest(TestCase):
 		self.assertEqual(response.status_code, 302)
 		self.assertEqual(response['location'], '/')
 	
-	def test_create_user_account_does_not_allow_blank_inputs(self):
+	def test_sign_up_blank_username_validation_error_wont_save_new_user(self):	
 
-		request = HttpRequest()
 		username, email, password = "", EMAIL, PASSWORD
 		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
 		self.assertEqual(User.objects.count(),0)
 
+	def test_sign_up_duplicate_username_validation_error_wont_save_new_user(self):	
+
+		username, email, password = USERNAME, EMAIL, PASSWORD
+		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		self.assertEqual(User.objects.count(),1)
+
+	def test_sign_up_bad_username_validation_error_wont_save_new_user(self):	
+
+		username, email, password = "joe blow", EMAIL, PASSWORD
+		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		self.assertEqual(User.objects.count(),0)
 	
+	def test_sign_up_blank_password_validation_error_wont_save_new_user(self):	
+
+		username, email, password = USERNAME, EMAIL, ''
+		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		self.assertEqual(User.objects.count(),0)
+
 	def test_sign_up_validation_error_render_sign_up_html(self):	
 		username, email, password = USERNAME,EMAIL,PASSWORD
 		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
@@ -108,7 +137,6 @@ class CreateAccountTest(TestCase):
 		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
 		self.assertIsInstance(response.context['form'], SignUpForm)
 
-
 	def test_sign_up_duplicate_user_validation_error_message_shows_up_on_sign_up_html(self):	
 		username, email, password = USERNAME,EMAIL,PASSWORD
 		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
@@ -119,7 +147,7 @@ class CreateAccountTest(TestCase):
 	def test_sign_up_bad_username_validation_error_message_shows_up_on_sign_up_html(self):	
 		username, email, password = 'Joe Schmoe',EMAIL,PASSWORD
 		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
-		self.assertContains(response,'Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters.')
+		self.assertContains(response,INVALID_USERNAME_ERROR)
  
 	def test_sign_up_missing_password_validation_error_message_shows_up_on_sign_up_html(self):	
 		username, email, password = USERNAME,EMAIL,''
