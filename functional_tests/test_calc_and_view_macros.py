@@ -7,11 +7,11 @@ import time
 class CalcAndViewMacros(FunctionalTest):
 
 	def test_can_calculate_macros(self):
-		
+		USERNAME, PASSWORD = 'JoeSchmoe','123pass123'
 		#Joe signs in as guest to calc his macros
 		self.browser.get(self.live_server_url)
-		User.objects.create_user(username='guest',password='321!beware')
-		self.login_user('guest','321!beware')
+		User.objects.create_user(username=USERNAME,password=PASSWORD)
+		self.login_user(USERNAME,PASSWORD)
 
 		#self.browser.find_element_by_id('id_as_guest')
 		#Joe, signed in as a guest, got to the Calculate Macros tab and sees the header
@@ -19,11 +19,12 @@ class CalcAndViewMacros(FunctionalTest):
 		self.browser.find_element_by_id('id_my_macros_tab_label').click()
 		macro_header = self.browser.find_element_by_id('id_my_macros_headline').text
 		self.assertEqual(macro_header,'Find Total Daily Energy Expenditure (TDEE)')
-		self.fail('Finish the test!')
 
 		#He also notices that the home page header has disapearred
-		#home_header = self.browser.find_element_by_id('id_home_headline').text
-		#self.assertEqual(home_header,'')
+		home_header_is_displayed = self.browser.find_element_by_id('id_home_headline').is_displayed()
+		self.assertFalse(home_header_is_displayed)
+
+		self.fail('Finish the test!')
 		#The form has fields for:
 		#Age, Sex, Weight, Height, and a series of radio button specifying 
 		#activity level, with a 'Calculate' button on the bottom.
