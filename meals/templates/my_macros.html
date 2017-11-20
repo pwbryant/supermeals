@@ -1,0 +1,8 @@
+<!doctype html>
+<div>
+	<form id="id_my_macros_form" method="POST" action="/meals/save_my_macros">
+	{{ form.age }}
+	<input id='id_save_my_macros' type='submit' class="btn" value="Save">
+	{% csrf_token %}
+	</form>
+</div>

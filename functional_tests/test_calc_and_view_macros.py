@@ -6,6 +6,15 @@ import time
 
 class CalcAndViewMacros(FunctionalTest):
 
+	def check_element_content(self,ID,comparison_type, comparison_text):
+	
+		if comparison_type == 'text':
+			content = self.browser.find_element_by_id(ID).text
+		if comparison_type == 'placeholder':
+			content = self.browser.find_element_by_id(ID).get_attribute('placeholder')
+
+		self.assertEqual(content,comparison_text)
+
 	def test_can_calculate_macros(self):
 		USERNAME, PASSWORD = 'JoeSchmoe','123pass123'
 		#Joe signs in as guest to calc his macros
@@ -24,9 +33,13 @@ class CalcAndViewMacros(FunctionalTest):
 		home_header_is_displayed = self.browser.find_element_by_id('id_home_headline').is_displayed()
 		self.assertFalse(home_header_is_displayed)
 
-		self.fail('Finish the test!')
 		#The form has fields for:
 		#Age, Sex, Weight, Height, and a series of radio button specifying 
+		self.check_element_content('id_age','placeholder','Age')
+		#age_place_holder(self.browser.find_element_by_id('id_age').attribute('placeholder'))
+		self.fail('Finish the test!')
+
+
 		#activity level, with a 'Calculate' button on the bottom.
 
 		#Joe enters his info, and hits 'Calculate'

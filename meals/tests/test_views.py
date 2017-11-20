@@ -3,7 +3,7 @@ from django.urls import resolve
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
-from meals.forms import LoginForm, SignUpForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR
+from meals.forms import LoginForm, SignUpForm, MyMacrosForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR
 
 # Create your tests here.
 
@@ -153,3 +153,14 @@ class CreateAccountTest(TestCase):
 		username, email, password = USERNAME,EMAIL,''
 		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
 		self.assertContains(response,EMPTY_PASSWORD_ERROR)
+
+class MyMacrosTabTest(TestCase):
+
+	def test_my_macros_url_renders_correct_template(self):
+		response = self.client.get('/meals/get_my_macros/')
+		self.assertTemplateUsed(response, 'my_macros.html')
+
+	def test_my_macros_template_uses_my_macros_form(self):
+		response = self.client.get('/meals/get_my_macros/')
+		self.assertIsInstance(response.context['form'], MyMacrosForm)
+		

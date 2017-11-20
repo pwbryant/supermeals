@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.db.utils import IntegrityError
 import json
-from meals.forms import LoginForm, SignUpForm
+from meals.forms import LoginForm, SignUpForm, MyMacrosForm
 
 # Create your views here.
 def home_or_login(request):
@@ -41,7 +41,6 @@ def logging_off(request):
 
 
 def sign_up(request):
-
 	return render(request, 'sign_up.html', {"form":SignUpForm()})
 
 
@@ -62,3 +61,6 @@ def create_account(request):
 	
 	return render(request,'sign_up.html',{"form":form})
 
+def get_my_macros(request):
+	form = MyMacrosForm()
+	return render(request, 'my_macros.html',{'form':MyMacrosForm()})

@@ -3,11 +3,14 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Fieldset, ButtonHolder, Layout, Field
 from django.contrib.auth.models import User
 
+#LoginForm/SignUpForm errors
 EMPTY_USERNAME_ERROR = 'Username Missing'
 EMPTY_EMAIL_ERROR = 'Email Missing'
 EMPTY_PASSWORD_ERROR = 'Password Missing'
 DUPLICATE_USERNAME_ERROR = 'Username taken'
 INVALID_USERNAME_ERROR = 'Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters.'
+#MyMacrosForm erros
+EMPTY_AGE_ERROR = 'Age Missing'
 
 class LoginForm(forms.models.ModelForm):
 	
@@ -71,4 +74,13 @@ class GuestLoginForm(forms.Form):
 		Field('guest',type='hidden')
 	)
 	helper.add_input(Submit('guest','Continue as Guest',css_class='btn-primary'))	
+
+
+class MyMacrosForm(forms.Form):
+	
+	age = forms.CharField(widget = forms.fields.TextInput(attrs={
+				'placeholder': 'Age',
+				'class': 'form-control input-sm',
+			})
+		)
 

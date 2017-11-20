@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from meals.forms import LoginForm,SignUpForm,  EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR
+from meals.forms import LoginForm,SignUpForm,MyMacrosForm,EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR,EMPTY_AGE_ERROR
 
 class LoginFormTest(TestCase):
 
@@ -42,3 +42,20 @@ class SignUpFormTest(TestCase):
 			form.errors['password'],
 			[EMPTY_PASSWORD_ERROR]
 		)
+
+
+class MyMacrosFormTest(TestCase):
+
+	def test_my_macros_form_has_placeholder_and_css_classes(self):
+		form = MyMacrosForm()
+		self.assertIn('placeholder="Age"', form.as_p())
+		self.assertIn('class="form-control input-sm"', form.as_p())
+
+	def test_form_validation_for_blank_inputs(self):
+		form = MyMacrosForm(data={'age':''})
+		self.assertFalse(form.is_valid())
+		self.assertEqual(
+			form.errors['age'],
+			['This field is required.']
+		)
+
