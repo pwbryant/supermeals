@@ -12,6 +12,8 @@ class CalcAndViewMacros(FunctionalTest):
 			content = self.browser.find_element_by_id(ID).text
 		if comparison_type == 'placeholder':
 			content = self.browser.find_element_by_id(ID).get_attribute('placeholder')
+		if comparison_type == 'value':
+			content = self.browser.find_element_by_id(ID).get_attribute('value')
 
 		self.assertEqual(content,comparison_text)
 
@@ -34,14 +36,17 @@ class CalcAndViewMacros(FunctionalTest):
 		self.assertFalse(home_header_is_displayed)
 
 		#The form has fields for:
-		#Age, Sex, Weight, Height, and a series of radio button specifying 
+		#Gender, Age, Sex, Weight, Height,  
+		self.assertTrue(self.browser.find_element_by_id('id_gender_0').is_selected())
+		self.assertFalse(self.browser.find_element_by_id('id_gender_1').is_selected())
 		self.check_element_content('id_age','placeholder','Age')
-		#age_place_holder(self.browser.find_element_by_id('id_age').attribute('placeholder'))
+		self.check_element_content('id_weight','placeholder','Weight(lbs)')
+		self.check_element_content('id_height','placeholder','Height(in)')
+
+
+		#and a series of radio button specifying activity level, with a 'Calculate' button on the bottom.
+
 		self.fail('Finish the test!')
-
-
-		#activity level, with a 'Calculate' button on the bottom.
-
 		#Joe enters his info, and hits 'Calculate'
 
 		#Below the form, he sees his daily caloric expediture

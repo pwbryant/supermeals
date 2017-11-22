@@ -1,7 +1,6 @@
 from django import forms
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Fieldset, ButtonHolder, Layout, Field
 from django.contrib.auth.models import User
+from meals.models import Macros
 
 #LoginForm/SignUpForm errors
 EMPTY_USERNAME_ERROR = 'Username Missing'
@@ -10,7 +9,10 @@ EMPTY_PASSWORD_ERROR = 'Password Missing'
 DUPLICATE_USERNAME_ERROR = 'Username taken'
 INVALID_USERNAME_ERROR = 'Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters.'
 #MyMacrosForm erros
+EMPTY_GENDER_ERROR = 'Gender Missing'
 EMPTY_AGE_ERROR = 'Age Missing'
+EMPTY_WEIGHT_ERROR = 'Weight Missing'
+EMPTY_HEIGHT_ERROR = 'Height Missing'
 
 class LoginForm(forms.models.ModelForm):
 	
@@ -63,24 +65,37 @@ class SignUpForm(forms.models.ModelForm):
 			'password': {'required': EMPTY_PASSWORD_ERROR}
 		}
 
-class GuestLoginForm(forms.Form):
-
-	guest = forms.CharField()
-
-	helper = FormHelper()
-	helper.form_method = 'POST'
-	helper.form_action = 'logging_in'
-	helper.layout = Layout(
-		Field('guest',type='hidden')
-	)
-	helper.add_input(Submit('guest','Continue as Guest',css_class='btn-primary'))	
 
 
-class MyMacrosForm(forms.Form):
+class MyMacrosForm(forms.models.ModelForm):
 	
-	age = forms.CharField(widget = forms.fields.TextInput(attrs={
+        
+	class Meta:
+
+		model = Macros
+		fields = ('gender','age','weight','height',)
+		
+		widgets = {
+			'gender': forms.RadioSelect(),
+			'age': forms.fields.TextInput(attrs = {
 				'placeholder': 'Age',
 				'class': 'form-control input-sm',
-			})
-		)
+			}),
+			'weight': forms.fields.TextInput(attrs = {
+				'placeholder': 'Weight(lbs)',
+				'class': 'form-control input-sm',
+			}),
+			'height': forms.fields.TextInput(attrs = {
+				'placeholder': 'Height(in)',
+				'class': 'form-control input-sm',
+			}),
+		}
+
+		#error constants
+		error_messages = {
+			'gender': {'required': EMPTY_GENDER_ERROR},
+			'age': {'required': EMPTY_AGE_ERROR},
+			'weight': {'required': EMPTY_WEIGHT_ERROR},
+			'height': {'required': EMPTY_HEIGHT_ERROR}
+		}
 
