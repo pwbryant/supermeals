@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth.models import User
 from meals.models import Macros
 
+from django.utils.translation import ugettext_lazy as _
+
 #LoginForm/SignUpForm errors
 EMPTY_USERNAME_ERROR = 'Username Missing'
 EMPTY_EMAIL_ERROR = 'Email Missing'
@@ -13,6 +15,8 @@ EMPTY_GENDER_ERROR = 'Gender Missing'
 EMPTY_AGE_ERROR = 'Age Missing'
 EMPTY_WEIGHT_ERROR = 'Weight Missing'
 EMPTY_HEIGHT_ERROR = 'Height Missing'
+EMPTY_ACTIVITY_ERROR = 'Activity Level Missing'
+EMPTY_DIRECTION_ERROR = 'Desired Change Missing'
 
 class LoginForm(forms.models.ModelForm):
 	
@@ -73,8 +77,7 @@ class MyMacrosForm(forms.models.ModelForm):
 	class Meta:
 
 		model = Macros
-		fields = ('gender','age','weight','height',)
-		
+		fields = ('gender','age','weight','height','activity','direction',)
 		widgets = {
 			'gender': forms.RadioSelect(),
 			'age': forms.fields.TextInput(attrs = {
@@ -89,6 +92,8 @@ class MyMacrosForm(forms.models.ModelForm):
 				'placeholder': 'Height(in)',
 				'class': 'form-control input-sm',
 			}),
+			'activity': forms.RadioSelect(),
+			'direction': forms.RadioSelect(),
 		}
 
 		#error constants
@@ -96,6 +101,8 @@ class MyMacrosForm(forms.models.ModelForm):
 			'gender': {'required': EMPTY_GENDER_ERROR},
 			'age': {'required': EMPTY_AGE_ERROR},
 			'weight': {'required': EMPTY_WEIGHT_ERROR},
-			'height': {'required': EMPTY_HEIGHT_ERROR}
+			'height': {'required': EMPTY_HEIGHT_ERROR},
+			'activity': {'required': EMPTY_ACTIVITY_ERROR},
+			'direction': {'required': EMPTY_DIRECTION_ERROR}
 		}
 

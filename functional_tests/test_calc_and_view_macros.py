@@ -39,10 +39,18 @@ class CalcAndViewMacros(FunctionalTest):
 		#Gender, Age, Sex, Weight, Height,  
 		self.assertTrue(self.browser.find_element_by_id('id_gender_0').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_gender_1').is_selected())
+		self.check_element_content('id_age_label','text','Age:')
 		self.check_element_content('id_age','placeholder','Age')
+		self.check_element_content('id_weight_label','text','Weight:')
 		self.check_element_content('id_weight','placeholder','Weight(lbs)')
+		self.check_element_content('id_height_label','text','Height:')
 		self.check_element_content('id_height','placeholder','Height(in)')
+		self.assertFalse(self.browser.find_element_by_id('id_activity_1').is_selected())
+		self.assertFalse(self.browser.find_element_by_id('id_activity_2').is_selected())
+		self.assertFalse(self.browser.find_element_by_id('id_activity_3').is_selected())
+		self.assertFalse(self.browser.find_element_by_id('id_activity_4').is_selected())
 
+		self.check_element_content('id_calc_tdee','text','Calculate')
 
 		#and a series of radio button specifying activity level, with a 'Calculate' button on the bottom.
 
