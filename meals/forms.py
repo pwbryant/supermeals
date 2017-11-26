@@ -1,8 +1,8 @@
 from django import forms
+from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
 from meals.models import Macros
 
-from django.utils.translation import ugettext_lazy as _
 
 #LoginForm/SignUpForm errors
 EMPTY_USERNAME_ERROR = 'Username Missing'
@@ -17,6 +17,11 @@ EMPTY_WEIGHT_ERROR = 'Weight Missing'
 EMPTY_HEIGHT_ERROR = 'Height Missing'
 EMPTY_ACTIVITY_ERROR = 'Activity Level Missing'
 EMPTY_DIRECTION_ERROR = 'Desired Change Missing'
+EMPTY_MACRO_ERROR = 'Macro Ratios Missing'
+
+class HorizontalRadioRenderer(forms.RadioSelect):
+	def render(self):
+		return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
 
 class LoginForm(forms.models.ModelForm):
 	
@@ -73,11 +78,16 @@ class SignUpForm(forms.models.ModelForm):
 
 class MyMacrosForm(forms.models.ModelForm):
 	
-        
+	MACRO_RATIO_CHOICES = (
+		('30_35_35','Protein: 30%, Fat: 35%, Carbs: 35%',),
+		('40_40_20','Protein: 40%, Fat: 40%, Carbs: 20%',),
+		('30_20_50','Protein: 30%, Fat: 20%, Carbs: 50%',),
+	)
+	macro_ratios = forms.ChoiceField(choices=MACRO_RATIO_CHOICES,widget=forms.RadioSelect,error_messages={'required':EMPTY_MACRO_ERROR},required=True)
 	class Meta:
 
 		model = Macros
-		fields = ('gender','age','weight','height','activity','direction',)
+		fields = ('gender','age','weight','height','activity','direction','macro_ratios')
 		widgets = {
 			'gender': forms.RadioSelect(),
 			'age': forms.fields.TextInput(attrs = {
@@ -103,6 +113,6 @@ class MyMacrosForm(forms.models.ModelForm):
 			'weight': {'required': EMPTY_WEIGHT_ERROR},
 			'height': {'required': EMPTY_HEIGHT_ERROR},
 			'activity': {'required': EMPTY_ACTIVITY_ERROR},
-			'direction': {'required': EMPTY_DIRECTION_ERROR}
+			'direction': {'required': EMPTY_DIRECTION_ERROR},
 		}
 
