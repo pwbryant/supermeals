@@ -52,12 +52,6 @@ class MacrosTest(TestCase):
 		
 	def test_validation_errors_illegal_field_values(self):
 		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('gender','')))#illegal gender
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('age',0)))#low age
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('weight',0)))#low weight
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('height',0)))#low height
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('age',900)))#high age
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('weight',900)))#high weight
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('height',900)))#high height
 		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('activity','blah')))#illegal activity
 		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('direction','blah')))#illegal direction
 		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('change_rate',Decimal('10.111'))))#illegal(too long)
@@ -68,13 +62,12 @@ class MacrosTest(TestCase):
 
 	def test_integrity_errors_missing_field_values(self):
 		#gender,direction and activity, because the have defaults are not tested on purpose because they are ValidationError
-		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('age','remove')))#ow age
-		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('weight','remove')))#low weight
-		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('height','remove')))#low height
-		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('height','remove')))#low height
-		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('change_rate','remove')))#illegal(too long)
-		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('fat_percent','remove')))#illegal(too long)
-		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('protein_percent','remove')))#illegal(too long)
+		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('age','remove')))#no age
+		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('weight','remove')))#no weight
+		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('height','remove')))#no height
+		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('change_rate','remove')))#no chane
+		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('fat_percent','remove')))#no fat percent
+		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('protein_percent','remove')))#no protein percent
  
 		self.assertEqual(Macros.objects.all().count(),0)
 

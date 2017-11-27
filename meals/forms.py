@@ -11,13 +11,12 @@ EMPTY_PASSWORD_ERROR = 'Password Missing'
 DUPLICATE_USERNAME_ERROR = 'Username taken'
 INVALID_USERNAME_ERROR = 'Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters.'
 #MyMacrosForm erros
-EMPTY_GENDER_ERROR = 'Gender Missing'
+INVALID_POST_ERROR = 'Invalid POST'
 EMPTY_AGE_ERROR = 'Age Missing'
 EMPTY_WEIGHT_ERROR = 'Weight Missing'
 EMPTY_HEIGHT_ERROR = 'Height Missing'
-EMPTY_ACTIVITY_ERROR = 'Activity Level Missing'
-EMPTY_DIRECTION_ERROR = 'Desired Change Missing'
 EMPTY_MACRO_ERROR = 'Macro Ratios Missing'
+DEFAULT_INVALID_INT_ERROR = 'Enter a whole number'
 
 class HorizontalRadioRenderer(forms.RadioSelect):
 	def render(self):
@@ -83,7 +82,12 @@ class MyMacrosForm(forms.models.ModelForm):
 		('40_40_20','Protein: 40%, Fat: 40%, Carbs: 20%',),
 		('30_20_50','Protein: 30%, Fat: 20%, Carbs: 50%',),
 	)
-	macro_ratios = forms.ChoiceField(choices=MACRO_RATIO_CHOICES,widget=forms.RadioSelect,error_messages={'required':EMPTY_MACRO_ERROR},required=True)
+	MACRO_RATIO_ERRORS = {
+		'required': INVALID_POST_ERROR,
+		'invalid_choice': INVALID_POST_ERROR,
+
+	}
+	macro_ratios = forms.ChoiceField(choices=MACRO_RATIO_CHOICES,widget=forms.RadioSelect,error_messages=MACRO_RATIO_ERRORS,required=True)
 	class Meta:
 
 		model = Macros
@@ -108,11 +112,30 @@ class MyMacrosForm(forms.models.ModelForm):
 
 		#error constants
 		error_messages = {
-			'gender': {'required': EMPTY_GENDER_ERROR},
-			'age': {'required': EMPTY_AGE_ERROR},
-			'weight': {'required': EMPTY_WEIGHT_ERROR},
-			'height': {'required': EMPTY_HEIGHT_ERROR},
-			'activity': {'required': EMPTY_ACTIVITY_ERROR},
-			'direction': {'required': EMPTY_DIRECTION_ERROR},
+			'gender': {
+				'required': INVALID_POST_ERROR,
+				'invalid_choice': INVALID_POST_ERROR
+			},
+			'age': {
+				'required': EMPTY_AGE_ERROR,
+				'invalid':DEFAULT_INVALID_INT_ERROR,
+			},
+			'weight': {
+				'required': EMPTY_WEIGHT_ERROR,
+				'invalid':DEFAULT_INVALID_INT_ERROR,
+			},
+			'height': {
+				'required': EMPTY_HEIGHT_ERROR,
+				'invalid':DEFAULT_INVALID_INT_ERROR,
+			},
+			'activity': {
+				'required': INVALID_POST_ERROR,
+				'invalid_choice': INVALID_POST_ERROR,
+			},
+			'direction': {
+				'required': INVALID_POST_ERROR,
+				'invalid_choice': INVALID_POST_ERROR,
+			}
 		}
+
 

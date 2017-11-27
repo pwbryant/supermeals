@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from meals.forms import LoginForm,SignUpForm,MyMacrosForm,EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR,EMPTY_AGE_ERROR,EMPTY_GENDER_ERROR,EMPTY_AGE_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR,EMPTY_ACTIVITY_ERROR,EMPTY_DIRECTION_ERROR,EMPTY_MACRO_ERROR
+from meals.forms import LoginForm,SignUpForm,MyMacrosForm,EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR,EMPTY_AGE_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR,EMPTY_MACRO_ERROR,INVALID_POST_ERROR,DEFAULT_INVALID_INT_ERROR
 
 class LoginFormTest(TestCase):
 
@@ -65,7 +65,7 @@ class MyMacrosFormTest(TestCase):
 		self.assertFalse(form.is_valid())
 		self.assertEqual(
 			form.errors['gender'],
-			[EMPTY_GENDER_ERROR]
+			[INVALID_POST_ERROR]
 		)
 		self.assertEqual(
 			form.errors['age'],
@@ -81,13 +81,46 @@ class MyMacrosFormTest(TestCase):
 		)
 		self.assertEqual(
 			form.errors['activity'],
-			[EMPTY_ACTIVITY_ERROR]
+			[INVALID_POST_ERROR]
 		)
 		self.assertEqual(
 			form.errors['direction'],
-			[EMPTY_DIRECTION_ERROR]
+			[INVALID_POST_ERROR]
 		)
 		self.assertEqual(
 			form.errors['macro_ratios'],
-			[EMPTY_MACRO_ERROR]
+			[INVALID_POST_ERROR]
 		)
+
+	def test_form_validation_for_illegal_inputs(self):
+		form = MyMacrosForm(data={'gender':0,'age':'str','weight':'str','height':'str','activity':'blah','direction':'blah','macro_ratios':'str'})
+		self.assertFalse(form.is_valid())
+		self.assertEqual(
+			form.errors['gender'],
+			[INVALID_POST_ERROR]
+		)
+		self.assertEqual(
+			form.errors['age'],
+			[DEFAULT_INVALID_INT_ERROR]
+		)
+		self.assertEqual(
+			form.errors['weight'],
+			[DEFAULT_INVALID_INT_ERROR]
+		)
+		self.assertEqual(
+			form.errors['height'],
+			[DEFAULT_INVALID_INT_ERROR]
+		)
+		self.assertEqual(
+			form.errors['activity'],
+			[INVALID_POST_ERROR]
+		)
+		self.assertEqual(
+			form.errors['direction'],
+			[INVALID_POST_ERROR]
+		)
+		self.assertEqual(
+			form.errors['macro_ratios'],
+			[INVALID_POST_ERROR]
+		)
+

@@ -7,19 +7,23 @@
 	{% for choice in form.gender %}
 	{{ choice }}
 	{% endfor %}
-	<br><label id="id_age_label" for="id_age">Age:</label> {{ form.age }}
-	<label id="id_weight_label" for="id_age">Weight:</label>{{ form.weight }}
-	<label id="id_height_label" for="id_age">Height:</label>{{ form.height }}
+	<br>
+	<div id='{{ form.age.auto_id }}_div'>{{ form.age.label_tag }}{{ form.age }}</div>
+	<div id='{{ form.weight.auto_id }}_div'>{{ form.weight.label_tag }}{{ form.weight }}</div>
+	<div id='{{ form.height.auto_id }}_div'>{{ form.height.label_tag }}{{ form.height }}</div>
+
 	{% for choice in form.activity %}
-	{{ choice }}
+	<span id='{{ choice.data.attrs.id }}_span'>{{ choice }}</span>
 	{% endfor %}
 	<br>
+	<button id='id_calc_tdee' class='btn'>Calculate</button>
+	<br>
 	{% for choice in form.direction %}
-	{{ choice }}
+	<span id='{{ choice.data.attrs.id }}_span'>{{ choice }}</span>
 	{% endfor %}
 	<br>
 	{% for choice in form.macro_ratios %}
-	{{ choice }}
+	<span id='{{ choice.data.attrs.id }}_span'>{{ choice }}</span>
 	{% endfor %}
 	{% csrf_token %}
 	<br><input id='id_save_my_macros' type='submit' class="btn" value="Save">

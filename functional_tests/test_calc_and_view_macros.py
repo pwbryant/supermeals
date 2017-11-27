@@ -6,14 +6,18 @@ import time
 
 class CalcAndViewMacros(FunctionalTest):
 
-	def check_element_content(self,ID,comparison_type, comparison_text):
+	def check_element_content(self,ID,comparison_type, comparison_text,child=None):
 	
+		element = self.browser.find_element_by_id(ID)
+		if child != None:
+			element = element.find_elements_by_tag_name(child)[0]
+
 		if comparison_type == 'text':
-			content = self.browser.find_element_by_id(ID).text
+			content = element.text
 		if comparison_type == 'placeholder':
-			content = self.browser.find_element_by_id(ID).get_attribute('placeholder')
+			content = element.get_attribute('placeholder')
 		if comparison_type == 'value':
-			content = self.browser.find_element_by_id(ID).get_attribute('value')
+			content = element.get_attribute('value')
 
 		self.assertEqual(content,comparison_text)
 
@@ -39,11 +43,11 @@ class CalcAndViewMacros(FunctionalTest):
 		#Gender, Age, Sex, Weight, Height,  
 		self.assertTrue(self.browser.find_element_by_id('id_gender_0').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_gender_1').is_selected())
-		self.check_element_content('id_age_label','text','Age:')
+		self.check_element_content('id_age_div','text','Age:',child='label')
 		self.check_element_content('id_age','placeholder','Age')
-		self.check_element_content('id_weight_label','text','Weight:')
+		self.check_element_content('id_weight_div','text','Weight:',child='label')
 		self.check_element_content('id_weight','placeholder','Weight(lbs)')
-		self.check_element_content('id_height_label','text','Height:')
+		self.check_element_content('id_height_div','text','Height:',child='label')
 		self.check_element_content('id_height','placeholder','Height(in)')
 		self.assertFalse(self.browser.find_element_by_id('id_activity_1').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_activity_2').is_selected())

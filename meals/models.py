@@ -13,9 +13,9 @@ class Macros(models.Model):
 		('f','Female',),
 	)
 	gender = models.CharField(max_length=1, choices=GENDER_CHOICES,default='m', blank=False)
-	age = models.IntegerField(validators=[MinValueValidator(1),MaxValueValidator(120)], blank=False)
-	weight = models.IntegerField(validators=[MinValueValidator(1),MaxValueValidator(300)], blank=False)
-	height = models.IntegerField(validators=[MinValueValidator(30),MaxValueValidator(250)], blank=False)
+	age = models.IntegerField(blank=False)
+	weight = models.IntegerField(blank=False)
+	height = models.IntegerField(blank=False)
 	ACTIVITY_CHOICES = (
 		('none','',),
 		('light','',),
