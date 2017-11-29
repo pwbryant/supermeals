@@ -15,8 +15,11 @@ INVALID_POST_ERROR = 'Invalid POST'
 EMPTY_AGE_ERROR = 'Age Missing'
 EMPTY_WEIGHT_ERROR = 'Weight Missing'
 EMPTY_HEIGHT_ERROR = 'Height Missing'
-EMPTY_MACRO_ERROR = 'Macro Ratios Missing'
+EMPTY_MACRO_ERROR = 'Macro Info Missing'
 DEFAULT_INVALID_INT_ERROR = 'Enter a whole number'
+EMPTY_RATE_ERROR = 'Weight Change Rate Missing'
+INVALID_MACRO_ERROR = 'Invalid Macro Ratio Values'
+OUT_OF_RANGE_MACRO_ERROR = 'Macro Percent Out Of Range'
 
 class HorizontalRadioRenderer(forms.RadioSelect):
 	def render(self):
@@ -74,36 +77,31 @@ class SignUpForm(forms.models.ModelForm):
 		}
 
 
+class MakeMacrosForm(forms.models.ModelForm):
 
-class MyMacrosForm(forms.models.ModelForm):
-	
-	MACRO_RATIO_CHOICES = (
-		('30_35_35','Protein: 30%, Fat: 35%, Carbs: 35%',),
-		('40_40_20','Protein: 40%, Fat: 40%, Carbs: 20%',),
-		('30_20_50','Protein: 30%, Fat: 20%, Carbs: 50%',),
-	)
-	MACRO_RATIO_ERRORS = {
-		'required': INVALID_POST_ERROR,
-		'invalid_choice': INVALID_POST_ERROR,
-
+	macro_error_messages = {
+		'required': EMPTY_MACRO_ERROR,
+		'invalid': INVALID_MACRO_ERROR,
+		'min_value': OUT_OF_RANGE_MACRO_ERROR,
+		'max_value': OUT_OF_RANGE_MACRO_ERROR
 	}
-	macro_ratios = forms.ChoiceField(choices=MACRO_RATIO_CHOICES,widget=forms.RadioSelect,error_messages=MACRO_RATIO_ERRORS,required=True)
+	pct_attrs = {'placeholder':'%','class': 'form-control input-sm'}
+	g_attrs = {'placeholder':'g','class': 'form-control input-sm'}
+	protein_pct = forms.IntegerField(min_value=0,max_value=100,widget=forms.fields.TextInput(attrs=pct_attrs),error_messages = macro_error_messages,required=True)
+	protein_g = forms.IntegerField(widget=forms.fields.TextInput(attrs=g_attrs),error_messages = macro_error_messages,required=True)
+	fat_pct = forms.IntegerField(min_value=0,max_value=100,widget=forms.fields.TextInput(attrs=pct_attrs),error_messages = macro_error_messages,required=True)
+	fat_g = forms.IntegerField(widget=forms.fields.TextInput(attrs=g_attrs),error_messages = macro_error_messages,required=True)
+	carbs_pct = forms.IntegerField(min_value=0,max_value=100,widget=forms.fields.TextInput(attrs=pct_attrs),error_messages = macro_error_messages,required=True)
+	carbs_g = forms.IntegerField(widget=forms.fields.TextInput(attrs=g_attrs),error_messages = macro_error_messages,required=True)
+
 	class Meta:
 
 		model = Macros
-		fields = ('gender','age','weight','height','activity','direction','macro_ratios')
+		fields = ('gender','age','activity','direction',)
 		widgets = {
 			'gender': forms.RadioSelect(),
 			'age': forms.fields.TextInput(attrs = {
 				'placeholder': 'Age',
-				'class': 'form-control input-sm',
-			}),
-			'weight': forms.fields.TextInput(attrs = {
-				'placeholder': 'Weight(lbs)',
-				'class': 'form-control input-sm',
-			}),
-			'height': forms.fields.TextInput(attrs = {
-				'placeholder': 'Height(in)',
 				'class': 'form-control input-sm',
 			}),
 			'activity': forms.RadioSelect(),
@@ -120,14 +118,6 @@ class MyMacrosForm(forms.models.ModelForm):
 				'required': EMPTY_AGE_ERROR,
 				'invalid':DEFAULT_INVALID_INT_ERROR,
 			},
-			'weight': {
-				'required': EMPTY_WEIGHT_ERROR,
-				'invalid':DEFAULT_INVALID_INT_ERROR,
-			},
-			'height': {
-				'required': EMPTY_HEIGHT_ERROR,
-				'invalid':DEFAULT_INVALID_INT_ERROR,
-			},
 			'activity': {
 				'required': INVALID_POST_ERROR,
 				'invalid_choice': INVALID_POST_ERROR,
@@ -135,7 +125,108 @@ class MyMacrosForm(forms.models.ModelForm):
 			'direction': {
 				'required': INVALID_POST_ERROR,
 				'invalid_choice': INVALID_POST_ERROR,
-			}
+			},
 		}
 
+
+
+class MetricTDEEForm(forms.models.ModelForm):
+
+	class Meta:
+
+		model = Macros
+		fields = ('weight','height','change_rate',)
+		widgets = {
+			'weight': forms.fields.TextInput(attrs = {
+				'placeholder': 'kg',
+				'class': 'form-control input-sm',
+			}),
+			'height': forms.fields.TextInput(attrs = {
+				'placeholder': 'cm',
+				'class': 'form-control input-sm',
+			}),
+			'change_rate': forms.fields.TextInput(attrs = {
+				'placeholder': 'kg/wk',
+				'class': 'form-control input-sm',
+			}),
+		}
+
+		#error constants
+		error_messages = {
+			'height': {
+				'required': EMPTY_HEIGHT_ERROR,
+				'invalid':DEFAULT_INVALID_INT_ERROR,
+			},
+			'weight': {
+				'required': EMPTY_WEIGHT_ERROR,
+				'invalid':DEFAULT_INVALID_INT_ERROR,
+			},
+			'change_rate': {
+				'required': EMPTY_RATE_ERROR,
+				'invalid':DEFAULT_INVALID_INT_ERROR,
+			},
+		}
+
+
+class ImperialHeightWidget(forms.MultiWidget):
+	def __init__(self, attrs=None):
+		widgets = (
+		forms.TextInput(attrs={'placeholder':'ft'}),
+		forms.TextInput(attrs={'placeholder':'in'}),
+		)
+		#error_messages = {'height':{'required':'poo required','invalid': 'poo invalid'}}
+		super(ImperialHeightWidget, self).__init__(widgets, attrs)
+
+	def decompress(self, value):
+		if value:
+			data = value.split(',')
+			return [data[0], data[1]]
+		return [None, None]
+
+	def format_output(self, rendered_widgets):
+		return u'\n'.join(rendered_widgets)
+
+
+	def value_from_datadict(self, data, files, name):
+		try:
+			return data[name]
+		except:
+			return None
+		pass
+
+
+
+class ImperialTDEEForm(forms.models.ModelForm):
+
+	class Meta:
+
+		model = Macros
+		fields = ('weight','height','change_rate',)
+		widgets = {
+			'weight': forms.fields.TextInput(attrs = {
+				'placeholder': 'lbs',
+				'class': 'form-control input-sm',
+			}),
+			'height': ImperialHeightWidget(),
+			'change_rate': forms.fields.TextInput(attrs = {
+				'placeholder': 'lb/wk',
+				'class': 'form-control input-sm',
+			}),
+		}
+
+		#error constants
+		error_messages = {
+			'height': {
+				'required': EMPTY_HEIGHT_ERROR,
+				'invalid':DEFAULT_INVALID_INT_ERROR,
+			},
+			'weight': {
+				'required': EMPTY_WEIGHT_ERROR,
+				'invalid':DEFAULT_INVALID_INT_ERROR,
+			},
+			'change_rate': {
+				'required': EMPTY_RATE_ERROR,
+				'invalid':DEFAULT_INVALID_INT_ERROR,
+			},
+		}
 

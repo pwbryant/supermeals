@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from meals.forms import LoginForm,SignUpForm,MyMacrosForm,EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR,EMPTY_AGE_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR,EMPTY_MACRO_ERROR,INVALID_POST_ERROR,DEFAULT_INVALID_INT_ERROR
+from meals.forms import LoginForm,SignUpForm,MakeMacrosForm,ImperialTDEEForm,MetricTDEEForm,EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR,EMPTY_AGE_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR,EMPTY_MACRO_ERROR,INVALID_POST_ERROR,DEFAULT_INVALID_INT_ERROR,EMPTY_RATE_ERROR,INVALID_MACRO_ERROR,OUT_OF_RANGE_MACRO_ERROR
 
 class LoginFormTest(TestCase):
 
@@ -44,24 +44,19 @@ class SignUpFormTest(TestCase):
 		)
 
 
-class MyMacrosFormTest(TestCase):
+class MakeMacrosFormTest(TestCase):
 
 	def test_my_macros_form_has_placeholder_values_and_css_classes(self):
-		form = MyMacrosForm()
+		form = MakeMacrosForm()
 		self.assertIn('value="m"', form.as_p())
 		self.assertIn('value="f"', form.as_p())
 		self.assertIn('placeholder="Age"', form.as_p())
-		self.assertIn('placeholder="Weight(lbs)"', form.as_p())
-		self.assertIn('placeholder="Height(in)"', form.as_p())
 		self.assertIn('value="none"', form.as_p())
 		self.assertIn('value="lose"', form.as_p())
-		self.assertIn('value="30_20_50"', form.as_p())
-		self.assertIn('value="40_40_20"', form.as_p())
-		self.assertIn('value="30_35_35"', form.as_p())
 		self.assertIn('class="form-control input-sm"', form.as_p())
 	
 	def test_form_validation_for_blank_inputs(self):
-		form = MyMacrosForm(data={'gender':'','age':'','weight':'','height':'','activity':'','direction':'','macro_ratios':''})
+		form = MakeMacrosForm(data={'gender':'','age':'','weight':'','height':'','activity':'','direction':'','protein_pct':'','protein_g':'','fat_pct':'','fat_g':'','carbs_pct':'','carbs_g':''})
 		self.assertFalse(form.is_valid())
 		self.assertEqual(
 			form.errors['gender'],
@@ -72,14 +67,6 @@ class MyMacrosFormTest(TestCase):
 			[EMPTY_AGE_ERROR]
 		)
 		self.assertEqual(
-			form.errors['weight'],
-			[EMPTY_WEIGHT_ERROR]
-		)
-		self.assertEqual(
-			form.errors['height'],
-			[EMPTY_HEIGHT_ERROR]
-		)
-		self.assertEqual(
 			form.errors['activity'],
 			[INVALID_POST_ERROR]
 		)
@@ -88,12 +75,32 @@ class MyMacrosFormTest(TestCase):
 			[INVALID_POST_ERROR]
 		)
 		self.assertEqual(
-			form.errors['macro_ratios'],
-			[INVALID_POST_ERROR]
+			form.errors['protein_pct'],
+			[EMPTY_MACRO_ERROR]
+		)
+		self.assertEqual(
+			form.errors['protein_g'],
+			[EMPTY_MACRO_ERROR]
+		)
+		self.assertEqual(
+			form.errors['fat_pct'],
+			[EMPTY_MACRO_ERROR]
+		)
+		self.assertEqual(
+			form.errors['fat_g'],
+			[EMPTY_MACRO_ERROR]
+		)
+		self.assertEqual(
+			form.errors['carbs_pct'],
+			[EMPTY_MACRO_ERROR]
+		)
+		self.assertEqual(
+			form.errors['carbs_g'],
+			[EMPTY_MACRO_ERROR]
 		)
 
 	def test_form_validation_for_illegal_inputs(self):
-		form = MyMacrosForm(data={'gender':0,'age':'str','weight':'str','height':'str','activity':'blah','direction':'blah','macro_ratios':'str'})
+		form = MakeMacrosForm(data={'gender':0,'age':'str','weight':'str','height':'str','activity':'blah','direction':'blah','protein_pct':'str','protein_g':'str','fat_pct':'str','fat_g':'str','carbs_pct':'str','carbs_g':'str'})
 		self.assertFalse(form.is_valid())
 		self.assertEqual(
 			form.errors['gender'],
@@ -104,14 +111,6 @@ class MyMacrosFormTest(TestCase):
 			[DEFAULT_INVALID_INT_ERROR]
 		)
 		self.assertEqual(
-			form.errors['weight'],
-			[DEFAULT_INVALID_INT_ERROR]
-		)
-		self.assertEqual(
-			form.errors['height'],
-			[DEFAULT_INVALID_INT_ERROR]
-		)
-		self.assertEqual(
 			form.errors['activity'],
 			[INVALID_POST_ERROR]
 		)
@@ -120,7 +119,143 @@ class MyMacrosFormTest(TestCase):
 			[INVALID_POST_ERROR]
 		)
 		self.assertEqual(
-			form.errors['macro_ratios'],
-			[INVALID_POST_ERROR]
+			form.errors['protein_pct'],
+			[INVALID_MACRO_ERROR]
+		)
+		self.assertEqual(
+			form.errors['protein_g'],
+			[INVALID_MACRO_ERROR]
+		)
+		self.assertEqual(
+			form.errors['fat_pct'],
+			[INVALID_MACRO_ERROR]
+		)
+		self.assertEqual(
+			form.errors['fat_g'],
+			[INVALID_MACRO_ERROR]
+		)
+		self.assertEqual(
+			form.errors['carbs_pct'],
+			[INVALID_MACRO_ERROR]
+		)
+		self.assertEqual(
+			form.errors['carbs_g'],
+			[INVALID_MACRO_ERROR]
+		)
+
+	def test_form_validation_for_out_of_range_inputs(self):
+		form = MakeMacrosForm(data={'protein_pct':'1000','fat_pct':'1000','carbs_pct':'1000'})
+		self.assertFalse(form.is_valid())
+
+		self.assertEqual(
+			form.errors['protein_pct'],
+			[OUT_OF_RANGE_MACRO_ERROR]
+		)
+		self.assertEqual(
+			form.errors['fat_pct'],
+			[OUT_OF_RANGE_MACRO_ERROR]
+		)
+		self.assertEqual(
+			form.errors['carbs_pct'],
+			[OUT_OF_RANGE_MACRO_ERROR]
+		)
+
+		form = MakeMacrosForm(data={'protein_pct':'-1000','fat_pct':'-1000','carbs_pct':'-1000'})
+		self.assertFalse(form.is_valid())
+
+		self.assertEqual(
+			form.errors['protein_pct'],
+			[OUT_OF_RANGE_MACRO_ERROR]
+		)
+		self.assertEqual(
+			form.errors['fat_pct'],
+			[OUT_OF_RANGE_MACRO_ERROR]
+		)
+		self.assertEqual(
+			form.errors['carbs_pct'],
+			[OUT_OF_RANGE_MACRO_ERROR]
+		)
+
+class ImperialTDEEFormTest(TestCase):
+
+	def test_imperial_tdee_form_has_placeholder_values_and_css_classes(self):
+		form = ImperialTDEEForm()
+		self.assertIn('placeholder="lbs"', form.as_p())
+		self.assertIn('placeholder="ft"', form.as_p())
+		self.assertIn('placeholder="in"', form.as_p())
+		self.assertIn('placeholder="lb/wk"', form.as_p())
+		self.assertIn('class="form-control input-sm"', form.as_p())
+	
+	def test_form_validation_for_blank_inputs(self):
+		form = ImperialTDEEForm(data={'weight':'','height':'','change_rate':''})
+		self.assertFalse(form.is_valid())
+		self.assertEqual(
+			form.errors['weight'],
+			[EMPTY_WEIGHT_ERROR]
+		)
+		self.assertEqual(
+			form.errors['height'],
+			[EMPTY_HEIGHT_ERROR]
+		)
+		self.assertEqual(
+			form.errors['change_rate'],
+			[EMPTY_RATE_ERROR]
+		)
+
+	def test_form_validation_for_illegal_inputs(self):
+		form = ImperialTDEEForm(data={'weight':'str','height':'str,str','change_rate':'str'})
+		self.assertFalse(form.is_valid())
+		self.assertEqual(
+			form.errors['weight'],
+			[DEFAULT_INVALID_INT_ERROR]
+		)
+		self.assertEqual(
+			form.errors['height'],
+			[DEFAULT_INVALID_INT_ERROR]
+		)
+		self.assertEqual(
+			form.errors['change_rate'],
+			[DEFAULT_INVALID_INT_ERROR]
+		)
+
+class MetricTDEEFormTest(TestCase):
+
+	def test_metric_tdee_form_has_placeholder_values_and_css_classes(self):
+		form = MetricTDEEForm()
+		self.assertIn('placeholder="kg"', form.as_p())
+		self.assertIn('placeholder="cm"', form.as_p())
+		self.assertIn('placeholder="kg/wk"', form.as_p())
+		self.assertIn('class="form-control input-sm"', form.as_p())
+	
+	def test_form_validation_for_blank_inputs(self):
+		form = MetricTDEEForm(data={'weight':'','height':'','change_rate':''})
+		self.assertFalse(form.is_valid())
+		self.assertEqual(
+			form.errors['weight'],
+			[EMPTY_WEIGHT_ERROR]
+		)
+		self.assertEqual(
+			form.errors['height'],
+			[EMPTY_HEIGHT_ERROR]
+		)
+		self.assertEqual(
+			form.errors['change_rate'],
+			[EMPTY_RATE_ERROR]
+		)
+
+	def test_form_validation_for_illegal_inputs(self):
+		form = MetricTDEEForm(data={'weight':'str','height':'str','change_rate':'str'})
+		self.assertFalse(form.is_valid())
+		self.assertEqual(
+			form.errors['weight'],
+			[DEFAULT_INVALID_INT_ERROR]
+		)
+		self.assertEqual(
+			form.errors['height'],
+			[DEFAULT_INVALID_INT_ERROR]
+		)
+		self.assertEqual(
+			form.errors['change_rate'],
+			[DEFAULT_INVALID_INT_ERROR]
 		)
 

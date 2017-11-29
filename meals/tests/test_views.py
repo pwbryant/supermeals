@@ -3,7 +3,7 @@ from django.urls import resolve
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
-from meals.forms import LoginForm, SignUpForm, MyMacrosForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR
+from meals.forms import LoginForm, SignUpForm, MakeMacrosForm,ImperialTDEEForm,MetricTDEEForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR
 
 # Create your tests here.
 
@@ -162,5 +162,5 @@ class MyMacrosTabTest(TestCase):
 
 	def test_my_macros_template_uses_my_macros_form(self):
 		response = self.client.get('/meals/get_my_macros/')
-		self.assertIsInstance(response.context['form'], MyMacrosForm)
+		self.assertIsInstance(response.context['form'], MakeMacrosForm)
 		

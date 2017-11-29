@@ -1,30 +1,51 @@
 <!doctype html>
-<script>
-	
-</script>
+<style>
+	.imperial {
+		display: block;
+	}	
+	.metric {
+		display: none;
+	}
+</style>
 <div>
 	<form id="id_my_macros_form" method="POST" action="/meals/save_my_macros">
+	<br>
 	{% for choice in form.gender %}
 	{{ choice }}
 	{% endfor %}
 	<br>
 	<div id='{{ form.age.auto_id }}_div'>{{ form.age.label_tag }}{{ form.age }}</div>
-	<div id='{{ form.weight.auto_id }}_div'>{{ form.weight.label_tag }}{{ form.weight }}</div>
-	<div id='{{ form.height.auto_id }}_div'>{{ form.height.label_tag }}{{ form.height }}</div>
-
+	<div class='imperial'>
+	<div id='{{ i_tdee_form.weight.auto_id }}_div'>{{ i_tdee_form.weight.label_tag }}{{ i_tdee_form.weight }}</div>
+	<div id='{{ i_tdee_form.height.auto_id }}_div'>{{ i_tdee_form.height.label_tag }}{{ i_tdee_form.height }}</div>
+	</div>
+	<div class='metric'>
+	<div id='{{ m_tdee_form.weight.auto_id }}_div'>{{ m_tdee_form.weight.label_tag }}{{ m_tdee_form.weight }}</div>
+	<div id='{{ m_tdee_form.height.auto_id }}_div'>{{ m_tdee_form.height.label_tag }}{{ m_tdee_form.height }}</div>
+	</div>
+	<br>
 	{% for choice in form.activity %}
 	<span id='{{ choice.data.attrs.id }}_span'>{{ choice }}</span>
 	{% endfor %}
 	<br>
-	<button id='id_calc_tdee' class='btn'>Calculate</button>
-	<br>
 	{% for choice in form.direction %}
 	<span id='{{ choice.data.attrs.id }}_span'>{{ choice }}</span>
 	{% endfor %}
+	<div class='imperial'>
+	{{ i_tdee_form.change_rate }}
+	</div>
+	<div class='metric'>
+	{{ m_tdee_form.change_rate }}
+	</div>
 	<br>
-	{% for choice in form.macro_ratios %}
-	<span id='{{ choice.data.attrs.id }}_span'>{{ choice }}</span>
-	{% endfor %}
+	<span><p>Choose Macro Ratios</p></span>
+	
+	<table>
+	<tr><th>Protein</th><td>{{ form.protein_pct }}</td><td>{{ form.protein_g }}</td></tr>
+	<tr><th>Fat</th><td>{{ form.fat_pct }}</td><td>{{ form.fat_g }}</td></tr>
+	<tr><th>Carbs</th><td>{{ form.carbs_pct }}</td><td>{{ form.carbs_g }}</td></tr>
+	</table>
+	
 	{% csrf_token %}
 	<br><input id='id_save_my_macros' type='submit' class="btn" value="Save">
 	</form>

@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.db.utils import IntegrityError
 import json
-from meals.forms import LoginForm, SignUpForm, MyMacrosForm
+from meals.forms import LoginForm, SignUpForm, MakeMacrosForm,ImperialTDEEForm,MetricTDEEForm
 
 # Create your views here.
 def home_or_login(request):
@@ -62,5 +62,11 @@ def create_account(request):
 	return render(request,'sign_up.html',{"form":form})
 
 def get_my_macros(request):
-	form = MyMacrosForm()
-	return render(request, 'my_macros.html',{'form':MyMacrosForm()})
+	form = MakeMacrosForm()
+	i_tdee_form = ImperialTDEEForm()
+	m_tdee_form = MetricTDEEForm()
+	return render(request, 'my_macros.html',{
+		'form':form,
+		'i_tdee_form':i_tdee_form,
+		'm_tdee_form':m_tdee_form
+	})
