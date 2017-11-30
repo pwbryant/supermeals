@@ -32,38 +32,28 @@ class LoginLogoffTest(TestCase):
 		self.assertEqual(response['location'], '/')
 
 	def test_can_login_as_guest(self):
-		guest_username,guest_password = GUEST_USERNAME,GUEST_PASSWORD
-		guest_user = User.objects.create_user(username=guest_username,password=guest_password)
-		response = self.client.post('/meals/logging_in', data={'username':guest_username, 'password':guest_password})
-		
+		guest_user = User.objects.create_user(username=GUEST_USERNAME,password=GUEST_PASSWORD)
+		response = self.client.post('/meals/logging_in', data={'username':GUEST_USERNAME, 'password':GUEST_PASSWORD})
 		self.assertEqual(response.status_code, 302)
 		self.assertEqual(response['location'], '/')
 
 	def test_login_error_renders_login_page(self):
-		bad_username,bad_password = BAD_USERNAME,BAD_PASSWORD
-		response = self.client.post('/meals/logging_in', data={'username':bad_username, 'password':bad_password})
-		
+		response = self.client.post('/meals/logging_in', data={'username':BAD_USERNAME, 'password':BAD_PASSWORD})
 		self.assertEqual(response.status_code,200)
 		self.assertTemplateUsed(response,'login.html')
 
 	def test_login_error_login_page_gets_back_login_form(self):
-		bad_username,bad_password = BAD_USERNAME,BAD_PASSWORD
-		response = self.client.post('/meals/logging_in', data={'username':bad_username, 'password':bad_password})
-		
+		response = self.client.post('/meals/logging_in', data={'username':BAD_USERNAME, 'password':BAD_PASSWORD})
 		self.assertIsInstance(response.context['form'], LoginForm)
 
 	def test_login_error_shows_up_on_login_page(self):
-		bad_username,bad_password = BAD_USERNAME,BAD_PASSWORD
-		response = self.client.post('/meals/logging_in', data={'username':bad_username, 'password':bad_password})
-		
+		response = self.client.post('/meals/logging_in', data={'username':BAD_USERNAME, 'password':BAD_PASSWORD})
 		expected_error = "Username or Password incorrect"
 		self.assertContains(response,expected_error)
 
 	def test_logoff(self):
-		guest_username,guest_password = GUEST_USERNAME,GUEST_PASSWORD
-		guest_user = User.objects.create_user(username=guest_username,password=guest_password)
-		response = self.client.post('/meals/logging_in', data={'username':guest_username, 'password':guest_password})
-
+		guest_user = User.objects.create_user(username=GUEST_USERNAME,password=GUEST_PASSWORD)
+		response = self.client.post('/meals/logging_in', data={'username':GUEST_USERNAME, 'password':GUEST_PASSWORD})
 		response = self.client.get('/')
 		self.assertTemplateUsed(response, 'home.html')
 
@@ -71,8 +61,6 @@ class LoginLogoffTest(TestCase):
 		response = self.client.get('/')
 		self.assertEqual(response.status_code, 302)
 		self.assertEqual(response['location'], 'meals/login/')
-
-
 
 
 class CreateAccountTest(TestCase):
@@ -87,45 +75,41 @@ class CreateAccountTest(TestCase):
 
 	def test_can_save_POST_and_create_user_account(self):
 		request = HttpRequest()
-		username, email, password = USERNAME,EMAIL,PASSWORD
-		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		response = self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 		self.assertEqual(User.objects.count(),1)
 		new_user = User.objects.first()
-		self.assertTrue(authenticate(request,username=username,password=password) is not None)
+		self.assertTrue(authenticate(request,username=USERNAME,password=PASSWORD) is not None)
 
 		self.assertEqual(response.status_code, 302)
 		self.assertEqual(response['location'], '/')
 	
 	def test_sign_up_blank_username_validation_error_wont_save_new_user(self):	
 
-		username, email, password = "", EMAIL, PASSWORD
-		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		USERNAME = ""
+		response = self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 		self.assertEqual(User.objects.count(),0)
 
 	def test_sign_up_duplicate_username_validation_error_wont_save_new_user(self):	
 
-		username, email, password = USERNAME, EMAIL, PASSWORD
-		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
-		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
-		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		response = self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+		response = self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 		self.assertEqual(User.objects.count(),1)
 
 	def test_sign_up_bad_username_validation_error_wont_save_new_user(self):	
 
-		username, email, password = "joe blow", EMAIL, PASSWORD
-		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		USERNAME = "joe blow"
+		response = self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 		self.assertEqual(User.objects.count(),0)
 	
 	def test_sign_up_blank_password_validation_error_wont_save_new_user(self):	
 
-		username, email, password = USERNAME, EMAIL, ''
-		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		PASSWORD =  ''
+		response = self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 		self.assertEqual(User.objects.count(),0)
 
 	def test_sign_up_validation_error_render_sign_up_html(self):	
-		username, email, password = USERNAME,EMAIL,PASSWORD
-		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
-		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		response = self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+		response = self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 		
 		self.assertEqual(response.status_code,200)
 		self.assertTemplateUsed(response,'sign_up.html')
@@ -133,29 +117,29 @@ class CreateAccountTest(TestCase):
 
 	def test_sign_up_duplicate_validation_error_gets_sign_up_form_back(self):	
 		username, email, password = USERNAME,EMAIL,PASSWORD
-		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
-
-		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		response = self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+		response = self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 		self.assertIsInstance(response.context['form'], SignUpForm)
 
 	def test_sign_up_duplicate_user_validation_error_message_shows_up_on_sign_up_html(self):	
-		username, email, password = USERNAME,EMAIL,PASSWORD
-		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
-		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		response = self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+		response = self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 
 		self.assertContains(response,DUPLICATE_USERNAME_ERROR)
 
 	def test_sign_up_bad_username_validation_error_message_shows_up_on_sign_up_html(self):	
-		username, email, password = 'Joe Schmoe',EMAIL,PASSWORD
-		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		USERNAME = 'Joe Schmoe'
+		response = self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 		self.assertContains(response,INVALID_USERNAME_ERROR)
  
 	def test_sign_up_missing_password_validation_error_message_shows_up_on_sign_up_html(self):	
-		username, email, password = USERNAME,EMAIL,''
-		response = self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		PASSWORD =''
+		response = self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 		self.assertContains(response,EMPTY_PASSWORD_ERROR)
 
 class MyMacrosTabTest(TestCase):
+	MACRO_DATA = {'gender':'m','age':'34','height':'70','weight':'210','activity':'none','direction':'lose',
+				'change_rate':'23','fat_pct':'25','protein_pct':'35'}
 
 	def test_my_macros_url_renders_correct_template(self):
 		response = self.client.get('/meals/get_my_macros/')
@@ -168,15 +152,35 @@ class MyMacrosTabTest(TestCase):
 		self.assertIsInstance(response.context['m_tdee_form'], MetricTDEEForm)
 		
 	def test_make_macro_can_save_macros(self):
-		request = HttpRequest()
-		username, email, password = USERNAME,EMAIL,PASSWORD
-		self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
-		make_macro_data = {'gender':'m','age':'34','height':'70','weight':'210','activity':'none','direction':'lose',
-					'change_rate':'23','fat_percent':'25','protein_percent':'35'}
+		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 
-		response=self.client.post('/meals/save_my_macros', data=make_macro_data)
+		response=self.client.post('/meals/save_my_macros', data=self.MACRO_DATA)
 		saved_macro = Macros.objects.all()
 		self.assertEqual(saved_macro.count(),1)		
 
 		self.assertEqual(response.status_code, 302)
 		self.assertEqual(response['location'], '/')
+	
+	def test_save_my_macro_wont_save_duplicate_macro_but_still_redirects(self):
+
+		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+
+		response=self.client.post('/meals/save_my_macros', data=self.MACRO_DATA)
+		saved_macro = Macros.objects.all()
+		self.assertEqual(saved_macro.count(),1)		
+
+		response=self.client.post('/meals/save_my_macros', data=self.MACRO_DATA)
+		saved_macro = Macros.objects.all()
+		self.assertEqual(saved_macro.count(),1)		
+
+		self.assertEqual(response.status_code, 302)
+		self.assertEqual(response['location'], '/')
+
+	def test_save_my_macro_missing_field_validation_wont_save_macro(self):	
+
+		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+		macro_data = self.MACRO_DATA.copy()
+		macro_data.pop('age')
+		response=self.client.post('/meals/save_my_macros', data=macro_data)
+
+		self.assertEqual(User.objects.count(),0)

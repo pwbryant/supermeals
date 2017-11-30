@@ -10,6 +10,10 @@
 <div>
 	<form id="id_my_macros_form" method="POST" action="/meals/save_my_macros">
 	<br>
+	{% for choice in form.unit_type %}
+	{{ choice }}
+	{% endfor %}
+	<br>
 	{% for choice in form.gender %}
 	{{ choice }}
 	{% endfor %}
@@ -19,10 +23,12 @@
 	<div id='{{ i_tdee_form.weight.auto_id }}_div'>{{ i_tdee_form.weight.label_tag }}{{ i_tdee_form.weight }}</div>
 	<div id='{{ i_tdee_form.height.auto_id }}_div'>{{ i_tdee_form.height.label_tag }}{{ i_tdee_form.height }}</div>
 	</div>
+	<!--
 	<div class='metric'>
 	<div id='{{ m_tdee_form.weight.auto_id }}_div'>{{ m_tdee_form.weight.label_tag }}{{ m_tdee_form.weight }}</div>
 	<div id='{{ m_tdee_form.height.auto_id }}_div'>{{ m_tdee_form.height.label_tag }}{{ m_tdee_form.height }}</div>
 	</div>
+	-->
 	<br>
 	{% for choice in form.activity %}
 	<span id='{{ choice.data.attrs.id }}_span'>{{ choice }}</span>
@@ -34,9 +40,11 @@
 	<div class='imperial'>
 	{{ i_tdee_form.change_rate }}
 	</div>
+	<!--
 	<div class='metric'>
 	{{ m_tdee_form.change_rate }}
 	</div>
+	-->
 	<br>
 	<span><p>Choose Macro Ratios</p></span>
 	

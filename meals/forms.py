@@ -79,6 +79,11 @@ class SignUpForm(forms.models.ModelForm):
 
 class MakeMacrosForm(forms.models.ModelForm):
 
+	unit_choices = (
+		('imperial','Imperial',),
+		('metric','Metric',),
+	)
+	unit_type = forms.ChoiceField(choices=unit_choices,widget=forms.RadioSelect(),initial='imperial',required=True)
 	macro_error_messages = {
 		'required': EMPTY_MACRO_ERROR,
 		'invalid': INVALID_MACRO_ERROR,
