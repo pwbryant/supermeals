@@ -51,9 +51,10 @@ class MacrosTest(TestCase):
 	
 		
 	def test_validation_errors_illegal_field_values(self):
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('gender','')))#illegal gender
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('activity','blah')))#illegal activity
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('direction','blah')))#illegal direction
+		#Integer fields age,height,weight not checked
+		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('gender','female')))#illegal gender
+		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('activity','str')))#illegal activity
+		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('direction','str')))#illegal direction
 		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('change_rate',Decimal('10.111'))))#illegal(too long)
 		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('fat_percent',Decimal('10.111'))))#illegal(too long)
 		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('protein_percent',Decimal('10.111'))))#illegal(too long)
@@ -110,10 +111,21 @@ class MacrosTest(TestCase):
 		self.assertEqual(first_saved_macros.age,MACRO_INIT_FIELD_DICT['age'])
 		self.assertEqual(first_saved_macros.weight,MACRO_INIT_FIELD_DICT['weight'])
 		self.assertEqual(first_saved_macros.height,MACRO_INIT_FIELD_DICT['height'])
+		self.assertEqual(first_saved_macros.activity,MACRO_INIT_FIELD_DICT['activity'])
+		self.assertEqual(first_saved_macros.direction,MACRO_INIT_FIELD_DICT['direction'])
+		self.assertEqual(first_saved_macros.change_rate,MACRO_INIT_FIELD_DICT['change_rate'])
+		self.assertEqual(first_saved_macros.fat_percent,MACRO_INIT_FIELD_DICT['fat_percent'])
+		self.assertEqual(first_saved_macros.protein_percent,MACRO_INIT_FIELD_DICT['protein_percent'])
 		self.assertEqual(first_saved_macros.user,first_user)
 
 		self.assertEqual(second_saved_macros.gender,MACRO_INIT_FIELD_DICT['gender'])
 		self.assertEqual(second_saved_macros.age,MACRO_INIT_FIELD_DICT['age'])
 		self.assertEqual(second_saved_macros.weight,MACRO_INIT_FIELD_DICT['weight'])
 		self.assertEqual(second_saved_macros.height,MACRO_INIT_FIELD_DICT['height'])
+		self.assertEqual(second_saved_macros.activity,MACRO_INIT_FIELD_DICT['activity'])
+		self.assertEqual(second_saved_macros.direction,MACRO_INIT_FIELD_DICT['direction'])
+		self.assertEqual(second_saved_macros.change_rate,MACRO_INIT_FIELD_DICT['change_rate'])
+		self.assertEqual(second_saved_macros.fat_percent,MACRO_INIT_FIELD_DICT['fat_percent'])
+		self.assertEqual(second_saved_macros.protein_percent,MACRO_INIT_FIELD_DICT['protein_percent'])
 		self.assertEqual(second_saved_macros.user,second_user)
+

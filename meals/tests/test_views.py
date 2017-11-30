@@ -4,6 +4,7 @@ from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
 from meals.forms import LoginForm, SignUpForm, MakeMacrosForm,ImperialTDEEForm,MetricTDEEForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR
+from meals.models import Macros
 
 # Create your tests here.
 
@@ -163,4 +164,19 @@ class MyMacrosTabTest(TestCase):
 	def test_my_macros_template_uses_my_macros_form(self):
 		response = self.client.get('/meals/get_my_macros/')
 		self.assertIsInstance(response.context['form'], MakeMacrosForm)
+		self.assertIsInstance(response.context['i_tdee_form'], ImperialTDEEForm)
+		self.assertIsInstance(response.context['m_tdee_form'], MetricTDEEForm)
 		
+	def test_make_macro_can_save_macros(self):
+		request = HttpRequest()
+		username, email, password = USERNAME,EMAIL,PASSWORD
+		self.client.post('/meals/create_account', data={'username':username, 'email':email,'password':password})
+		make_macro_data = {'gender':'m','age':'34','height':'70','weight':'210','activity':'none','direction':'lose',
+					'change_rate':'23','fat_percent':'25','protein_percent':'35'}
+
+		response=self.client.post('/meals/save_my_macros', data=make_macro_data)
+		saved_macro = Macros.objects.all()
+		self.assertEqual(saved_macro.count(),1)		
+
+		self.assertEqual(response.status_code, 302)
+		self.assertEqual(response['location'], '/')

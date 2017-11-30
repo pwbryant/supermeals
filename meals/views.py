@@ -4,7 +4,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.db.utils import IntegrityError
 import json
+from decimal import Decimal
 from meals.forms import LoginForm, SignUpForm, MakeMacrosForm,ImperialTDEEForm,MetricTDEEForm
+from meals.models import Macros
 
 # Create your views here.
 def home_or_login(request):
@@ -70,3 +72,20 @@ def get_my_macros(request):
 		'i_tdee_form':i_tdee_form,
 		'm_tdee_form':m_tdee_form
 	})
+
+def save_my_macros(request):
+	
+	create_macro_dict = {
+		'user':request.user,
+		'gender':request.POST.get('gender',''),
+		'age':request.POST.get('age',''),
+		'weight':request.POST.get('weight',''), 
+		'height':request.POST.get('height','') ,
+		'activity':request.POST.get('activity',''), 
+		'direction':request.POST.get('direction',''), 
+		'change_rate':request.POST.get('change_rate',''), 
+		'fat_percent':request.POST.get('fat_percent',''), 
+		'protein_percent':request.POST.get('protein_percent',''), 
+	}
+	Macros.objects.create(**create_macro_dict)
+	return redirect('/')	
