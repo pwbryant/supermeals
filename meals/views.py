@@ -97,22 +97,18 @@ def save_my_macros(request):
 	else:
 		print(macro_form.errors)
 	
+	post_dict.pop('unit_type')
+	post_dict.pop('fat_g')
+	post_dict.pop('protein_g')
+	post_dict.pop('carbs_g')
+	post_dict.pop('carbs_percent')
 	post_dict['user'] = request.user
-	create_macro_dict = {
-		'user':post_dict.get('user',''),
-		'gender':post_dict.get('gender',''),
-		'age':post_dict.get('age',''),
-		'weight':post_dict.get('weight',''), 
-		'height':post_dict.get('height',''),
-		'activity':post_dict.get('activity',''), 
-		'direction':post_dict.get('direction',''),		
-		'change_rate':Decimal(post_dict.get('change_rate','')), 
-		'fat_percent':Decimal(post_dict.get('fat_pct','')), 
-		'protein_percent':Decimal(post_dict.get('protein_pct','')), 
-	}
+	post_dict['change_rate'] = Decimal(post_dict['change_rate']) 
+	post_dict['protein_percent'] = Decimal(post_dict['protein_percent']) 
+	post_dict['fat_percent'] = Decimal(post_dict['fat_percent']) 
 	try:
 		with transaction.atomic():
-			Macros.objects.create(**create_macro_dict)
+			Macros.objects.create(**post_dict)
 	except IntegrityError:
 		pass
 	return redirect('/')	

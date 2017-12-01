@@ -56,7 +56,7 @@ class MakeMacrosFormTest(TestCase):
 		self.assertIn('class="form-control input-sm"', form.as_p())
 	
 	def test_form_validation_for_blank_inputs(self):
-		form = MakeMacrosForm(data={'gender':'','age':'','weight':'','height':'','activity':'','direction':'','protein_pct':'','protein_g':'','fat_pct':'','fat_g':'','carbs_pct':'','carbs_g':''})
+		form = MakeMacrosForm(data={'gender':'','age':'','weight':'','height':'','activity':'','direction':'','protein_percent':'','protein_g':'','fat_percent':'','fat_g':'','carbs_percent':'','carbs_g':''})
 		self.assertFalse(form.is_valid())
 		self.assertEqual(
 			form.errors['gender'],
@@ -75,7 +75,7 @@ class MakeMacrosFormTest(TestCase):
 			[INVALID_POST_ERROR]
 		)
 		self.assertEqual(
-			form.errors['protein_pct'],
+			form.errors['protein_percent'],
 			[EMPTY_MACRO_ERROR]
 		)
 		self.assertEqual(
@@ -83,7 +83,7 @@ class MakeMacrosFormTest(TestCase):
 			[EMPTY_MACRO_ERROR]
 		)
 		self.assertEqual(
-			form.errors['fat_pct'],
+			form.errors['fat_percent'],
 			[EMPTY_MACRO_ERROR]
 		)
 		self.assertEqual(
@@ -91,7 +91,7 @@ class MakeMacrosFormTest(TestCase):
 			[EMPTY_MACRO_ERROR]
 		)
 		self.assertEqual(
-			form.errors['carbs_pct'],
+			form.errors['carbs_percent'],
 			[EMPTY_MACRO_ERROR]
 		)
 		self.assertEqual(
@@ -100,7 +100,7 @@ class MakeMacrosFormTest(TestCase):
 		)
 
 	def test_form_validation_for_illegal_inputs(self):
-		form = MakeMacrosForm(data={'gender':0,'age':'str','weight':'str','height':'str','activity':'blah','direction':'blah','protein_pct':'str','protein_g':'str','fat_pct':'str','fat_g':'str','carbs_pct':'str','carbs_g':'str'})
+		form = MakeMacrosForm(data={'gender':0,'age':'str','weight':'str','height':'str','activity':'blah','direction':'blah','protein_percent':'str','protein_g':'str','fat_percent':'str','fat_g':'str','carbs_percent':'str','carbs_g':'str'})
 		self.assertFalse(form.is_valid())
 		self.assertEqual(
 			form.errors['gender'],
@@ -119,7 +119,7 @@ class MakeMacrosFormTest(TestCase):
 			[INVALID_POST_ERROR]
 		)
 		self.assertEqual(
-			form.errors['protein_pct'],
+			form.errors['protein_percent'],
 			[INVALID_MACRO_ERROR]
 		)
 		self.assertEqual(
@@ -127,7 +127,7 @@ class MakeMacrosFormTest(TestCase):
 			[INVALID_MACRO_ERROR]
 		)
 		self.assertEqual(
-			form.errors['fat_pct'],
+			form.errors['fat_percent'],
 			[INVALID_MACRO_ERROR]
 		)
 		self.assertEqual(
@@ -135,7 +135,7 @@ class MakeMacrosFormTest(TestCase):
 			[INVALID_MACRO_ERROR]
 		)
 		self.assertEqual(
-			form.errors['carbs_pct'],
+			form.errors['carbs_percent'],
 			[INVALID_MACRO_ERROR]
 		)
 		self.assertEqual(
@@ -144,35 +144,35 @@ class MakeMacrosFormTest(TestCase):
 		)
 
 	def test_form_validation_for_out_of_range_inputs(self):
-		form = MakeMacrosForm(data={'protein_pct':'1000','fat_pct':'1000','carbs_pct':'1000'})
+		form = MakeMacrosForm(data={'protein_percent':'1000','fat_percent':'1000','carbs_percent':'1000'})
 		self.assertFalse(form.is_valid())
 
 		self.assertEqual(
-			form.errors['protein_pct'],
+			form.errors['protein_percent'],
 			[OUT_OF_RANGE_MACRO_ERROR]
 		)
 		self.assertEqual(
-			form.errors['fat_pct'],
+			form.errors['fat_percent'],
 			[OUT_OF_RANGE_MACRO_ERROR]
 		)
 		self.assertEqual(
-			form.errors['carbs_pct'],
+			form.errors['carbs_percent'],
 			[OUT_OF_RANGE_MACRO_ERROR]
 		)
 
-		form = MakeMacrosForm(data={'protein_pct':'-1000','fat_pct':'-1000','carbs_pct':'-1000'})
+		form = MakeMacrosForm(data={'protein_percent':'-1000','fat_percent':'-1000','carbs_percent':'-1000'})
 		self.assertFalse(form.is_valid())
 
 		self.assertEqual(
-			form.errors['protein_pct'],
+			form.errors['protein_percent'],
 			[OUT_OF_RANGE_MACRO_ERROR]
 		)
 		self.assertEqual(
-			form.errors['fat_pct'],
+			form.errors['fat_percent'],
 			[OUT_OF_RANGE_MACRO_ERROR]
 		)
 		self.assertEqual(
-			form.errors['carbs_pct'],
+			form.errors['carbs_percent'],
 			[OUT_OF_RANGE_MACRO_ERROR]
 		)
 

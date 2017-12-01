@@ -138,8 +138,8 @@ class CreateAccountTest(TestCase):
 		self.assertContains(response,EMPTY_PASSWORD_ERROR)
 
 class MyMacrosTabTest(TestCase):
-	MACRO_DATA = {'gender':'m','age':'34','height':'70','weight':'210','activity':'none','direction':'lose',
-				'change_rate':'23','fat_pct':'25','protein_pct':'35'}
+	MACRO_DATA = {'unit_type':'imperial','gender':'m','age':'34','height':'70','weight':'210','activity':'none',
+			'direction':'lose','change_rate':'23','fat_g':'10','fat_percent':'25','protein_g':'10','protein_percent':'35','carbs_g':'10','carbs_percent':'40'}
 
 	def test_my_macros_url_renders_correct_template(self):
 		response = self.client.get('/meals/get_my_macros/')
@@ -182,5 +182,5 @@ class MyMacrosTabTest(TestCase):
 		macro_data = self.MACRO_DATA.copy()
 		macro_data.pop('age')
 		response=self.client.post('/meals/save_my_macros', data=macro_data)
-
-		self.assertEqual(User.objects.count(),0)
+		saved_macro = Macros.objects.all()
+		self.assertEqual(saved_macro.count(),0)
