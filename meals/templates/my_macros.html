@@ -73,6 +73,22 @@
 	</table>
 	
 	{% csrf_token %}
+	{% if form.errors %}
+		<div class="form-group has-error">
+			<div class="help-block">{{ form.errors }}</div>
+		</div>
+	{% endif %}
+	{% if i_tdee_form.errors %}
+		<div class="form-group has-error">
+			<div class="help-block">{{ i_tdee_form.errors }}</div>
+		</div>
+	{% endif %}
+	{% if m_tdee_form.errors %}
+		<div class="form-group has-error">
+			<div class="help-block">{{ m_tdee_form.errors }}</div>
+		</div>
+	{% endif %}
+
 	<br><input id='id_save_my_macros' type='submit' class="btn" value="Save">
 	</form>
 </div>
