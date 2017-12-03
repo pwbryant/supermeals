@@ -66,7 +66,7 @@ def create_account(request):
 
 def get_my_macros(request):
 	form = MakeMacrosForm()
-	i_tdee_form = ImperialTDEEForm(data={'weight':5,'change_rate':5,'height':'5,3'})
+	i_tdee_form = ImperialTDEEForm()
 	m_tdee_form = MetricTDEEForm()
 	return render(request, 'my_macros.html',{
 		'form':form,
@@ -75,29 +75,35 @@ def get_my_macros(request):
 	})
 
 def save_my_macros(request):
-
-	post_dict = dict((key,value[0]) for key,value in request.POST.lists())
-	unit_type = request.POST.get('unit_type','')
+	
+	POST = request.POST
+	post_dict = dict((key,value[0]) for key,value in POST.lists())
+	unit_type = POST.get('unit_type','')
 	if unit_type == 'imperial':
-		height1 = request.POST.get('height_0','')
-		height2 = request.POST.get('height_1','')
+		height1 = POST.get('height_0','')
+		height2 = POST.get('height_1','')
 		if height1 != '' and height2 != '':
 			post_dict['height'] = str((int(height1) * 12) + int(height2))
 
-	tdee_form = ImperialTDEEForm(post_dict)
-	if tdee_form.is_valid():
-		print('tdee valid')
-	else:
-		print(tdee_form.errors)
-	
+	i_tdee_form = ImperialTDEEForm(post_dict)
+	m_tdee_form = MetricTDEEForm(post_dict)
+	macro_form = MakeMacrosForm(POST)	
+	if not i_tdee_form.is_valid() or not m_tdee_form.is_valid() or not macro_form.is_valid():
+		if post_dict.get('height_0',False):
+			post_dict['height'] = '%s,%s' % (POST.get('height_0'),POST.get('height_1',),)
+		else:
+			post_dict['height'] = ',';
+		i_tdee_form = ImperialTDEEForm(post_dict)
+		return render(request,'my_macros.html', {
+			'form':macro_form,
+			'i_tdee_form':i_tdee_form,
+			'm_tdee_form':m_tdee_form
+		})
 
-	macro_form = MakeMacrosForm(request.POST)	
-	if macro_form.is_valid():
-		print('macro valid')
-	else:
-		print(macro_form.errors)
-	
 	post_dict.pop('unit_type')
+	if unit_type == 'imperial':
+		post_dict.pop('height_0')
+		post_dict.pop('height_1')
 	post_dict.pop('fat_g')
 	post_dict.pop('protein_g')
 	post_dict.pop('carbs_g')

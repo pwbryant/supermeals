@@ -3,7 +3,7 @@ from django.urls import resolve
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
-from meals.forms import LoginForm, SignUpForm, MakeMacrosForm,ImperialTDEEForm,MetricTDEEForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR
+from meals.forms import LoginForm, SignUpForm, MakeMacrosForm,ImperialTDEEForm,MetricTDEEForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR,DEFAULT_INVALID_INT_ERROR
 from meals.models import Macros
 
 # Create your tests here.
@@ -138,8 +138,8 @@ class CreateAccountTest(TestCase):
 		self.assertContains(response,EMPTY_PASSWORD_ERROR)
 
 class MyMacrosTabTest(TestCase):
-	MACRO_DATA = {'unit_type':'imperial','gender':'m','age':'34','height':'70','weight':'210','activity':'none',
-			'direction':'lose','change_rate':'23','fat_g':'10','fat_percent':'25','protein_g':'10','protein_percent':'35','carbs_g':'10','carbs_percent':'40'}
+	
+	MACRO_DATA = {'unit_type':'imperial','gender':'m','age':'34','height_0':'5','height_1':'10','weight':'210','activity':'none','direction':'lose','change_rate':'23','fat_g':'10','fat_percent':'25','protein_g':'10','protein_percent':'35','carbs_g':'10','carbs_percent':'40'}
 
 	def test_my_macros_url_renders_correct_template(self):
 		response = self.client.get('/meals/get_my_macros/')
@@ -151,10 +151,26 @@ class MyMacrosTabTest(TestCase):
 		self.assertIsInstance(response.context['i_tdee_form'], ImperialTDEEForm)
 		self.assertIsInstance(response.context['m_tdee_form'], MetricTDEEForm)
 		
-	def test_make_macro_can_save_macros(self):
+	def test_make_macro_can_save_imperial_macros(self):
+		
 		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
-
 		response=self.client.post('/meals/save_my_macros', data=self.MACRO_DATA)
+		saved_macro = Macros.objects.all()
+		self.assertEqual(saved_macro.count(),1)		
+
+		self.assertEqual(response.status_code, 302)
+		self.assertEqual(response['location'], '/')
+
+	def test_make_macro_can_save_metric_macros(self):
+		
+		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+		metric_macros = self.MACRO_DATA.copy()
+		metric_macros['unit_type'] = 'metric'
+		metric_macros.pop('height_0')
+		metric_macros.pop('height_1')
+		metric_macros['height'] = 175
+
+		response=self.client.post('/meals/save_my_macros', data=metric_macros)
 		saved_macro = Macros.objects.all()
 		self.assertEqual(saved_macro.count(),1)		
 
@@ -184,3 +200,61 @@ class MyMacrosTabTest(TestCase):
 		response=self.client.post('/meals/save_my_macros', data=macro_data)
 		saved_macro = Macros.objects.all()
 		self.assertEqual(saved_macro.count(),0)
+
+	def test_save_my_macro_validation_error_render_my_macros_html(self):	
+		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+		macro_data = self.MACRO_DATA.copy()
+		macro_data.pop('age')
+		response=self.client.post('/meals/save_my_macros', data=macro_data)
+		
+		self.assertEqual(response.status_code,200)
+		self.assertTemplateUsed(response,'my_macros.html')
+
+
+	def test_save_my_macro_metric_validation_error_gets_back_MetricTDEEForm_ImperialTDEEForm_and_MakeMacrosForm(self):	
+		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+		metric_macros = self.MACRO_DATA.copy()
+		metric_macros.pop('age')
+		metric_macros['unit_type'] = 'metric'
+		metric_macros.pop('height_0')
+		metric_macros.pop('height_1')
+		metric_macros['height'] = 175
+		response=self.client.post('/meals/save_my_macros', data=metric_macros)
+		
+		self.assertEqual(response.status_code,200)
+		self.assertIsInstance(response.context['form'], MakeMacrosForm)
+		self.assertIsInstance(response.context['i_tdee_form'], ImperialTDEEForm)
+		self.assertIsInstance(response.context['m_tdee_form'], MetricTDEEForm)
+
+	def test_save_my_macro_imperial_validation_error_gets_back_MetricTDEEForm_ImperialTDEEForm_and_MakeMacrosForm(self):	
+		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+		macro_data = self.MACRO_DATA.copy()
+		macro_data.pop('age')
+		response=self.client.post('/meals/save_my_macros', data=macro_data)
+		
+		self.assertEqual(response.status_code,200)
+		self.assertIsInstance(response.context['form'], MakeMacrosForm)
+		self.assertIsInstance(response.context['i_tdee_form'], ImperialTDEEForm)
+		self.assertIsInstance(response.context['m_tdee_form'], MetricTDEEForm)
+
+	def test_save_my_macro_validation_error_render_my_macros_html(self):	
+		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+		macro_data = self.MACRO_DATA.copy()
+		macro_data.pop('age')
+		response=self.client.post('/meals/save_my_macros', data=macro_data)
+		
+		self.assertEqual(response.status_code,200)
+		self.assertTemplateUsed(response,'my_macros.html')
+
+
+	def xtest_sign_up_duplicate_user_validation_error_message_shows_up_on_sign_up_html(self):	
+		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+
+		macro_data = self.MACRO_DATA.copy()
+		macro_data['age'] = 'str'
+
+		response=self.client.post('/meals/save_my_macros', data=macro_data)
+		print(response.content)
+
+		self.assertContains(response,DEFAULT_INVALID_INT_ERROR)
+

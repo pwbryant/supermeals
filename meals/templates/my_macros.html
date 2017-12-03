@@ -7,6 +7,30 @@
 		display: none;
 	}
 </style>
+<script>
+	$("input[name='unit_type']").on('click', function() {
+		console.log('worked');
+		console.log($(this).val());
+			
+		if ($(this).val() == 'metric') {
+			var size = '<div id="{{ m_tdee_form.weight.auto_id|escapejs }}_div">{{ m_tdee_form.weight.label_tag|escapejs }}{{ m_tdee_form.weight|escapejs }}</div><div id="{{ m_tdee_form.height.auto_id|escapejs }}_div">{{ m_tdee_form.height.label_tag|escapejs }}{{ m_tdee_form.height|escapejs }}</div>',
+			change_rate = '{{ m_tdee_form.change_rate|escapejs }}';
+
+			$('#id_imperial_size').html('');
+			$('#id_imperial_change_rate').html('');
+			$('#id_metric_size').html(size);
+			$('#id_metric_change_rate').html(change_rate);
+		} else {
+			var size = '<div id="{{ i_tdee_form.weight.auto_id|escapejs }}_div">{{ i_tdee_form.weight.label_tag|escapejs }}{{ i_tdee_form.weight|escapejs }}</div><div id="{{ i_tdee_form.height.auto_id|escapejs }}_div">{{ i_tdee_form.height.label_tag|escapejs }}{{ i_tdee_form.height|escapejs }}</div>',
+			change_rate = '{{ i_tdee_form.change_rate|escapejs }}';
+				
+			$('#id_metric_size').html('');
+			$('#id_metric_change_rate').html('');
+			$('#id_imperial_size').html(size);
+			$('#id_imperial_change_rate').html(change_rate);
+		}
+	});
+</script>
 <div>
 	<form id="id_my_macros_form" method="POST" action="/meals/save_my_macros">
 	<br>
@@ -19,16 +43,13 @@
 	{% endfor %}
 	<br>
 	<div id='{{ form.age.auto_id }}_div'>{{ form.age.label_tag }}{{ form.age }}</div>
-	<div class='imperial'>
+	<!--imperial is filled in because it is default-->
+	<div id='id_imperial_size'>
 	<div id='{{ i_tdee_form.weight.auto_id }}_div'>{{ i_tdee_form.weight.label_tag }}{{ i_tdee_form.weight }}</div>
 	<div id='{{ i_tdee_form.height.auto_id }}_div'>{{ i_tdee_form.height.label_tag }}{{ i_tdee_form.height }}</div>
 	</div>
-	<!--
-	<div class='metric'>
-	<div id='{{ m_tdee_form.weight.auto_id }}_div'>{{ m_tdee_form.weight.label_tag }}{{ m_tdee_form.weight }}</div>
-	<div id='{{ m_tdee_form.height.auto_id }}_div'>{{ m_tdee_form.height.label_tag }}{{ m_tdee_form.height }}</div>
+	<div id='id_metric_size'>
 	</div>
-	-->
 	<br>
 	{% for choice in form.activity %}
 	<span id='{{ choice.data.attrs.id }}_span'>{{ choice }}</span>
@@ -37,20 +58,17 @@
 	{% for choice in form.direction %}
 	<span id='{{ choice.data.attrs.id }}_span'>{{ choice }}</span>
 	{% endfor %}
-	<div class='imperial'>
+	<div id='id_imperial_change_rate'>
 	{{ i_tdee_form.change_rate }}
 	</div>
-	<!--
-	<div class='metric'>
-	{{ m_tdee_form.change_rate }}
+	<div id='id_metric_change_rate'>
 	</div>
-	-->
 	<br>
 	<span><p>Choose Macro Ratios</p></span>
 	
 	<table>
 	<tr><th>Protein</th><td>{{ form.protein_percent }}</td><td>{{ form.protein_g }}</td></tr>
-	<tr><th>Fat</th><td>{{ form.fat_percentt }}</td><td>{{ form.fat_g }}</td></tr>
+	<tr><th>Fat</th><td>{{ form.fat_percent }}</td><td>{{ form.fat_g }}</td></tr>
 	<tr><th>Carbs</th><td>{{ form.carbs_percent }}</td><td>{{ form.carbs_g }}</td></tr>
 	</table>
 	
