@@ -102,15 +102,22 @@ class MakeMacrosForm(forms.models.ModelForm):
 	class Meta:
 
 		model = Macros
-		fields = ('gender','age','activity','direction',)
+		fields = ('gender','age','weight','height','activity','direction','change_rate',)
 		widgets = {
 			'gender': forms.RadioSelect(),
 			'age': forms.fields.TextInput(attrs = {
 				'placeholder': 'Age',
 				'class': 'form-control input-sm',
 			}),
+			'weight': forms.fields.TextInput(attrs = {
+				'class': 'form-control input-sm',
+			}),
+			'height': forms.fields.TextInput(),
 			'activity': forms.RadioSelect(),
 			'direction': forms.RadioSelect(),
+			'change_rate': forms.fields.TextInput(attrs = {
+				'class': 'form-control input-sm',
+			}),
 		}
 
 		#error constants
@@ -131,39 +138,12 @@ class MakeMacrosForm(forms.models.ModelForm):
 				'required': INVALID_POST_ERROR,
 				'invalid_choice': INVALID_POST_ERROR,
 			},
-		}
-
-
-
-class MetricTDEEForm(forms.models.ModelForm):
-
-	class Meta:
-
-		model = Macros
-		fields = ('weight','height','change_rate',)
-		widgets = {
-			'weight': forms.fields.TextInput(attrs = {
-				'placeholder': 'kg',
-				'class': 'form-control input-sm',
-			}),
-			'height': forms.fields.TextInput(attrs = {
-				'placeholder': 'cm',
-				'class': 'form-control input-sm',
-			}),
-			'change_rate': forms.fields.TextInput(attrs = {
-				'placeholder': 'kg/wk',
-				'class': 'form-control input-sm',
-			}),
-		}
-
-		#error constants
-		error_messages = {
-			'height': {
-				'required': EMPTY_HEIGHT_ERROR,
-				'invalid':DEFAULT_INVALID_INT_ERROR,
-			},
 			'weight': {
 				'required': EMPTY_WEIGHT_ERROR,
+				'invalid':DEFAULT_INVALID_INT_ERROR,
+			},
+			'height': {
+				'required': EMPTY_HEIGHT_ERROR,
 				'invalid':DEFAULT_INVALID_INT_ERROR,
 			},
 			'change_rate': {
@@ -172,66 +152,4 @@ class MetricTDEEForm(forms.models.ModelForm):
 			},
 		}
 
-
-class ImperialHeightWidget(forms.MultiWidget):
-	def __init__(self, attrs=None):
-		widgets = (
-		forms.TextInput(attrs={'placeholder':'ft'}),
-		forms.TextInput(attrs={'placeholder':'in'}),
-		)
-		#error_messages = {'height':{'required':'poo required','invalid': 'poo invalid'}}
-		super(ImperialHeightWidget, self).__init__(widgets, attrs)
-
-	def decompress(self, value):
-		if value:
-			data = value.split(',')
-			return [data[0], data[1]]
-		return [None, None]
-
-	def format_output(self, rendered_widgets):
-		return u'\n'.join(rendered_widgets)
-
-
-	def value_from_datadict(self, data, files, name):
-		try:
-			return data[name]
-		except:
-			return None
-		pass
-
-
-
-class ImperialTDEEForm(forms.models.ModelForm):
-
-	class Meta:
-
-		model = Macros
-		fields = ('weight','height','change_rate',)
-		widgets = {
-			'weight': forms.fields.TextInput(attrs = {
-				'placeholder': 'lbs',
-				'class': 'form-control input-sm',
-			}),
-			'height': ImperialHeightWidget(),
-			'change_rate': forms.fields.TextInput(attrs = {
-				'placeholder': 'lb/wk',
-				'class': 'form-control input-sm',
-			}),
-		}
-
-		#error constants
-		error_messages = {
-			'height': {
-				'required': EMPTY_HEIGHT_ERROR,
-				'invalid':DEFAULT_INVALID_INT_ERROR,
-			},
-			'weight': {
-				'required': EMPTY_WEIGHT_ERROR,
-				'invalid':DEFAULT_INVALID_INT_ERROR,
-			},
-			'change_rate': {
-				'required': EMPTY_RATE_ERROR,
-				'invalid':DEFAULT_INVALID_INT_ERROR,
-			},
-		}
 

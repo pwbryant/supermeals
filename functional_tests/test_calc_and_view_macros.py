@@ -27,11 +27,12 @@ class CalcAndViewMacros(FunctionalTest):
 		self.browser.get(self.live_server_url)
 		User.objects.create_user(username=USERNAME,password=PASSWORD)
 		self.login_user(USERNAME,PASSWORD)
-
+		
 		#self.browser.find_element_by_id('id_as_guest')
 		#Joe, signed in as a guest, got to the Calculate Macros tab and sees the header
 		#'Total Daily Energy Expenditure (TDEE)'
 		self.browser.find_element_by_id('id_my_macros_tab_label').click()
+		time.sleep(5)
 		macro_header = self.browser.find_element_by_id('id_my_macros_headline').text
 		self.assertEqual(macro_header,'Find Total Daily Energy Expenditure (TDEE)')
 
@@ -39,25 +40,45 @@ class CalcAndViewMacros(FunctionalTest):
 		home_header_is_displayed = self.browser.find_element_by_id('id_home_headline').is_displayed()
 		self.assertFalse(home_header_is_displayed)
 
-		#The form has fields for:
-		#Gender, Age, Sex, Weight, Height,  
+		#The form has fields unit type Gender, Age, Sex, Weight, Height, Activity level,
+		#options for weight gain,maintain,and loss, and the desired rate of change and a
+		#Calculate button. The radio buttons for unit type, gender, activity, and weight change
+		#have 'Imperial', 'Male', 'Low Activity', and 'Loss' preselected
+		self.assertTrue(self.browser.find_element_by_id('id_unit_type_0').is_selected())
+		self.assertFalse(self.browser.find_element_by_id('id_unit_type_1').is_selected())
+
 		self.assertTrue(self.browser.find_element_by_id('id_gender_0').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_gender_1').is_selected())
 		self.check_element_content('id_age_div','text','Age:',child='label')
 		self.check_element_content('id_age','placeholder','Age')
 		self.check_element_content('id_weight_div','text','Weight:',child='label')
-		self.check_element_content('id_weight','placeholder','Weight(lbs)')
+		self.check_element_content('id_weight','placeholder','lbs')
 		self.check_element_content('id_height_div','text','Height:',child='label')
-		self.check_element_content('id_height','placeholder','Height(in)')
+		self.check_element_content('id_height_0','placeholder','ft')
+		self.check_element_content('id_height_1','placeholder','in')
+		self.assertTrue(self.browser.find_element_by_id('id_activity_0').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_activity_1').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_activity_2').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_activity_3').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_activity_4').is_selected())
 
+		self.assertTrue(self.browser.find_element_by_id('id_direction_0').is_selected())
+		self.assertFalse(self.browser.find_element_by_id('id_direction_1').is_selected())
+		self.assertFalse(self.browser.find_element_by_id('id_direction_2').is_selected())
+
+		self.check_element_content('id_change_rate','placeholder','lb/wk')
+
 		self.check_element_content('id_calc_tdee','text','Calculate')
 
-		#and a series of radio button specifying activity level, with a 'Calculate' button on the bottom.
+		#Out of Joe wants to enter his info in metric so he selects the metric radio button
+		#and notices that height fields turn into just one input field with 'cm' placeholder, 
+		#and the weight and rate of change fields have 'kg' and 'kg/wk' respectively.
 
+		self.browser.find_element_by_id('id_unit_type_1').click()
+		self.check_element_content('id_weight','placeholder','kg')
+		self.check_element_content('id_height','placeholder','cm')
+		self.check_element_content('id_change_rate','placeholder','kg/wk')
+	
 		self.fail('Finish the test!')
 		#Joe enters his info, and hits 'Calculate'
 

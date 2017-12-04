@@ -3,7 +3,7 @@ from django.urls import resolve
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
-from meals.forms import LoginForm, SignUpForm, MakeMacrosForm,ImperialTDEEForm,MetricTDEEForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR,DEFAULT_INVALID_INT_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR
+from meals.forms import LoginForm, SignUpForm, MakeMacrosForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR,DEFAULT_INVALID_INT_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR
 from meals.models import Macros
 
 # Create your tests here.
@@ -80,8 +80,12 @@ class CreateAccountTest(TestCase):
 		new_user = User.objects.first()
 		self.assertTrue(authenticate(request,username=USERNAME,password=PASSWORD) is not None)
 
+	def test_can_save_POST_and_create_user_account_redirects(self):
+
+		response = self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 		self.assertEqual(response.status_code, 302)
 		self.assertEqual(response['location'], '/')
+	
 	
 	def test_sign_up_blank_username_validation_error_wont_save_new_user(self):	
 
@@ -113,7 +117,6 @@ class CreateAccountTest(TestCase):
 		
 		self.assertEqual(response.status_code,200)
 		self.assertTemplateUsed(response,'sign_up.html')
-
 
 	def test_sign_up_duplicate_validation_error_gets_sign_up_form_back(self):	
 		username, email, password = USERNAME,EMAIL,PASSWORD
@@ -148,8 +151,6 @@ class MyMacrosTabTest(TestCase):
 	def test_my_macros_template_uses_my_macros_form(self):
 		response = self.client.get('/meals/get_my_macros/')
 		self.assertIsInstance(response.context['form'], MakeMacrosForm)
-		self.assertIsInstance(response.context['i_tdee_form'], ImperialTDEEForm)
-		self.assertIsInstance(response.context['m_tdee_form'], MetricTDEEForm)
 		
 	def test_make_macro_can_save_imperial_macros(self):
 		
@@ -158,8 +159,6 @@ class MyMacrosTabTest(TestCase):
 		saved_macro = Macros.objects.all()
 		self.assertEqual(saved_macro.count(),1)		
 
-		self.assertEqual(response.status_code, 302)
-		self.assertEqual(response['location'], '/')
 
 	def test_make_macro_can_save_metric_macros(self):
 		
@@ -174,9 +173,14 @@ class MyMacrosTabTest(TestCase):
 		saved_macro = Macros.objects.all()
 		self.assertEqual(saved_macro.count(),1)		
 
+	
+	def test_make_macro_redirects(self):
+		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+		response=self.client.post('/meals/save_my_macros', data=self.MACRO_DATA)
+
 		self.assertEqual(response.status_code, 302)
 		self.assertEqual(response['location'], '/')
-	
+
 	def test_save_my_macro_wont_save_duplicate_macro_but_still_redirects(self):
 
 		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
@@ -220,8 +224,6 @@ class MyMacrosTabTest(TestCase):
 		
 		self.assertEqual(response.status_code,200)
 		self.assertIsInstance(response.context['form'], MakeMacrosForm)
-		self.assertIsInstance(response.context['i_tdee_form'], ImperialTDEEForm)
-		self.assertIsInstance(response.context['m_tdee_form'], MetricTDEEForm)
 
 	def test_save_my_macro_imperial_validation_error_gets_back_MetricTDEEForm_ImperialTDEEForm_and_MakeMacrosForm(self):	
 		macro_data = self.MACRO_DATA.copy()
@@ -230,8 +232,6 @@ class MyMacrosTabTest(TestCase):
 		
 		self.assertEqual(response.status_code,200)
 		self.assertIsInstance(response.context['form'], MakeMacrosForm)
-		self.assertIsInstance(response.context['i_tdee_form'], ImperialTDEEForm)
-		self.assertIsInstance(response.context['m_tdee_form'], MetricTDEEForm)
 
 	def test_save_my_macro_validation_error_render_my_macros_html(self):	
 		macro_data = self.MACRO_DATA.copy()
@@ -242,7 +242,7 @@ class MyMacrosTabTest(TestCase):
 		self.assertTemplateUsed(response,'my_macros.html')
 
 
-	def test_sign_up_duplicate_user_validation_error_message_shows_up_on_sign_up_html(self):	
+	def test_save_my_macro_validation_error_shows_up_on_my_macro_html(self):	
 
 		macro_data = self.MACRO_DATA.copy()
 		#MakeMacroForm and ImperialTDEEForm
@@ -258,4 +258,4 @@ class MyMacrosTabTest(TestCase):
 		macro_data['weight'] = 50
 		macro_data['height'] = ''
 		response=self.client.post('/meals/save_my_macros', data=macro_data)
-		self.assertContains(response,DEFAULT_INVALID_INT_ERROR)
+		self.assertContains(response,EMPTY_HEIGHT_ERROR)

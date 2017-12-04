@@ -26,7 +26,11 @@
 		</div>
 		<h1 id="id_home_headline">Meal Lab Home</h1>
 		
-		
+		<!--switch between metric and imperial height forms and placeholders-->
+		<div id='id_height_div'></div>
+		<input id='id_weight' type='text' />
+		<input id='id_change_rate' type='text' />
+			
 	</div>
 	<script src="https://code.jquery.com/qunit/qunit-2.4.1.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -54,6 +58,18 @@
 			hide_home_header_on_tab_select();
 			assert.equal($('#id_home_headline').is(':visible'), true);
 		});
+		//imperial to metric switch
+		QUnit.test("imperial metric switch", function(assert) {
+			height_input = "<input id='id_height' type='text'>"
+			switch_between_imperial_metric(height_input,'metric')
+			var weight_placeholder = $('#id_weight').attr('placeholder')
+			assert.equal(weight_placeholder,'kg')
+			var height_placeholder = $('#id_height').attr('placeholder')
+			assert.equal(height_placeholder,'cm')
+			var rate_placeholder = $('#id_change_rate').attr('placeholder')
+			assert.equal(rate_placeholder,'kg/wk')
+		});
+		
 	</script>
 </body>
 </html>

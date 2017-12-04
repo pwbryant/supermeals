@@ -6,7 +6,7 @@ from django.db.utils import IntegrityError
 from django.db import transaction
 import json
 from decimal import Decimal
-from meals.forms import LoginForm, SignUpForm, MakeMacrosForm,ImperialTDEEForm,MetricTDEEForm
+from meals.forms import LoginForm, SignUpForm, MakeMacrosForm
 from meals.models import Macros
 
 # Create your views here.
@@ -66,12 +66,9 @@ def create_account(request):
 
 def get_my_macros(request):
 	form = MakeMacrosForm()
-	i_tdee_form = ImperialTDEEForm()
-	m_tdee_form = MetricTDEEForm()
 	return render(request, 'my_macros.html',{
 		'form':form,
-		'i_tdee_form':i_tdee_form,
-		'm_tdee_form':m_tdee_form
+		'unit_type':'imperial'
 	})
 
 def save_my_macros(request):
@@ -85,19 +82,12 @@ def save_my_macros(request):
 		if height1 != '' and height2 != '':
 			post_dict['height'] = str((int(height1) * 12) + int(height2))
 
-	i_tdee_form = ImperialTDEEForm(post_dict)
-	m_tdee_form = MetricTDEEForm(post_dict)
-	macro_form = MakeMacrosForm(POST)	
-	if not i_tdee_form.is_valid() or not m_tdee_form.is_valid() or not macro_form.is_valid():
-		if post_dict.get('height_0',False):
-			post_dict['height'] = '%s,%s' % (POST.get('height_0'),POST.get('height_1',),)
-		else:
-			post_dict['height'] = ',';
-		i_tdee_form = ImperialTDEEForm(post_dict)
+	macro_form = MakeMacrosForm(post_dict)	
+	
+	if not macro_form.is_valid():
 		return render(request,'my_macros.html', {
 			'form':macro_form,
-			'i_tdee_form':i_tdee_form,
-			'm_tdee_form':m_tdee_form
+			'unit_type':unit_type
 		})
 
 	post_dict.pop('unit_type')
