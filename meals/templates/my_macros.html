@@ -10,17 +10,38 @@
 <div>
 	<form id="id_my_macros_form" method="POST" action="/meals/save_my_macros">
 	<br>
-	{% for choice in form.unit_type %}
-	{{ choice }}
+	<table><tr>
+	{% for choice in form.choose_unit_type %}
+		<td>{{ choice }}</td>
 	{% endfor %}
-	<br>
+	</tr>
+	<tr>
 	{% for choice in form.gender %}
-	{{ choice }}
+		<td>{{ choice }}</td>
 	{% endfor %}
+	</tr></table>
 	<br>
-	<div id='{{ form.age.auto_id }}_div'>{{ form.age.label_tag }}{{ form.age }}</div>
-	<div id="{{ form.weight.auto_id }}_div">{{ form.weight.label_tag }}{{ form.weight }}</div>
-	<div id='id_height_div'></div>
+	<table><tr><td></td><td></td><td></td></tr>
+		<tr><td><span id="id_age_label">{{ form.age.label_tag }}<span></td><td>{{ form.age }}</td></tr>
+		<tr><td><span id="id_weight_label"><b>Weight:</b></span></td>
+		{% if form.unit_type == "imperial" %}
+			<td>{{ form.i_weight }}</td>
+		{% endif %}
+		{% if form.unit_type == "metric" %}
+			<td>{{ form.m_weight }}</td>
+		{% endif %}
+		</tr>
+
+		<tr><td><span id="id_height_label"><b>Height:</b></span></td>
+		{% if form.unit_type == "imperial" %}
+			<td>{{ form.i_height_0 }}</td>
+			<td>{{ form.i_height_1 }}</td>
+		{% endif %}
+		{% if form.unit_type == "metric" %}
+			<td>{{ form.m_height }}</td>
+		{% endif %}
+		</tr>
+	</table>
 	<br>
 	{% for choice in form.activity %}
 	<span id='{{ choice.data.attrs.id }}_span'>{{ choice }}</span>
@@ -30,7 +51,14 @@
 	<span id='{{ choice.data.attrs.id }}_span'>{{ choice }}</span>
 	{% endfor %}
 	<br>
-	{{ form.change_rate }}
+	<div id='id_change_rate_div'>
+		{% if form.unit_type == "imperial" %}
+			{{ form.i_change_rate }}
+		{% endif %}
+		{% if form.unit_type == "metric" %}
+			{{ form.m_change_rate }}
+		{% endif %}
+	</div>
 	<br>
 	<button id='id_calc_tdee'>Calculate</button>
 	<span><p>Choose Macro Ratios</p></span>
@@ -62,7 +90,7 @@
 </div>
 <script>
 	
-		
+	/*	
 	var i_height_input_1 = "<input id='id_height_0' type='text' name='height_0' class='form-control input-sm' />",
 	i_height_input_0 = "<input id='id_height_1' type='text' name='height_1' class='form-control input-sm' />",
 	m_height_input = "<input id='id_height' type='text' name='height' class='form-control input-sm' />",
@@ -80,7 +108,7 @@
 	height_input_table +=  height_row + "</tr></table>";
 	
 	switch_between_imperial_metric(height_input_table,unit_type);
-	
+	*/
 
 	
 </script>

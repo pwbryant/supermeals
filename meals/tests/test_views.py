@@ -142,8 +142,10 @@ class CreateAccountTest(TestCase):
 
 class MyMacrosTabTest(TestCase):
 	
-	MACRO_DATA = {'unit_type':'imperial','gender':'m','age':'34','height_0':'5','height_1':'10','weight':'210','activity':'none','direction':'lose','change_rate':'23','fat_g':'10','fat_percent':'25','protein_g':'10','protein_percent':'35','carbs_g':'10','carbs_percent':'40'}
+	IMPERIAL_MACRO_DATA = {'choose_unit_type':'imperial','gender':'m','age':'34','i_height_0':'5','i_height_1':'10','i_weight':'210','activity':'none','direction':'lose','i_change_rate':'23','fat_g':'10','fat_percent':'25','protein_g':'10','protein_percent':'35','carbs_g':'10','carbs_percent':'40'}
 
+	METRIC_MACRO_DATA = {'choose_unit_type':'metric','gender':'m','age':'34','m_height':'5','m_weight':'210','activity':'none','direction':'lose','m_change_rate':'23','fat_g':'10','fat_percent':'25','protein_g':'10','protein_percent':'35','carbs_g':'10','carbs_percent':'40'}
+	
 	def test_my_macros_url_renders_correct_template(self):
 		response = self.client.get('/meals/get_my_macros/')
 		self.assertTemplateUsed(response, 'my_macros.html')
@@ -155,28 +157,22 @@ class MyMacrosTabTest(TestCase):
 	def test_make_macro_can_save_imperial_macros(self):
 		
 		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
-		response=self.client.post('/meals/save_my_macros', data=self.MACRO_DATA)
+		response=self.client.post('/meals/save_my_macros', data=self.IMPERIAL_MACRO_DATA)
 		saved_macro = Macros.objects.all()
 		self.assertEqual(saved_macro.count(),1)		
 
 
 	def test_make_macro_can_save_metric_macros(self):
-		
 		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
-		metric_macros = self.MACRO_DATA.copy()
-		metric_macros['unit_type'] = 'metric'
-		metric_macros.pop('height_0')
-		metric_macros.pop('height_1')
-		metric_macros['height'] = 175
 
-		response=self.client.post('/meals/save_my_macros', data=metric_macros)
+		response=self.client.post('/meals/save_my_macros', data=self.METRIC_MACRO_DATA)
 		saved_macro = Macros.objects.all()
 		self.assertEqual(saved_macro.count(),1)		
 
 	
 	def test_make_macro_redirects(self):
 		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
-		response=self.client.post('/meals/save_my_macros', data=self.MACRO_DATA)
+		response=self.client.post('/meals/save_my_macros', data=self.IMPERIAL_MACRO_DATA)
 
 		self.assertEqual(response.status_code, 302)
 		self.assertEqual(response['location'], '/')
@@ -185,11 +181,11 @@ class MyMacrosTabTest(TestCase):
 
 		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 
-		response=self.client.post('/meals/save_my_macros', data=self.MACRO_DATA)
+		response=self.client.post('/meals/save_my_macros', data=self.IMPERIAL_MACRO_DATA)
 		saved_macro = Macros.objects.all()
 		self.assertEqual(saved_macro.count(),1)		
 
-		response=self.client.post('/meals/save_my_macros', data=self.MACRO_DATA)
+		response=self.client.post('/meals/save_my_macros', data=self.IMPERIAL_MACRO_DATA)
 		saved_macro = Macros.objects.all()
 		self.assertEqual(saved_macro.count(),1)		
 
@@ -198,64 +194,40 @@ class MyMacrosTabTest(TestCase):
 
 	def test_save_my_macro_missing_field_validation_wont_save_macro(self):	
 
-		macro_data = self.MACRO_DATA.copy()
+		macro_data = self.IMPERIAL_MACRO_DATA.copy()
 		macro_data.pop('age')
 		response=self.client.post('/meals/save_my_macros', data=macro_data)
 		saved_macro = Macros.objects.all()
 		self.assertEqual(saved_macro.count(),0)
 
-	def test_save_my_macro_validation_error_render_my_macros_html(self):	
-		macro_data = self.MACRO_DATA.copy()
-		macro_data.pop('age')
-		response=self.client.post('/meals/save_my_macros', data=macro_data)
-		
-		self.assertEqual(response.status_code,200)
-		self.assertTemplateUsed(response,'my_macros.html')
 
-
-	def test_save_my_macro_metric_validation_error_gets_back_MetricTDEEForm_ImperialTDEEForm_and_MakeMacrosForm(self):	
-		metric_macros = self.MACRO_DATA.copy()
-		metric_macros.pop('age')
-		metric_macros['unit_type'] = 'metric'
-		metric_macros.pop('height_0')
-		metric_macros.pop('height_1')
-		metric_macros['height'] = 175
-		response=self.client.post('/meals/save_my_macros', data=metric_macros)
-		
-		self.assertEqual(response.status_code,200)
-		self.assertIsInstance(response.context['form'], MakeMacrosForm)
-
-	def test_save_my_macro_imperial_validation_error_gets_back_MetricTDEEForm_ImperialTDEEForm_and_MakeMacrosForm(self):	
-		macro_data = self.MACRO_DATA.copy()
+	def test_save_my_macro_validation_error_gets_back_MakeMacrosForm(self):	
+		macro_data = self.IMPERIAL_MACRO_DATA.copy()
 		macro_data.pop('age')
 		response=self.client.post('/meals/save_my_macros', data=macro_data)
 		
 		self.assertEqual(response.status_code,200)
 		self.assertIsInstance(response.context['form'], MakeMacrosForm)
 
+
 	def test_save_my_macro_validation_error_render_my_macros_html(self):	
-		macro_data = self.MACRO_DATA.copy()
+		macro_data = self.IMPERIAL_MACRO_DATA.copy()
 		macro_data.pop('age')
 		response=self.client.post('/meals/save_my_macros', data=macro_data)
 		
 		self.assertEqual(response.status_code,200)
 		self.assertTemplateUsed(response,'my_macros.html')
-
 
 	def test_save_my_macro_validation_error_shows_up_on_my_macro_html(self):	
 
-		macro_data = self.MACRO_DATA.copy()
-		#MakeMacroForm and ImperialTDEEForm
+		macro_data = self.IMPERIAL_MACRO_DATA.copy()
 		macro_data['age'] = 'str'
-		macro_data['weight'] = ''
+		macro_data['i_weight'] = ''
 		response=self.client.post('/meals/save_my_macros', data=macro_data)
 		self.assertContains(response,DEFAULT_INVALID_INT_ERROR)
 		self.assertContains(response,EMPTY_WEIGHT_ERROR)
 
-		#MetricTDEEForm
-		macro_data['unit_type'] = 'metric'
-		macro_data['age'] = 35
-		macro_data['weight'] = 50
-		macro_data['height'] = ''
+		macro_data = self.METRIC_MACRO_DATA.copy()
+		macro_data['m_height'] = ''
 		response=self.client.post('/meals/save_my_macros', data=macro_data)
 		self.assertContains(response,EMPTY_HEIGHT_ERROR)

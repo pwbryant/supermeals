@@ -65,7 +65,7 @@ def create_account(request):
 	return render(request,'sign_up.html',{"form":form})
 
 def get_my_macros(request):
-	form = MakeMacrosForm()
+	form = MakeMacrosForm(unit_type='imperial')
 	return render(request, 'my_macros.html',{
 		'form':form,
 		'unit_type':'imperial'
@@ -75,33 +75,49 @@ def save_my_macros(request):
 	
 	POST = request.POST
 	post_dict = dict((key,value[0]) for key,value in POST.lists())
-	unit_type = POST.get('unit_type','')
+	unit_type = POST.get('choose_unit_type','')
 	if unit_type == 'imperial':
-		height1 = POST.get('height_0','')
-		height2 = POST.get('height_1','')
+		height1 = POST.get('i_height_0','')
+		height2 = POST.get('i_height_1','')
 		if height1 != '' and height2 != '':
 			post_dict['height'] = str((int(height1) * 12) + int(height2))
+		post_dict['weight'] = POST.get('i_weight','')
+		post_dict['change_rate'] = POST.get('i_change_rate','')
 
-	macro_form = MakeMacrosForm(post_dict)	
-	
+	if unit_type == 'metric':
+		post_dict['height'] = POST.get('m_height','')
+		post_dict['weight'] = POST.get('m_weight','')
+		post_dict['change_rate'] = POST.get('m_change_rate','')
+
+	macro_form = MakeMacrosForm(post_dict,unit_type=unit_type)	
 	if not macro_form.is_valid():
 		return render(request,'my_macros.html', {
 			'form':macro_form,
 			'unit_type':unit_type
 		})
 
-	post_dict.pop('unit_type')
+	
+	post_dict.pop('choose_unit_type')
 	if unit_type == 'imperial':
-		post_dict.pop('height_0')
-		post_dict.pop('height_1')
+		post_dict.pop('i_height_0')
+		post_dict.pop('i_height_1')
+		post_dict.pop('i_weight')
+		post_dict.pop('i_change_rate')
+	if unit_type == 'metric':
+		post_dict.pop('m_height')
+		post_dict.pop('m_weight')
+		post_dict.pop('m_change_rate')
+
 	post_dict.pop('fat_g')
 	post_dict.pop('protein_g')
 	post_dict.pop('carbs_g')
 	post_dict.pop('carbs_percent')
+	
 	post_dict['user'] = request.user
 	post_dict['change_rate'] = Decimal(post_dict['change_rate']) 
 	post_dict['protein_percent'] = Decimal(post_dict['protein_percent']) 
 	post_dict['fat_percent'] = Decimal(post_dict['fat_percent']) 
+	
 	try:
 		with transaction.atomic():
 			Macros.objects.create(**post_dict)

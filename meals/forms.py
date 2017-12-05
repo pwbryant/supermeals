@@ -79,11 +79,42 @@ class SignUpForm(forms.models.ModelForm):
 
 class MakeMacrosForm(forms.models.ModelForm):
 
+
 	unit_choices = (
 		('imperial','Imperial',),
 		('metric','Metric',),
 	)
-	unit_type = forms.ChoiceField(choices=unit_choices,widget=forms.RadioSelect(),initial='imperial',required=True)
+	choose_unit_type = forms.ChoiceField(choices=unit_choices,widget=forms.RadioSelect())
+	
+	m_height = forms.CharField(widget=forms.fields.TextInput(attrs= {
+		'placeholder':'cm',
+		'class':'form-control input-sm'
+	}),required=False)
+	m_weight = forms.CharField(widget=forms.fields.TextInput(attrs= {
+		'placeholder':'kg',
+		'class':'form-control input-sm'
+	}),required=False)
+	m_change_rate = forms.CharField(widget=forms.fields.TextInput(attrs= {
+		'placeholder':'kg/wk',
+		'class':'form-control input-sm'
+	}),required=False)
+	i_height_0 = forms.CharField(widget=forms.fields.TextInput(attrs= {
+		'placeholder':'ft',
+		'class':'form-control input-sm'
+	}),required=False)
+	i_height_1 = forms.CharField(widget=forms.fields.TextInput(attrs= {
+		'placeholder':'in',
+		'class':'form-control input-sm'
+	}),required=False)
+	i_weight = forms.CharField(widget=forms.fields.TextInput(attrs= {
+		'placeholder':'lb',
+		'class':'form-control input-sm'
+	}),required=False)
+	i_change_rate = forms.CharField(widget=forms.fields.TextInput(attrs= {
+		'placeholder':'lb/wk',
+		'class':'form-control input-sm'
+	}),required=False)
+
 	macro_error_messages = {
 		'required': EMPTY_MACRO_ERROR,
 		'invalid': INVALID_MACRO_ERROR,
@@ -98,11 +129,11 @@ class MakeMacrosForm(forms.models.ModelForm):
 	fat_g = forms.IntegerField(widget=forms.fields.TextInput(attrs=g_attrs),error_messages = macro_error_messages,required=True)
 	carbs_percent = forms.IntegerField(min_value=0,max_value=100,widget=forms.fields.TextInput(attrs=pct_attrs),error_messages = macro_error_messages,required=True)
 	carbs_g = forms.IntegerField(widget=forms.fields.TextInput(attrs=g_attrs),error_messages = macro_error_messages,required=True)
-
 	class Meta:
 
 		model = Macros
 		fields = ('gender','age','weight','height','activity','direction','change_rate',)
+	
 		widgets = {
 			'gender': forms.RadioSelect(),
 			'age': forms.fields.TextInput(attrs = {
@@ -151,5 +182,8 @@ class MakeMacrosForm(forms.models.ModelForm):
 				'invalid':DEFAULT_INVALID_INT_ERROR,
 			},
 		}
-
+	def __init__(self,*args,**kwargs):
+		self.unit_type = kwargs.pop('unit_type')
+		super(MakeMacrosForm,self).__init__(*args,**kwargs)
+		self.fields['choose_unit_type'].initial = self.unit_type 
 

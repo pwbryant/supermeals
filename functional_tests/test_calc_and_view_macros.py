@@ -44,18 +44,18 @@ class CalcAndViewMacros(FunctionalTest):
 		#options for weight gain,maintain,and loss, and the desired rate of change and a
 		#Calculate button. The radio buttons for unit type, gender, activity, and weight change
 		#have 'Imperial', 'Male', 'Low Activity', and 'Loss' preselected
-		self.assertTrue(self.browser.find_element_by_id('id_unit_type_0').is_selected())
-		self.assertFalse(self.browser.find_element_by_id('id_unit_type_1').is_selected())
+		self.assertTrue(self.browser.find_element_by_id('id_choose_unit_type_0').is_selected())
+		self.assertFalse(self.browser.find_element_by_id('id_choose_unit_type_1').is_selected())
 
 		self.assertTrue(self.browser.find_element_by_id('id_gender_0').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_gender_1').is_selected())
-		self.check_element_content('id_age_div','text','Age:',child='label')
+		self.check_element_content('id_age_label','text','Age:')
 		self.check_element_content('id_age','placeholder','Age')
-		self.check_element_content('id_weight_div','text','Weight:',child='label')
-		self.check_element_content('id_weight','placeholder','lbs')
-		self.check_element_content('id_height_div','text','Height:',child='label')
-		self.check_element_content('id_height_0','placeholder','ft')
-		self.check_element_content('id_height_1','placeholder','in')
+		self.check_element_content('id_weight_label','text','Weight:')
+		self.check_element_content('id_i_weight','placeholder','lb')
+		self.check_element_content('id_height_label','text','Height:')
+		self.check_element_content('id_i_height_0','placeholder','ft')
+		self.check_element_content('id_i_height_1','placeholder','in')
 		self.assertTrue(self.browser.find_element_by_id('id_activity_0').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_activity_1').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_activity_2').is_selected())
@@ -66,7 +66,7 @@ class CalcAndViewMacros(FunctionalTest):
 		self.assertFalse(self.browser.find_element_by_id('id_direction_1').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_direction_2').is_selected())
 
-		self.check_element_content('id_change_rate','placeholder','lb/wk')
+		self.check_element_content('id_i_change_rate','placeholder','lb/wk')
 
 		self.check_element_content('id_calc_tdee','text','Calculate')
 
@@ -74,10 +74,10 @@ class CalcAndViewMacros(FunctionalTest):
 		#and notices that height fields turn into just one input field with 'cm' placeholder, 
 		#and the weight and rate of change fields have 'kg' and 'kg/wk' respectively.
 
-		self.browser.find_element_by_id('id_unit_type_1').click()
-		self.check_element_content('id_weight','placeholder','kg')
-		self.check_element_content('id_height','placeholder','cm')
-		self.check_element_content('id_change_rate','placeholder','kg/wk')
+		self.browser.find_element_by_id('id_choose_unit_type_1').click()
+		self.check_element_content('id_m_weight','placeholder','kg')
+		self.check_element_content('id_m_height','placeholder','cm')
+		self.check_element_content('id_m_change_rate','placeholder','kg/wk')
 	
 		self.fail('Finish the test!')
 		#Joe enters his info, and hits 'Calculate'

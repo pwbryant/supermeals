@@ -47,16 +47,24 @@ class SignUpFormTest(TestCase):
 class MakeMacrosFormTest(TestCase):
 
 	def test_my_macros_form_has_placeholder_values_and_css_classes(self):
-		form = MakeMacrosForm()
+		form = MakeMacrosForm(unit_type='imperial')		
 		self.assertIn('value="m"', form.as_p())
 		self.assertIn('value="f"', form.as_p())
 		self.assertIn('placeholder="Age"', form.as_p())
+		self.assertIn('placeholder="lb"', form.as_p())
+		self.assertIn('placeholder="ft"', form.as_p())
+		self.assertIn('placeholder="in"', form.as_p())
+		self.assertIn('placeholder="lb/wk"', form.as_p())
+		self.assertIn('placeholder="kg"', form.as_p())
+		self.assertIn('placeholder="cm"', form.as_p())
+		self.assertIn('placeholder="kg/wk"', form.as_p())
 		self.assertIn('value="none"', form.as_p())
 		self.assertIn('value="lose"', form.as_p())
 		self.assertIn('class="form-control input-sm"', form.as_p())
-	
+			
+
 	def test_form_validation_for_blank_inputs(self):
-		form = MakeMacrosForm(data={'gender':'','age':'','weight':'','height':'','activity':'','direction':'','change_rate':'','protein_percent':'','protein_g':'','fat_percent':'','fat_g':'','carbs_percent':'','carbs_g':''})
+		form = MakeMacrosForm(data={'gender':'','age':'','weight':'','height':'','activity':'','direction':'','change_rate':'','protein_percent':'','protein_g':'','fat_percent':'','fat_g':'','carbs_percent':'','carbs_g':''},unit_type='imperial')
 		self.assertFalse(form.is_valid())
 		self.assertEqual(
 			form.errors['gender'],
@@ -112,7 +120,7 @@ class MakeMacrosFormTest(TestCase):
 		)
 
 	def test_form_validation_for_illegal_inputs(self):
-		form = MakeMacrosForm(data={'gender':0,'age':'str','weight':'str','height':'str','activity':'str','direction':'str','change_rate':'str','protein_percent':'str','protein_g':'str','fat_percent':'str','fat_g':'str','carbs_percent':'str','carbs_g':'str'})
+		form = MakeMacrosForm(data={'gender':0,'age':'str','weight':'str','height':'str','activity':'str','direction':'str','change_rate':'str','protein_percent':'str','protein_g':'str','fat_percent':'str','fat_g':'str','carbs_percent':'str','carbs_g':'str'},unit_type='imperial')
 		self.assertFalse(form.is_valid())
 		self.assertEqual(
 			form.errors['gender'],
@@ -168,7 +176,7 @@ class MakeMacrosFormTest(TestCase):
 		)
 
 	def test_form_validation_for_out_of_range_inputs(self):
-		form = MakeMacrosForm(data={'protein_percent':'1000','fat_percent':'1000','carbs_percent':'1000'})
+		form = MakeMacrosForm(data={'protein_percent':'1000','fat_percent':'1000','carbs_percent':'1000'},unit_type='imperial')
 		self.assertFalse(form.is_valid())
 
 		self.assertEqual(
@@ -184,7 +192,7 @@ class MakeMacrosFormTest(TestCase):
 			[OUT_OF_RANGE_MACRO_ERROR]
 		)
 
-		form = MakeMacrosForm(data={'protein_percent':'-1000','fat_percent':'-1000','carbs_percent':'-1000'})
+		form = MakeMacrosForm(data={'protein_percent':'-1000','fat_percent':'-1000','carbs_percent':'-1000'},unit_type='imperial')
 		self.assertFalse(form.is_valid())
 
 		self.assertEqual(
