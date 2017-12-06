@@ -88,9 +88,12 @@ def save_my_macros(request):
 		post_dict['height'] = POST.get('m_height','')
 		post_dict['weight'] = POST.get('m_weight','')
 		post_dict['change_rate'] = POST.get('m_change_rate','')
-
+	
+	print(post_dict)
 	macro_form = MakeMacrosForm(post_dict,unit_type=unit_type)	
 	if not macro_form.is_valid():
+		print('invalid')
+		print(macro_form.errors)
 		return render(request,'my_macros.html', {
 			'form':macro_form,
 			'unit_type':unit_type
@@ -117,10 +120,10 @@ def save_my_macros(request):
 	post_dict['change_rate'] = Decimal(post_dict['change_rate']) 
 	post_dict['protein_percent'] = Decimal(post_dict['protein_percent']) 
 	post_dict['fat_percent'] = Decimal(post_dict['fat_percent']) 
-	
 	try:
 		with transaction.atomic():
 			Macros.objects.create(**post_dict)
 	except IntegrityError:
 		pass
-	return redirect('/')	
+
+	return HttpResponse('1')

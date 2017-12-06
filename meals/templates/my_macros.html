@@ -8,7 +8,7 @@
 	}
 </style>
 <div>
-	<form id="id_my_macros_form" method="POST" action="/meals/save_my_macros">
+	<div id="id_my_macros_form">
 	<br>
 	<table><tr>
 	{% for choice in form.choose_unit_type %}
@@ -24,15 +24,17 @@
 	<table><tr><td></td><td></td><td></td></tr>
 		<tr><td><span id="id_age_label">{{ form.age.label_tag }}<span></td><td>{{ form.age }}</td></tr>
 		<tr><td><span id="id_weight_label"><b>Weight:</b></span></td>
+		<td id='id_weight_cell'>
 		{% if form.unit_type == "imperial" %}
-			<td>{{ form.i_weight }}</td>
+			{{ form.i_weight }}
 		{% endif %}
 		{% if form.unit_type == "metric" %}
-			<td>{{ form.m_weight }}</td>
+			{{ form.m_weight }}
 		{% endif %}
+		</td>
 		</tr>
 
-		<tr><td><span id="id_height_label"><b>Height:</b></span></td>
+		<tr id='id_height_row'><td><span id="id_height_label"><b>Height:</b></span></td>
 		{% if form.unit_type == "imperial" %}
 			<td>{{ form.i_height_0 }}</td>
 			<td>{{ form.i_height_1 }}</td>
@@ -85,30 +87,10 @@
 			<div class="help-block">{{ m_tdee_form.errors }}</div>
 		</div>
 	{% endif %}
-	<br><input id='id_save_my_macros' type='submit' class="btn" value="Save">
-	</form>
+	<br><button id='id_save_my_macros' class="btn">Save</button>
+	</div>
 </div>
 <script>
-	
-	/*	
-	var i_height_input_1 = "<input id='id_height_0' type='text' name='height_0' class='form-control input-sm' />",
-	i_height_input_0 = "<input id='id_height_1' type='text' name='height_1' class='form-control input-sm' />",
-	m_height_input = "<input id='id_height' type='text' name='height' class='form-control input-sm' />",
-	height_label = "{{ form.height.label }}",
-	unit_type = "{{ unit_type }}",
-	height_row = "<td><b>" + height_label + ":<b></td>",
-	height_input_table = "<table id='id_height_table'><tr>"
-	;
-	if (unit_type == 'metric') {
-		height_row += "<td>" + m_height_input + "</td>";
-	} else {
-		
-		height_row += "<td>" + i_height_input_0 + "</td><td>" + i_height_input_1 + "</td>";
-	}	
-	height_input_table +=  height_row + "</tr></table>";
-	
-	switch_between_imperial_metric(height_input_table,unit_type);
-	*/
-
-	
+	post_my_macros_form();
+	switch_between_imperial_metric();
 </script>
