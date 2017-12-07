@@ -79,11 +79,15 @@ class CalcAndViewMacros(FunctionalTest):
 		self.check_element_content('id_m_height','placeholder','cm')
 		self.check_element_content('id_m_change_rate','placeholder','kg/wk')
 	
-		self.fail('Finish the test!')
-		#Joe enters his info, and hits 'Calculate'
-
+		
+		#Joe enters his info, and hits 'Calculate'. BTW Joe accidentally hits the lady gender, but he's gunna send it
 		#Below the form, he sees his daily caloric expediture
-
+		macro_form_ids = ['id_choose_unit_type_0','id_gender_0','id_age','id_i_weight','id_i_height_0','id_i_height_1','id_activity_1','id_direction_1','id_i_change_rate']
+		macro_form_values = [None,None,'34','210','5','10',None,None,'2']
+		self.fill_input(macro_form_ids,macro_form_values)	
+		self.browser.find_element_by_id('id_calc_tdee').click()
+		self.check_element_content('id_tdee_result','text','2790')
+		self.fail('Finish the test!')
 		#Below this he sees a series of radio buttons where he can
 		#specify if he want lose/gain/or maintain his weigth, and the corresponding intensity
 		#He chooses lose weight at a 20% cal deficit

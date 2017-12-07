@@ -28,7 +28,6 @@ var post_my_macros_form = function() {
 		$("#id_my_macros_form_container").find(":input[type=text],:input[type=hidden],:input[type=radio]:checked").each(function() {
 		    post_data[this.name] = $(this).val();
 		});
-		console.log(post_data);
 		$.post('/meals/save_my_macros',post_data,function(data) {
 			
 			if (data == '1') {
@@ -60,4 +59,73 @@ var switch_between_imperial_metric = function() {
 		}
 	});
 
+}
+
+var convert_to_metric = function(imperial_value,conversion) {
+
+	
+	if (conversion == 'in_to_cm') {
+		return imperial_value/0.39370;	
+	}
+	if (conversion == 'lb_to_kg') {
+		return imperial_value * 0.45359237;	
+	}
+}
+
+var calc_tdee = function() {
+	
+	$('#id_calc_tdee').on('click',function() {	
+		var status_ = 1,
+		tdee_data = {};
+		$("#id_tdee_form_container").find(":input[type=text],:input[type=radio]:checked").each(function() {
+			
+			if ($(this).val() == '') {
+				status_ = 0;	
+			} else {
+				if (isNaN($(this).val())) {
+					tdee_data[this.name] = $(this).val();
+				} else {
+					tdee_data[this.name] = parseFloat($(this).val());
+				}	
+			}		
+		});
+		if (status_ == 1) {
+			if (tdee_data['choose_unit_type'] == 'imperial') {
+				tdee_data['weight'] = convert_to_metric(tdee_data['i_weight'],'lb_to_kg');
+				tdee_data['height'] = convert_to_metric(tdee_data['i_height_0'] * 12 + tdee_data['i_height_1'],'in_to_cm');
+				tdee_data['change_rate'] = convert_to_metric(tdee_data['i_change_rate'],'lb_to_kg');
+			} else {
+				tdee_data['weight'] = tdee_data['m_weight'];
+				tdee_data['height'] = tdee_data['m_height_0'];
+				tdee_data['change_rate'] = tdee_data['m_change_rate'];
+			}
+			var formula_data_by_gender = {
+				"f": {
+					'base_add':655,
+					'weight':9.6 * tdee_data['weight'],
+					'height':1.8 * tdee_data['height'],
+					'age':4.7 * tdee_data['age']
+				},
+				'm': {
+					'base_add':66,
+					'weight':13.7 * tdee_data['weight'],
+					'height':5 * tdee_data['height'],
+					'age':6.8 * tdee_data['age']
+				}
+			},
+			activity_data = {
+				"none":1.2,
+				"light":1.375,
+				"medium":1.55,
+				"high":1.725,
+				"very high":1.9
+			},
+			formula_data = formula_data_by_gender[tdee_data['gender']],
+			tdee_return_value = (formula_data['base_add'] + formula_data['weight'] + formula_data['height'] - formula_data['age']) * activity_data[tdee_data['activity']];
+			
+		} else {
+			tdee_return_value = 'Missing Value. Check Form.';
+		}
+		$('#id_tdee_result').html(Math.round(tdee_return_value));
+	});
 }

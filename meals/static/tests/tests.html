@@ -30,7 +30,21 @@
 		<div id='id_height_div'></div>
 		<input id='id_weight' type='text' />
 		<input id='id_change_rate' type='text' />
-			
+
+		<!--calc tdee-->
+		<div id='id_tdee_form_container'>
+		<input type='radio' name='choose_unit_type' value='imperial' checked='checked'/>
+		<input type='radio' name='gender' value='m' checked='checked'/>
+		<input type='text' name='age' value='34'/>
+		<input type='text' name='i_weight' value='210'/>
+		<input type='text' name='i_height_0' value='5'/>
+		<input type='text' name='i_height_1' value='10'/>
+		<input type='radio' name='activity' value='none' checked='checked'/>
+		<input type='radio' name='direction' value='lose' checked='checked'/>
+		<input type='text' name='i_change_rate' value='2'/>
+		<button id="id_calc_tdee">Calculate</button>
+		</div>
+		<div id="id_tdee_result" class='lazer'><p>Gunt</p></div>
 	</div>
 	<script src="https://code.jquery.com/qunit/qunit-2.4.1.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -59,6 +73,7 @@
 			assert.equal($('#id_home_headline').is(':visible'), true);
 		});
 		//imperial to metric switch
+		/*
 		QUnit.test("imperial metric switch", function(assert) {
 			height_input = "<input id='id_height' type='text'>"
 			switch_between_imperial_metric(height_input,'metric')
@@ -69,7 +84,70 @@
 			var rate_placeholder = $('#id_change_rate').attr('placeholder')
 			assert.equal(rate_placeholder,'kg/wk')
 		});
+		*/
+		//convert to metric (no html to test)
+		QUnit.test("convert to metric", function(assert) {
+			var in_cm = convert_to_metric(2,'in_to_cm'),
+			lb_kg = convert_to_metric(2,'lb_to_kg');
+
+			assert.equal(in_cm.toFixed(5),5.08001);
+			assert.equal(lb_kg.toFixed(5),0.90718);
+			console.log($('#id_tdee_result').html());
+		});
+		//calc tdee male at 'none' activity leves
+		QUnit.test("calculate tdee male at none activity", function(assert) {
 		
+			calc_tdee();
+			$('#id_calc_tdee').trigger('click');
+			var result = $('#id_tdee_result').html();
+			assert.equal(parseFloat(result).toFixed(5),2435);
+		});
+		//calc tdee female at 'none' activity
+		QUnit.test("calculate tdee female at none activity", function(assert) {
+		
+			calc_tdee();
+			$('input[name=gender]').val('f')
+			$('#id_calc_tdee').trigger('click');
+			var result = $('#id_tdee_result').html();
+			assert.equal(parseFloat(result).toFixed(5),2076);
+
+		});
+		//calc tdee male at 'light' activity level
+		QUnit.test("calculate tdee male at light activity", function(assert) {
+		
+			calc_tdee();
+			$('input[name=activity]').val('light')
+			$('#id_calc_tdee').trigger('click');
+			var result = $('#id_tdee_result').html();
+			assert.equal(parseFloat(result).toFixed(5),2790);
+		});
+		//calc tdee male at 'medium' activity level
+		QUnit.test("calculate tdee male at medium activity", function(assert) {
+		
+			calc_tdee();
+			$('input[name=activity]').val('medium')
+			$('#id_calc_tdee').trigger('click');
+			var result = $('#id_tdee_result').html();
+			assert.equal(parseFloat(result).toFixed(5),3145);
+		});
+		//calc tdee male at 'high' activity level
+		QUnit.test("calculate tdee male at high activity", function(assert) {
+		
+			calc_tdee();
+			$('input[name=activity]').val('high')
+			$('#id_calc_tdee').trigger('click');
+			var result = $('#id_tdee_result').html();
+			assert.equal(parseFloat(result).toFixed(5),3500);
+		});
+		//calc tdee male at 'very high' activity level
+		QUnit.test("calculate tdee male at very high activity", function(assert) {
+		
+			calc_tdee();
+			$('input[name=activity]').val('very high')
+			$('#id_calc_tdee').trigger('click');
+			var result = $('#id_tdee_result').html();
+			assert.equal(parseFloat(result).toFixed(5),3855);
+		});
 	</script>
 </body>
 </html>

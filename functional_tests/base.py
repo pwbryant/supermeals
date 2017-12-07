@@ -15,8 +15,12 @@ class FunctionalTest(StaticLiveServerTestCase):
 	
 	def fill_input(self,element_ids,values):
 		for i in range(len(element_ids)):
-			self.browser.find_element_by_id(element_ids[i]).send_keys(values[i])
+			element = self.browser.find_element_by_id(element_ids[i])
+			if element.get_attribute('type') == 'text':
+				element.send_keys(values[i])
 
+			if element.get_attribute('type') == 'radio':
+				element.click()
 
 	def login_user(self,username,password = False):
 
