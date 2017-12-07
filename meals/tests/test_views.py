@@ -170,27 +170,24 @@ class MyMacrosTabTest(TestCase):
 		self.assertEqual(saved_macro.count(),1)		
 
 	
-	def test_make_macro_redirects(self):
+	def test_make_macro_if_success_returns_1(self):
 		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 		response=self.client.post('/meals/save_my_macros', data=self.IMPERIAL_MACRO_DATA)
 
-		self.assertEqual(response.status_code, 302)
-		self.assertEqual(response['location'], '/')
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.content.decode(),'1')
 
-	def test_save_my_macro_wont_save_duplicate_macro_but_still_redirects(self):
+	def test_save_my_macro_wont_save_duplicate_macro_but_still_returns_1(self):
 
 		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 
+		self.client.post('/meals/save_my_macros', data=self.IMPERIAL_MACRO_DATA)
 		response=self.client.post('/meals/save_my_macros', data=self.IMPERIAL_MACRO_DATA)
 		saved_macro = Macros.objects.all()
 		self.assertEqual(saved_macro.count(),1)		
 
-		response=self.client.post('/meals/save_my_macros', data=self.IMPERIAL_MACRO_DATA)
-		saved_macro = Macros.objects.all()
-		self.assertEqual(saved_macro.count(),1)		
-
-		self.assertEqual(response.status_code, 302)
-		self.assertEqual(response['location'], '/')
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.content.decode(), "1")
 
 	def test_save_my_macro_missing_field_validation_wont_save_macro(self):	
 
