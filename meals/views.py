@@ -89,6 +89,7 @@ def save_my_macros(request):
 		post_dict['weight'] = POST.get('m_weight','')
 		post_dict['change_rate'] = POST.get('m_change_rate','')
 	
+	print(post_dict)
 	macro_form = MakeMacrosForm(post_dict,unit_type=unit_type)	
 	if not macro_form.is_valid():
 		return render(request,'my_macros.html', {
@@ -120,6 +121,7 @@ def save_my_macros(request):
 	try:
 		with transaction.atomic():
 			Macros.objects.create(**post_dict)
+		pass	
 	except IntegrityError:
 		pass
 

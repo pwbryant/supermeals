@@ -24,31 +24,11 @@ var get_my_macros_page_content = function() {
 //not tested
 var post_my_macros_form = function() {
 	$('#id_save_my_macros').on('click',function() {
-		console.log(this);
-		var post_data = {
-			'choose_unit_type':$('input[name=choose_unit_type]:checked').val(),
-			'gender':$('input[name=gender]:checked').val(),
-			'age':$('#id_age').val(),
-			'activity':$('input[name=activity]:checked').val(),
-			'direction':$('input[name=direction]:checked').val(),
-			'protein_percent':$('#id_protein_percent').val(),
-			'fat_percent':$('#id_fat_percent').val(),
-			'carbs_percent':$('#id_carbs_percent').val(),
-			'protein_g':$('#id_protein_g').val(),
-			'fat_g':$('#id_fat_g').val(),
-			'carbs_g':$('#id_carbs_g').val(),
-			'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
-		};
-		if (post_data['choose_unit_type'] == 'imperial') {
-			post_data['i_weight'] = $('input[name=i_weight]').val();
-			post_data['i_height_0'] = $('input[name=i_height_0]').val();
-			post_data['i_height_1'] = $('input[name=i_height_1]').val();
-			post_data['i_change_rate'] = $('input[name=i_change_rate]').val();
-		} else {
-			post_data['m_weight'] = $('input[name=m_weight]').val();
-			post_data['m_height'] = $('input[name=m_height]').val();
-			post_data['m_change_rate'] = $('input[name=m_change_rate]').val();
-		}
+		var post_data = {};
+		$("#id_my_macros_form_container").find(":input[type=text],:input[type=hidden],:input[type=radio]:checked").each(function() {
+		    post_data[this.name] = $(this).val();
+		});
+		console.log(post_data);
 		$.post('/meals/save_my_macros',post_data,function(data) {
 			
 			if (data == '1') {
@@ -62,6 +42,8 @@ var post_my_macros_form = function() {
 		});
 	});
 }
+
+
 
 //tested
 var switch_between_imperial_metric = function() {
