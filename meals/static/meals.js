@@ -127,5 +127,6 @@ var calc_tdee = function() {
 			tdee_return_value = 'Missing Value. Check Form.';
 		}
 		$('#id_tdee_result').html(Math.round(tdee_return_value));
+		$('#id_weight_change_form_container').show();
 	});
 }

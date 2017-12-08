@@ -1,10 +1,10 @@
 <!doctype html>
 <style>
-	.imperial {
-		display: block;
-	}	
-	.metric {
-		display: none;
+	#id_weight_change_form_container {
+		display:none;
+	}
+	#id_choose_macros_form_container {
+		display:none;
 	}
 </style>
 <div>
@@ -49,6 +49,13 @@
 			<span id='{{ choice.data.attrs.id }}_span'>{{ choice }}</span>
 			{% endfor %}
 			<br>
+		
+			<button id='id_calc_tdee'>Calculate</button>
+			<div id="id_tdee_result"></div>
+		</div>
+		<div id='id_weight_change_form_container'>
+			<span><p>Desired Weight Change</p></span>
+				
 			{% for choice in form.direction %}
 			<span id='{{ choice.data.attrs.id }}_span'>{{ choice }}</span>
 			{% endfor %}
@@ -61,26 +68,23 @@
 					{{ form.m_change_rate }}
 				{% endif %}
 			</div>
-			<br>
-		
-			<button id='id_calc_tdee'>Calculate</button>
-			<div id="id_tdee_result"></div>
 		</div>
-		<span><p>Choose Macro Ratios</p></span>
-		
-		<table>
-		<tr><th>Protein</th><td>{{ form.protein_percent }}</td><td>{{ form.protein_g }}</td></tr>
-		<tr><th>Fat</th><td>{{ form.fat_percent }}</td><td>{{ form.fat_g }}</td></tr>
-		<tr><th>Carbs</th><td>{{ form.carbs_percent }}</td><td>{{ form.carbs_g }}</td></tr>
-		</table>
-		
+		<div id="id_choose_macros_form_container">
+			<span><p>Choose Macro Ratios</p></span>
+			<br>
+			<table>
+			<tr><th>Protein</th><td>{{ form.protein_percent }}</td><td>{{ form.protein_g }}</td></tr>
+			<tr><th>Fat</th><td>{{ form.fat_percent }}</td><td>{{ form.fat_g }}</td></tr>
+			<tr><th>Carbs</th><td>{{ form.carbs_percent }}</td><td>{{ form.carbs_g }}</td></tr>
+			</table>
+			<br><button id='id_save_my_macros' class="btn">Save</button>
+		</div>
 		{% csrf_token %}
 		{% if form.errors %}
 			<div class="form-group has-error">
 				<div class="help-block">{{ form.errors }}</div>
 			</div>
 		{% endif %}
-		<br><button id='id_save_my_macros' class="btn">Save</button>
 	</div>
 </div>
 <script>

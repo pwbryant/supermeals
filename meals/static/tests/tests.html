@@ -44,7 +44,8 @@
 		<input type='text' name='i_change_rate' value='2'/>
 		<button id="id_calc_tdee">Calculate</button>
 		</div>
-		<div id="id_tdee_result" class='lazer'><p>Gunt</p></div>
+		<div id="id_tdee_result"></div>
+		<div id="id_weight_change_form_container" style="display:none;"></div>
 	</div>
 	<script src="https://code.jquery.com/qunit/qunit-2.4.1.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -92,7 +93,14 @@
 
 			assert.equal(in_cm.toFixed(5),5.08001);
 			assert.equal(lb_kg.toFixed(5),0.90718);
-			console.log($('#id_tdee_result').html());
+		});
+		//calc tdee displays id_weight_change_form_container
+		QUnit.test("calculate tdee displays id_weight_change_form_container", function(assert) {
+		
+			calc_tdee();
+			assert.equal($('#id_weight_change_form_container').css('display'),'none')
+			$('#id_calc_tdee').trigger('click');
+			assert.equal($('#id_weight_change_form_container').css('display'),'block')
 		});
 		//calc tdee male at 'none' activity leves
 		QUnit.test("calculate tdee male at none activity", function(assert) {
