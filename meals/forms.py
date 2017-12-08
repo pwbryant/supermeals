@@ -80,11 +80,6 @@ class SignUpForm(forms.models.ModelForm):
 class MakeMacrosForm(forms.models.ModelForm):
 
 
-	unit_choices = (
-		('imperial','Imperial',),
-		('metric','Metric',),
-	)
-	choose_unit_type = forms.ChoiceField(choices=unit_choices,widget=forms.RadioSelect())
 	
 	m_height = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		'placeholder':'cm',
@@ -132,9 +127,10 @@ class MakeMacrosForm(forms.models.ModelForm):
 	class Meta:
 
 		model = Macros
-		fields = ('gender','age','weight','height','activity','direction','change_rate',)
+		fields = ('unit_type','gender','age','weight','height','activity','direction','change_rate',)
 	
 		widgets = {
+			'unit_type': forms.RadioSelect(),
 			'gender': forms.RadioSelect(),
 			'age': forms.fields.TextInput(attrs = {
 				'placeholder': 'Age',
@@ -153,6 +149,10 @@ class MakeMacrosForm(forms.models.ModelForm):
 
 		#error constants
 		error_messages = {
+			'unit_type': {
+				'required': INVALID_POST_ERROR,
+				'invalid_choice': INVALID_POST_ERROR
+			},
 			'gender': {
 				'required': INVALID_POST_ERROR,
 				'invalid_choice': INVALID_POST_ERROR
@@ -182,8 +182,9 @@ class MakeMacrosForm(forms.models.ModelForm):
 				'invalid':DEFAULT_INVALID_INT_ERROR,
 			},
 		}
+	
 	def __init__(self,*args,**kwargs):
-		self.unit_type = kwargs.pop('unit_type')
+		initial = {'unit_type':kwargs.pop('unit_type')}
+		kwargs['initial'] = initial
 		super(MakeMacrosForm,self).__init__(*args,**kwargs)
-		self.fields['choose_unit_type'].initial = self.unit_type 
 

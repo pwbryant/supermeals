@@ -7,6 +7,11 @@ from django.core.validators import MaxValueValidator,MinValueValidator
 class Macros(models.Model):
 	
 	user = models.OneToOneField('auth.User',on_delete=models.CASCADE)
+	UNIT_CHOICES = (
+		('imperial','Imperial',),
+		('metric','Metric',),
+	)
+	unit_type = models.CharField(max_length=1, choices=UNIT_CHOICES,default='i', blank=False)
 
 	GENDER_CHOICES = (
 		('m','Male',),

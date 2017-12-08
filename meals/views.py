@@ -65,17 +65,17 @@ def create_account(request):
 	return render(request,'sign_up.html',{"form":form})
 
 def get_my_macros(request):
+	#form = MakeMacrosForm()
 	form = MakeMacrosForm(unit_type='imperial')
 	return render(request, 'my_macros.html',{
-		'form':form,
-		'unit_type':'imperial'
+		'form':form
 	})
 
 def save_my_macros(request):
 	
 	POST = request.POST
 	post_dict = dict((key,value[0]) for key,value in POST.lists())
-	unit_type = POST.get('choose_unit_type','')
+	unit_type = POST.get('unit_type','')
 	if unit_type == 'imperial':
 		height1 = POST.get('i_height_0','')
 		height2 = POST.get('i_height_1','')
@@ -97,7 +97,7 @@ def save_my_macros(request):
 		})
 
 	
-	post_dict.pop('choose_unit_type')
+	post_dict.pop('unit_type')
 	if unit_type == 'imperial':
 		post_dict.pop('i_height_0')
 		post_dict.pop('i_height_1')

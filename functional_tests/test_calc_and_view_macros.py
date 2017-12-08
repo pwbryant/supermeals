@@ -44,8 +44,8 @@ class CalcAndViewMacros(FunctionalTest):
 		#options for weight gain,maintain,and loss, and the desired rate of change and a
 		#Calculate button. The radio buttons for unit type, gender, activity, and weight change
 		#have 'Imperial', 'Male', 'Low Activity', and 'Loss' preselected
-		self.assertTrue(self.browser.find_element_by_id('id_choose_unit_type_0').is_selected())
-		self.assertFalse(self.browser.find_element_by_id('id_choose_unit_type_1').is_selected())
+		self.assertTrue(self.browser.find_element_by_id('id_unit_type_0').is_selected())
+		self.assertFalse(self.browser.find_element_by_id('id_unit_type_1').is_selected())
 
 		self.assertTrue(self.browser.find_element_by_id('id_gender_0').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_gender_1').is_selected())
@@ -74,7 +74,7 @@ class CalcAndViewMacros(FunctionalTest):
 		#and notices that height fields turn into just one input field with 'cm' placeholder, 
 		#and the weight and rate of change fields have 'kg' and 'kg/wk' respectively.
 
-		self.browser.find_element_by_id('id_choose_unit_type_1').click()
+		self.browser.find_element_by_id('id_unit_type_1').click()
 		self.check_element_content('id_m_weight','placeholder','kg')
 		self.check_element_content('id_m_height','placeholder','cm')
 		self.check_element_content('id_m_change_rate','placeholder','kg/wk')
@@ -82,7 +82,7 @@ class CalcAndViewMacros(FunctionalTest):
 		
 		#Joe enters his info, and hits 'Calculate'. BTW Joe accidentally hits the lady gender, but he's gunna send it
 		#Below the form, he sees his daily caloric expediture
-		macro_form_ids = ['id_choose_unit_type_0','id_gender_0','id_age','id_i_weight','id_i_height_0','id_i_height_1','id_activity_1','id_direction_1','id_i_change_rate']
+		macro_form_ids = ['id_unit_type_0','id_gender_0','id_age','id_i_weight','id_i_height_0','id_i_height_1','id_activity_1','id_direction_1','id_i_change_rate']
 		macro_form_values = [None,None,'34','210','5','10',None,None,'2']
 		self.fill_input(macro_form_ids,macro_form_values)	
 		self.browser.find_element_by_id('id_calc_tdee').click()

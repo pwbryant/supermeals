@@ -11,7 +11,7 @@
 	<div id="id_my_macros_form_container">
 		<div id="id_tdee_form_container">
 			<table><tr>
-			{% for choice in form.choose_unit_type %}
+			{% for choice in form.unit_type %}
 				<td>{{ choice }}</td>
 			{% endfor %}
 			</tr>
@@ -25,21 +25,21 @@
 				<tr><td><span id="id_age_label">{{ form.age.label_tag }}<span></td><td>{{ form.age }}</td></tr>
 				<tr><td><span id="id_weight_label"><b>Weight:</b></span></td>
 				<td id='id_weight_cell'>
-				{% if form.unit_type == "imperial" %}
+				{% if form.unit_type.initial == "imperial" %}
 					{{ form.i_weight }}
 				{% endif %}
-				{% if form.unit_type == "metric" %}
+				{% if form.unit_type.initial == "metric" %}
 					{{ form.m_weight }}
 				{% endif %}
 				</td>
 				</tr>
 
 				<tr id='id_height_row'><td><span id="id_height_label"><b>Height:</b></span></td>
-				{% if form.unit_type == "imperial" %}
+				{% if form.unit_type.initial == "imperial" %}
 					<td>{{ form.i_height_0 }}</td>
 					<td>{{ form.i_height_1 }}</td>
 				{% endif %}
-				{% if form.unit_type == "metric" %}
+				{% if form.unit_type.initial == "metric" %}
 					<td>{{ form.m_height }}</td>
 				{% endif %}
 				</tr>
@@ -54,10 +54,10 @@
 			{% endfor %}
 			<br>
 			<div id='id_change_rate_div'>
-				{% if form.unit_type == "imperial" %}
+				{% if form.unit_type.initial == "imperial" %}
 					{{ form.i_change_rate }}
 				{% endif %}
-				{% if form.unit_type == "metric" %}
+				{% if form.unit_type.initial == "metric" %}
 					{{ form.m_change_rate }}
 				{% endif %}
 			</div>
@@ -78,16 +78,6 @@
 		{% if form.errors %}
 			<div class="form-group has-error">
 				<div class="help-block">{{ form.errors }}</div>
-			</div>
-		{% endif %}
-		{% if i_tdee_form.errors %}
-			<div class="form-group has-error">
-				<div class="help-block">{{ i_tdee_form.errors }}</div>
-			</div>
-		{% endif %}
-		{% if m_tdee_form.errors %}
-			<div class="form-group has-error">
-				<div class="help-block">{{ m_tdee_form.errors }}</div>
 			</div>
 		{% endif %}
 		<br><button id='id_save_my_macros' class="btn">Save</button>

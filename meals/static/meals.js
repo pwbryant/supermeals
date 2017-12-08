@@ -46,8 +46,8 @@ var post_my_macros_form = function() {
 
 //tested
 var switch_between_imperial_metric = function() {
-	$('input[name=choose_unit_type]').on('click',function() {	
-		var unit_type = $('input[name=choose_unit_type]:checked').val();
+	$('input[name=unit_type]').on('click',function() {	
+		var unit_type = $('input[name=unit_type]:checked').val();
 		if (unit_type == 'metric') {
 			$('#id_weight_cell').html('<input id="id_m_weight" type="text" name="m_weight" class="form-control input-sm" placeholder="kg"/>');		
 			$('#id_height_row').html('<td><span id="id_height_label"><b>Height:</b></span></td><td><input id="id_m_height" type="text" name="m_height" class="form-control input-sm" placeholder="cm"/></td>');		
@@ -90,7 +90,7 @@ var calc_tdee = function() {
 			}		
 		});
 		if (status_ == 1) {
-			if (tdee_data['choose_unit_type'] == 'imperial') {
+			if (tdee_data['unit_type'] == 'imperial') {
 				tdee_data['weight'] = convert_to_metric(tdee_data['i_weight'],'lb_to_kg');
 				tdee_data['height'] = convert_to_metric(tdee_data['i_height_0'] * 12 + tdee_data['i_height_1'],'in_to_cm');
 				tdee_data['change_rate'] = convert_to_metric(tdee_data['i_change_rate'],'lb_to_kg');
