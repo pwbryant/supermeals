@@ -142,9 +142,9 @@ class CreateAccountTest(TestCase):
 
 class MyMacrosTabTest(TestCase):
 	
-	IMPERIAL_MACRO_DATA = {'choose_unit_type':'imperial','gender':'m','age':'34','i_height_0':'5','i_height_1':'10','i_weight':'210','activity':'none','direction':'lose','i_change_rate':'23','fat_g':'10','fat_percent':'25','protein_g':'10','protein_percent':'35','carbs_g':'10','carbs_percent':'40'}
+	IMPERIAL_MACRO_DATA = {'unit_type':'imperial','gender':'m','age':'34','i_height_0':'5','i_height_1':'10','i_weight':'210','activity':'none','direction':'lose','i_change_rate':'23','fat_g':'10','fat_percent':'25','protein_g':'10','protein_percent':'35','carbs_g':'10','carbs_percent':'40'}
 
-	METRIC_MACRO_DATA = {'choose_unit_type':'metric','gender':'m','age':'34','m_height':'5','m_weight':'210','activity':'none','direction':'lose','m_change_rate':'23','fat_g':'10','fat_percent':'25','protein_g':'10','protein_percent':'35','carbs_g':'10','carbs_percent':'40'}
+	METRIC_MACRO_DATA = {'unit_type':'metric','gender':'m','age':'34','m_height':'5','m_weight':'210','activity':'none','direction':'lose','m_change_rate':'23','fat_g':'10','fat_percent':'25','protein_g':'10','protein_percent':'35','carbs_g':'10','carbs_percent':'40'}
 	
 	def test_my_macros_url_renders_correct_template(self):
 		response = self.client.get('/meals/get_my_macros/')
@@ -178,6 +178,7 @@ class MyMacrosTabTest(TestCase):
 		self.assertEqual(response.content.decode(),'1')
 
 	def test_save_my_macro_wont_save_duplicate_macro_but_still_returns_1(self):
+		print('duplicates')
 
 		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 

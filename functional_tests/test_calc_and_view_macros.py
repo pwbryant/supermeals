@@ -32,7 +32,6 @@ class CalcAndViewMacros(FunctionalTest):
 		#Joe, signed in as a guest, got to the Calculate Macros tab and sees the header
 		#'Total Daily Energy Expenditure (TDEE)'
 		self.browser.find_element_by_id('id_my_macros_tab_label').click()
-		time.sleep(5)
 		macro_header = self.browser.find_element_by_id('id_my_macros_headline').text
 		self.assertEqual(macro_header,'Find Total Daily Energy Expenditure (TDEE)')
 
@@ -47,8 +46,8 @@ class CalcAndViewMacros(FunctionalTest):
 		self.assertTrue(self.browser.find_element_by_id('id_unit_type_0').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_unit_type_1').is_selected())
 
-		self.assertTrue(self.browser.find_element_by_id('id_gender_0').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_gender_1').is_selected())
+		self.assertFalse(self.browser.find_element_by_id('id_gender_2').is_selected())
 		self.check_element_content('id_age_label','text','Age:')
 		self.check_element_content('id_age','placeholder','Age')
 		self.check_element_content('id_weight_label','text','Weight:')
@@ -61,7 +60,10 @@ class CalcAndViewMacros(FunctionalTest):
 		self.assertFalse(self.browser.find_element_by_id('id_activity_2').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_activity_3').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_activity_4').is_selected())
-
+		self.assertTrue(self.browser.find_element_by_id('id_direction_0').is_selected())
+		self.assertFalse(self.browser.find_element_by_id('id_direction_1').is_selected())
+		self.assertFalse(self.browser.find_element_by_id('id_direction_2').is_selected())
+		self.check_element_content('id_i_change_rate','placeholder','lb/wk')
 
 		self.check_element_content('id_calc_tdee','text','Calculate')
 
@@ -76,35 +78,46 @@ class CalcAndViewMacros(FunctionalTest):
 	
 		#Joe suspects more content will be displayed after he hits Calculates, but as of now he only sees
 		#the calc button at the bottom of the form
-		is_hidden_div = not self.browser.find_element_by_id('id_weight_change_form_container').is_displayed()
+		is_hidden_div = not self.browser.find_element_by_id('id_choose_macros_form_container').is_displayed()
 		self.assertTrue(is_hidden_div)
+		isnt_hidden_div = not self.browser.find_element_by_id('id_fat_g').is_displayed()
+		self.assertTrue(isnt_hidden_div)
 
-		#Joe enters his info, and hits 'Calculate'.
+		#Joe enters his info, and hits 'Calculate', but too late he realized he had female selected
 		#Below the form, he sees his daily caloric expediture
-		macro_form_ids = ['id_unit_type_0','id_gender_1','id_age','id_i_weight','id_i_height_0','id_i_height_1','id_activity_0']
-		macro_form_values = [None,None,'34','210','5','10',None]
+		macro_form_ids = ['id_unit_type_0','id_gender_2','id_age','id_i_weight','id_i_height_0','id_i_height_1','id_activity_0','id_direction_0','id_i_change_rate']
+		macro_form_values = [None,None,'34','210','5','10',None,None,'1']
 		self.fill_input(macro_form_ids,macro_form_values)	
 		self.browser.find_element_by_id('id_calc_tdee').click()
 		self.check_element_content('id_tdee_result','text','2076')
-		
+		self.check_element_content('id_change_tdee_result','text','1576')
 
 		#Below this he sees a series of radio buttons appear where he can
 		#specify if he want lose/gain/or maintain his weigth, and the corresponding intensity
 		#He chooses lose weight at a 20% cal deficit
-		isnt_hidden_div = self.browser.find_element_by_id('id_weight_change_form_container').is_displayed()
+		isnt_hidden_div = self.browser.find_element_by_id('id_choose_macros_form_container').is_displayed()
 		self.assertTrue(isnt_hidden_div)
-		self.assertTrue(self.browser.find_element_by_id('id_direction_0').is_selected())
-		self.assertFalse(self.browser.find_element_by_id('id_direction_1').is_selected())
-		self.assertFalse(self.browser.find_element_by_id('id_direction_2').is_selected())
-		self.check_element_content('id_i_change_rate','placeholder','lb/wk')
+		self.check_element_content('id_protein_percent','placeholder','%')
+		self.check_element_content('id_protein_g','placeholder','g')
+		self.check_element_content('id_fat_percent','placeholder','%')
+		self.check_element_content('id_fat_g','placeholder','g')
+		self.check_element_content('id_carbs_percent','placeholder','%')
+		self.check_element_content('id_carbs_g','placeholder','g')
 
 		#Joe switches to Male and hits Calculate again and sees his new TDEE
-		self.fill_input(['id_gender_0'],[None])	
-		time.sleep(3)
+		self.fill_input(['id_gender_1'],[None])	
 		self.browser.find_element_by_id('id_calc_tdee').click()
 		self.check_element_content('id_tdee_result','text','2435')
-		self.fail('Finish the test!')
+		self.check_element_content('id_change_tdee_result','text','1935')
 
+		#Joe comes wants to see what happens when he selcts the maintain button so he clicks it
+		#and sees that the change input box disappears
+		self.fill_input(['id_direction_1'],[None])	
+		is_hidden_div = not self.browser.find_element_by_id('id_change_rate_form_container').is_displayed()
+		self.assertTrue(is_hidden_div)
+
+
+		self.fail('Finish the test!')
 		#Below this he sees several default marco breakdown's with their 
 		#characteristics, as well as custom option
 		#He decides to choose the %50 carb, %30 fat, and %20 fat

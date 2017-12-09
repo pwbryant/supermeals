@@ -11,7 +11,7 @@ USER = User.objects.get(username='paul')
 USERNAME1,PASSWORD1 = 'Joe1','joepass1'
 USERNAME2,PASSWORD2 = 'Joe2','joepass2'
 MACRO_INIT_FIELD_DICT = {
-	'unit_type':'m',
+	'unit_type':'metric',
 	'gender':'m',
 	'age':35,
 	'weight':200,
@@ -54,7 +54,7 @@ class MacrosTest(TestCase):
 	def test_validation_errors_illegal_field_values(self):
 		#Integer fields age,height,weight not checked
 		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('unit_type','schmetric')))#illegal unit_type
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('gender','shmemale')))#illegal gender
+		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('gender','')))#illegal gender
 		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('activity','str')))#illegal activity
 		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('direction','str')))#illegal direction
 		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('change_rate',Decimal('10.111'))))#illegal(too long)
@@ -64,7 +64,7 @@ class MacrosTest(TestCase):
 		self.assertEqual(Macros.objects.all().count(),0)
 
 	def test_integrity_errors_missing_field_values(self):
-		#unit_type,gender,direction and activity, because the have defaults are not tested on purpose because they are ValidationError
+		#unit_type,,direction and activity, because the have defaults are not tested on purpose because they are ValidationError
 		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('age','remove')))#no age
 		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('weight','remove')))#no weight
 		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('height','remove')))#no height

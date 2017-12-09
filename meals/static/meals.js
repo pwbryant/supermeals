@@ -51,27 +51,30 @@ var switch_between_imperial_metric = function() {
 		if (unit_type == 'metric') {
 			$('#id_weight_cell').html('<input id="id_m_weight" type="text" name="m_weight" class="form-control input-sm" placeholder="kg"/>');		
 			$('#id_height_row').html('<td><span id="id_height_label"><b>Height:</b></span></td><td><input id="id_m_height" type="text" name="m_height" class="form-control input-sm" placeholder="cm"/></td>');		
-			$('#id_change_rate_div').html('<input id="id_m_change_rate" type="text" name="m_change_rate" class="form-control input-sm" placeholder="kg/wk"/>');		
+			$('#id_change_rate_form_container').html('<input id="id_m_change_rate" type="text" name="m_change_rate" class="form-control input-sm" placeholder="kg/wk"/>');		
 		} else {
 			$('#id_weight_cell').html('<input id="id_i_weight" type="text" name="i_weight" class="form-control input-sm" placeholder="lb"/>');		
 			$('#id_height_row').html('<td><span id="id_height_label"><b>Height:</b></span></td><td><input id="id_i_height_0" type="text" name="i_height_0" class="form-control input-sm" placeholder="ft"/></td><td><input id="id_i_height_1" type="text" name="i_height_1" class="form-control input-sm" placeholder="in"/></td>');		
-			$('#id_change_rate_div').html('<input id="id_i_change_rate" type="text" name="i_change_rate" class="form-control input-sm" placeholder="lb/wk"/>');		
+			$('#id_change_rate_form_container').html('<input id="id_i_change_rate" type="text" name="i_change_rate" class="form-control input-sm" placeholder="lb/wk"/>');		
 		}
 	});
 
 }
-
-var convert_to_metric = function(imperial_value,conversion) {
+//tested
+var convert_between_metric_english = function(unit_value,conversion) {
 
 	
 	if (conversion == 'in_to_cm') {
-		return imperial_value/0.39370;	
+		return unit_value/0.39370;	
 	}
 	if (conversion == 'lb_to_kg') {
-		return imperial_value * 0.45359237;	
+		return unit_value * 0.45359237;	
+	}
+	if (conversion == 'kg_to_lb') {
+		return unit_value / 0.45359237;	
 	}
 }
-
+//tested
 var calc_tdee = function() {
 	
 	$('#id_calc_tdee').on('click',function() {	
@@ -90,14 +93,19 @@ var calc_tdee = function() {
 			}		
 		});
 		if (status_ == 1) {
+			var weight_change_direction = {
+				'maintain': 0,
+				'lose': -1,
+				'gain': 1,
+			}[tdee_data['direction']];
 			if (tdee_data['unit_type'] == 'imperial') {
-				tdee_data['weight'] = convert_to_metric(tdee_data['i_weight'],'lb_to_kg');
-				tdee_data['height'] = convert_to_metric(tdee_data['i_height_0'] * 12 + tdee_data['i_height_1'],'in_to_cm');
-				tdee_data['change_rate'] = convert_to_metric(tdee_data['i_change_rate'],'lb_to_kg');
+				tdee_data['weight'] = convert_between_metric_english(tdee_data['i_weight'],'lb_to_kg');
+				tdee_data['height'] = convert_between_metric_english(tdee_data['i_height_0'] * 12 + tdee_data['i_height_1'],'in_to_cm');
+				tdee_data['change_rate'] = tdee_data['i_change_rate'] * weight_change_direction * 500;
 			} else {
 				tdee_data['weight'] = tdee_data['m_weight'];
-				tdee_data['height'] = tdee_data['m_height_0'];
-				tdee_data['change_rate'] = tdee_data['m_change_rate'];
+				tdee_data['height'] = tdee_data['m_height'];
+				tdee_data['change_rate'] = convert_between_metric_english(tdee_data['m_change_rate'],'kg_to_lb') * weight_change_direction * 500;
 			}
 			var formula_data_by_gender = {
 				"f": {
@@ -121,12 +129,25 @@ var calc_tdee = function() {
 				"very high":1.9
 			},
 			formula_data = formula_data_by_gender[tdee_data['gender']],
-			tdee_return_value = (formula_data['base_add'] + formula_data['weight'] + formula_data['height'] - formula_data['age']) * activity_data[tdee_data['activity']];
+			tdee_return_value = ((formula_data['base_add'] + formula_data['weight'] + formula_data['height'] - formula_data['age']) * activity_data[tdee_data['activity']]),
+			change_tdee_return_value = ((formula_data['base_add'] + formula_data['weight'] + formula_data['height'] - formula_data['age']) * activity_data[tdee_data['activity']]) + tdee_data['change_rate'];
 			
 		} else {
 			tdee_return_value = 'Missing Value. Check Form.';
 		}
 		$('#id_tdee_result').html(Math.round(tdee_return_value));
-		$('#id_weight_change_form_container').show();
+		$('#id_change_tdee_result').html(Math.round(change_tdee_return_value));
+		$('#id_choose_macros_form_container').show();
+	});
+}
+
+var change_change_rate_display = function() {
+	$('input[name=direction]').on('click',function() {
+		if (this.value == 'maintain') {
+			$('#id_change_rate_form_container').css('display','none');
+			$('.change_rate').val('');
+		} else {
+			$('#id_change_rate_form_container').css('display','block');
+		}	
 	});
 }

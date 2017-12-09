@@ -11,13 +11,13 @@ class Macros(models.Model):
 		('imperial','Imperial',),
 		('metric','Metric',),
 	)
-	unit_type = models.CharField(max_length=1, choices=UNIT_CHOICES,default='i', blank=False)
+	unit_type = models.CharField(max_length=8, choices=UNIT_CHOICES,default='imperial', blank=False)
 
 	GENDER_CHOICES = (
 		('m','Male',),
 		('f','Female',),
 	)
-	gender = models.CharField(max_length=1, choices=GENDER_CHOICES,default='m', blank=False)
+	gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=False)
 	age = models.IntegerField(blank=False)
 	weight = models.IntegerField(blank=False)
 	height = models.IntegerField(blank=False)

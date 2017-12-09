@@ -91,7 +91,7 @@ class MakeMacrosForm(forms.models.ModelForm):
 	}),required=False)
 	m_change_rate = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		'placeholder':'kg/wk',
-		'class':'form-control input-sm'
+		'class':'form-control input-sm change_rate'
 	}),required=False)
 	i_height_0 = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		'placeholder':'ft',
@@ -107,7 +107,7 @@ class MakeMacrosForm(forms.models.ModelForm):
 	}),required=False)
 	i_change_rate = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		'placeholder':'lb/wk',
-		'class':'form-control input-sm'
+		'class':'form-control input-sm change_rate'
 	}),required=False)
 
 	macro_error_messages = {
