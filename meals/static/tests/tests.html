@@ -55,9 +55,10 @@
 		<div id="id_choose_macros_form_container" style="display:none;">
 		<!--choose macros -->
 		<table>
-		<tr><th>Protein</th><td><input id="id_protein_percent" class="choose_macros" type="text" placeholder="%"/></td><input id="id_protein_g" class="choose_macros" type="text" placeholder="g"/><td></td></tr>
-		<tr><th>Fat</th><td><input id="id_fat_percent" class="choose_macros" type="text" placeholder="%"/></td><td><input id="id_fat_g" class="choose_macros" type="text" placeholder="g"/></td></tr>
-		<tr><th>Carbs</th><td><input id="id_carbs_percent" class="choose_macros" type="text" placeholder="%"/></td><td><input id="id_carbs_g" class="choose_macros" type="text" placeholder="g"/></td></tr>
+		<tr><th>Protein</th><td><input id="id_protein_percent" class="choose_macros" type="text" placeholder="%" data-value="0" /></td><input id="id_protein_g" class="choose_macros" type="text" placeholder="g"/><td></td></tr>
+		<tr><th>Fat</th><td><input id="id_fat_percent" class="choose_macros" type="text" placeholder="%" data-value="0"/></td><td><input id="id_fat_g" class="choose_macros" type="text" placeholder="g"/></td></tr>
+		<tr><th>Carbs</th><td><input id="id_carbs_percent" class="choose_macros" type="text" placeholder="%" data-value="0"/></td><td><input id="id_carbs_g" class="choose_macros" type="text" placeholder="g"/></td></tr>
+		<tr><th>Total</th><td><span id='id_macro_percent_total'>0</span></td><td></td></tr>
 		</table>
 		</div>
 	</div>
@@ -93,7 +94,32 @@
 			protein_grams = parseFloat($('#id_protein_percent').val());
 			assert.equal(protein_grams.toFixed(0),50);
 		});
-
+		QUnit.test("choose_macro_handler can handle deletes", function (assert) {
+			choose_macro_handler();
+			set_up_choose_macros_test('id_protein_percent','50','id_change_tdee_result','1935');
+			set_up_choose_macros_test('id_protein_percent','','id_change_tdee_result','1935');
+			protein_grams = $('#id_protein_g').val();
+			assert.equal(protein_grams,'');
+			set_up_choose_macros_test('id_protein_g','50','id_change_tdee_result','1935');
+			set_up_choose_macros_test('id_protein_g','','id_change_tdee_result','1935');
+			protein_percent = $('#id_protein_percent').val();
+			assert.equal(protein_percent,'');
+		});
+		QUnit.test("macro_percent_totaler tallys the macro percent total correctly", function (assert) {
+			choose_macro_handler();
+			set_up_choose_macros_test('id_protein_percent','50','id_change_tdee_result','1935');
+			set_up_choose_macros_test('id_fat_percent','20','id_change_tdee_result','1935');
+			set_up_choose_macros_test('id_fat_percent','11','id_change_tdee_result','1935');
+			percent_total = $('#id_macro_percent_total').html();
+			assert.equal(percent_total,'61');
+		});
+		QUnit.test("macro_percent_totaler doesn't break upon delete", function (assert) {
+			choose_macro_handler();
+			set_up_choose_macros_test('id_protein_percent','50','id_change_tdee_result','1935');
+			set_up_choose_macros_test('id_protein_percent','','id_change_tdee_result','1935');
+			percent_total = $('#id_macro_percent_total').html();
+			assert.equal(percent_total,'0');
+		});
 		//error removal tests
 		QUnit.test("errors should be hidden on keypress", function (assert) {
 			initialize();

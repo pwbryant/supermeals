@@ -166,17 +166,37 @@ var choose_macro_handler = function() {
 			var tdee_result = $('#id_tdee_result').html();
 		}
 		var input_array = this.id.split('_'),
-		macro_value = this.value,
+		macro_value = parseFloat(this.value),
 		macro = input_array[1],
 		type = input_array[2],
 		macro_factor = MACRO_FACTORS[macro];
 		if (type == 'percent') {
 			return_value = (tdee_result * macro_value / 100.0 / macro_factor).toFixed(0);
-			$('#id_' + macro + '_g').val(return_value);
+			var return_id = '#id_' + macro + '_g';
 		} else {
 			return_value = (macro_value * macro_factor / tdee_result * 100).toFixed(0);	
-			$('#id_' + macro + '_percent').val(return_value);
+			var return_id = '#id_' + macro + '_percent';
 		}
+		if (isNaN(macro_value)) {
+			$(return_id).val('');
+		} else {
+			$(return_id).val(return_value);
+		}
+		macro_percent_totaler('id_' + macro + '_percent')
 	});
 }
 
+var macro_percent_totaler = function(percent_id) {
+	var new_macro_percent = parseFloat($('#' + percent_id).val());
+
+	if (isNaN(new_macro_percent)) {
+		new_macro_percent = 0;
+
+	} 
+	old_macro_percent = parseFloat($('#' + percent_id).attr('data-value')),
+	percent_diff = new_macro_percent - old_macro_percent,
+	old_percent_total = parseFloat($('#id_macro_percent_total').html()),
+	new_percent_total = old_percent_total + percent_diff;
+	$('#id_macro_percent_total').html(new_percent_total);
+	$('#' + percent_id).attr('data-value',new_macro_percent);
+}
