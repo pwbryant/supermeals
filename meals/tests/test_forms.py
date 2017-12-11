@@ -61,6 +61,8 @@ class MakeMacrosFormTest(TestCase):
 		self.assertIn('value="none"', form.as_p())
 		self.assertIn('value="lose"', form.as_p())
 		self.assertIn('class="form-control input-sm change_rate"', form.as_p())
+		self.assertIn('class="form-control input-sm choose_macros"', form.as_p())
+		self.assertIn('class="form-control input-sm"', form.as_p())
 			
 
 	def test_form_validation_for_blank_inputs(self):

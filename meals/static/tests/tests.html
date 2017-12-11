@@ -33,31 +33,67 @@
 
 		<!--calc tdee-->
 		<div id='id_tdee_form_container'>
-		<input type='radio' name='unit_type' value='imperial' checked='checked'/>
-		<input type='radio' name='gender' value='m' checked='checked'/>
-		<input type='text' name='age' value='34'/>
-		<input type='text' name='i_weight' value='210'/>
-		<input type='text' name='m_weight' value='0'/>
-		<input type='text' name='i_height_0' value='5'/>
-		<input type='text' name='i_height_1' value='10'/>
-		<input type='text' name='m_height' value='0'/>
-		<input type='radio' name='activity'  checked='checked'/>
-		<input id='id_direction_0' type='radio' name='direction' value='lose'/>
-		<input id='id_direction_1' type='radio' name='direction' value='maintain' />
-		<input id='id_direction_2' type='radio' name='direction' value='gain' />
-		<div id='id_change_rate_form_container'>
-			<input class='change_rate' type='text' name='i_change_rate' />
-		</div>
-		<button id="id_calc_tdee">Calculate</button>
+			<input type='radio' name='unit_type' value='imperial' checked='checked'/>
+			<input type='radio' name='gender' value='m' checked='checked'/>
+			<input type='text' name='age' value='34'/>
+			<input type='text' name='i_weight' value='210'/>
+			<input type='text' name='m_weight' value='0'/>
+			<input type='text' name='i_height_0' value='5'/>
+			<input type='text' name='i_height_1' value='10'/>
+			<input type='text' name='m_height' value='0'/>
+			<input type='radio' name='activity'  checked='checked'/>
+			<input id='id_direction_0' type='radio' name='direction' value='lose'/>
+			<input id='id_direction_1' type='radio' name='direction' value='maintain' />
+			<input id='id_direction_2' type='radio' name='direction' value='gain' />
+			<div id='id_change_rate_form_container'>
+				<input class='change_rate' type='text' name='i_change_rate' />
+			</div>
+			<button id="id_calc_tdee">Calculate</button>
 		</div>
 		<div id="id_tdee_result"></div>
 		<div id="id_change_tdee_result"></div>
-		<div id="id_choose_macros_form_container" style="display:none;"></div>
+		<div id="id_choose_macros_form_container" style="display:none;">
+		<!--choose macros -->
+		<table>
+		<tr><th>Protein</th><td><input id="id_protein_percent" class="choose_macros" type="text" placeholder="%"/></td><input id="id_protein_g" class="choose_macros" type="text" placeholder="g"/><td></td></tr>
+		<tr><th>Fat</th><td><input id="id_fat_percent" class="choose_macros" type="text" placeholder="%"/></td><td><input id="id_fat_g" class="choose_macros" type="text" placeholder="g"/></td></tr>
+		<tr><th>Carbs</th><td><input id="id_carbs_percent" class="choose_macros" type="text" placeholder="%"/></td><td><input id="id_carbs_g" class="choose_macros" type="text" placeholder="g"/></td></tr>
+		</table>
+		</div>
 	</div>
 	<script src="https://code.jquery.com/qunit/qunit-2.4.1.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="../meals.js"></script>
 	<script>
+		//helper functions
+		var fill_activity_direction_rate = function(act_,dir_,rate,rate_unit) {
+			$('input[name=activity]').val(act_);
+			$('input[value=' + dir_ + ']').prop('checked',true);
+			$('input[name=' + rate_unit + '_change_rate]').val(rate);
+		}
+
+		var set_up_choose_macros_test = function(input_,value,result_id,result_value) {
+			$('#id_choose_macros_form_container').css('display','block');
+			$('#' + input_).val(value);
+			$('#' + result_id).html(result_value);
+			$('#' + input_).trigger('keyup');
+		}
+	</script>
+	<script>
+		//choose macros
+		QUnit.test("keystroke in protein percentage creates grams in protein g", function (assert) {
+			choose_macro_handler();
+			set_up_choose_macros_test('id_protein_percent','50','id_change_tdee_result','1935');
+			protein_grams = parseFloat($('#id_protein_g').val());
+			assert.equal(protein_grams.toFixed(0),242);
+		});
+		QUnit.test("keystroke in protein grams creates % in protein %", function (assert) {
+			choose_macro_handler();
+			set_up_choose_macros_test('id_protein_g','241.875','id_change_tdee_result','1935');
+			protein_grams = parseFloat($('#id_protein_percent').val());
+			assert.equal(protein_grams.toFixed(0),50);
+		});
+
 		//error removal tests
 		QUnit.test("errors should be hidden on keypress", function (assert) {
 			initialize();
@@ -104,11 +140,6 @@
 			assert.equal(kg_lb.toFixed(1),2);
 		});
 		//tdee stuff
-		var fill_activity_direction_rate = function(act_,dir_,rate,rate_unit) {
-			$('input[name=activity]').val(act_);
-			$('input[value=' + dir_ + ']').prop('checked',true);
-			$('input[name=' + rate_unit + '_change_rate]').val(rate);
-		}
 		QUnit.test("calculate tdee displays id_choose_macros_form_container", function(assert) {
 		
 			calc_tdee();

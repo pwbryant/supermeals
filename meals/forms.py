@@ -116,8 +116,9 @@ class MakeMacrosForm(forms.models.ModelForm):
 		'min_value': OUT_OF_RANGE_MACRO_ERROR,
 		'max_value': OUT_OF_RANGE_MACRO_ERROR
 	}
-	pct_attrs = {'placeholder':'%','class': 'form-control input-sm'}
-	g_attrs = {'placeholder':'g','class': 'form-control input-sm'}
+	choose_macro_classes = 'form-control input-sm choose_macros'
+	pct_attrs = {'placeholder':'%','class': choose_macro_classes }
+	g_attrs = {'placeholder':'g','class': choose_macro_classes}
 	protein_percent = forms.IntegerField(min_value=0,max_value=100,widget=forms.fields.TextInput(attrs=pct_attrs),error_messages = macro_error_messages,required=True)
 	protein_g = forms.IntegerField(widget=forms.fields.TextInput(attrs=g_attrs),error_messages = macro_error_messages,required=True)
 	fat_percent = forms.IntegerField(min_value=0,max_value=100,widget=forms.fields.TextInput(attrs=pct_attrs),error_messages = macro_error_messages,required=True)

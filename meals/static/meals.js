@@ -1,3 +1,9 @@
+
+MACRO_FACTORS = {
+	'fat': 9,
+	'protein':4,
+	'carbs':4
+};
 //tested
 var initialize = function () {
 	$('input[type="text"]').on('keypress',function() {
@@ -151,3 +157,26 @@ var change_change_rate_display = function() {
 		}	
 	});
 }
+
+var choose_macro_handler = function() {
+	$('.choose_macros').on('keyup',function() {	
+		if ($('#id_change_tdee_result') != '') {	
+			var tdee_result = $('#id_change_tdee_result').html();
+		} else {
+			var tdee_result = $('#id_tdee_result').html();
+		}
+		var input_array = this.id.split('_'),
+		macro_value = this.value,
+		macro = input_array[1],
+		type = input_array[2],
+		macro_factor = MACRO_FACTORS[macro];
+		if (type == 'percent') {
+			return_value = (tdee_result * macro_value / 100.0 / macro_factor).toFixed(0);
+			$('#id_' + macro + '_g').val(return_value);
+		} else {
+			return_value = (macro_value * macro_factor / tdee_result * 100).toFixed(0);	
+			$('#id_' + macro + '_percent').val(return_value);
+		}
+	});
+}
+
