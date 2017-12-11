@@ -1,6 +1,7 @@
 from .base import FunctionalTest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 from django.contrib.auth.models import User
 import time
 
@@ -103,6 +104,13 @@ class CalcAndViewMacros(FunctionalTest):
 		self.check_element_content('id_fat_g','placeholder','g')
 		self.check_element_content('id_carbs_percent','placeholder','%')
 		self.check_element_content('id_carbs_g','placeholder','g')
+		macro_row_headers = self.browser.find_elements_by_class_name('choose_macro_titles')
+		self.assertEqual(macro_row_headers[0].text,'%')
+		self.assertEqual(macro_row_headers[1].text,'g')
+		self.assertEqual(macro_row_headers[2].text,'Protein')
+		self.assertEqual(macro_row_headers[3].text,'Fat')
+		self.assertEqual(macro_row_headers[4].text,'Carbs')
+		self.assertEqual(macro_row_headers[5].text,'% Remaining')
 
 		#Joe switches to Male and hits Calculate again and sees his new TDEE
 		self.fill_input(['id_gender_1'],[None])	
@@ -117,11 +125,15 @@ class CalcAndViewMacros(FunctionalTest):
 		self.assertTrue(is_hidden_div)
 
 
+		#He decides to choose the %50 carb, %30 fat, and %20 protein and notices that
+		#after typeing in his percents, the inputs in the 'g' column automatically get filled in
+		#and the % remaing is updated
+		macro_form_ids = ['id_protein_percent','id_fat_percent','id_carbs_percent']
+		macro_form_values = ['20','30','50']
+		self.fill_input(macro_form_ids,macro_form_values)	
+		self.check_element_content('id_protein_g','value','97')
+		self.check_element_content('id_macro_percent_total','text','0')
 		self.fail('Finish the test!')
-		#Below this he sees several default marco breakdown's with their 
-		#characteristics, as well as custom option
-		#He decides to choose the %50 carb, %30 fat, and %20 fat
-
 		#Below this he sees a 'Save My Macros' button, and he clicks it
 		#and sees a'Macros Saved -- view/edit on My Macros tab' confirmation message.
 

@@ -69,12 +69,12 @@
 		<div id="id_choose_macros_form_container">
 			<span><p>Choose Macro Ratios</p></span>
 			<br>
-			<table>
-			<tr><td></td><th>%</th><th>g</th></tr>
-			<tr><th>Protein</th><td>{{ form.protein_percent }}</td><td>{{ form.protein_g }}</td></tr>
-			<tr><th>Fat</th><td>{{ form.fat_percent }}</td><td>{{ form.fat_g }}</td></tr>
-			<tr><th>Carbs</th><td>{{ form.carbs_percent }}</td><td>{{ form.carbs_g }}</td></tr>
-			<tr><th>%<br>Remaining</th><td><span id="id_macro_percent_total">100</span></td><td></td></tr>
+			<table id='id_choose_macro_table'>
+			<tr><td></td><th><span class='choose_macro_titles'>%</span></th><th><span class='choose_macro_titles'>g</span></th></tr>
+			<tr><th><span class='choose_macro_titles'>Protein</span></th><td>{{ form.protein_percent }}</td><td>{{ form.protein_g }}</td></tr>
+			<tr><th><span class='choose_macro_titles'>Fat</span></th><td>{{ form.fat_percent }}</td><td>{{ form.fat_g }}</td></tr>
+			<tr><th><span class='choose_macro_titles'>Carbs</span></th><td>{{ form.carbs_percent }}</td><td>{{ form.carbs_g }}</td></tr>
+			<tr><th><span class='choose_macro_titles'>% Remaining</span></th><td><span id="id_macro_percent_total">100</span></td><td></td></tr>
 	
 			</table>
 			<br><button id='id_save_my_macros' class="btn">Save</button>
