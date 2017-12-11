@@ -196,7 +196,7 @@ var macro_percent_totaler = function(percent_id) {
 	old_macro_percent = parseFloat($('#' + percent_id).attr('data-value')),
 	percent_diff = new_macro_percent - old_macro_percent,
 	old_percent_total = parseFloat($('#id_macro_percent_total').html()),
-	new_percent_total = old_percent_total + percent_diff;
+	new_percent_total = old_percent_total - percent_diff;
 	$('#id_macro_percent_total').html(new_percent_total);
 	$('#' + percent_id).attr('data-value',new_macro_percent);
 }

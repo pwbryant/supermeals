@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from meals.forms import LoginForm,SignUpForm,MakeMacrosForm,EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR,EMPTY_AGE_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR,EMPTY_MACRO_ERROR,INVALID_POST_ERROR,DEFAULT_INVALID_INT_ERROR,EMPTY_RATE_ERROR,INVALID_MACRO_ERROR,OUT_OF_RANGE_MACRO_ERROR
+from meals.forms import LoginForm,SignUpForm,MakeMacrosForm,EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR,EMPTY_AGE_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR,EMPTY_MACRO_ERROR,INVALID_POST_ERROR,DEFAULT_INVALID_INT_ERROR,EMPTY_RATE_ERROR,INVALID_MACRO_ERROR,OUT_OF_RANGE_MACRO_ERROR,MACROS_DONT_ADD_UP_ERROR
 
 class LoginFormTest(TestCase):
 
@@ -58,6 +58,8 @@ class MakeMacrosFormTest(TestCase):
 		self.assertIn('placeholder="kg"', form.as_p())
 		self.assertIn('placeholder="cm"', form.as_p())
 		self.assertIn('placeholder="kg/wk"', form.as_p())
+		self.assertIn('placeholder="%"', form.as_p())
+		self.assertIn('placeholder="g"', form.as_p())
 		self.assertIn('value="none"', form.as_p())
 		self.assertIn('value="lose"', form.as_p())
 		self.assertIn('class="form-control input-sm change_rate"', form.as_p())
@@ -194,7 +196,7 @@ class MakeMacrosFormTest(TestCase):
 			[OUT_OF_RANGE_MACRO_ERROR]
 		)
 
-		form = MakeMacrosForm(data={'protein_percent':'-1000','fat_percent':'-1000','carbs_percent':'-1000'},unit_type='imperial')
+		form = MakeMacrosForm(data={'protein_percent':'-1000','fat_percent':'-1000','carbs_percent':'-1000','total_macro_percent':'101'},unit_type='imperial')
 		self.assertFalse(form.is_valid())
 
 		self.assertEqual(
@@ -208,5 +210,9 @@ class MakeMacrosFormTest(TestCase):
 		self.assertEqual(
 			form.errors['carbs_percent'],
 			[OUT_OF_RANGE_MACRO_ERROR]
+		)
+		self.assertEqual(
+			form.errors['total_macro_percent'],
+			[MACROS_DONT_ADD_UP_ERROR]
 		)
 

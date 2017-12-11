@@ -20,7 +20,7 @@ DEFAULT_INVALID_INT_ERROR = 'Enter a whole number'
 EMPTY_RATE_ERROR = 'Weight Change Rate Missing'
 INVALID_MACRO_ERROR = 'Invalid Macro Ratio Values'
 OUT_OF_RANGE_MACRO_ERROR = 'Macro Percent Out Of Range'
-
+MACROS_DONT_ADD_UP_ERROR = 'Macro Percentages Do Not Add Up Too 100'
 class HorizontalRadioRenderer(forms.RadioSelect):
 	def render(self):
 		return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
@@ -116,6 +116,7 @@ class MakeMacrosForm(forms.models.ModelForm):
 		'min_value': OUT_OF_RANGE_MACRO_ERROR,
 		'max_value': OUT_OF_RANGE_MACRO_ERROR
 	}
+	
 	choose_macro_classes = 'form-control input-sm choose_macros'
 	pct_attrs = {'placeholder':'%','class': choose_macro_classes,'data-value':0}
 	g_attrs = {'placeholder':'g','class': choose_macro_classes}
@@ -125,6 +126,10 @@ class MakeMacrosForm(forms.models.ModelForm):
 	fat_g = forms.IntegerField(widget=forms.fields.TextInput(attrs=g_attrs),error_messages = macro_error_messages,required=True)
 	carbs_percent = forms.IntegerField(min_value=0,max_value=100,widget=forms.fields.TextInput(attrs=pct_attrs),error_messages = macro_error_messages,required=True)
 	carbs_g = forms.IntegerField(widget=forms.fields.TextInput(attrs=g_attrs),error_messages = macro_error_messages,required=True)
+	macro_error_messages['min_value'] =MACROS_DONT_ADD_UP_ERROR 
+	macro_error_messages['max_value'] =MACROS_DONT_ADD_UP_ERROR 
+	total_macro_percent = forms.IntegerField(min_value=100,max_value=100,error_messages = macro_error_messages,required=True)
+	
 	class Meta:
 
 		model = Macros

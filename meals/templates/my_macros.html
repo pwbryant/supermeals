@@ -70,10 +70,11 @@
 			<span><p>Choose Macro Ratios</p></span>
 			<br>
 			<table>
+			<tr><td></td><th>%</th><th>g</th></tr>
 			<tr><th>Protein</th><td>{{ form.protein_percent }}</td><td>{{ form.protein_g }}</td></tr>
 			<tr><th>Fat</th><td>{{ form.fat_percent }}</td><td>{{ form.fat_g }}</td></tr>
 			<tr><th>Carbs</th><td>{{ form.carbs_percent }}</td><td>{{ form.carbs_g }}</td></tr>
-			<tr><th>Total</th><td><span id="id_macro_percent_total">0</span></td><td></td></tr>
+			<tr><th>%<br>Remaining</th><td><span id="id_macro_percent_total">100</span></td><td></td></tr>
 	
 			</table>
 			<br><button id='id_save_my_macros' class="btn">Save</button>

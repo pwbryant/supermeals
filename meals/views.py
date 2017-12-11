@@ -88,6 +88,8 @@ def save_my_macros(request):
 		post_dict['height'] = POST.get('m_height','')
 		post_dict['weight'] = POST.get('m_weight','')
 		post_dict['change_rate'] = POST.get('m_change_rate','')
+	post_dict['total_macro_percent'] = int(post_dict['protein_percent']) + int(post_dict['fat_percent']) + int(post_dict['carbs_percent'])
+
 	macro_form = MakeMacrosForm(post_dict,unit_type=unit_type)	
 	if not macro_form.is_valid():
 		return render(request,'my_macros.html', {
@@ -107,13 +109,14 @@ def save_my_macros(request):
 		post_dict.pop('m_weight')
 		post_dict.pop('m_change_rate')
 
+	
+	post_dict['user'] = request.user
+	post_dict['change_rate'] = Decimal(post_dict['change_rate']) 
 	post_dict.pop('fat_g')
 	post_dict.pop('protein_g')
 	post_dict.pop('carbs_g')
 	post_dict.pop('carbs_percent')
-	
-	post_dict['user'] = request.user
-	post_dict['change_rate'] = Decimal(post_dict['change_rate']) 
+	post_dict.pop('total_macro_percent') 
 	post_dict['protein_percent'] = Decimal(post_dict['protein_percent']) 
 	post_dict['fat_percent'] = Decimal(post_dict['fat_percent']) 
 	try:
