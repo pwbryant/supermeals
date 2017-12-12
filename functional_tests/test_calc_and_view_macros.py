@@ -93,9 +93,9 @@ class CalcAndViewMacros(FunctionalTest):
 		self.check_element_content('id_tdee_result','text','2076')
 		self.check_element_content('id_change_tdee_result','text','1576')
 
-		#Below this he sees a series of radio buttons appear where he can
-		#specify if he want lose/gain/or maintain his weigth, and the corresponding intensity
-		#He chooses lose weight at a 20% cal deficit
+		#After calculating TDEE, and area for choosing macro percent appers. With inputs for both
+		#% and g for each macro, with % Remaing Footer, and a 'Continue' button which is greyed out.
+
 		isnt_hidden_div = self.browser.find_element_by_id('id_choose_macros_form_container').is_displayed()
 		self.assertTrue(isnt_hidden_div)
 		self.check_element_content('id_protein_percent','placeholder','%')
@@ -111,6 +111,8 @@ class CalcAndViewMacros(FunctionalTest):
 		self.assertEqual(macro_row_headers[3].text,'Fat')
 		self.assertEqual(macro_row_headers[4].text,'Carbs')
 		self.assertEqual(macro_row_headers[5].text,'% Remaining')
+		continue_button = self.browser.find_element_by_id('id_choose_macros_continue_button')
+		self.assertFalse(continue_button.is_enabled())
 
 		#Joe switches to Male and hits Calculate again and sees his new TDEE
 		self.fill_input(['id_gender_1'],[None])	
@@ -124,7 +126,6 @@ class CalcAndViewMacros(FunctionalTest):
 		is_hidden_div = not self.browser.find_element_by_id('id_change_rate_form_container').is_displayed()
 		self.assertTrue(is_hidden_div)
 
-
 		#He decides to choose the %50 carb, %30 fat, and %20 protein and notices that
 		#after typeing in his percents, the inputs in the 'g' column automatically get filled in
 		#and the % remaing is updated
@@ -133,9 +134,27 @@ class CalcAndViewMacros(FunctionalTest):
 		self.fill_input(macro_form_ids,macro_form_values)	
 		self.check_element_content('id_protein_g','value','97')
 		self.check_element_content('id_macro_percent_total','text','0')
+
+		#When the % Remaining equals 0, The Continue button becomes ungreyed and so Joe clicks it, and 
+		#another section becomes visible which contains an inputs with the label "How many meals/snacks 
+		#do you like per day?" Joe enters 5.
+		continue_button = self.browser.find_element_by_id('id_choose_macros_continue_button')
+		self.assertTrue(continue_button.is_enabled())
+		#continue_button.click()
+		#self.check_element_content('id_calc_macro_meals_header','text','How many meals/snacks do you like per day')
+		#self.check_element_content('id_calc_macro_meals_number','placeholder','# meals/snacks')
+		
 		self.fail('Finish the test!')
-		#Below this he sees a 'Save My Macros' button, and he clicks it
-		#and sees a'Macros Saved -- view/edit on My Macros tab' confirmation message.
+		#After entering 5, another section appears where there are 5 inputs labeled Breakfast,Lunch
+		#,Dinner, Snack1, Snack2 with the inputs autofilled into five equal caloric chunks of 387.
+
+		#There is a a "Cals Remaining" footer which adds up to 1935. 
+
+		#And a header reading "Customize meal calories (Optional), and a Save button below
+
+		#Joe wants to have two snacks of 200 cals so he changed Snack1 and Snack2 to 200 each
+		#and he notices that the total cals changes to 374, and the Save button grays out.
+		
 
 		#Joe realizes he wants to make a change to his macro ratio's, so, as per
 		#the aforementioned confirmation message, he navigates to the 'My Macros' tab

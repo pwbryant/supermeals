@@ -199,4 +199,9 @@ var macro_percent_totaler = function(percent_id) {
 	new_percent_total = old_percent_total - percent_diff;
 	$('#id_macro_percent_total').html(new_percent_total);
 	$('#' + percent_id).attr('data-value',new_macro_percent);
+	if (new_percent_total == 0) {
+		$('#id_choose_macros_continue_button').prop('disabled',false);
+	} else {
+		$('#id_choose_macros_continue_button').prop('disabled',true);
+	}
 }

@@ -3,6 +3,9 @@
 	#id_choose_macros_form_container {
 		display:none;
 	}
+	#id_calc_macros_meals_number_form_container {
+		display:none;
+	}
 </style>
 <div>
 	<div id="id_my_macros_form_container">
@@ -77,9 +80,13 @@
 			<tr><th><span class='choose_macro_titles'>% Remaining</span></th><td><span id="id_macro_percent_total">100</span></td><td></td></tr>
 	
 			</table>
-			<br><button id='id_save_my_macros' class="btn">Save</button>
+		</div>
+		<br><button id='id_choose_macros_continue_button' class="btn" disabled>Continue</button>
+		<div id="id_calc_macros_meals_number_form_container">
+			<input id='id_calc_macros_meals_number' type='text' />
 		</div>
 		{% csrf_token %}
+		<br><button id='id_save_my_macros' class="btn">Save</button>
 		{% if form.errors %}
 			<div class="form-group has-error">
 				<div class="help-block">{{ form.errors }}</div>

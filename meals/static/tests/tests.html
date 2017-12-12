@@ -60,6 +60,7 @@
 		<tr><th>Carbs</th><td><input id="id_carbs_percent" class="choose_macros" type="text" placeholder="%" data-value="0"/></td><td><input id="id_carbs_g" class="choose_macros" type="text" placeholder="g"/></td></tr>
 		<tr><th>Total</th><td><span id='id_macro_percent_total'>100</span></td><td></td></tr>
 		</table>
+		<button id="id_choose_macros_continue_button" disabled>Continue</button>
 		</div>
 	</div>
 	<script src="https://code.jquery.com/qunit/qunit-2.4.1.js"></script>
@@ -82,6 +83,31 @@
 	</script>
 	<script>
 		//choose macros
+		QUnit.test("macro_percent_totaler tallys the macro percent total correctly", function (assert) {
+			choose_macro_handler();
+			set_up_choose_macros_test('id_protein_percent','50','id_change_tdee_result','1935');
+			set_up_choose_macros_test('id_fat_percent','20','id_change_tdee_result','1935');
+			set_up_choose_macros_test('id_fat_percent','11','id_change_tdee_result','1935');
+			percent_total = $('#id_macro_percent_total').html();
+			assert.equal(percent_total,'39');
+		});
+		QUnit.test("macro_percent_totaler doesn't break upon delete", function (assert) {
+			choose_macro_handler();
+			set_up_choose_macros_test('id_protein_percent','50','id_change_tdee_result','1935');
+			set_up_choose_macros_test('id_protein_percent','','id_change_tdee_result','1935');
+			percent_total = $('#id_macro_percent_total').html();
+			assert.equal(percent_total,'100');
+		});
+		QUnit.test("choose_percent_totaler enables Continu button if total = 0,disables if not", function (assert) {
+			choose_macro_handler();
+			set_up_choose_macros_test('id_protein_percent','50','id_change_tdee_result','1935');
+			set_up_choose_macros_test('id_fat_percent','25','id_change_tdee_result','1935');
+			set_up_choose_macros_test('id_carbs_percent','25','id_change_tdee_result','1935');
+			assert.equal($('#id_choose_macros_continue_button').prop('disabled'),false);
+			set_up_choose_macros_test('id_carbs_percent','20','id_change_tdee_result','1935');
+			assert.equal($('#id_choose_macros_continue_button').prop('disabled'),true);
+		});
+		
 		QUnit.test("keystroke in protein percentage creates grams in protein g", function (assert) {
 			choose_macro_handler();
 			set_up_choose_macros_test('id_protein_percent','50','id_change_tdee_result','1935');
@@ -104,21 +130,6 @@
 			set_up_choose_macros_test('id_protein_g','','id_change_tdee_result','1935');
 			protein_percent = $('#id_protein_percent').val();
 			assert.equal(protein_percent,'');
-		});
-		QUnit.test("macro_percent_totaler tallys the macro percent total correctly", function (assert) {
-			choose_macro_handler();
-			set_up_choose_macros_test('id_protein_percent','50','id_change_tdee_result','1935');
-			set_up_choose_macros_test('id_fat_percent','20','id_change_tdee_result','1935');
-			set_up_choose_macros_test('id_fat_percent','11','id_change_tdee_result','1935');
-			percent_total = $('#id_macro_percent_total').html();
-			assert.equal(percent_total,'39');
-		});
-		QUnit.test("macro_percent_totaler doesn't break upon delete", function (assert) {
-			choose_macro_handler();
-			set_up_choose_macros_test('id_protein_percent','50','id_change_tdee_result','1935');
-			set_up_choose_macros_test('id_protein_percent','','id_change_tdee_result','1935');
-			percent_total = $('#id_macro_percent_total').html();
-			assert.equal(percent_total,'100');
 		});
 		//error removal tests
 		QUnit.test("errors should be hidden on keypress", function (assert) {

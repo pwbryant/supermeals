@@ -43,6 +43,6 @@ class Macros(models.Model):
 class MealTemplate(models.Model):
 
 	user = models.ForeignKey('auth.User',on_delete=models.CASCADE)
-	num_per_day = models.IntegerField(blank=False)
-	daily_percent = models.DecimalField(max_digits=4,decimal_places=2,blank=False)
+	name = models.TextField(blank=False)	
+	cals = models.DecimalField(max_digits=4,decimal_places=2,blank=False)
 	
