@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError,transaction
 
-from meals.models import Macros
+from meals.models import Macros,MealTemplate
 
 GUEST_USER = User.objects.get(username='guest')
 USER = User.objects.get(username='paul')
@@ -22,55 +22,58 @@ MACRO_INIT_FIELD_DICT = {
 	'fat_percent':Decimal('35'),
 	'protein_percent':Decimal('25')
 }
-class MacrosTest(TestCase):
+MEAL_TEMPLATE_ARGS = {'name':'breakfast','cals':100}
+class BaseTest(TestCase):
 
-	def check_model_validation_error(self,macros,delete_macro=True):
+	def check_model_validation_error(self,obj,delete_obj=True):
 		with self.assertRaises(ValidationError):
-			macros.save()
-			macros.full_clean()
-		if delete_macro:
-			macros.user.delete()	
+			obj.save()
+			obj.full_clean()
+		if delete_obj:
+			obj.user.delete()	
 
-	def check_model_integrity_error(self,macros):
+	def check_model_integrity_error(self,obj):
 		with transaction.atomic():
 			with self.assertRaises(IntegrityError):
-				macros.save()
-				macros.full_clean()
+				obj.save()
+				obj.full_clean()
 
-	def create_broken_macro_field_dict(self,break_field,value):
-		broke_macro_dict = MACRO_INIT_FIELD_DICT.copy()
+	def create_broken_field_dict(self,break_field,value,master_dict):
+		broke_dict = master_dict.copy()
 		if User.objects.all().count() != 0:
 			User.objects.all()[0].delete()
 			
-		broke_macro_dict['user'] = User.objects.create_user(username=USERNAME1,password=PASSWORD1)
+		broke_dict['user'] = User.objects.create_user(username=USERNAME1,password=PASSWORD1)
 		if value == 'remove':
-			broke_macro_dict.pop(break_field)
+			broke_dict.pop(break_field)
 		else:
-			broke_macro_dict[break_field] = value
+			broke_dict[break_field] = value
 
-		return broke_macro_dict
-	
+		return broke_dict
+
+
+class MacrosTest(BaseTest):
 		
 	def test_validation_errors_illegal_field_values(self):
 		#Integer fields age,height,weight not checked
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('unit_type','schmetric')))#illegal unit_type
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('gender','')))#illegal gender
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('activity','str')))#illegal activity
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('direction','str')))#illegal direction
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('change_rate',Decimal('10.111'))))#illegal(too long)
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('fat_percent',Decimal('10.111'))))#illegal(too long)
-		self.check_model_validation_error(Macros(**self.create_broken_macro_field_dict('protein_percent',Decimal('10.111'))))#illegal(too long)
+		self.check_model_validation_error(Macros(**self.create_broken_field_dict('unit_type','schmetric',MACRO_INIT_FIELD_DICT)))#illegal unit_type
+		self.check_model_validation_error(Macros(**self.create_broken_field_dict('gender','',MACRO_INIT_FIELD_DICT)))#illegal gender
+		self.check_model_validation_error(Macros(**self.create_broken_field_dict('activity','str',MACRO_INIT_FIELD_DICT)))#illegal activity
+		self.check_model_validation_error(Macros(**self.create_broken_field_dict('direction','str',MACRO_INIT_FIELD_DICT)))#illegal direction
+		self.check_model_validation_error(Macros(**self.create_broken_field_dict('change_rate',Decimal('10.111'),MACRO_INIT_FIELD_DICT)))#illegal(too long)
+		self.check_model_validation_error(Macros(**self.create_broken_field_dict('fat_percent',Decimal('10.111'),MACRO_INIT_FIELD_DICT)))#illegal(too long)
+		self.check_model_validation_error(Macros(**self.create_broken_field_dict('protein_percent',Decimal('10.111'),MACRO_INIT_FIELD_DICT)))#illegal(too long)
  
 		self.assertEqual(Macros.objects.all().count(),0)
 
 	def test_integrity_errors_missing_field_values(self):
 		#unit_type,,direction and activity, because the have defaults are not tested on purpose because they are ValidationError
-		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('age','remove')))#no age
-		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('weight','remove')))#no weight
-		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('height','remove')))#no height
-		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('change_rate','remove')))#no chane
-		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('fat_percent','remove')))#no fat percent
-		self.check_model_integrity_error(Macros(**self.create_broken_macro_field_dict('protein_percent','remove')))#no protein percent
+		self.check_model_integrity_error(Macros(**self.create_broken_field_dict('age','remove',MACRO_INIT_FIELD_DICT)))#no age
+		self.check_model_integrity_error(Macros(**self.create_broken_field_dict('weight','remove',MACRO_INIT_FIELD_DICT)))#no weight
+		self.check_model_integrity_error(Macros(**self.create_broken_field_dict('height','remove',MACRO_INIT_FIELD_DICT)))#no height
+		self.check_model_integrity_error(Macros(**self.create_broken_field_dict('change_rate','remove',MACRO_INIT_FIELD_DICT)))#no chane
+		self.check_model_integrity_error(Macros(**self.create_broken_field_dict('fat_percent','remove',MACRO_INIT_FIELD_DICT)))#no fat percent
+		self.check_model_integrity_error(Macros(**self.create_broken_field_dict('protein_percent','remove',MACRO_INIT_FIELD_DICT)))#no protein percent
  
 		self.assertEqual(Macros.objects.all().count(),0)
 
@@ -132,3 +135,32 @@ class MacrosTest(TestCase):
 		self.assertEqual(second_saved_macros.protein_percent,MACRO_INIT_FIELD_DICT['protein_percent'])
 		self.assertEqual(second_saved_macros.user,second_user)
 
+class MealTemplateTest(BaseTest):
+	def test_saving_and_retrieving_meal_templates(self):
+		user = User.objects.create_user(username=USERNAME1,password=PASSWORD1)
+		MealTemplate.objects.create(user = user,name='breakfast',cals=100)
+		saved_meal_templates = MealTemplate.objects.all()
+		self.assertEqual(saved_meal_templates.count(),1)
+
+	def test_delete_user_deletes_meal_template(self):
+		user = User.objects.create_user(username = USERNAME1,password = PASSWORD1)
+		MealTemplate.objects.create(user = user,name='breakfast',cals=100)
+		user.delete()
+		self.assertEqual(MealTemplate.objects.all().count(),0)
+
+	def test_integrity_errors_missing_field_values(self):
+		#no name is a validateion error so not testsed here
+		self.check_model_integrity_error(MealTemplate(**self.create_broken_field_dict('cals','remove',MEAL_TEMPLATE_ARGS)))#no cals
+		self.check_model_integrity_error(MealTemplate(**self.create_broken_field_dict('user','remove',MEAL_TEMPLATE_ARGS)))#no user
+		self.assertEqual(MealTemplate.objects.all().count(),0)
+
+	def test_integrity_errors_missing_field_values(self):
+		#no name is a validateion error so not testsed here
+		self.check_model_integrity_error(MealTemplate(**self.create_broken_field_dict('cals','remove',MEAL_TEMPLATE_ARGS)))#no cals
+		self.check_model_integrity_error(MealTemplate(**self.create_broken_field_dict('user','remove',MEAL_TEMPLATE_ARGS)))#no user
+		self.assertEqual(MealTemplate.objects.all().count(),0)
+
+	def test_validation_errors_illegal_field_values(self):
+		#cals not here because no validation restraints are present
+		self.check_model_validation_error(MealTemplate(**self.create_broken_field_dict('name','',MEAL_TEMPLATE_ARGS)))#illegal name
+		self.assertEqual(Macros.objects.all().count(),0)
