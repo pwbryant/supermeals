@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
-from meals.models import Macros
+from meals.models import Macros,MealTemplate
 
 
 #LoginForm/SignUpForm errors
@@ -21,6 +21,8 @@ EMPTY_RATE_ERROR = 'Weight Change Rate Missing'
 INVALID_MACRO_ERROR = 'Invalid Macro Ratio Values'
 OUT_OF_RANGE_MACRO_ERROR = 'Macro Percent Out Of Range'
 MACROS_DONT_ADD_UP_ERROR = 'Macro Percentages Do Not Add Up Too 100'
+EMPTY_CALS_ERROR = 'Meal/Snack Calories Missing'
+
 class HorizontalRadioRenderer(forms.RadioSelect):
 	def render(self):
 		return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
@@ -78,8 +80,6 @@ class SignUpForm(forms.models.ModelForm):
 
 
 class MakeMacrosForm(forms.models.ModelForm):
-
-
 	
 	m_height = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		'placeholder':'cm',
@@ -194,3 +194,17 @@ class MakeMacrosForm(forms.models.ModelForm):
 		kwargs['initial'] = initial
 		super(MakeMacrosForm,self).__init__(*args,**kwargs)
 
+class MealTemplateForm(forms.models.ModelForm):
+
+	class Meta:
+		model = MealTemplate
+		fields = ('cals_percent',)
+	
+		error_messages = {
+			'cals_percent': {
+				'required': EMPTY_CALS_ERROR,
+				'invalid':DEFAULT_INVALID_INT_ERROR,
+			},
+		}
+
+		

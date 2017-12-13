@@ -4,7 +4,7 @@ from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
 from meals.forms import LoginForm, SignUpForm, MakeMacrosForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR,DEFAULT_INVALID_INT_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR
-from meals.models import Macros
+from meals.models import Macros,MealTemplate
 
 # Create your tests here.
 
@@ -141,10 +141,9 @@ class CreateAccountTest(TestCase):
 		self.assertContains(response,EMPTY_PASSWORD_ERROR)
 
 class MyMacrosTabTest(TestCase):
-	
-	IMPERIAL_MACRO_DATA = {'unit_type':'imperial','gender':'m','age':'34','i_height_0':'5','i_height_1':'10','i_weight':'210','activity':'none','direction':'lose','i_change_rate':'23','fat_g':'10','fat_percent':'30','protein_g':'10','protein_percent':'30','carbs_g':'10','carbs_percent':'40'}
-
-	METRIC_MACRO_DATA = {'unit_type':'metric','gender':'m','age':'34','m_height':'5','m_weight':'210','activity':'none','direction':'lose','m_change_rate':'23','fat_g':'10','fat_percent':'25','protein_g':'10','protein_percent':'35','carbs_g':'10','carbs_percent':'40'}
+	SHARED_MACRO_DATA = {'gender':'m','age':'34','activity':'none','direction':'lose','fat_g':'10','fat_percent':'30','protein_g':'10','protein_percent':'30','carbs_g':'10','carbs_percent':'40','name':'breakfast','cals_percent':'50'}
+	IMPERIAL_MACRO_DATA = {**SHARED_MACRO_DATA,**{'unit_type':'imperial','i_height_0':'5','i_height_1':'10','i_weight':'210','i_change_rate':'23'}}
+	METRIC_MACRO_DATA = {**SHARED_MACRO_DATA,**{'unit_type':'metric','m_height':'5','m_weight':'210','m_change_rate':'23'}}
 	
 	def test_my_macros_url_renders_correct_template(self):
 		response = self.client.get('/meals/get_my_macros/')
@@ -228,3 +227,11 @@ class MyMacrosTabTest(TestCase):
 		macro_data['m_height'] = ''
 		response=self.client.post('/meals/save_my_macros', data=macro_data)
 		self.assertContains(response,EMPTY_HEIGHT_ERROR)
+
+
+	def test_make_macro_can_save_meal_template(self):
+		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+		response=self.client.post('/meals/save_my_macros', data=self.METRIC_MACRO_DATA)
+		saved_meal_template = MealTemplate.objects.all()
+		self.assertEqual(saved_meal_template.count(),1)		
+

@@ -6,8 +6,8 @@ from django.db.utils import IntegrityError
 from django.db import transaction
 import json
 from decimal import Decimal
-from meals.forms import LoginForm, SignUpForm, MakeMacrosForm
-from meals.models import Macros
+from meals.forms import LoginForm, SignUpForm, MakeMacrosForm, MealTemplateForm
+from meals.models import Macros,MealTemplate
 
 # Create your views here.
 def home_or_login(request):
@@ -99,29 +99,30 @@ def save_my_macros(request):
 
 	
 	post_dict.pop('unit_type')
+	pop_keys = []
 	if unit_type == 'imperial':
-		post_dict.pop('i_height_0')
-		post_dict.pop('i_height_1')
-		post_dict.pop('i_weight')
-		post_dict.pop('i_change_rate')
+		pop_keys += ['i_height_0','i_height_1','i_weight','i_change_rate']
 	if unit_type == 'metric':
-		post_dict.pop('m_height')
-		post_dict.pop('m_weight')
-		post_dict.pop('m_change_rate')
-
+		pop_keys += ['m_height','m_weight','m_change_rate']
+	pop_keys += ['fat_g','protein_g','carbs_g','carbs_percent','total_macro_percent']
+		
+	meal_template_dict = dict((key,post_dict[key],) for key in ['name','cals_percent'])
+	meal_template_dict['cals_percent'] = Decimal(meal_template_dict['cals_percent']) 
 	
-	post_dict['user'] = request.user
-	post_dict['change_rate'] = Decimal(post_dict['change_rate']) 
-	post_dict.pop('fat_g')
-	post_dict.pop('protein_g')
-	post_dict.pop('carbs_g')
-	post_dict.pop('carbs_percent')
-	post_dict.pop('total_macro_percent') 
-	post_dict['protein_percent'] = Decimal(post_dict['protein_percent']) 
-	post_dict['fat_percent'] = Decimal(post_dict['fat_percent']) 
+	pop_keys += meal_template_dict.keys()
+	[post_dict.pop(key) for key in pop_keys]
+	
+	macro_dict = post_dict
+	macro_dict['change_rate'] = Decimal(macro_dict['change_rate']) 
+	macro_dict['protein_percent'] = Decimal(macro_dict['protein_percent']) 
+	macro_dict['fat_percent'] = Decimal(macro_dict['fat_percent']) 
+	
+	macro_dict['user'] = request.user
+	meal_template_dict['user'] = request.user
 	try:
 		with transaction.atomic():
-			Macros.objects.create(**post_dict)
+			Macros.objects.create(**macro_dict)
+			MealTemplate.objects.create(**meal_template_dict)
 		pass	
 	except IntegrityError:
 		pass

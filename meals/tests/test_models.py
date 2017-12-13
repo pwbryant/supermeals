@@ -22,7 +22,7 @@ MACRO_INIT_FIELD_DICT = {
 	'fat_percent':Decimal('35'),
 	'protein_percent':Decimal('25')
 }
-MEAL_TEMPLATE_ARGS = {'name':'breakfast','cals':100}
+MEAL_TEMPLATE_ARGS = {'user':USER,'name':'breakfast','cals_percent':Decimal('50')}
 class BaseTest(TestCase):
 
 	def check_model_validation_error(self,obj,delete_obj=True):
@@ -137,26 +137,21 @@ class MacrosTest(BaseTest):
 
 class MealTemplateTest(BaseTest):
 	def test_saving_and_retrieving_meal_templates(self):
-		user = User.objects.create_user(username=USERNAME1,password=PASSWORD1)
-		MealTemplate.objects.create(user = user,name='breakfast',cals=100)
+		MealTemplate.objects.create(**MEAL_TEMPLATE_ARGS)
 		saved_meal_templates = MealTemplate.objects.all()
 		self.assertEqual(saved_meal_templates.count(),1)
 
 	def test_delete_user_deletes_meal_template(self):
 		user = User.objects.create_user(username = USERNAME1,password = PASSWORD1)
-		MealTemplate.objects.create(user = user,name='breakfast',cals=100)
+		meal_template_args = MEAL_TEMPLATE_ARGS.copy()
+		meal_template_args['user'] = user
+		MealTemplate.objects.create(**meal_template_args)
 		user.delete()
 		self.assertEqual(MealTemplate.objects.all().count(),0)
 
 	def test_integrity_errors_missing_field_values(self):
 		#no name is a validateion error so not testsed here
-		self.check_model_integrity_error(MealTemplate(**self.create_broken_field_dict('cals','remove',MEAL_TEMPLATE_ARGS)))#no cals
-		self.check_model_integrity_error(MealTemplate(**self.create_broken_field_dict('user','remove',MEAL_TEMPLATE_ARGS)))#no user
-		self.assertEqual(MealTemplate.objects.all().count(),0)
-
-	def test_integrity_errors_missing_field_values(self):
-		#no name is a validateion error so not testsed here
-		self.check_model_integrity_error(MealTemplate(**self.create_broken_field_dict('cals','remove',MEAL_TEMPLATE_ARGS)))#no cals
+		self.check_model_integrity_error(MealTemplate(**self.create_broken_field_dict('cals_percent','remove',MEAL_TEMPLATE_ARGS)))#no cals
 		self.check_model_integrity_error(MealTemplate(**self.create_broken_field_dict('user','remove',MEAL_TEMPLATE_ARGS)))#no user
 		self.assertEqual(MealTemplate.objects.all().count(),0)
 
