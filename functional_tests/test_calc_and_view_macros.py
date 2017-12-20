@@ -136,14 +136,15 @@ class CalcAndViewMacros(FunctionalTest):
 		self.check_element_content('id_macro_percent_total','text','0')
 
 		#When the % Remaining equals 0, The Continue button becomes ungreyed and so Joe clicks it, and 
-		#another section becomes visible which contains an inputs with the label "How many meals/snacks 
-		#do you like per day?" Joe enters 5.
+		#another section becomes visible which contains a header reading about optionlly breaking up
+		#the daily calories, and an input ask prompting the user to enter how many meals/snacks 
+		#per day?" Joe enters 5.
 		continue_button = self.browser.find_element_by_id('id_choose_macros_continue_button')
 		self.assertTrue(continue_button.is_enabled())
-		#continue_button.click()
-		#self.check_element_content('id_calc_macro_meals_header','text','How many meals/snacks do you like per day')
-		#self.check_element_content('id_calc_macro_meals_number','placeholder','# meals/snacks')
-		
+		continue_button.click()
+		self.check_element_content('id_meal_template_header','text','Break Up Your Daily Calories Into Meals/Snacks (Optional)')
+		self.check_element_content('id_meal_template_meals_number_label','text','Number of meals/snacks per day?')
+		self.check_element_content('id_calc_macros_meals_number','placeholder','# meals/snacks')
 		self.fail('Finish the test!')
 		#After entering 5, another section appears where there are 5 inputs labeled Breakfast,Lunch
 		#,Dinner, Snack1, Snack2 with the inputs autofilled into five equal caloric chunks of 387.

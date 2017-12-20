@@ -80,10 +80,12 @@
 			<tr><th><span class='choose_macro_titles'>% Remaining</span></th><td><span id="id_macro_percent_total">100</span></td><td></td></tr>
 	
 			</table>
+			<br><button id='id_choose_macros_continue_button' class="btn" disabled>Continue</button>
 		</div>
-		<br><button id='id_choose_macros_continue_button' class="btn" disabled>Continue</button>
 		<div id="id_calc_macros_meals_number_form_container">
-			<input id='id_calc_macros_meals_number' type='text' />
+			<span id="id_meal_template_header">Break Up Your Daily Calories Into Meals/Snacks (Optional)</span>
+			<label id="id_meal_template_meals_number_label">Number of meals/snacks per day?</label>
+			<input id='id_calc_macros_meals_number' type='text' placeholder='# meals/snacks'/>
 		</div>
 		{% csrf_token %}
 		<br><button id='id_save_my_macros' class="btn">Save</button>
@@ -100,4 +102,5 @@
 	calc_tdee();
 	change_change_rate_display();
 	choose_macro_handler();
+	continue_button_displays_meal_snack_num_div();
 </script>

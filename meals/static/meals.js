@@ -205,3 +205,11 @@ var macro_percent_totaler = function(percent_id) {
 		$('#id_choose_macros_continue_button').prop('disabled',true);
 	}
 }
+
+var continue_button_displays_meal_snack_num_div = function() {
+
+	$('#id_choose_macros_continue_button').on('click', function() {
+
+		$('#id_calc_macros_meals_number_form_container').show();
+	});
+}

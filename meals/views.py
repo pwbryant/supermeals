@@ -98,7 +98,6 @@ def save_my_macros(request):
 		})
 
 	
-	post_dict.pop('unit_type')
 	pop_keys = []
 	if unit_type == 'imperial':
 		pop_keys += ['i_height_0','i_height_1','i_weight','i_change_rate']
@@ -106,7 +105,7 @@ def save_my_macros(request):
 		pop_keys += ['m_height','m_weight','m_change_rate']
 	pop_keys += ['fat_g','protein_g','carbs_g','carbs_percent','total_macro_percent']
 		
-	meal_template_dict = dict((key,post_dict[key],) for key in ['name','cals_percent'])
+	meal_template_dict = dict((key,post_dict[key],) for key in ['name','cals_percent','number_of_meals'])
 	meal_template_dict['cals_percent'] = Decimal(meal_template_dict['cals_percent']) 
 	
 	pop_keys += meal_template_dict.keys()

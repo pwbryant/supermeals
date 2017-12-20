@@ -141,9 +141,9 @@ class CreateAccountTest(TestCase):
 		self.assertContains(response,EMPTY_PASSWORD_ERROR)
 
 class MyMacrosTabTest(TestCase):
-	SHARED_MACRO_DATA = {'gender':'m','age':'34','activity':'none','direction':'lose','fat_g':'10','fat_percent':'30','protein_g':'10','protein_percent':'30','carbs_g':'10','carbs_percent':'40','name':'breakfast','cals_percent':'50'}
-	IMPERIAL_MACRO_DATA = {**SHARED_MACRO_DATA,**{'unit_type':'imperial','i_height_0':'5','i_height_1':'10','i_weight':'210','i_change_rate':'23'}}
-	METRIC_MACRO_DATA = {**SHARED_MACRO_DATA,**{'unit_type':'metric','m_height':'5','m_weight':'210','m_change_rate':'23'}}
+	SHARED_MACRO_DATA = {'gender':'m','age':'34','activity':'none','direction':'lose','fat_g':'10','fat_percent':'30','protein_g':'10','protein_percent':'30','carbs_g':'10','carbs_percent':'40','name':'breakfast','cals_percent':'50','number_of_meals':3}
+	IMPERIAL_MACRO_DATA = {**SHARED_MACRO_DATA,**{'unit_type':'imperial','i_height_0':'5','i_height_1':'10','i_weight':'210','i_change_rate':'2'}}
+	METRIC_MACRO_DATA = {**SHARED_MACRO_DATA,**{'unit_type':'metric','m_height':'5','m_weight':'210','m_change_rate':'2'}}
 	
 	def test_my_macros_url_renders_correct_template(self):
 		response = self.client.get('/meals/get_my_macros/')
@@ -166,7 +166,14 @@ class MyMacrosTabTest(TestCase):
 
 		response=self.client.post('/meals/save_my_macros', data=self.METRIC_MACRO_DATA)
 		saved_macro = Macros.objects.all()
-		self.assertEqual(saved_macro.count(),1)		
+
+
+	def test_make_macro_can_save_meal_template(self):
+		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+
+		response=self.client.post('/meals/save_my_macros', data=self.METRIC_MACRO_DATA)
+		saved_meal_template = MealTemplate.objects.all()
+		self.assertEqual(saved_meal_template.count(),1)		
 
 	
 	def test_make_macro_if_success_returns_1(self):
@@ -176,25 +183,29 @@ class MyMacrosTabTest(TestCase):
 		self.assertEqual(response.status_code, 200)
 		self.assertEqual(response.content.decode(),'1')
 
-	def test_save_my_macro_wont_save_duplicate_macro_but_still_returns_1(self):
+	def test_save_my_macro_wont_save_duplicate_macro_and_meal_template_but_still_returns_1(self):
 
 		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 
 		self.client.post('/meals/save_my_macros', data=self.IMPERIAL_MACRO_DATA)
 		response=self.client.post('/meals/save_my_macros', data=self.IMPERIAL_MACRO_DATA)
 		saved_macro = Macros.objects.all()
+		saved_meal_template = Macros.objects.all()
 		self.assertEqual(saved_macro.count(),1)		
+		self.assertEqual(saved_meal_template.count(),1)		
 
 		self.assertEqual(response.status_code, 200)
 		self.assertEqual(response.content.decode(), "1")
 
-	def test_save_my_macro_missing_field_validation_wont_save_macro(self):	
+	def test_save_my_macro_missing_field_validation_wont_save_macro_and_meal_template(self):	
 
 		macro_data = self.IMPERIAL_MACRO_DATA.copy()
 		macro_data.pop('age')
 		response=self.client.post('/meals/save_my_macros', data=macro_data)
 		saved_macro = Macros.objects.all()
-		self.assertEqual(saved_macro.count(),0)
+		saved_meal_template = Macros.objects.all()
+		self.assertEqual(saved_macro.count(),0)		
+		self.assertEqual(saved_meal_template.count(),0)		
 
 
 	def test_save_my_macro_validation_error_gets_back_MakeMacrosForm(self):	

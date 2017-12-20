@@ -45,4 +45,5 @@ class MealTemplate(models.Model):
 	user = models.ForeignKey('auth.User',on_delete=models.CASCADE)
 	name = models.TextField(blank=False)	
 	cals_percent = models.DecimalField(max_digits=4,decimal_places=2,blank=False)
+	number_of_meals = models.IntegerField(blank=False)
 	
