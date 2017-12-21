@@ -26,12 +26,12 @@
 		</div>
 		<h1 id="id_home_headline">Meal Lab Home</h1>
 		
-		<!--switch between metric and imperial height forms and placeholders-->
+		<!--calc macros - switch between metric and imperial height forms and placeholders-->
 		<div id='id_height_div'></div>
 		<input id='id_weight' type='text' />
 		<input id='id_change_rate' type='text' />
 
-		<!--calc tdee-->
+		<!--calc macros - calc tdee-->
 		<div id='id_tdee_form_container'>
 			<input type='radio' name='unit_type' value='imperial' checked='checked'/>
 			<input type='radio' name='gender' value='m' checked='checked'/>
@@ -63,13 +63,17 @@
 		<button id="id_choose_macros_continue_button" disabled>Continue</button>
 		</div>
 	</div>
-	<!--Continue button reveals meal/snack number input -->
+	<!--calc macros - Continue button reveals meal/snack number input -->
 	<button id='id_choose_macros_continue_button' class='btn'>Continue</button>
-	<div id="id_calc_macros_meals_number_form_container" style="display:none">
-		<input id='id_calc_macros_meals_number' type='text'>
-		<button id='id_set_cals_button' class='btn' disabled>Set Calories</button>
+	<div id="id_meal_template_meals_number_form_container" style="display:none">
+		<input id='id_meal_template_meals_number' type='text'>
+		<button id='id_meal_template_set_cals_button' class='btn' disabled>Set Calories</button>
 	</div>
+	<!--calc macros - set cals for daily meals-->
+	<div id="id_meal_template_set_meal_cals_container"></div>
+	<button id="id_save_my_macros_button" class='btn'>Save Your Macro Info</button>
 
+	<!--end of test mocks-->
 	<script src="https://code.jquery.com/qunit/qunit-2.4.1.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="../meals.js"></script>
@@ -87,25 +91,75 @@
 			$('#' + result_id).html(result_value);
 			$('#' + input_).trigger('keyup');
 		}
+		
+		var setup_set_cals_form = function() {
+			display_set_cals_form();
+			$('#id_change_tdee_result').html('1935');
+			$('#id_meal_template_meals_number').val('5');
+			$('#id_meal_template_set_cals_button').trigger('click');
+		}
 	</script>
 	<script>
+		//Set Calories form (note: meal_template_set_cals_totaler is initiated inside display_set_cals_form()
+		QUnit.test("If set cals total not equal to 0 the total is red, but returns to black once 0 again", function (assert) {
+			setup_set_cals_form();
+			$('input[name=meal_0]').val('390');
+			$('input[name=meal_0]').trigger('keyup');
+			assert.equal($('#id_meal_template_set_cals_total').css('color'), 'rgb(255, 0, 0)');
+
+			$('input[name=meal_0]').val('387');
+			$('input[name=meal_0]').trigger('keyup');
+			assert.equal($('#id_meal_template_set_cals_total').css('color'), 'rgb(0, 0, 0)');
+			
+		});
+		QUnit.test("If set cals total not equal to 0 the 'Save Macros' button is disabled", function (assert) {
+			setup_set_cals_form();
+			assert.equal($('#id_save_my_macros_button').prop('disabled'), false);
+			$('input[name=meal_0]').val('390');
+			$('input[name=meal_0]').trigger('keyup');
+			assert.equal($('#id_save_my_macros_button').prop('disabled'), true);
+			
+		});
+		QUnit.test("Change of values in the set calorie inputs alters the calorie total in the last row of the set cals table", function (assert) {
+			setup_set_cals_form();
+			$('input[name=meal_0]').val('390');
+			$('input[name=meal_0]').trigger('keyup');
+			var new_tdee_total = $('#id_meal_template_set_cals_total').html();
+			assert.equal(new_tdee_total,3);
+
+			$('input[name=meal_0]').val('380');
+			$('input[name=meal_0]').trigger('keyup');
+			var new_tdee_total = $('#id_meal_template_set_cals_total').html();
+			assert.equal(new_tdee_total,-7);
+		});
+		QUnit.test("Click Set Calories button displays meal inputs that have evenly distibuted cals", function (assert) {
+			setup_set_cals_form();
+			var equal_cals = $('input[name=meal_0]').val();
+			assert.equal(equal_cals,387);
+		});
+		QUnit.test("Click Set Calories creates the same number of inputs elements as the number of meals", function (assert) {
+			setup_set_cals_form();
+			var set_cals_table_input_num = $('#id_meal_template_set_cals_table input').length;
+			assert.equal(set_cals_table_input_num,5);
+		});
 		//Set Calories button becomes enabled when meal number input is filled
 		QUnit.test("Set Calories button becomes enabled upon number input and disabled with str input", function (assert) {
 			set_cals_button_is_enabled_upon_input_keyup();
-			$('#id_calc_macros_meals_number').val('5');
-			$('#id_calc_macros_meals_number').trigger('keyup');
-			assert.equal($('#id_set_cals_button').is(':enabled'), true);
+			$('#id_meal_template_meals_number').val('5');
+			$('#id_meal_template_meals_number').trigger('keyup');
+			assert.equal($('#id_meal_template_set_cals_button').is(':enabled'), true);
 
-			$('#id_calc_macros_meals_number').val('cat');
-			$('#id_calc_macros_meals_number').trigger('keyup');
+			$('#id_meal_template_meals_number').val('cat');
+			$('#id_meal_template_meals_number').trigger('keyup');
 			assert.equal($('#id_set_cals_button').is(':enabled'), false);
 		});
 		
 		//Continue button reveals the meal/snacks input div
 		QUnit.test("continue button displays macro meals number div", function (assert) {
 			continue_button_displays_meal_snack_num_div();
+			assert.equal($('#id_meal_template_meals_number_form_container').is(':visible'), false);
 			$('#id_choose_macros_continue_button').trigger('click');
-			assert.equal($('#id_calc_macros_meals_number_form_container').is(':visible'), true);
+			assert.equal($('#id_meal_template_meals_number_form_container').is(':visible'), true);
 		});
 
 		//choose macros

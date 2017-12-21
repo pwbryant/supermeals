@@ -210,19 +210,71 @@ var continue_button_displays_meal_snack_num_div = function() {
 
 	$('#id_choose_macros_continue_button').on('click', function() {
 
-		$('#id_calc_macros_meals_number_form_container').show();
+		$('#id_meal_template_meals_number_form_container').show();
 	});
 }
 
 var set_cals_button_is_enabled_upon_input_keyup = function() {
 
-	$('#id_calc_macros_meals_number').on('keyup',function() {
+	$('#id_meal_template_meals_number').on('keyup',function() {
 		var input_value = $(this).val();
 		if (input_value % 1 === 0) {
-			$('#id_set_cals_button').prop('disabled',false);
+			$('#id_meal_template_set_cals_button').prop('disabled',false);
 		} else {
 
-			$('#id_set_cals_button').prop('disabled',true);
+			$('#id_meal_template_set_cals_button').prop('disabled',true);
 		}
 	});
 }
+
+var display_set_cals_form = function() {
+
+	$('#id_meal_template_set_cals_button').on('click',function() {
+		var tdee = $('#id_change_tdee_result').html(),
+		meal_num = $('#id_meal_template_meals_number').val();
+		if (tdee == '') {
+			tdee = $('#id_tdee_result').html();
+		}
+		var equal_cals = tdee / meal_num,
+		set_cals_table = '<table id="id_meal_template_set_cals_table">';
+
+		for (i=0;i<meal_num;i++) {
+			set_cals_table += '<tr><td><input name="meal_' + i + '" type="text" value="' + equal_cals + '" data-value="' + equal_cals + '"/></td></tr>';
+		}
+		set_cals_table += '<tr><td><span id="id_meal_template_set_cals_total">0</span></td></tr></table>';
+		$('#id_meal_template_set_meal_cals_container').html(set_cals_table)
+		meal_template_set_cals_totaler();//start lister on new table
+
+	});
+}
+
+var meal_template_set_cals_totaler = function() {
+
+	$('#id_meal_template_set_cals_table input').on('keyup',function() {
+		current_cal_total = $('#id_meal_template_set_cals_total').html();
+		var new_cal = parseFloat($(this).val());
+		if (isNaN(new_cal)) {
+			new_cal = 0;
+
+		} 
+		var old_cal = parseFloat($(this).attr('data-value')),
+		cal_diff = new_cal - old_cal,
+		old_cal_total = parseFloat($('#id_meal_template_set_cals_total').html()),
+		new_cal_total = old_cal_total + cal_diff,
+		tdee = $('#id_change_tdee_result').html();
+		if (tdee === '') {
+			tdee = $('#id_tdee_result').html();
+		}
+		
+		$('#id_meal_template_set_cals_total').html(new_cal_total);
+		$(this).attr('data-value',new_cal);
+		if (new_cal_total == 0) {
+			$('#id_save_my_macros_button').prop('disabled',false);
+			$('#id_meal_template_set_cals_total').css('color','black');
+		} else {
+			$('#id_save_my_macros_button').prop('disabled',true);
+			$('#id_meal_template_set_cals_total').css('color','red');
+		}
+	});
+}
+

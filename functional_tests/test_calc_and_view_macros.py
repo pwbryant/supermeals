@@ -154,8 +154,20 @@ class CalcAndViewMacros(FunctionalTest):
 		#with the inputs autofilled into five equal caloric chunks of 387.
 		self.fill_input(['id_calc_macros_meals_number'],['5'])	
 		self.assertTrue(set_cals_button.is_enabled())
+		
+		empty_div = self.browser.find_element_by_id('id_calc_macros_set_meal_cals_div').text
+		self.assertEqual(empty_div,'')
+		set_cals_button.click()
 
+		set_meal_cals_elements = self.browser.find_elements_by_class_name('set_meal_cals_table')
+		self.assertEqual(set_meal_cals_elements[0].text,'bad test')
+		self.assertEqual(set_meal_cals_elements[1].text,'')
+		self.assertEqual(set_meal_cals_elements[2].text,'')
+		self.assertEqual(set_meal_cals_elements[3].text,'')
+		self.assertEqual(set_meal_cals_elements[4].text,'')
+		
 		self.fail('Finish the test!')
+
 		#There is a a "Cals Remaining" footer which adds up to 1935. 
 
 		#And a header reading "Customize meal calories (Optional), and a Save button below
