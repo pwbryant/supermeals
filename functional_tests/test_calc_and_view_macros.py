@@ -138,17 +138,24 @@ class CalcAndViewMacros(FunctionalTest):
 		#When the % Remaining equals 0, The Continue button becomes ungreyed and so Joe clicks it, and 
 		#another section becomes visible which contains a header reading about optionlly breaking up
 		#the daily calories, and an input ask prompting the user to enter how many meals/snacks 
-		#per day?" Joe enters 5.
+		#per day?" And a 'Set Calories' button which is disabled. 
 		continue_button = self.browser.find_element_by_id('id_choose_macros_continue_button')
 		self.assertTrue(continue_button.is_enabled())
 		continue_button.click()
 		self.check_element_content('id_meal_template_header','text','Break Up Your Daily Calories Into Meals/Snacks (Optional)')
 		self.check_element_content('id_meal_template_meals_number_label','text','Number of meals/snacks per day?')
 		self.check_element_content('id_calc_macros_meals_number','placeholder','# meals/snacks')
-		self.fail('Finish the test!')
-		#After entering 5, another section appears where there are 5 inputs labeled Breakfast,Lunch
-		#,Dinner, Snack1, Snack2 with the inputs autofilled into five equal caloric chunks of 387.
+		
+		set_cals_button = self.browser.find_element_by_id('id_set_cals_button')
+		self.assertEqual(set_cals_button.text,'Set Calories')
+		self.assertFalse(set_cals_button.is_enabled())
+		#Joe enters 5, and clicks the Set Calories which becomes enabled once the the input is entered.
+		#Another section appears where there are 5 inputs labeled meal/snack 1 - 5
+		#with the inputs autofilled into five equal caloric chunks of 387.
+		self.fill_input(['id_calc_macros_meals_number'],['5'])	
+		self.assertTrue(set_cals_button.is_enabled())
 
+		self.fail('Finish the test!')
 		#There is a a "Cals Remaining" footer which adds up to 1935. 
 
 		#And a header reading "Customize meal calories (Optional), and a Save button below

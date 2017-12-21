@@ -213,3 +213,16 @@ var continue_button_displays_meal_snack_num_div = function() {
 		$('#id_calc_macros_meals_number_form_container').show();
 	});
 }
+
+var set_cals_button_is_enabled_upon_input_keyup = function() {
+
+	$('#id_calc_macros_meals_number').on('keyup',function() {
+		var input_value = $(this).val();
+		if (input_value % 1 === 0) {
+			$('#id_set_cals_button').prop('disabled',false);
+		} else {
+
+			$('#id_set_cals_button').prop('disabled',true);
+		}
+	});
+}

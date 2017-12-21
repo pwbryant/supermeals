@@ -65,7 +65,10 @@
 	</div>
 	<!--Continue button reveals meal/snack number input -->
 	<button id='id_choose_macros_continue_button' class='btn'>Continue</button>
-	<div id="id_calc_macros_meals_number_form_container" style="display:none"></div>
+	<div id="id_calc_macros_meals_number_form_container" style="display:none">
+		<input id='id_calc_macros_meals_number' type='text'>
+		<button id='id_set_cals_button' class='btn' disabled>Set Calories</button>
+	</div>
 
 	<script src="https://code.jquery.com/qunit/qunit-2.4.1.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -86,6 +89,18 @@
 		}
 	</script>
 	<script>
+		//Set Calories button becomes enabled when meal number input is filled
+		QUnit.test("Set Calories button becomes enabled upon number input and disabled with str input", function (assert) {
+			set_cals_button_is_enabled_upon_input_keyup();
+			$('#id_calc_macros_meals_number').val('5');
+			$('#id_calc_macros_meals_number').trigger('keyup');
+			assert.equal($('#id_set_cals_button').is(':enabled'), true);
+
+			$('#id_calc_macros_meals_number').val('cat');
+			$('#id_calc_macros_meals_number').trigger('keyup');
+			assert.equal($('#id_set_cals_button').is(':enabled'), false);
+		});
+		
 		//Continue button reveals the meal/snacks input div
 		QUnit.test("continue button displays macro meals number div", function (assert) {
 			continue_button_displays_meal_snack_num_div();

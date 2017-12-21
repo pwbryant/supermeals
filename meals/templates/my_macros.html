@@ -86,6 +86,7 @@
 			<span id="id_meal_template_header">Break Up Your Daily Calories Into Meals/Snacks (Optional)</span>
 			<label id="id_meal_template_meals_number_label">Number of meals/snacks per day?</label>
 			<input id='id_calc_macros_meals_number' type='text' placeholder='# meals/snacks'/>
+			<button id='id_set_cals_button' class='btn' disabled>Set Calories</button>
 		</div>
 		{% csrf_token %}
 		<br><button id='id_save_my_macros' class="btn">Save</button>
@@ -103,4 +104,5 @@
 	change_change_rate_display();
 	choose_macro_handler();
 	continue_button_displays_meal_snack_num_div();
+	set_cals_button_is_enabled_upon_input_keyup();
 </script>
