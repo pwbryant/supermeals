@@ -144,28 +144,31 @@ class CalcAndViewMacros(FunctionalTest):
 		continue_button.click()
 		self.check_element_content('id_meal_template_header','text','Break Up Your Daily Calories Into Meals/Snacks (Optional)')
 		self.check_element_content('id_meal_template_meals_number_label','text','Number of meals/snacks per day?')
-		self.check_element_content('id_calc_macros_meals_number','placeholder','# meals/snacks')
+		self.check_element_content('id_meal_template_meals_number','placeholder','# meals/snacks')
 		
-		set_cals_button = self.browser.find_element_by_id('id_set_cals_button')
+		set_cals_button = self.browser.find_element_by_id('id_meal_template_set_cals_button')
 		self.assertEqual(set_cals_button.text,'Set Calories')
 		self.assertFalse(set_cals_button.is_enabled())
 		#Joe enters 5, and clicks the Set Calories which becomes enabled once the the input is entered.
 		#Another section appears where there are 5 inputs labeled meal/snack 1 - 5
 		#with the inputs autofilled into five equal caloric chunks of 387.
-		self.fill_input(['id_calc_macros_meals_number'],['5'])	
+		self.fill_input(['id_meal_template_meals_number'],['5'])	
 		self.assertTrue(set_cals_button.is_enabled())
 		
-		empty_div = self.browser.find_element_by_id('id_calc_macros_set_meal_cals_div').text
+		empty_div = self.browser.find_element_by_id('id_meal_template_set_meal_cals_container').text
 		self.assertEqual(empty_div,'')
 		set_cals_button.click()
 
-		set_meal_cals_elements = self.browser.find_elements_by_class_name('set_meal_cals_table')
-		self.assertEqual(set_meal_cals_elements[0].text,'bad test')
-		self.assertEqual(set_meal_cals_elements[1].text,'')
-		self.assertEqual(set_meal_cals_elements[2].text,'')
-		self.assertEqual(set_meal_cals_elements[3].text,'')
-		self.assertEqual(set_meal_cals_elements[4].text,'')
+		set_meal_cals_table = self.browser.find_element_by_id('id_meal_template_set_cals_table')
+		table_labels = set_meal_cals_table.find_elements_by_tag_name('label')
+		self.assertEqual(table_labels[0].text,'Meal 1')
+		self.assertEqual(table_labels[1].text,'Meal 2')
+		self.assertEqual(table_labels[2].text,'Meal 3')
+		self.assertEqual(table_labels[3].text,'Meal 4')
+		self.assertEqual(table_labels[4].text,'Meal 5')
 		
+		auto_filled_tdee_split_value = set_meal_cals_table.find_element_by_css_selector('input[name=meal_0]').get_attribute('value')
+		self.assertEqual(auto_filled_tdee_split_value,'387')
 		self.fail('Finish the test!')
 
 		#There is a a "Cals Remaining" footer which adds up to 1935. 

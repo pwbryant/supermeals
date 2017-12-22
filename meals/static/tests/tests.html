@@ -137,6 +137,11 @@
 			var equal_cals = $('input[name=meal_0]').val();
 			assert.equal(equal_cals,387);
 		});
+		QUnit.test("Click Set Calories button displays meal inputs that have 'Meal 1' - n labels", function (assert) {
+			setup_set_cals_form();
+			var last_meal_label = $($('#id_meal_template_set_cals_table label')[4]).html();
+			assert.equal(last_meal_label,'Meal 5');
+		});
 		QUnit.test("Click Set Calories creates the same number of inputs elements as the number of meals", function (assert) {
 			setup_set_cals_form();
 			var set_cals_table_input_num = $('#id_meal_template_set_cals_table input').length;

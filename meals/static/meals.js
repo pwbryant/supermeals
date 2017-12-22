@@ -239,7 +239,7 @@ var display_set_cals_form = function() {
 		set_cals_table = '<table id="id_meal_template_set_cals_table">';
 
 		for (i=0;i<meal_num;i++) {
-			set_cals_table += '<tr><td><input name="meal_' + i + '" type="text" value="' + equal_cals + '" data-value="' + equal_cals + '"/></td></tr>';
+			set_cals_table += '<tr><td><label for="meal_' + i + '">Meal ' + (i + 1) + '</label><input name="meal_' + i + '" type="text" value="' + equal_cals + '" data-value="' + equal_cals + '"/></td></tr>';
 		}
 		set_cals_table += '<tr><td><span id="id_meal_template_set_cals_total">0</span></td></tr></table>';
 		$('#id_meal_template_set_meal_cals_container').html(set_cals_table)
