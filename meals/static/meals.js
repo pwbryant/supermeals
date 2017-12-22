@@ -29,7 +29,7 @@ var get_my_macros_page_content = function() {
 
 //not tested
 var post_my_macros_form = function() {
-	$('#id_save_my_macros').on('click',function() {
+	$('#id_save_my_macros_button').on('click',function() {
 		var post_data = {};
 		$("#id_my_macros_form_container").find(":input[type=text],:input[type=hidden],:input[type=radio]:checked").each(function() {
 		    post_data[this.name] = $(this).val();
@@ -147,6 +147,7 @@ var calc_tdee = function() {
 	});
 }
 
+//tested
 var change_change_rate_display = function() {
 	$('input[name=direction]').on('click',function() {
 		if (this.value == 'maintain') {
@@ -158,6 +159,7 @@ var change_change_rate_display = function() {
 	});
 }
 
+//tested
 var choose_macro_handler = function() {
 	$('.choose_macros').on('keyup',function() {	
 		if ($('#id_change_tdee_result') != '') {	
@@ -186,6 +188,7 @@ var choose_macro_handler = function() {
 	});
 }
 
+//tested
 var macro_percent_totaler = function(percent_id) {
 	var new_macro_percent = parseFloat($('#' + percent_id).val());
 
@@ -206,6 +209,7 @@ var macro_percent_totaler = function(percent_id) {
 	}
 }
 
+//tested
 var continue_button_displays_meal_snack_num_div = function() {
 
 	$('#id_choose_macros_continue_button').on('click', function() {
@@ -214,6 +218,7 @@ var continue_button_displays_meal_snack_num_div = function() {
 	});
 }
 
+//tested
 var set_cals_continue_button_is_enabled_upon_input_keyup = function() {
 
 	$('#id_meal_template_meals_number').on('keyup',function() {
@@ -227,6 +232,7 @@ var set_cals_continue_button_is_enabled_upon_input_keyup = function() {
 	});
 }
 
+//tested
 var display_set_cals_form = function() {
 
 	$('#id_meal_template_set_cals_continue_button').on('click',function() {
@@ -241,14 +247,15 @@ var display_set_cals_form = function() {
 		for (i=0;i<meal_num;i++) {
 			set_cals_table += '<tr><td><label for="meal_' + i + '">Meal ' + (i + 1) + '</label><input name="meal_' + i + '" type="text" value="' + equal_cals + '" data-value="' + equal_cals + '"/></td></tr>';
 		}
-		set_cals_table += '<tr><td><span id="id_meal_template_set_cals_total">0</span></td></tr></table>';
-		set_cals_table += '<br><button id="id_save_my_macros_button" class="btn">Save Your Macro Info</button>';
+		set_cals_table += '<tr><td><label for="remaining_cals">Remaining Cals</label><span id="id_meal_template_set_cals_total" name="remaining_cals">0</span></td></tr></table>';
+		set_cals_table += '<br><button id="id_save_my_macros_button" class="btn">Save Macro Info</button>';
 		$('#id_meal_template_set_meal_cals_container').html(set_cals_table)
 		meal_template_set_cals_totaler();//start lister on new table
 
 	});
 }
 
+//tested
 var meal_template_set_cals_totaler = function() {
 
 	$('#id_meal_template_set_cals_table input').on('keyup',function() {
@@ -261,7 +268,7 @@ var meal_template_set_cals_totaler = function() {
 		var old_cal = parseFloat($(this).attr('data-value')),
 		cal_diff = new_cal - old_cal,
 		old_cal_total = parseFloat($('#id_meal_template_set_cals_total').html()),
-		new_cal_total = old_cal_total + cal_diff,
+		new_cal_total = old_cal_total - cal_diff,
 		tdee = $('#id_change_tdee_result').html();
 		if (tdee === '') {
 			tdee = $('#id_tdee_result').html();

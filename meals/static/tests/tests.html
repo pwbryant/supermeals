@@ -98,7 +98,8 @@
 	<div id="id_meal_template_set_meal_cals_container"></div>
 
 	<!--end of test mocks-->
-
+	<!------------------------------------------------------------------------------------------------------------------ -->
+	<!------------------------------------------------------------------------------------------------------------------ -->
 	<!--QUnit TESTS -->
 	<script>
 		//Set Calories form (note: meal_template_set_cals_totaler is initiated inside display_set_cals_form()
@@ -119,6 +120,9 @@
 			$('input[name=meal_0]').val('390');
 			$('input[name=meal_0]').trigger('keyup');
 			assert.equal($('#id_save_my_macros_button').prop('disabled'), true);
+			$('input[name=meal_0]').val('387');
+			$('input[name=meal_0]').trigger('keyup');
+			assert.equal($('#id_save_my_macros_button').prop('disabled'), false);
 			
 		});
 		QUnit.test("Change of values in the set calorie inputs alters the calorie total in the last row of the set cals table", function (assert) {
@@ -126,22 +130,24 @@
 			$('input[name=meal_0]').val('390');
 			$('input[name=meal_0]').trigger('keyup');
 			var new_tdee_total = $('#id_meal_template_set_cals_total').html();
-			assert.equal(new_tdee_total,3);
+			assert.equal(new_tdee_total,-3);
 
 			$('input[name=meal_0]').val('380');
 			$('input[name=meal_0]').trigger('keyup');
 			var new_tdee_total = $('#id_meal_template_set_cals_total').html();
-			assert.equal(new_tdee_total,-7);
+			assert.equal(new_tdee_total,7);
 		});
 		QUnit.test("Click Set Calories button displays meal inputs that have evenly distibuted cals", function (assert) {
 			setup_set_cals_form();
 			var equal_cals = $('input[name=meal_0]').val();
 			assert.equal(equal_cals,387);
 		});
-		QUnit.test("Click Set Calories button displays meal inputs that have 'Meal 1' - n labels", function (assert) {
+		QUnit.test("Click Set Calories button displays meal inputs that have 'Meal 1' - n and Remaining Cals labels", function (assert) {
 			setup_set_cals_form();
-			var last_meal_label = $($('#id_meal_template_set_cals_table label')[4]).html();
+			var last_meal_label = $($('#id_meal_template_set_cals_table label')[4]).html(),
+			remaining_cals_label = $($('#id_meal_template_set_cals_table label')[5]).html();
 			assert.equal(last_meal_label,'Meal 5');
+			assert.equal(remaining_cals_label,'Remaining Cals');
 		});
 		QUnit.test("Click Continue creates the same number of inputs elements as the number of meals", function (assert) {
 			setup_set_cals_form();

@@ -166,23 +166,32 @@ class CalcAndViewMacros(FunctionalTest):
 		self.assertEqual(table_labels[2].text,'Meal 3')
 		self.assertEqual(table_labels[3].text,'Meal 4')
 		self.assertEqual(table_labels[4].text,'Meal 5')
+		self.assertEqual(table_labels[5].text,'Remaining Cals')
 		
-		auto_filled_tdee_split_value = set_meal_cals_table.find_element_by_css_selector('input[name=meal_0]').get_attribute('value')
+		meal_0_input = set_meal_cals_table.find_element_by_css_selector('input[name=meal_0]')
+		auto_filled_tdee_split_value = meal_0_input.get_attribute('value')
 		self.assertEqual(auto_filled_tdee_split_value,'387')
-		self.fail('Finish the test!')
 
-		#There is a a "Cals Remaining" footer which adds up to 1935. 
 
-		#And a header reading "Customize meal calories (Optional), and a Save button below
-
-		#Joe wants to have two snacks of 200 cals so he changed Snack1 and Snack2 to 200 each
-		#and he notices that the total cals changes to 374, and the Save button grays out.
+		#Joe wants to have one meal of 200 cals so he changes Meal 1 to 200
+		#and he notices that the Remaining Cals changes to 187, and the Save button grays out.
+		meal_0_input.clear()
+		meal_0_input.send_keys(200)
+		remaining_cals_span = self.browser.find_element_by_id('id_meal_template_set_cals_total')
+		remaining_cals = remaining_cals_span.text
+		self.assertEqual(remaining_cals,'187')
 		
+		save_macros_button = self.browser.find_element_by_id('id_save_my_macros_button')
+		self.assertEqual(save_macros_button.text,'Save Macro Info')
+		self.assertFalse(save_macros_button.is_enabled())
 
-		#Joe realizes he wants to make a change to his macro ratio's, so, as per
-		#the aforementioned confirmation message, he navigates to the 'My Macros' tab
-
-		#He notices a display that shows his macro stats, such as the percentage 
-		#breakdown, his daily activity settings, and his, weight loss/gain rate, and the 
-		#macros themselves. Except for the macros, all the other info has the option to change
-		#the current settings, with the macro % breakdown having a "Custom" button, in addtion to the preset breakdown radio buttons.
+		#Joe returns the meal 1 to 387 and when the save button is enabled he clicks it and soon gets a 
+		#'Macros Sucessfully Saved' Alert message below the save button
+		meal_0_input.clear()
+		meal_0_input.send_keys('387')
+		self.assertTrue(save_macros_button.is_enabled())
+	
+		self.fail('Finish the test!')
+		save_macros_button.click()
+		successful_post_message = self.browser.find_element_by_id('id_successful_post_message').text
+		self.assertEqual(successful_post_message,'Macros Successfully Saved')
