@@ -142,12 +142,12 @@ class CalcAndViewMacros(FunctionalTest):
 		continue_button = self.browser.find_element_by_id('id_choose_macros_continue_button')
 		self.assertTrue(continue_button.is_enabled())
 		continue_button.click()
-		self.check_element_content('id_meal_template_header','text','Break Up Your Daily Calories Into Meals/Snacks (Optional)')
+		self.check_element_content('id_meal_template_header','text','Break Up Your Daily Calories Into Meals/Snacks')
 		self.check_element_content('id_meal_template_meals_number_label','text','Number of meals/snacks per day?')
 		self.check_element_content('id_meal_template_meals_number','placeholder','# meals/snacks')
 		
-		set_cals_button = self.browser.find_element_by_id('id_meal_template_set_cals_button')
-		self.assertEqual(set_cals_button.text,'Set Calories')
+		set_cals_button = self.browser.find_element_by_id('id_meal_template_set_cals_continue_button')
+		self.assertEqual(set_cals_button.text,'Continue')
 		self.assertFalse(set_cals_button.is_enabled())
 		#Joe enters 5, and clicks the Set Calories which becomes enabled once the the input is entered.
 		#Another section appears where there are 5 inputs labeled meal/snack 1 - 5

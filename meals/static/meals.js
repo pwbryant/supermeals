@@ -214,22 +214,22 @@ var continue_button_displays_meal_snack_num_div = function() {
 	});
 }
 
-var set_cals_button_is_enabled_upon_input_keyup = function() {
+var set_cals_continue_button_is_enabled_upon_input_keyup = function() {
 
 	$('#id_meal_template_meals_number').on('keyup',function() {
 		var input_value = $(this).val();
 		if (input_value % 1 === 0) {
-			$('#id_meal_template_set_cals_button').prop('disabled',false);
+			$('#id_meal_template_set_cals_continue_button').prop('disabled',false);
 		} else {
 
-			$('#id_meal_template_set_cals_button').prop('disabled',true);
+			$('#id_meal_template_set_cals_continue_button').prop('disabled',true);
 		}
 	});
 }
 
 var display_set_cals_form = function() {
 
-	$('#id_meal_template_set_cals_button').on('click',function() {
+	$('#id_meal_template_set_cals_continue_button').on('click',function() {
 		var tdee = $('#id_change_tdee_result').html(),
 		meal_num = $('#id_meal_template_meals_number').val();
 		if (tdee == '') {
@@ -242,6 +242,7 @@ var display_set_cals_form = function() {
 			set_cals_table += '<tr><td><label for="meal_' + i + '">Meal ' + (i + 1) + '</label><input name="meal_' + i + '" type="text" value="' + equal_cals + '" data-value="' + equal_cals + '"/></td></tr>';
 		}
 		set_cals_table += '<tr><td><span id="id_meal_template_set_cals_total">0</span></td></tr></table>';
+		set_cals_table += '<br><button id="id_save_my_macros_button" class="btn">Save Your Macro Info</button>';
 		$('#id_meal_template_set_meal_cals_container').html(set_cals_table)
 		meal_template_set_cals_totaler();//start lister on new table
 

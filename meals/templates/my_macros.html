@@ -83,14 +83,13 @@
 			<br><button id='id_choose_macros_continue_button' class="btn" disabled>Continue</button>
 		</div>
 		<div id="id_meal_template_meals_number_form_container">
-			<span id="id_meal_template_header">Break Up Your Daily Calories Into Meals/Snacks (Optional)</span>
+			<span id="id_meal_template_header">Break Up Your Daily Calories Into Meals/Snacks</span>
 			<label id="id_meal_template_meals_number_label">Number of meals/snacks per day?</label>
 			<input id='id_meal_template_meals_number' type='text' placeholder='# meals/snacks'/>
-			<button id='id_meal_template_set_cals_button' class='btn' disabled>Set Calories</button>
+			<button id='id_meal_template_set_cals_continue_button' class='btn' disabled>Continue</button>
 		</div>
 		<div id="id_meal_template_set_meal_cals_container"></div>
 		{% csrf_token %}
-		<br><button id='id_save_my_macros_button' class="btn">Save Your Macro Info</button>
 		{% if form.errors %}
 			<div class="form-group has-error">
 				<div class="help-block">{{ form.errors }}</div>
@@ -105,7 +104,7 @@
 	change_change_rate_display();
 	choose_macro_handler();
 	continue_button_displays_meal_snack_num_div();
-	set_cals_button_is_enabled_upon_input_keyup();
+	set_cals_continue_button_is_enabled_upon_input_keyup();
 	display_set_cals_form();
 	meal_template_set_cals_totaler();
 </script>

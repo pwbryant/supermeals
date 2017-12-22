@@ -6,6 +6,31 @@
 	<title>Javascript Tests</title>
 	<link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.4.1.css">
 
+	<script>
+		//helper functions
+		var fill_activity_direction_rate = function(act_,dir_,rate,rate_unit) {
+			$('input[name=activity]').val(act_);
+			$('input[value=' + dir_ + ']').prop('checked',true);
+			$('input[name=' + rate_unit + '_change_rate]').val(rate);
+		}
+
+		var set_up_choose_macros_test = function(input_,value,result_id,result_value) {
+			$('#id_choose_macros_form_container').css('display','block');
+			$('#' + input_).val(value);
+			$('#' + result_id).html(result_value);
+			$('#' + input_).trigger('keyup');
+		}
+		
+		var setup_set_cals_form = function() {
+			display_set_cals_form();
+			$('#id_change_tdee_result').html('1935');
+			$('#id_meal_template_meals_number').val('5');
+			$('#id_meal_template_set_cals_continue_button').trigger('click');
+		}
+	</script>
+	<script src="https://code.jquery.com/qunit/qunit-2.4.1.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="../meals.js"></script>
 </head>
 <body>
 	<div id="qunit"></div>
@@ -67,38 +92,14 @@
 	<button id='id_choose_macros_continue_button' class='btn'>Continue</button>
 	<div id="id_meal_template_meals_number_form_container" style="display:none">
 		<input id='id_meal_template_meals_number' type='text'>
-		<button id='id_meal_template_set_cals_button' class='btn' disabled>Set Calories</button>
+		<button id='id_meal_template_set_cals_continue_button' class='btn' disabled>Continue</button>
 	</div>
 	<!--calc macros - set cals for daily meals-->
 	<div id="id_meal_template_set_meal_cals_container"></div>
-	<button id="id_save_my_macros_button" class='btn'>Save Your Macro Info</button>
 
 	<!--end of test mocks-->
-	<script src="https://code.jquery.com/qunit/qunit-2.4.1.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-	<script src="../meals.js"></script>
-	<script>
-		//helper functions
-		var fill_activity_direction_rate = function(act_,dir_,rate,rate_unit) {
-			$('input[name=activity]').val(act_);
-			$('input[value=' + dir_ + ']').prop('checked',true);
-			$('input[name=' + rate_unit + '_change_rate]').val(rate);
-		}
 
-		var set_up_choose_macros_test = function(input_,value,result_id,result_value) {
-			$('#id_choose_macros_form_container').css('display','block');
-			$('#' + input_).val(value);
-			$('#' + result_id).html(result_value);
-			$('#' + input_).trigger('keyup');
-		}
-		
-		var setup_set_cals_form = function() {
-			display_set_cals_form();
-			$('#id_change_tdee_result').html('1935');
-			$('#id_meal_template_meals_number').val('5');
-			$('#id_meal_template_set_cals_button').trigger('click');
-		}
-	</script>
+	<!--QUnit TESTS -->
 	<script>
 		//Set Calories form (note: meal_template_set_cals_totaler is initiated inside display_set_cals_form()
 		QUnit.test("If set cals total not equal to 0 the total is red, but returns to black once 0 again", function (assert) {
@@ -142,21 +143,22 @@
 			var last_meal_label = $($('#id_meal_template_set_cals_table label')[4]).html();
 			assert.equal(last_meal_label,'Meal 5');
 		});
-		QUnit.test("Click Set Calories creates the same number of inputs elements as the number of meals", function (assert) {
+		QUnit.test("Click Continue creates the same number of inputs elements as the number of meals", function (assert) {
 			setup_set_cals_form();
 			var set_cals_table_input_num = $('#id_meal_template_set_cals_table input').length;
 			assert.equal(set_cals_table_input_num,5);
 		});
 		//Set Calories button becomes enabled when meal number input is filled
-		QUnit.test("Set Calories button becomes enabled upon number input and disabled with str input", function (assert) {
-			set_cals_button_is_enabled_upon_input_keyup();
+		QUnit.test("Continue button becomes enabled upon number input and disabled with str input", function (assert) {
+			set_cals_continue_button_is_enabled_upon_input_keyup();
+			assert.equal($('#id_meal_template_set_cals_continue_button').is(':enabled'), false);
 			$('#id_meal_template_meals_number').val('5');
 			$('#id_meal_template_meals_number').trigger('keyup');
-			assert.equal($('#id_meal_template_set_cals_button').is(':enabled'), true);
+			assert.equal($('#id_meal_template_set_cals_continue_button').is(':enabled'), true);
 
 			$('#id_meal_template_meals_number').val('cat');
 			$('#id_meal_template_meals_number').trigger('keyup');
-			assert.equal($('#id_set_cals_button').is(':enabled'), false);
+			assert.equal($('#id_set_cals_continue_button').is(':enabled'), false);
 		});
 		
 		//Continue button reveals the meal/snacks input div
