@@ -25,6 +25,6 @@ urlpatterns = [
 	url(r'^sign_up/$', views.sign_up, name='sign_up'),
 	url(r'^create_account$', views.create_account, name='create_account'),
 	url(r'^get_my_macros/$', views.get_my_macros, name='get_my_macros'),
-	url(r'^save_my_macros$', views.save_my_macros, name='save_my_macros'),
+	url(r'^save_my_macros$', views.save_my_macros_and_meal_templates, name='save_my_macros_and_meal_templates'),
 ]
 	

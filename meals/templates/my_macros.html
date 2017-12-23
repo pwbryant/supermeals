@@ -68,6 +68,7 @@
 			<button id='id_calc_tdee'>Calculate</button>
 			<div id="id_tdee_result"></div>
 			<div id="id_change_tdee_result"></div>
+			<input id="id_hidded_tdee" name='tdee' type='hidden'/>
 		</div>
 		<div id="id_choose_macros_form_container">
 			<span><p>Choose Macro Ratios</p></span>
@@ -85,7 +86,7 @@
 		<div id="id_meal_template_meals_number_form_container">
 			<span id="id_meal_template_header">Break Up Your Daily Calories Into Meals/Snacks</span>
 			<label id="id_meal_template_meals_number_label">Number of meals/snacks per day?</label>
-			<input id='id_meal_template_meals_number' type='text' placeholder='# meals/snacks'/>
+			<input id='id_meal_template_meals_number' type='text' name='meal_number' placeholder='# meals/snacks'/>
 			<button id='id_meal_template_set_cals_continue_button' class='btn' disabled>Continue</button>
 		</div>
 		<div id="id_meal_template_set_meal_cals_container"></div>
@@ -95,11 +96,15 @@
 				<div class="help-block">{{ form.errors }}</div>
 			</div>
 		{% endif %}
+		{% if errors %}
+			<div class="form-group has-error">
+				<div class="help-block">{{ errors }}</div>
+			</div>
+		{% endif %}
 	</div>
 	<div id="id_my_macros_post_status"></div>
 </div>
 <script>
-	post_my_macros_form();
 	switch_between_imperial_metric();
 	calc_tdee();
 	change_change_rate_display();

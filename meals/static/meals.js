@@ -28,12 +28,14 @@ var get_my_macros_page_content = function() {
 };
 
 //not tested
-var post_my_macros_form = function() {
+var save_my_macros_button_posts_form = function() {
 	$('#id_save_my_macros_button').on('click',function() {
 		var post_data = {};
 		$("#id_my_macros_form_container").find(":input[type=text],:input[type=hidden],:input[type=radio]:checked").each(function() {
 		    post_data[this.name] = $(this).val();
 		});
+		console.log(post_data);
+		/*
 		$.post('/meals/save_my_macros',post_data,function(data) {
 			
 			if (data == '1') {
@@ -45,6 +47,7 @@ var post_my_macros_form = function() {
 			}
 			
 		});
+		*/
 	});
 }
 
@@ -250,6 +253,7 @@ var display_set_cals_form = function() {
 		set_cals_table += '<tr><td><label for="remaining_cals">Remaining Cals</label><span id="id_meal_template_set_cals_total" name="remaining_cals">0</span></td></tr></table>';
 		set_cals_table += '<br><button id="id_save_my_macros_button" class="btn">Save Macro Info</button>';
 		$('#id_meal_template_set_meal_cals_container').html(set_cals_table)
+		save_my_macros_button_posts_form();
 		meal_template_set_cals_totaler();//start lister on new table
 
 	});
