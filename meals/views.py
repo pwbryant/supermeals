@@ -76,11 +76,20 @@ def create_meal_template_dict(POST):
 	validation_errors = []
 
 	meal_template_dict = {}
-	meal_num = int(POST.get('meal_number',0))
-	tdee = int(POST.get('tdee',-1))
-	if tdee == -1:
+	meal_num = POST.get('meal_number',-1)
+	tdee = POST.get('tdee',-1)
+
+	if meal_num in ['',-1] or not meal_num.isdigit():
+		validation_errors.append('Enter Valid Number of Meals')
+		meal_num = -1 
+	else:
+		meal_num = int(meal_num)
+
+	if tdee in ['',-1]:
 		validation_errors.append('TDEE Missing')
-	
+		tdee = -1
+	else:
+		tdee = int(tdee) 
 	unique_cals = {}
 	if meal_num > 0:
 		for i in range(int(meal_num)):
@@ -91,8 +100,6 @@ def create_meal_template_dict(POST):
 				unique_cals[cals].append(str(i + 1))
 			else:
 				validation_errors.append('All Meal Calorie Fields Must Contain a Number')
-	else:		
-		validation_errors.append('Enter Number of Meals')
 
 	template_num = 1
 	for cal_key,meal_nums in unique_cals.items():
@@ -110,7 +117,7 @@ def create_meal_template_dict(POST):
 def save_meal_templates(request):
 	meal_template_dict,validation_errors = create_meal_template_dict(request.POST)
 	if len(validation_errors) > 0:
-		return {'errors':'<ul>' + validation_errors + '</ul>'}
+		return {'status':0,'errors':'<ul>' + validation_errors + '</ul>'}
 
 	for model_fields in meal_template_dict.values():
 		model_fields['user'] = request.user
@@ -121,7 +128,7 @@ def save_meal_templates(request):
 		except IntegrityError:
 			pass
 	
-	return 1
+	return {'status':1}
 
 def create_macro_form_dict_from_POST(POST):
 
@@ -150,7 +157,6 @@ def create_macro_form_dict_from_POST(POST):
 				},
 				**macro_form_dict
 			}
-
 	return macro_form_dict
 
 def save_my_macros(request):
@@ -158,7 +164,7 @@ def save_my_macros(request):
 	macro_form_dict = create_macro_form_dict_from_POST(request.POST) 
 	macro_form = MakeMacrosForm(macro_form_dict,unit_type=macro_form_dict['unit_type'])	
 	if not macro_form.is_valid():
-		return {
+		return {'status':0,
 			'form':macro_form,
 			'unit_type':macro_form_dict['unit_type']
 		}
@@ -176,7 +182,10 @@ def save_my_macros(request):
 	except IntegrityError:
 		pass
 
-	return 1
+	return {'status':1,
+		'form':macro_form,
+		'unit_type':macro_form_dict['unit_type']
+	}
 
 
 def save_my_macros_and_meal_templates(request):
@@ -184,12 +193,10 @@ def save_my_macros_and_meal_templates(request):
 	my_macro_response = save_my_macros(request)
 	meal_template_response = save_meal_templates(request)
 
-	if [my_macro_response,meal_template_response] == [1,1]:
+	if [my_macro_response['status'],meal_template_response['status']] == [1,1]:
 		return HttpResponse('1')
 
-	error_dict = {}
-	if my_macro_response != 1:
- 		error_dict = {**my_macro_response}
+	error_dict = {**my_macro_response}
 
 	if meal_template_response != 1:
  		error_dict = {**meal_template_response,**error_dict}

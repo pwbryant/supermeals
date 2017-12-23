@@ -34,10 +34,9 @@ var save_my_macros_button_posts_form = function() {
 		$("#id_my_macros_form_container").find(":input[type=text],:input[type=hidden],:input[type=radio]:checked").each(function() {
 		    post_data[this.name] = $(this).val();
 		});
-		console.log(post_data);
-		/*
+		console.log(1,post_data);
 		$.post('/meals/save_my_macros',post_data,function(data) {
-			
+			console.log('after post')
 			if (data == '1') {
 				$.get('/meals/get_my_macros/',function(data) {
 					$('#id_my_macros_form_container').html(data);
@@ -47,7 +46,6 @@ var save_my_macros_button_posts_form = function() {
 			}
 			
 		});
-		*/
 	});
 }
 
@@ -146,6 +144,8 @@ var calc_tdee = function() {
 		}
 		$('#id_tdee_result').html(Math.round(tdee_return_value));
 		$('#id_change_tdee_result').html(Math.round(change_tdee_return_value));
+		$('#id_hidden_tdee').val(Math.round(change_tdee_return_value));
+		
 		$('#id_choose_macros_form_container').show();
 	});
 }
