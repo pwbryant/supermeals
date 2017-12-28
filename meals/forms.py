@@ -83,31 +83,38 @@ class MakeMacrosForm(forms.models.ModelForm):
 	
 	m_height = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		'placeholder':'cm',
-		'class':'form-control input-sm'
+		'class':'form-control input-sm',
+		'data-type':'number'
 	}),required=False)
 	m_weight = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		'placeholder':'kg',
-		'class':'form-control input-sm'
+		'class':'form-control input-sm',
+		'data-type':'number'
 	}),required=False)
 	m_change_rate = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		'placeholder':'kg/wk',
-		'class':'form-control input-sm change_rate'
+		'class':'form-control input-sm change_rate',
+		'data-type':'number'
 	}),required=False)
 	i_height_0 = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		'placeholder':'ft',
-		'class':'form-control input-sm'
+		'class':'form-control input-sm',
+		'data-type':'number'
 	}),required=False)
 	i_height_1 = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		'placeholder':'in',
-		'class':'form-control input-sm'
+		'class':'form-control input-sm',
+		'data-type':'number'
 	}),required=False)
 	i_weight = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		'placeholder':'lb',
-		'class':'form-control input-sm'
+		'class':'form-control input-sm',
+		'data-type':'number'
 	}),required=False)
 	i_change_rate = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		'placeholder':'lb/wk',
-		'class':'form-control input-sm change_rate'
+		'class':'form-control input-sm change_rate',
+		'data-type':'number'
 	}),required=False)
 
 	macro_error_messages = {
@@ -118,8 +125,8 @@ class MakeMacrosForm(forms.models.ModelForm):
 	}
 	
 	choose_macro_classes = 'form-control input-sm choose_macros'
-	pct_attrs = {'placeholder':'%','class': choose_macro_classes,'data-value':0}
-	g_attrs = {'placeholder':'g','class': choose_macro_classes}
+	pct_attrs = {'placeholder':'%','class': choose_macro_classes,'data-value':0,'data-type':'number'}
+	g_attrs = {'placeholder':'g','class': choose_macro_classes,'data-type':'number'}
 	protein_percent = forms.IntegerField(min_value=0,max_value=100,widget=forms.fields.TextInput(attrs=pct_attrs),error_messages = macro_error_messages,required=True)
 	protein_g = forms.IntegerField(widget=forms.fields.TextInput(attrs=g_attrs),error_messages = macro_error_messages,required=True)
 	fat_percent = forms.IntegerField(min_value=0,max_value=100,widget=forms.fields.TextInput(attrs=pct_attrs),error_messages = macro_error_messages,required=True)
@@ -141,15 +148,21 @@ class MakeMacrosForm(forms.models.ModelForm):
 			'age': forms.fields.TextInput(attrs = {
 				'placeholder': 'Age',
 				'class': 'form-control input-sm',
+				'data-type':'number'
 			}),
 			'weight': forms.fields.TextInput(attrs = {
 				'class': 'form-control input-sm',
+				'data-type':'number'
 			}),
-			'height': forms.fields.TextInput(),
+			'height': forms.fields.TextInput(attrs = {
+				'class': 'form-control input-sm',
+				'data-type':'number'
+			}),
 			'activity': forms.RadioSelect(),
 			'direction': forms.RadioSelect(),
 			'change_rate': forms.fields.TextInput(attrs = {
 				'class': 'form-control input-sm',
+				'data-type':'number'
 			}),
 		}
 

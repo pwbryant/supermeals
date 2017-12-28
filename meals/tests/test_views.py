@@ -259,3 +259,12 @@ class MyMacrosTabTest(TestCase):
 		response=self.client.post('/meals/save_my_macros', data=macro_data)
 		self.assertContains(response,'TDEE Missing')
 
+	def test_save_meal_template_validation_error_gets_back_MakeMacrosForm(self):	
+		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+		macro_data = self.IMPERIAL_MACRO_DATA.copy()
+		macro_data.pop('tdee')
+		response=self.client.post('/meals/save_my_macros', data=macro_data)
+		
+		self.assertIsInstance(response.context['form'], MakeMacrosForm)
+
+
