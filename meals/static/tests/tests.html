@@ -61,30 +61,30 @@
 		<!--calc macros - calc tdee-->
 		<div id='id_tdee_form_container'>
 			<div id="id_unit_type_div">
-			<input type='radio' name='unit_type' value='imperial' checked='checked'/>
-			<input type='radio' name='unit_type' value='metric'/>
+			<input id='id_unit_type_1' type='radio' name='unit_type' value='imperial' checked='checked'/>
+			<input id='id_unit_type_2' type='radio' name='unit_type' value='metric'/>
 			</div>
 			<div id="id_gender_div">
-			<input type='radio' name='gender' value='m' checked='checked'/>
-			<input type='radio' name='gender' value='f' />
+			<input id='id_gender_1' type='radio' name='gender' value='m' checked='checked'/>
+			<input id='id_gender_2'type='radio' name='gender' value='f' />
 			</div>
-			<div id="id_age_div"><label for='id_age'>Age:</label><input id='id_age' type='text' name='age' value='34'/></div>
-			<div id="id_weight_div"><label for='id_weight'>Weight:</label><span id="id_weight"><input id='id_i_weight' type='text' name='i_weight' value='210' />
-			<input type='text' name='m_weight' value='0'/></span>
+			<div id="id_age_div"><label for='id_age'>Age:</label><input id='id_age' type='text' name='age' value='34' data-type='number' /></div>
+			<div id="id_weight_div"><label for='id_weight'>Weight:</label><span id="id_weight"><input id='id_i_weight' type='text' name='i_weight' value='210' data-type='number'/>
+			<input type='text' name='m_weight' value='0' data-type='number'/></span>
 			</div>
-			<div id="id_height_div"><label for='id_height'>Height:</label><span id="id_height"><input id='id_i_height' type='text' name='i_height_0' value='5'/>
-			<input type='text' name='i_height_1' value='10'/>
-			<input type='text' name='m_height' value='0'/>
+			<div id="id_height_div"><label for='id_height'>Height:</label><span id="id_height"><input id='id_i_height' type='text' name='i_height_0' value='5' data-type='number'/>
+			<input type='text' name='i_height_1' value='10' data-type='number'/>
+			<input type='text' name='m_height' value='0' data-type='number'/>
 			</span></div>
 			<div id="id_activity_div"><input type='radio' name='activity'  checked='checked'/></div>
 			<div id="id_direction_div"><input id='id_direction_0' type='radio' name='direction' value='lose'/>
-			<input id='id_direction_1' type='radio' name='direction' value='maintain' />
+			<input id='id_direction_1' type='radio' name='direction' value='maintain' checked='checked' />
 			<input id='id_direction_2' type='radio' name='direction' value='gain' />
 			</div>
 			<div id='id_change_rate_div'><label for='id_change_rate'>Rate</label><span id='id_change_rate'>
-				<input id='id_i_change_rate' class='change_rate' type='text' name='i_change_rate' value='1' />
+				<input id='id_i_change_rate' class='change_rate' type='text' name='i_change_rate' value='1' data-type='number' />
 			</div>
-			<button id="id_calc_tdee" onclick="form_validation('id_tdee_form_container')">Calculate</button>
+			<button id="id_calc_tdee">Calculate</button>
 			<!--<button id="id_calc_tdee" >Calculate</button>-->
 
 			<div id="id_calc_tdee_errors"></div>
@@ -120,11 +120,25 @@
 	<script>
 		//form validation
 		QUnit.test("validates form inputs, test catch empty field", function (assert) {
+			calc_tdee();
 			$('#id_i_weight').val('');
-			$('#id_calc_tdee_form_container').html('');
 			$('#id_calc_tdee').trigger('click');
 			error = $('#id_calc_tdee_errors').html();
 			assert.equal(error.includes('Missing Weight Value'),true);
+		});
+		QUnit.test("validates form inputs, test catch str int field", function (assert) {
+			calc_tdee();
+			$('#id_i_weight').val('str');
+			$('#id_calc_tdee').trigger('click');
+			error = $('#id_calc_tdee_errors').html();
+			assert.equal(error.includes('Weight Field Forbids Non-Numeric Values'),true);
+		});
+		QUnit.test("validates form inputs, test catch empty radio", function (assert) {
+			calc_tdee();
+			$('#id_unit_type_1').prop('checked',false);
+			$('#id_calc_tdee').trigger('click');
+			error = $('#id_calc_tdee_errors').html();
+			assert.equal(error.includes('Unit Type Option Needs To Be Selected'),true);
 		});
 		//Set Calories form (note: meal_template_set_cals_totaler is initiated inside display_set_cals_form()
 		QUnit.test("If set cals total not equal to 0 the total is red, but returns to black once 0 again", function (assert) {

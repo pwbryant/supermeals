@@ -54,13 +54,13 @@ var switch_between_imperial_metric = function() {
 	$('input[name=unit_type]').on('click',function() {	
 		var unit_type = $(this).val();
 		if (unit_type == 'metric') {
-			$('#id_weight_div').html('<label for=id_weight>Weight:</label><span id="id_weight"><input id="id_m_weight" type="text" name="m_weight" class="form-control input-sm" placeholder="kg"/>');	
-			$('#id_height_div').html('<label for="id_height">Height:</label><span id="id_height"><input id="id_m_height" type="text" name="m_height" class="form-control input-sm" placeholder="cm"/>');		
-			$('#id_change_rate_div').html('<label for="id_change_rate">Rate of Change</label><span id="id_change_rate"><input id="id_m_change_rate" type="text" name="m_change_rate" class="form-control input-sm" placeholder="kg/wk"/></span>');		
+			$('#id_weight_div').html('<label for=id_weight>Weight:</label><span id="id_weight"><input id="id_m_weight" type="text" name="m_weight" class="form-control input-sm" placeholder="kg" data-type="number" />');	
+			$('#id_height_div').html('<label for="id_height">Height:</label><span id="id_height"><input id="id_m_height" type="text" name="m_height" class="form-control input-sm" placeholder="cm" data-type="number"/>');		
+			$('#id_change_rate_div').html('<label for="id_change_rate">Rate of Change</label><span id="id_change_rate"><input id="id_m_change_rate" type="text" name="m_change_rate" class="form-control input-sm" placeholder="kg/wk" data-type="number"/></span>');		
 		} else {
-			$('#id_weight_div').html('<label for=id_weight>Weight:</label><span id="id_weight"><input id="id_i_weight" type="text" name="i_weight" class="form-control input-sm" placeholder="lb"/>');	
-			$('#id_height_div').html('<label for="id_height">Height:</label><span id="id_height"><input id="id_i_height_0" type="text" name="i_height_0" class="form-control input-sm" placeholder="ft"/><input id="id_i_height_1" type="text" name="i_height_1" class="form-control input-sm" placeholder="in"/></span>');
-			$('#id_change_rate_div').html('<label for="id_change_rate">Rate of Change</label><span id="id_change_rate"><input id="id_m_change_rate" type="text" name="m_change_rate" class="form-control input-sm" placeholder="lb/wk"/></span>');		
+			$('#id_weight_div').html('<label for=id_weight>Weight:</label><span id="id_weight"><input id="id_i_weight" type="text" name="i_weight" class="form-control input-sm" placeholder="lb" data-type="number"/>');
+			$('#id_height_div').html('<label for="id_height">Height:</label><span id="id_height"><input id="id_i_height_0" type="text" name="i_height_0" class="form-control input-sm" placeholder="ft" data-type="number"/><input id="id_i_height_1" type="text" name="i_height_1" class="form-control input-sm" placeholder="in" data-type="number"/></span>');
+			$('#id_change_rate_div').html('<label for="id_change_rate">Rate of Change</label><span id="id_change_rate"><input id="id_m_change_rate" type="text" name="m_change_rate" class="form-control input-sm" placeholder="lb/wk" data-type="number"/></span>');		
 		}
 	});
 
@@ -83,8 +83,8 @@ var convert_between_metric_english = function(unit_value,conversion) {
 var calc_tdee = function() {
 	
 	$('#id_calc_tdee').on('click',function() {	
-		var are_errors = $('#id_calc_tdee_errors').html();
-		if (are_errors == '') {
+		var form_validated = form_validation('id_tdee_form_container');
+		if (form_validated) {
 			var status_ = 1,
 			tdee_data = {};
 			$("#id_tdee_form_container").find(":input[type=text],:input[type=radio]:checked").each(function() {
@@ -292,17 +292,42 @@ var meal_template_set_cals_totaler = function() {
 }
 
 var form_validation = function(form_id) {
-	var errors = [];
+	var errors = [],
+	radio_names = [];
 	$('#' + form_id).find(':input[type=text],input[type=radio]:checked').each(function(index,element) {
 		var value = $(element).val(),
-		type = $(element).prop('type');
-		
+		type = $(element).prop('type'),
+		data_type = $(element).attr('data-type'),
+		label = $(element).closest('div').find('label').text().replace(/[^a-zA-Z_ ]/g,''),
+		error = '';
 		if (type == 'text' && value == '') {
-			var label = $(element).closest('div').find('label').text().replace(/[^a-zA-Z_]/g,'');
-			errors.push('Missing ' + label + ' Value');
+			error = 'Missing ' + label + ' Value';
+		} 
+		if (type == 'text' && data_type == 'number'  && isNaN(value)) {
+			error = label + ' Field Forbids Non-Numeric Values';
+		}
+		if (type == 'radio') {
+			var name = $(element).prop('name');
+			radio_names.push(name);
+		} 
+		if (error != '') {
+			errors.push(error);
 		}
 	});
 
+	$('#' + form_id).find('input[type=radio]').each(function(index,element) {
+		var name = $(element).prop('name');
+		if (!(radio_names.includes(name))) {
+			var title_name = '';
+			name.split('_').forEach(function(chunk) {
+				title_name += chunk[0].toUpperCase() + chunk.slice(1) + ' ';
+			});
+			error = title_name.trim() + ' Option Needs To Be Selected';
+			if (!(errors.includes(error))) {
+				errors.push(error);
+			}
+		}
+	});
 	if (errors.length > 0) {
 		var error_html = '<ul>';
 		errors.forEach(function(error) {
@@ -310,6 +335,10 @@ var form_validation = function(form_id) {
 		});
 		error_html += '</ul>';
 		$('#id_calc_tdee_errors').html(error_html);
+		return 0;
+	} else {
+		$('#id_calc_tdee_errors').html('');
+		return 1;
 	}	
 }
 
