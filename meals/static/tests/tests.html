@@ -87,18 +87,19 @@
 			<button id="id_calc_tdee">Calculate</button>
 			<!--<button id="id_calc_tdee" >Calculate</button>-->
 
-			<div id="id_calc_tdee_errors"></div>
 		</div>
 		<div id="id_tdee_result"></div>
 		<div id="id_change_tdee_result"></div>
 		<div id="id_choose_macros_form_container" style="display:none;">
 		<!--choose macros -->
-		<table>
-		<tr><th>Protein</th><td><input id="id_protein_percent" class="choose_macros" type="text" placeholder="%" data-value="0" /></td><input id="id_protein_g" class="choose_macros" type="text" placeholder="g"/><td></td></tr>
-		<tr><th>Fat</th><td><input id="id_fat_percent" class="choose_macros" type="text" placeholder="%" data-value="0"/></td><td><input id="id_fat_g" class="choose_macros" type="text" placeholder="g"/></td></tr>
-		<tr><th>Carbs</th><td><input id="id_carbs_percent" class="choose_macros" type="text" placeholder="%" data-value="0"/></td><td><input id="id_carbs_g" class="choose_macros" type="text" placeholder="g"/></td></tr>
-		<tr><th>Total</th><td><span id='id_macro_percent_total'>100</span></td><td></td></tr>
-		</table>
+		<label for='id_protein_percent'>Protein</label><input id="id_protein_percent" class="choose_macros" type="text" placeholder="%" data-value="0" data-type="number" />
+		<input id="id_protein_g" class="choose_macros" type="text" placeholder="g" data-type="number"/>
+		<label for='id_fat_percent'>Fat</label><input id="id_fat_percent" class="choose_macros" type="text" placeholder="%" data-value="0" data-type="number"/>
+		<input id="id_fat_g" class="choose_macros" type="text" placeholder="g" data-type="number"/>
+		<label for='id_carbs_percent'>Carbs</label><input id="id_carbs_percent" class="choose_macros" type="text" placeholder="%" data-value="0" data-type="number"/>
+		<input id="id_carbs_g" class="choose_macros" type="text" placeholder="g" data-type="number"/>
+		<label for='id_macro_percent_total'>Total</label></th><td><span id='id_macro_percent_total'>100</span>
+
 		<button id="id_choose_macros_continue_button" disabled>Continue</button>
 		</div>
 	</div>
@@ -107,12 +108,14 @@
 	<!--calc macros - Continue button reveals meal/snack number input -->
 	<button id='id_choose_macros_continue_button' class='btn'>Continue</button>
 	<div id="id_meal_template_meals_number_form_container" style="display:none">
-		<input id='id_meal_template_meals_number' type='text'>
+		<input id='id_meal_template_meals_number' type='text' data-type="number">
 		<button id='id_meal_template_set_cals_continue_button' class='btn' disabled>Continue</button>
 	</div>
 	<!--calc macros - set cals for daily meals-->
-	<div id="id_meal_template_set_meal_cals_container"></div>
+	<div id="id_meal_template_set_meal_cals_form_container"></div>
 
+	<!-- form errors-->
+	<div id="id_client_side_form_errors"></div>
 	<!--end of test mocks-->
 	<!------------------------------------------------------------------------------------------------------------------ -->
 	<!------------------------------------------------------------------------------------------------------------------ -->
@@ -123,21 +126,21 @@
 			calc_tdee();
 			$('#id_i_weight').val('');
 			$('#id_calc_tdee').trigger('click');
-			error = $('#id_calc_tdee_errors').html();
+			error = $('#id_client_side_form_errors').html();
 			assert.equal(error.includes('Missing Weight Value'),true);
 		});
 		QUnit.test("validates form inputs, test catch str int field", function (assert) {
 			calc_tdee();
 			$('#id_i_weight').val('str');
 			$('#id_calc_tdee').trigger('click');
-			error = $('#id_calc_tdee_errors').html();
+			error = $('#id_client_side_form_errors').html();
 			assert.equal(error.includes('Weight Field Forbids Non-Numeric Values'),true);
 		});
 		QUnit.test("validates form inputs, test catch empty radio", function (assert) {
 			calc_tdee();
 			$('#id_unit_type_1').prop('checked',false);
 			$('#id_calc_tdee').trigger('click');
-			error = $('#id_calc_tdee_errors').html();
+			error = $('#id_client_side_form_errors').html();
 			assert.equal(error.includes('Unit Type Option Needs To Be Selected'),true);
 		});
 		//Set Calories form (note: meal_template_set_cals_totaler is initiated inside display_set_cals_form()
@@ -182,14 +185,14 @@
 		});
 		QUnit.test("Click Set Calories button displays meal inputs that have 'Meal 1' - n and Remaining Cals labels", function (assert) {
 			setup_set_cals_form();
-			var last_meal_label = $($('#id_meal_template_set_cals_table label')[4]).html(),
-			remaining_cals_label = $($('#id_meal_template_set_cals_table label')[5]).html();
+			var last_meal_label = $($('#id_meal_template_set_meal_cals_form_container label')[4]).html(),
+			remaining_cals_label = $($('#id_meal_template_set_meal_cals_form_container label')[5]).html();
 			assert.equal(last_meal_label,'Meal 5');
 			assert.equal(remaining_cals_label,'Remaining Cals');
 		});
 		QUnit.test("Click Continue creates the same number of inputs elements as the number of meals", function (assert) {
 			setup_set_cals_form();
-			var set_cals_table_input_num = $('#id_meal_template_set_cals_table input').length;
+			var set_cals_table_input_num = $('#id_meal_template_set_meal_cals_form_container input').length;
 			assert.equal(set_cals_table_input_num,5);
 		});
 		//Set Calories button becomes enabled when meal number input is filled
@@ -208,6 +211,10 @@
 		//Continue button reveals the meal/snacks input div
 		QUnit.test("continue button displays macro meals number div", function (assert) {
 			continue_button_displays_meal_snack_num_div();
+			choose_macro_handler();
+			set_up_choose_macros_test('id_protein_percent','50','id_change_tdee_result','1935');
+			set_up_choose_macros_test('id_fat_percent','20','id_change_tdee_result','1935');
+			set_up_choose_macros_test('id_carbs_percent','30','id_change_tdee_result','1935');
 			assert.equal($('#id_meal_template_meals_number_form_container').is(':visible'), false);
 			$('#id_choose_macros_continue_button').trigger('click');
 			assert.equal($('#id_meal_template_meals_number_form_container').is(':visible'), true);
@@ -338,14 +345,6 @@
 			assert.equal($('#id_change_rate_div').css('display'),'block')
 		});
 		//calc tdees
-		QUnit.test("calculate tdee won't show choose macros dive if erros are present", function(assert) {
-			calc_tdee();
-			$('#id_calc_tdee_errors').html('errors');
-			$('#id_calc_tdee').trigger('click');
-			var result = $('#id_tdee_result').html();
-			assert.equal(result,'');
-			assert.equal($('#id_choose_macros_form_container').css('display'),'none');
-		});
 		QUnit.test("calculate tdee male at none activity lose 1lb/wk", function(assert) {
 			calc_tdee();
 			fill_activity_direction_rate('none','lose','1','i');

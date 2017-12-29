@@ -78,9 +78,9 @@
 			<p>Choose Macro Ratios</p>
 		
 			<span class='choose_macro_titles'>%</span><span class='choose_macro_titles'>g</span><br>
-			<span class='choose_macro_titles'>Protein</span>{{ form.protein_percent }}{{ form.protein_g }}<br>
-			<span class='choose_macro_titles'>Fat</span>{{ form.fat_percent }}{{ form.fat_g }}<br>
-			<span class='choose_macro_titles'>Carbs</span>{{ form.carbs_percent }}{{ form.carbs_g }}<br>
+			<div id='id_choose_protein_div'><label for='id_protein_percent'><span class='choose_macro_titles'>Protein</span></label>{{ form.protein_percent }}{{ form.protein_g }}</div>
+			<div id='id_choose_fat_div'><label for='id_fat_percent'><span class='choose_macro_titles'>Fat</span></label>{{ form.fat_percent }}{{ form.fat_g }}</div>
+			<div id='id_choose_carbs_div'><label for='id_carbs_percent'><span class='choose_macro_titles'>Carbs</span></label>{{ form.carbs_percent }}{{ form.carbs_g }}</div>
 			<span class='choose_macro_titles'>% Remaining</span><span id="id_macro_percent_total">100</span>
 			<br><button id='id_choose_macros_continue_button' class="btn" disabled>Continue</button>
 		</div>
@@ -88,10 +88,10 @@
 			<span id="id_meal_template_header">Break Up Your Daily Calories Into Meals/Snacks</span>
 			
 			<label for="id_meal_template_meals_number">Number of meals/snacks per day?</label>
-			<input id='id_meal_template_meals_number' class='form-control' type='text' name='meal_number' placeholder='# meals/snacks'/>
+			<input id='id_meal_template_meals_number' class='form-control' type='text' name='meal_number' placeholder='# meals/snacks' data-type="number"/>
 			<button id='id_meal_template_set_cals_continue_button' class='btn' disabled>Continue</button>
 		</div>
-		<div id="id_meal_template_set_meal_cals_container"></div>
+		<div id="id_meal_template_set_meal_cals_form_container"></div>
 		{% csrf_token %}
 		{% if form.errors %}
 			<div class="form-group has-error">
@@ -103,6 +103,7 @@
 				<div class="help-block">{{ errors }}</div>
 			</div>
 		{% endif %}
+		<div id='id_client_side_form_errors'></div>
 	</div>
 	<div id="id_my_macros_post_status"></div>
 </div>

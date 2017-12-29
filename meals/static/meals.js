@@ -30,20 +30,23 @@ var get_my_macros_page_content = function() {
 //not tested
 var save_my_macros_button_posts_form = function() {
 	$('#id_save_my_macros_button').on('click',function() {
-		var post_data = {};
-		$("#id_my_macros_form_container").find(":input[type=text],:input[type=hidden],:input[type=radio]:checked").each(function() {
-		    post_data[this.name] = $(this).val();
-		});
-		$.post('/meals/save_my_macros',post_data,function(data) {
-			if (data == '1') {
-				$.get('/meals/get_my_macros/',function(data) {
+		var form_validated = form_validation('id_my_macros_form_container');
+		if (form_validated) {
+			var post_data = {};
+			$("#id_my_macros_form_container").find(":input[type=text],:input[type=hidden],:input[type=radio]:checked").each(function() {
+			    post_data[this.name] = $(this).val();
+			});
+			$.post('/meals/save_my_macros',post_data,function(data) {
+				if (data == '1') {
+					$.get('/meals/get_my_macros/',function(data) {
+						$('#id_my_macros_form_container').html(data);
+					});
+				} else {
 					$('#id_my_macros_form_container').html(data);
-				});
-			} else {
-				$('#id_my_macros_form_container').html(data);
-			}
-			
-		});
+				}
+				
+			});
+		}
 	});
 }
 
@@ -215,11 +218,13 @@ var macro_percent_totaler = function(percent_id) {
 
 //tested
 var continue_button_displays_meal_snack_num_div = function() {
-
 	$('#id_choose_macros_continue_button').on('click', function() {
-
-		$('#id_meal_template_meals_number_form_container').show();
+		var form_validated = form_validation('id_choose_macros_form_container');
+		if (form_validated) {
+			$('#id_meal_template_meals_number_form_container').show();
+		}
 	});
+
 }
 
 //tested
@@ -227,7 +232,7 @@ var set_cals_continue_button_is_enabled_upon_input_keyup = function() {
 
 	$('#id_meal_template_meals_number').on('keyup',function() {
 		var input_value = $(this).val();
-		if (input_value % 1 === 0) {
+		if (!(isNaN(input_value) | input_value == 0)) {
 			$('#id_meal_template_set_cals_continue_button').prop('disabled',false);
 		} else {
 
@@ -246,16 +251,16 @@ var display_set_cals_form = function() {
 			tdee = $('#id_tdee_result').html();
 		}
 		var equal_cals = tdee / meal_num,
-		set_cals_table = '<table id="id_meal_template_set_cals_table">';
+		set_cals_form = '';
 
 		for (i=0;i<meal_num;i++) {
-			set_cals_table += '<tr><td><label for="meal_' + i + '">Meal ' + (i + 1) + '</label><input name="meal_' + i + '" type="text" value="' + equal_cals + '" data-value="' + equal_cals + '"/></td></tr>';
+			set_cals_form += '<div id="id_meal_' + i + '_div"><label for="meal_' + i + '">Meal ' + (i + 1) + '</label><input name="meal_' + i + '" type="text" value="' + equal_cals + '" data-value="' + equal_cals + '" data-type="number"/></div><br>';
 		}
-		set_cals_table += '<tr><td><label for="remaining_cals">Remaining Cals</label><span id="id_meal_template_set_cals_total" name="remaining_cals">0</span></td></tr></table>';
-		set_cals_table += '<br><button id="id_save_my_macros_button" class="btn">Save Macro Info</button>';
-		$('#id_meal_template_set_meal_cals_container').html(set_cals_table)
+		set_cals_form += '<label for="remaining_cals">Remaining Cals</label><span id="id_meal_template_set_cals_total" name="remaining_cals">0</span>';
+		set_cals_form += '<br><button id="id_save_my_macros_button" class="btn">Save Macro Info</button>';
+		$('#id_meal_template_set_meal_cals_form_container').html(set_cals_form)
 		save_my_macros_button_posts_form();
-		meal_template_set_cals_totaler();//start lister on new table
+		meal_template_set_cals_totaler();//start lister on new inputs 
 
 	});
 }
@@ -263,7 +268,7 @@ var display_set_cals_form = function() {
 //tested
 var meal_template_set_cals_totaler = function() {
 
-	$('#id_meal_template_set_cals_table input').on('keyup',function() {
+	$('#id_meal_template_set_meal_cals_form_container input').on('keyup',function() {
 		current_cal_total = $('#id_meal_template_set_cals_total').html();
 		var new_cal = parseFloat($(this).val());
 		if (isNaN(new_cal)) {
@@ -298,7 +303,7 @@ var form_validation = function(form_id) {
 		var value = $(element).val(),
 		type = $(element).prop('type'),
 		data_type = $(element).attr('data-type'),
-		label = $(element).closest('div').find('label').text().replace(/[^a-zA-Z_ ]/g,''),
+		label = $(element).closest('div').find('label').text().replace(/[^a-zA-Z0-9_ ]/g,''),
 		error = '';
 		if (type == 'text' && value == '') {
 			error = 'Missing ' + label + ' Value';
@@ -334,10 +339,12 @@ var form_validation = function(form_id) {
 			error_html += '<li>' + error + '</li>';
 		});
 		error_html += '</ul>';
-		$('#id_calc_tdee_errors').html(error_html);
+		//$('#id_calc_tdee_errors').html(error_html);
+		$('#id_client_side_form_errors').html(error_html);
 		return 0;
 	} else {
-		$('#id_calc_tdee_errors').html('');
+		//$('#id_calc_tdee_errors').html('');
+		$('#id_client_side_form_errors').html('');
 		return 1;
 	}	
 }
