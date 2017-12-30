@@ -200,6 +200,6 @@ class CalcAndViewMacros(FunctionalTest):
 		self.assertTrue(save_macros_button.is_enabled())
 	
 		save_macros_button.click()
-		successful_post_message = self.browser.find_element_by_id('id_successful_post_message').text
-		self.assertEqual(successful_post_message,'Macros Successfully Saved')
+		successful_post_message = self.browser.find_element_by_id('id_my_macros_successful_save_div').text
+		self.assertEqual(successful_post_message,'Macros Successfully Saved! Now Go Make a Meal!')
 		self.fail('Finish the test!')

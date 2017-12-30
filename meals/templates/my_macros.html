@@ -6,6 +6,9 @@
 	#id_meal_template_meals_number_form_container {
 		display:none;
 	}
+	#id_my_macros_successful_save_div {
+		display:none;
+	}
 </style>
 <div>
 	<div id="id_my_macros_form_container">
@@ -105,7 +108,9 @@
 		{% endif %}
 		<div id='id_client_side_form_errors'></div>
 	</div>
-	<div id="id_my_macros_post_status"></div>
+	<div id="id_my_macros_successful_save_div" class='alert alert-success'>
+		Macros Successfully Saved! Now Go Make a Meal!
+	</div>
 </div>
 <script>
 	switch_between_imperial_metric();

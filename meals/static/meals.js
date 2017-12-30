@@ -38,9 +38,7 @@ var save_my_macros_button_posts_form = function() {
 			});
 			$.post('/meals/save_my_macros',post_data,function(data) {
 				if (data == '1') {
-					$.get('/meals/get_my_macros/',function(data) {
-						$('#id_my_macros_form_container').html(data);
-					});
+					$('#id_my_macros_successful_save_div').show();
 				} else {
 					$('#id_my_macros_form_container').html(data);
 				}
