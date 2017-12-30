@@ -130,7 +130,7 @@ def save_meal_templates(request):
 	
 	return {'status':1}
 
-def create_macro_form_dict_from_POST(POST):
+def create_macro_form_dict_from(POST):
 
 	macro_form_dict = {}
 	macro_form_dict['unit_type'] = POST['unit_type']
@@ -138,9 +138,13 @@ def create_macro_form_dict_from_POST(POST):
 		height1 = POST.get('i_height_0','')
 		height2 = POST.get('i_height_1','')
 		if height1 != '' and height2 != '':
-			macro_form_dict['height'] = str((int(height1) * 12) + int(height2))
+			macro_form_dict['height'] = str(round(((int(height1) * 12) + int(height2)) /.3937,2))
 		macro_form_dict['weight'] = POST.get('i_weight','')
 		macro_form_dict['change_rate'] = POST.get('i_change_rate','')
+		if macro_form_dict['weight'] != '':
+			macro_form_dict['weight'] = str(round(int(macro_form_dict['weight']) * .45359237,2))
+		if macro_form_dict['change_rate'] != '':
+			macro_form_dict['change_rate'] = str(round(int(macro_form_dict['change_rate']) * .45359237,2))
 
 	if macro_form_dict['unit_type'] == 'metric':
 		macro_form_dict['height'] = POST.get('m_height',0)
@@ -160,8 +164,7 @@ def create_macro_form_dict_from_POST(POST):
 	return macro_form_dict
 
 def save_my_macros(request):
-
-	macro_form_dict = create_macro_form_dict_from_POST(request.POST) 
+	macro_form_dict = create_macro_form_dict_from(request.POST) 
 	macro_form = MakeMacrosForm(macro_form_dict,unit_type=macro_form_dict['unit_type'])	
 	if not macro_form.is_valid():
 		return {'status':0,
@@ -171,6 +174,8 @@ def save_my_macros(request):
 
 	macro_dict = macro_form_dict
 	[macro_dict.pop(key) for key in  ['fat_g','carbs_g','protein_g','carbs_percent','total_macro_percent']]
+	macro_dict['height'] = Decimal(macro_dict['height']) 
+	macro_dict['weight'] = Decimal(macro_dict['weight']) 
 	macro_dict['change_rate'] = Decimal(macro_dict['change_rate']) 
 	macro_dict['protein_percent'] = Decimal(macro_dict['protein_percent']) 
 	macro_dict['fat_percent'] = Decimal(macro_dict['fat_percent']) 

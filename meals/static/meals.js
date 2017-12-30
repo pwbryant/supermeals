@@ -63,7 +63,7 @@ var switch_between_imperial_metric = function() {
 		} else {
 			$('#id_weight_div').html('<label for=id_weight>Weight:</label><span id="id_weight"><input id="id_i_weight" type="text" name="i_weight" class="form-control input-sm" placeholder="lb" data-type="number"/>');
 			$('#id_height_div').html('<label for="id_height">Height:</label><span id="id_height"><input id="id_i_height_0" type="text" name="i_height_0" class="form-control input-sm" placeholder="ft" data-type="number"/><input id="id_i_height_1" type="text" name="i_height_1" class="form-control input-sm" placeholder="in" data-type="number"/></span>');
-			$('#id_change_rate_div').html('<label for="id_change_rate">Rate of Change</label><span id="id_change_rate"><input id="id_m_change_rate" type="text" name="m_change_rate" class="form-control input-sm" placeholder="lb/wk" data-type="number"/></span>');		
+			$('#id_change_rate_div').html('<label for="id_change_rate">Rate of Change</label><span id="id_change_rate"><input id="id_i_change_rate" type="text" name="i_change_rate" class="form-control input-sm" placeholder="lb/wk" data-type="number"/></span>');		
 		}
 	});
 

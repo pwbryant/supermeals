@@ -3,8 +3,10 @@ from django.urls import resolve
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
+from decimal import Decimal
 from meals.forms import LoginForm, SignUpForm, MakeMacrosForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR,DEFAULT_INVALID_INT_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR
 from meals.models import Macros,MealTemplate
+from meals.views import save_my_macros,save_meal_templates
 
 # Create your tests here.
 
@@ -142,11 +144,17 @@ class CreateAccountTest(TestCase):
 
 class MyMacrosTabTest(TestCase):
 	SHARED_MACRO_DATA = {'gender':'m','age':'34','activity':'none','direction':'lose','fat_g':'10','fat_percent':'30',
-			'	protein_g':'10','protein_percent':'30','carbs_g':'10','carbs_percent':'40','meal_0':'287',
+			'protein_g':'10','protein_percent':'30','carbs_g':'10','carbs_percent':'40','meal_0':'287',
 				'meal_1':'287','meal_2':'287','meal_3':'285','meal_4':'289','meal_number':'5','tdee':'1435'}
 	IMPERIAL_MACRO_DATA = {**SHARED_MACRO_DATA,**{'unit_type':'imperial','i_height_0':'5','i_height_1':'10','i_weight':'210','i_change_rate':'2'}}
 	METRIC_MACRO_DATA = {**SHARED_MACRO_DATA,**{'unit_type':'metric','m_height':'5','m_weight':'210','m_change_rate':'2'}}
 	
+	def setup_user_request_for_post_to_view(self,post_data):
+		request = HttpRequest()
+		request.POST = post_data
+		request.user = User.objects.create_user(username=USERNAME, email=EMAIL,password=PASSWORD)
+		return request
+
 	def test_my_macros_url_renders_correct_template(self):
 		response = self.client.get('/meals/get_my_macros/')
 		self.assertTemplateUsed(response, 'my_macros.html')
@@ -154,28 +162,72 @@ class MyMacrosTabTest(TestCase):
 	def test_my_macros_template_uses_my_macros_form(self):
 		response = self.client.get('/meals/get_my_macros/')
 		self.assertIsInstance(response.context['form'], MakeMacrosForm)
-		
-	def test_make_macro_can_save_imperial_macros(self):
-		
-		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
-		response=self.client.post('/meals/save_my_macros', data=self.IMPERIAL_MACRO_DATA)
+
+
+	def test_save_my_macros_imperial_macros(self):
+		request = self.setup_user_request_for_post_to_view(self.IMPERIAL_MACRO_DATA)
+		response = save_my_macros(request)
 		saved_macro = Macros.objects.all()
 		self.assertEqual(saved_macro.count(),1)		
 
+	def test_save_meal_templates_imperial_macros(self):
+		request = self.setup_user_request_for_post_to_view(self.IMPERIAL_MACRO_DATA)
+		response = save_meal_templates(request)
+		saved_macro = MealTemplate.objects.all()
+		self.assertEqual(saved_macro.count(),3)		
 
-	def test_make_macro_can_save_metric_macros(self):
-		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
-
-		response=self.client.post('/meals/save_my_macros', data=self.METRIC_MACRO_DATA)
+	def test_save_my_macros_metric_macros(self):
+		request = self.setup_user_request_for_post_to_view(self.METRIC_MACRO_DATA)
+		response = save_my_macros(request)
 		saved_macro = Macros.objects.all()
 		self.assertEqual(saved_macro.count(),1)		
+
+	def test_save_meal_templates_metric_macros(self):
+		request = self.setup_user_request_for_post_to_view(self.METRIC_MACRO_DATA)
+		response = save_meal_templates(request)
+		saved_macro = MealTemplate.objects.all()
+		self.assertEqual(saved_macro.count(),3)		
 	
-	def test_make_macro_if_success_returns_1(self):
+	def test_save_my_macro_returns_status_dict_with_status_of_1_if_success(self):
+		request = self.setup_user_request_for_post_to_view(self.METRIC_MACRO_DATA)
+		response = save_my_macros(request)
+		self.assertEqual(response['status'],1)
+		self.assertIsInstance(response['form'],MakeMacrosForm)
+		self.assertEqual(response['unit_type'],'metric')
+
+	def test_save_meal_templates_returns_status_dict_with_status_of_1_if_success(self):
+		request = self.setup_user_request_for_post_to_view(self.METRIC_MACRO_DATA)
+		response = save_meal_templates(request)
+		self.assertEqual(response['status'],1)
+
+	def test_save_my_macros_and_meal_templates_saves_imperial_macros(self):
 		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 		response=self.client.post('/meals/save_my_macros', data=self.IMPERIAL_MACRO_DATA)
+		saved_macro = Macros.objects.all()
+		self.assertEqual(saved_macro.count(),1)		
+		saved_meal_template = MealTemplate.objects.all()
+		self.assertEqual(saved_meal_template.count(),3)		
 
-		self.assertEqual(response.status_code, 200)
+	def test_save_my_macros_and_meal_templates_saves_imperial_macros(self):
+		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+		response=self.client.post('/meals/save_my_macros', data=self.IMPERIAL_MACRO_DATA)
 		self.assertEqual(response.content.decode(),'1')
+
+	def test_save_my_macros_saves_imperial_macros_in_metric(self):
+		request = self.setup_user_request_for_post_to_view(self.IMPERIAL_MACRO_DATA)
+		save_my_macros(request)
+		macro_obj = Macros.objects.first()
+		self.assertEqual(macro_obj.height,Decimal('177.80'))
+		self.assertEqual(macro_obj.weight,Decimal('95.25'))
+		self.assertEqual(macro_obj.change_rate,Decimal('0.91'))
+
+	def test_save_my_macros_saves_metric_macros_in_metric(self):
+		request = self.setup_user_request_for_post_to_view(self.METRIC_MACRO_DATA)
+		save_my_macros(request)
+		macro_obj = Macros.objects.first()
+		self.assertEqual(macro_obj.height,Decimal('5.00'))
+		self.assertEqual(macro_obj.weight,Decimal('210.00'))
+		self.assertEqual(macro_obj.change_rate,Decimal('2.00'))
 
 	def test_save_my_macro_wont_save_duplicate_macro_and_meal_template_but_still_returns_1(self):
 
@@ -240,8 +292,12 @@ class MyMacrosTabTest(TestCase):
 		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
 
 		response=self.client.post('/meals/save_my_macros', data=self.METRIC_MACRO_DATA)
-		saved_meal_template = MealTemplate.objects.all()
-		self.assertEqual(saved_meal_template.count(),3)		
+
+	def test_save_my_macro_and_meal_template_retuns_1_upon_successfull_save(self):
+		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+
+		response=self.client.post('/meals/save_my_macros', data=self.METRIC_MACRO_DATA)
+		self.assertEqual(response.content.decode(),'1')
 
 	def test_save_meal_template_validation_error_render_my_macros_html(self):	
 		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})

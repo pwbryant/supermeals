@@ -7,9 +7,14 @@ import time
 
 class CalcAndViewMacros(FunctionalTest):
 
-	def check_element_content(self,ID,comparison_type, comparison_text,child=None):
+	def check_element_content(self,selector,selector_type,comparison_type, comparison_text,child=None):
 	
-		element = self.browser.find_element_by_id(ID)
+		if selector_type == 'id':
+			element = self.browser.find_element_by_id(selector)
+		
+		if selector_type == 'css':
+			element = self.browser.find_element_by_css_selector(selector)
+
 		if child != None:
 			element = element.find_elements_by_tag_name(child)[0]
 
@@ -49,13 +54,13 @@ class CalcAndViewMacros(FunctionalTest):
 
 		self.assertFalse(self.browser.find_element_by_id('id_gender_1').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_gender_2').is_selected())
-		self.check_element_content('id_age_label','text','Age:')
-		self.check_element_content('id_age','placeholder','Age')
-		self.check_element_content('id_weight_label','text','Weight:')
-		self.check_element_content('id_i_weight','placeholder','lb')
-		self.check_element_content('id_height_label','text','Height:')
-		self.check_element_content('id_i_height_0','placeholder','ft')
-		self.check_element_content('id_i_height_1','placeholder','in')
+		self.check_element_content('label[for=id_age]','css','text','Age:')
+		self.check_element_content('id_age','id','placeholder','Age')
+		self.check_element_content('label[for=id_weight]','css','text','Weight:')
+		self.check_element_content('id_i_weight','id','placeholder','lb')
+		self.check_element_content('label[for=id_height]','css','text','Height:')
+		self.check_element_content('id_i_height_0','id','placeholder','ft')
+		self.check_element_content('id_i_height_1','id','placeholder','in')
 		self.assertTrue(self.browser.find_element_by_id('id_activity_0').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_activity_1').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_activity_2').is_selected())
@@ -64,18 +69,20 @@ class CalcAndViewMacros(FunctionalTest):
 		self.assertTrue(self.browser.find_element_by_id('id_direction_0').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_direction_1').is_selected())
 		self.assertFalse(self.browser.find_element_by_id('id_direction_2').is_selected())
-		self.check_element_content('id_i_change_rate','placeholder','lb/wk')
+		self.check_element_content('label[for=id_direction_div]','css','text','Desired Weight Change')
+		self.check_element_content('label[for=id_change_rate]','css','text','Rate of Change')
+		self.check_element_content('id_i_change_rate','id','placeholder','lb/wk')
 
-		self.check_element_content('id_calc_tdee','text','Calculate')
+		self.check_element_content('id_calc_tdee','id','text','Calculate')
 
 		#Out of Joe wants to enter his info in metric so he selects the metric radio button
 		#and notices that height fields turn into just one input field with 'cm' placeholder, 
 		#and the weight and rate of change fields have 'kg' and 'kg/wk' respectively.
 
 		self.browser.find_element_by_id('id_unit_type_1').click()
-		self.check_element_content('id_m_weight','placeholder','kg')
-		self.check_element_content('id_m_height','placeholder','cm')
-		self.check_element_content('id_m_change_rate','placeholder','kg/wk')
+		self.check_element_content('id_m_weight','id','placeholder','kg')
+		self.check_element_content('id_m_height','id','placeholder','cm')
+		self.check_element_content('id_m_change_rate','id','placeholder','kg/wk')
 	
 		#Joe suspects more content will be displayed after he hits Calculates, but as of now he only sees
 		#the calc button at the bottom of the form
@@ -84,26 +91,27 @@ class CalcAndViewMacros(FunctionalTest):
 		isnt_hidden_div = not self.browser.find_element_by_id('id_fat_g').is_displayed()
 		self.assertTrue(isnt_hidden_div)
 
-		#Joe enters his info, and hits 'Calculate', but too late he realized he had female selected
-		#Below the form, he sees his daily caloric expediture
+		#Joe changes back to imperial units and enters his info, and hits 'Calculate', but too late he realized he had
+		#female selected. Below the form, he sees his daily caloric expediture
+		self.browser.find_element_by_id('id_unit_type_0').click()
 		macro_form_ids = ['id_unit_type_0','id_gender_2','id_age','id_i_weight','id_i_height_0','id_i_height_1','id_activity_0','id_direction_0','id_i_change_rate']
 		macro_form_values = [None,None,'34','210','5','10',None,None,'1']
 		self.fill_input(macro_form_ids,macro_form_values)	
 		self.browser.find_element_by_id('id_calc_tdee').click()
-		self.check_element_content('id_tdee_result','text','2076')
-		self.check_element_content('id_change_tdee_result','text','1576')
+		self.check_element_content('id_tdee_result','id','text','2076')
+		self.check_element_content('id_change_tdee_result','id','text','1576')
 
 		#After calculating TDEE, and area for choosing macro percent appers. With inputs for both
 		#% and g for each macro, with % Remaing Footer, and a 'Continue' button which is greyed out.
 
 		isnt_hidden_div = self.browser.find_element_by_id('id_choose_macros_form_container').is_displayed()
 		self.assertTrue(isnt_hidden_div)
-		self.check_element_content('id_protein_percent','placeholder','%')
-		self.check_element_content('id_protein_g','placeholder','g')
-		self.check_element_content('id_fat_percent','placeholder','%')
-		self.check_element_content('id_fat_g','placeholder','g')
-		self.check_element_content('id_carbs_percent','placeholder','%')
-		self.check_element_content('id_carbs_g','placeholder','g')
+		self.check_element_content('id_protein_percent','id','placeholder','%')
+		self.check_element_content('id_protein_g','id','placeholder','g')
+		self.check_element_content('id_fat_percent','id','placeholder','%')
+		self.check_element_content('id_fat_g','id','placeholder','g')
+		self.check_element_content('id_carbs_percent','id','placeholder','%')
+		self.check_element_content('id_carbs_g','id','placeholder','g')
 		macro_row_headers = self.browser.find_elements_by_class_name('choose_macro_titles')
 		self.assertEqual(macro_row_headers[0].text,'%')
 		self.assertEqual(macro_row_headers[1].text,'g')
@@ -117,13 +125,13 @@ class CalcAndViewMacros(FunctionalTest):
 		#Joe switches to Male and hits Calculate again and sees his new TDEE
 		self.fill_input(['id_gender_1'],[None])	
 		self.browser.find_element_by_id('id_calc_tdee').click()
-		self.check_element_content('id_tdee_result','text','2435')
-		self.check_element_content('id_change_tdee_result','text','1935')
+		self.check_element_content('id_tdee_result','id','text','2435')
+		self.check_element_content('id_change_tdee_result','id','text','1935')
 
 		#Joe comes wants to see what happens when he selcts the maintain button so he clicks it
 		#and sees that the change input box disappears
 		self.fill_input(['id_direction_1'],[None])	
-		is_hidden_div = not self.browser.find_element_by_id('id_change_rate_form_container').is_displayed()
+		is_hidden_div = not self.browser.find_element_by_id('id_change_rate_div').is_displayed()
 		self.assertTrue(is_hidden_div)
 
 		#He decides to choose the %50 carb, %30 fat, and %20 protein and notices that
@@ -132,8 +140,8 @@ class CalcAndViewMacros(FunctionalTest):
 		macro_form_ids = ['id_protein_percent','id_fat_percent','id_carbs_percent']
 		macro_form_values = ['20','30','50']
 		self.fill_input(macro_form_ids,macro_form_values)	
-		self.check_element_content('id_protein_g','value','97')
-		self.check_element_content('id_macro_percent_total','text','0')
+		self.check_element_content('id_protein_g','id','value','97')
+		self.check_element_content('id_macro_percent_total','id','text','0')
 
 		#When the % Remaining equals 0, The Continue button becomes ungreyed and so Joe clicks it, and 
 		#another section becomes visible which contains a header reading about optionlly breaking up
@@ -142,9 +150,9 @@ class CalcAndViewMacros(FunctionalTest):
 		continue_button = self.browser.find_element_by_id('id_choose_macros_continue_button')
 		self.assertTrue(continue_button.is_enabled())
 		continue_button.click()
-		self.check_element_content('id_meal_template_header','text','Break Up Your Daily Calories Into Meals/Snacks')
-		self.check_element_content('id_meal_template_meals_number_label','text','Number of meals/snacks per day?')
-		self.check_element_content('id_meal_template_meals_number','placeholder','# meals/snacks')
+		self.check_element_content('id_meal_template_header','id','text','Break Up Your Daily Calories Into Meals/Snacks')
+		self.check_element_content('label[for=id_meal_template_meals_number]','css','text','Number of meals/snacks per day?')
+		self.check_element_content('id_meal_template_meals_number','id','placeholder','# meals/snacks')
 		
 		set_cals_button = self.browser.find_element_by_id('id_meal_template_set_cals_continue_button')
 		self.assertEqual(set_cals_button.text,'Continue')
@@ -155,11 +163,11 @@ class CalcAndViewMacros(FunctionalTest):
 		self.fill_input(['id_meal_template_meals_number'],['5'])	
 		self.assertTrue(set_cals_button.is_enabled())
 		
-		empty_div = self.browser.find_element_by_id('id_meal_template_set_meal_cals_container').text
+		empty_div = self.browser.find_element_by_id('id_meal_template_set_meal_cals_form_container').text
 		self.assertEqual(empty_div,'')
 		set_cals_button.click()
 
-		set_meal_cals_table = self.browser.find_element_by_id('id_meal_template_set_cals_table')
+		set_meal_cals_table = self.browser.find_element_by_id('id_meal_template_set_meal_cals_form_container')
 		table_labels = set_meal_cals_table.find_elements_by_tag_name('label')
 		self.assertEqual(table_labels[0].text,'Meal 1')
 		self.assertEqual(table_labels[1].text,'Meal 2')
