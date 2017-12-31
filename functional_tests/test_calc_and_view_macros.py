@@ -1,7 +1,6 @@
 from .base import FunctionalTest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
 from django.contrib.auth.models import User
 import time
 
@@ -202,4 +201,3 @@ class CalcAndViewMacros(FunctionalTest):
 		save_macros_button.click()
 		successful_post_message = self.browser.find_element_by_id('id_my_macros_successful_save_div').text
 		self.assertEqual(successful_post_message,'Macros Successfully Saved! Now Go Make a Meal!')
-		self.fail('Finish the test!')

@@ -174,7 +174,7 @@ class MyMacrosTabTest(TestCase):
 		request = self.setup_user_request_for_post_to_view(self.IMPERIAL_MACRO_DATA)
 		response = save_meal_templates(request)
 		saved_macro = MealTemplate.objects.all()
-		self.assertEqual(saved_macro.count(),3)		
+		self.assertEqual(saved_macro.count(),5)		
 
 	def test_save_my_macros_metric_macros(self):
 		request = self.setup_user_request_for_post_to_view(self.METRIC_MACRO_DATA)
@@ -186,7 +186,7 @@ class MyMacrosTabTest(TestCase):
 		request = self.setup_user_request_for_post_to_view(self.METRIC_MACRO_DATA)
 		response = save_meal_templates(request)
 		saved_macro = MealTemplate.objects.all()
-		self.assertEqual(saved_macro.count(),3)		
+		self.assertEqual(saved_macro.count(),5)		
 	
 	def test_save_my_macro_returns_status_dict_with_status_of_1_if_success(self):
 		request = self.setup_user_request_for_post_to_view(self.METRIC_MACRO_DATA)
@@ -206,7 +206,7 @@ class MyMacrosTabTest(TestCase):
 		saved_macro = Macros.objects.all()
 		self.assertEqual(saved_macro.count(),1)		
 		saved_meal_template = MealTemplate.objects.all()
-		self.assertEqual(saved_meal_template.count(),3)		
+		self.assertEqual(saved_meal_template.count(),5)		
 
 	def test_save_my_macros_and_meal_templates_saves_imperial_macros(self):
 		self.client.post('/meals/create_account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})

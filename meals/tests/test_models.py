@@ -22,7 +22,7 @@ MACRO_INIT_FIELD_DICT = {
 	'fat_percent':Decimal('35'),
 	'protein_percent':Decimal('25')
 }
-MEAL_TEMPLATE_ARGS = {'user':USER,'name':'breakfast','cals_percent':Decimal('50'),'number_of_meals':3}
+MEAL_TEMPLATE_ARGS = {'user':USER,'name':'breakfast','cals_percent':Decimal('50')}
 class BaseTest(TestCase):
 
 	def check_model_validation_error(self,obj,delete_obj=True):
@@ -154,7 +154,6 @@ class MealTemplateTest(BaseTest):
 		#no name is a validateion error so not testsed here
 		self.check_model_integrity_error(MealTemplate(**self.create_broken_field_dict('cals_percent','remove',MEAL_TEMPLATE_ARGS)))#no cals
 		self.check_model_integrity_error(MealTemplate(**self.create_broken_field_dict('user','remove',MEAL_TEMPLATE_ARGS)))#no user
-		self.check_model_integrity_error(MealTemplate(**self.create_broken_field_dict('number_of_meals','remove',MEAL_TEMPLATE_ARGS)))#no user
 		self.assertEqual(MealTemplate.objects.all().count(),0)
 
 	def test_validation_errors_illegal_field_values(self):

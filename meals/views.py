@@ -75,7 +75,6 @@ def create_meal_template_dict(POST):
 
 	validation_errors = []
 
-	meal_template_dict = {}
 	meal_num = POST.get('meal_number',-1)
 	tdee = POST.get('tdee',-1)
 
@@ -90,26 +89,18 @@ def create_meal_template_dict(POST):
 		tdee = -1
 	else:
 		tdee = int(tdee) 
-	unique_cals = {}
+
+	meal_template_dict = {}
 	if meal_num > 0:
 		for i in range(int(meal_num)):
 			cals = POST.get('meal_%d' % i,'')
 			if cals.isdigit():
-				if cals not in unique_cals:
-					unique_cals[cals] = []
-				unique_cals[cals].append(str(i + 1))
+				template = 'template %d' % i
+				meal_template_dict[template] = {}
+				meal_template_dict[template]['name'] = 'meal_%d' % i
+				meal_template_dict[template]['cals_percent'] = int(cals) / tdee * 100 
 			else:
 				validation_errors.append('All Meal Calorie Fields Must Contain a Number')
-
-	template_num = 1
-	for cal_key,meal_nums in unique_cals.items():
-		template = 'template %d' % template_num
-		meal_template_dict[template] = {}
-		meal_template_dict[template]['name'] = 'meals %s' % ','.join(meal_nums) 
-		meal_template_dict[template]['number_of_meals'] = len(meal_nums) 
-		meal_template_dict[template]['cals_percent'] = int(cal_key) / tdee * 100 
-		
-		template_num += 1
 
 	validation_errors = ''.join(['<li>' + error + '</li>' for error in validation_errors])
 	return (meal_template_dict,validation_errors,)
@@ -124,10 +115,8 @@ def save_meal_templates(request):
 		try:
 			with transaction.atomic():
 				MealTemplate.objects.create(**model_fields)
-			pass	
 		except IntegrityError:
 			pass
-	
 	return {'status':1}
 
 def create_macro_form_dict_from(POST):
@@ -183,7 +172,6 @@ def save_my_macros(request):
 	try:
 		with transaction.atomic():
 			Macros.objects.create(**macro_dict)
-		pass	
 	except IntegrityError:
 		pass
 

@@ -1,14 +1,22 @@
 from .base import FunctionalTest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from django.contrib.auth.models import User
+import time
 
 class MakeMacroMealTest(FunctionalTest):
 
 	def test_make_macro_meal(self):
-		pass	
+		USERNAME, PASSWORD = 'JoeSchmoe', '123pass123'
+		self.browser.get(self.live_server_url)
+		User.objects.create_user(username=USERNAME,password=PASSWORD)
+		self.login_user(USERNAME,PASSWORD)
 		#Joe now wants to make a meal that helps him achieve his macros
 		#so he clicks on the 'Meal Maker' tab
-
+		self.browser.find_element_by_id('id_meal_maker_tab_label').click()
+		meal_maker_header = self.browser.find_element_by_id('id_meal_maker_headline').text
+		self.assertEqual(meal_maker_header,'Meal Maker')
+		self.fail('Finish The Test!')
 		#He Notices in the upper left of the tab a text input with the placeholder 
 		#'How Many Calories?'.
 
