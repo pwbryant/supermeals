@@ -65,7 +65,6 @@ def create_account(request):
 	return render(request,'sign_up.html',{"form":form})
 
 def get_my_macros(request):
-	#form = MakeMacrosForm()
 	form = MakeMacrosForm(unit_type='imperial')
 	return render(request, 'my_macros.html',{
 		'form':form
@@ -94,11 +93,15 @@ def create_meal_template_dict(POST):
 	if meal_num > 0:
 		for i in range(int(meal_num)):
 			cals = POST.get('meal_%d' % i,'')
-			if cals.isdigit():
+			try:
+				cals = float(cals)
+			except:
+				pass	
+			if type(cals) == float:
 				template = 'template %d' % i
 				meal_template_dict[template] = {}
 				meal_template_dict[template]['name'] = 'meal_%d' % i
-				meal_template_dict[template]['cals_percent'] = int(cals) / tdee * 100 
+				meal_template_dict[template]['cals_percent'] = cals / tdee * 100 
 			else:
 				validation_errors.append('All Meal Calorie Fields Must Contain a Number')
 
@@ -196,3 +199,6 @@ def save_my_macros_and_meal_templates(request):
 
 	return render(request,'my_macros.html',error_dict) 
 
+
+def get_meal_maker_template(request):
+	return render(request,'meal_maker.html') 

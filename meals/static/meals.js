@@ -5,7 +5,7 @@ MACRO_FACTORS = {
 	'carbs':4
 };
 //tested
-var initialize = function () {
+var key_press_hides_error = function () {
 	$('input[type="text"]').on('keypress',function() {
 		$('.has-error').hide();
 	});
@@ -23,6 +23,15 @@ var get_my_macros_page_content = function() {
 	$('#id_my_macros_tab_label').on('click',function() {
 		$.get('/meals/get_my_macros/',function(data) {
 			$('#id_my_macros_form_container').html(data);
+		});
+	});
+};
+
+//not tested
+var get_meal_maker_page_content = function() {
+	$('#id_meal_maker_tab_label').on('click',function() {
+		$.get('/meals/meal_maker/',function(data) {
+			$('#id_meal_maker_container').html(data);
 		});
 	});
 };
@@ -115,19 +124,12 @@ var calc_tdee = function() {
 					tdee_data['height'] = tdee_data['m_height'];
 					tdee_data['change_rate'] = convert_between_metric_english(tdee_data['m_change_rate'],'kg_to_lb') * weight_change_direction * 500;
 				}
-				var formula_data_by_gender = {
-					"f": {
-						'base_add':655,
-						'weight':9.6 * tdee_data['weight'],
-						'height':1.8 * tdee_data['height'],
-						'age':4.7 * tdee_data['age']
-					},
-					'm': {
-						'base_add':66,
-						'weight':13.7 * tdee_data['weight'],
-						'height':5 * tdee_data['height'],
-						'age':6.8 * tdee_data['age']
-					}
+				var formula_data = {
+					"f":-161,
+					'm':5,
+					'weight':10 * tdee_data['weight'],
+					'height':6.25 * tdee_data['height'],
+					'age':5 * tdee_data['age']
 				},
 				activity_data = {
 					"none":1.2,
@@ -136,9 +138,8 @@ var calc_tdee = function() {
 					"high":1.725,
 					"very high":1.9
 				},
-				formula_data = formula_data_by_gender[tdee_data['gender']],
-				tdee_return_value = ((formula_data['base_add'] + formula_data['weight'] + formula_data['height'] - formula_data['age']) * activity_data[tdee_data['activity']]),
-				change_tdee_return_value = ((formula_data['base_add'] + formula_data['weight'] + formula_data['height'] - formula_data['age']) * activity_data[tdee_data['activity']]) + tdee_data['change_rate'];
+				tdee_return_value = (formula_data['weight'] + formula_data['height'] - formula_data['age']  + formula_data[tdee_data['gender']]) * activity_data[tdee_data['activity']],
+				change_tdee_return_value = ((formula_data['weight'] + formula_data['height'] - formula_data['age']  + formula_data[tdee_data['gender']]) * activity_data[tdee_data['activity']]) + tdee_data['change_rate'];
 				
 			} else {
 				tdee_return_value = 'Missing Value. Check Form.';

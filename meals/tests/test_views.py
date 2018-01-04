@@ -14,6 +14,15 @@ USERNAME,EMAIL,PASSWORD = 'JoeSchmoe','joe@joemail.com','321pass123!'
 GUEST_USERNAME,GUEST_PASSWORD = 'guest','321!beware'
 BAD_USERNAME,BAD_PASSWORD = 'bad','badpass'
 
+class MealMakerTest(TestCase):
+
+	def test_meal_maker_url_renders_correct_template(self):
+		
+		response = self.client.get('/meals/meal_maker/')
+		self.assertEqual(response.status_code,200)
+		self.assertTemplateUsed(response,'meal_maker.html')
+
+
 class LoginLogoffTest(TestCase):
 	
 	def test_anonymous_user_home_redirects_to_login_template(self):
@@ -162,7 +171,6 @@ class MyMacrosTabTest(TestCase):
 	def test_my_macros_template_uses_my_macros_form(self):
 		response = self.client.get('/meals/get_my_macros/')
 		self.assertIsInstance(response.context['form'], MakeMacrosForm)
-
 
 	def test_save_my_macros_imperial_macros(self):
 		request = self.setup_user_request_for_post_to_view(self.IMPERIAL_MACRO_DATA)

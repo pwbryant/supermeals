@@ -35,3 +35,23 @@ class FunctionalTest(StaticLiveServerTestCase):
 			login_button_id = 'id_login'
 
 		self.browser.find_element_by_id(login_button_id).click()
+
+	def check_element_content(self,selector,selector_type,comparison_type, comparison_text,child=None):
+	
+		if selector_type == 'id':
+			element = self.browser.find_element_by_id(selector)
+		
+		if selector_type == 'css':
+			element = self.browser.find_element_by_css_selector(selector)
+
+		if child != None:
+			element = element.find_elements_by_tag_name(child)[0]
+
+		if comparison_type == 'text':
+			content = element.text
+		if comparison_type == 'placeholder':
+			content = element.get_attribute('placeholder')
+		if comparison_type == 'value':
+			content = element.get_attribute('value')
+
+		self.assertEqual(content,comparison_text)

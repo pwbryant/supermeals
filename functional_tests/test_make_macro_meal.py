@@ -2,6 +2,7 @@ from .base import FunctionalTest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from django.contrib.auth.models import User
+from meals.models import Macros
 import time
 
 class MakeMacroMealTest(FunctionalTest):
@@ -16,12 +17,26 @@ class MakeMacroMealTest(FunctionalTest):
 		self.browser.find_element_by_id('id_meal_maker_tab_label').click()
 		meal_maker_header = self.browser.find_element_by_id('id_meal_maker_headline').text
 		self.assertEqual(meal_maker_header,'Meal Maker')
-		self.fail('Finish The Test!')
-		#He Notices in the upper left of the tab a text input with the placeholder 
-		#'How Many Calories?'.
-
+		#He Notices in the upper left of the tab a text input with the label 
+		#'How Many Calories?', and the placeholder 'cals'.
+		self.check_element_content('label[for=id_goal_meal_cals]','css','text','How Many Calories?')
+		self.check_element_content('id_goal_meal_cals','id','placeholder','2111')
 		#Below this input there is a table with the macros 'Fat'/'Carbs'/'Protein' and their
 		#respective percent breakdown.  
+
+		table = self.browser.find_element_by_id('id_goal_meal_macros_table')
+		cells = table.find_elements_by_tag_name('td')
+		self.assertEqual(cells[0].text,'Fat')
+		self.assertEqual(cells[1].text,'34')
+		self.assertEqual(cells[2].text,'73')
+		self.assertEqual(cells[3].text,'Carbs')
+		self.assertEqual(cells[4].text,'33')
+		self.assertEqual(cells[5].text,'160')
+		self.assertEqual(cells[6].text,'Protein')
+		self.assertEqual(cells[7].text,'33')
+		self.assertEqual(cells[8].text,'160')
+		#Macros.objects.create()	
+		self.fail('Finish The Test!')
 
 		#Below the table is a 'Customize Macro %' button
 

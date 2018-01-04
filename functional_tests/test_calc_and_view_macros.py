@@ -6,26 +6,6 @@ import time
 
 class CalcAndViewMacros(FunctionalTest):
 
-	def check_element_content(self,selector,selector_type,comparison_type, comparison_text,child=None):
-	
-		if selector_type == 'id':
-			element = self.browser.find_element_by_id(selector)
-		
-		if selector_type == 'css':
-			element = self.browser.find_element_by_css_selector(selector)
-
-		if child != None:
-			element = element.find_elements_by_tag_name(child)[0]
-
-		if comparison_type == 'text':
-			content = element.text
-		if comparison_type == 'placeholder':
-			content = element.get_attribute('placeholder')
-		if comparison_type == 'value':
-			content = element.get_attribute('value')
-
-		self.assertEqual(content,comparison_text)
-
 	def test_can_calculate_macros(self):
 		USERNAME, PASSWORD = 'JoeSchmoe','123pass123'
 		#Joe signs in as guest to calc his macros
@@ -93,12 +73,12 @@ class CalcAndViewMacros(FunctionalTest):
 		#Joe changes back to imperial units and enters his info, and hits 'Calculate', but too late he realized he had
 		#female selected. Below the form, he sees his daily caloric expediture
 		self.browser.find_element_by_id('id_unit_type_0').click()
-		macro_form_ids = ['id_unit_type_0','id_gender_2','id_age','id_i_weight','id_i_height_0','id_i_height_1','id_activity_0','id_direction_0','id_i_change_rate']
+		macro_form_ids = ['id_unit_type_0','id_gender_2','id_age','id_i_weight','id_i_height_0','id_i_height_1','id_activity_1','id_direction_0','id_i_change_rate']
 		macro_form_values = [None,None,'34','210','5','10',None,None,'1']
 		self.fill_input(macro_form_ids,macro_form_values)	
 		self.browser.find_element_by_id('id_calc_tdee').click()
-		self.check_element_content('id_tdee_result','id','text','2076')
-		self.check_element_content('id_change_tdee_result','id','text','1576')
+		self.check_element_content('id_tdee_result','id','text','2383')
+		self.check_element_content('id_change_tdee_result','id','text','1883')
 
 		#After calculating TDEE, and area for choosing macro percent appers. With inputs for both
 		#% and g for each macro, with % Remaing Footer, and a 'Continue' button which is greyed out.
@@ -124,8 +104,8 @@ class CalcAndViewMacros(FunctionalTest):
 		#Joe switches to Male and hits Calculate again and sees his new TDEE
 		self.fill_input(['id_gender_1'],[None])	
 		self.browser.find_element_by_id('id_calc_tdee').click()
-		self.check_element_content('id_tdee_result','id','text','2435')
-		self.check_element_content('id_change_tdee_result','id','text','1935')
+		self.check_element_content('id_tdee_result','id','text','2611')
+		self.check_element_content('id_change_tdee_result','id','text','2111')
 
 		#Joe comes wants to see what happens when he selcts the maintain button so he clicks it
 		#and sees that the change input box disappears
@@ -139,7 +119,7 @@ class CalcAndViewMacros(FunctionalTest):
 		macro_form_ids = ['id_protein_percent','id_fat_percent','id_carbs_percent']
 		macro_form_values = ['20','30','50']
 		self.fill_input(macro_form_ids,macro_form_values)	
-		self.check_element_content('id_protein_g','id','value','97')
+		self.check_element_content('id_protein_g','id','value','106')
 		self.check_element_content('id_macro_percent_total','id','text','0')
 
 		#When the % Remaining equals 0, The Continue button becomes ungreyed and so Joe clicks it, and 
@@ -177,7 +157,7 @@ class CalcAndViewMacros(FunctionalTest):
 		
 		meal_0_input = set_meal_cals_table.find_element_by_css_selector('input[name=meal_0]')
 		auto_filled_tdee_split_value = meal_0_input.get_attribute('value')
-		self.assertEqual(auto_filled_tdee_split_value,'387')
+		self.assertEqual(auto_filled_tdee_split_value,'422.2')
 
 
 		#Joe wants to have one meal of 200 cals so he changes Meal 1 to 200
@@ -186,7 +166,7 @@ class CalcAndViewMacros(FunctionalTest):
 		meal_0_input.send_keys(200)
 		remaining_cals_span = self.browser.find_element_by_id('id_meal_template_set_cals_total')
 		remaining_cals = remaining_cals_span.text
-		self.assertEqual(remaining_cals,'187')
+		self.assertEqual(remaining_cals,'222.2')
 		
 		save_macros_button = self.browser.find_element_by_id('id_save_my_macros_button')
 		self.assertEqual(save_macros_button.text,'Save Macro Info')
@@ -195,9 +175,8 @@ class CalcAndViewMacros(FunctionalTest):
 		#Joe returns the meal 1 to 387 and when the save button is enabled he clicks it and soon gets a 
 		#'Macros Sucessfully Saved' Alert message below the save button
 		meal_0_input.clear()
-		meal_0_input.send_keys('387')
+		meal_0_input.send_keys('422.2')
 		self.assertTrue(save_macros_button.is_enabled())
-	
 		save_macros_button.click()
 		successful_post_message = self.browser.find_element_by_id('id_my_macros_successful_save_div').text
 		self.assertEqual(successful_post_message,'Macros Successfully Saved! Now Go Make a Meal!')

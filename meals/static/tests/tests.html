@@ -271,13 +271,13 @@
 		});
 		//error removal tests
 		QUnit.test("errors should be hidden on keypress", function (assert) {
-			initialize();
+			key_press_hides_error();
 			$('input[type="text"]').trigger('keypress');
 			assert.equal($('.has-error').is(':visible'), false);
 		});
 
 		QUnit.test("errors aren't hidden if no keypress", function (assert) {
-			initialize();
+			key_press_hides_error();
 			assert.equal($('.has-error').is(':visible'), true);
 		});
 		//header removal tests	
