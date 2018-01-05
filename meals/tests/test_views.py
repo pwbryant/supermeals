@@ -1,12 +1,13 @@
 from django.test import TestCase
 from django.urls import resolve
 from django.http import HttpRequest
+from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
 from decimal import Decimal
 from meals.forms import LoginForm, SignUpForm, MakeMacrosForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR,DEFAULT_INVALID_INT_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR
 from meals.models import Macros,MealTemplate
-from meals.views import save_my_macros,save_meal_templates
+from meals.views import save_my_macros,save_meal_templates,get_meal_maker_template
 
 # Create your tests here.
 
@@ -16,12 +17,46 @@ BAD_USERNAME,BAD_PASSWORD = 'bad','badpass'
 
 class MealMakerTest(TestCase):
 
-	def test_meal_maker_url_renders_correct_template(self):
+	def create_default_macro(self,username):
+		user = User.objects.get(username=username)
+		Macros.objects.create(**{
+			'user':user,
+			'unit_type':'imperial',
+			'gender':'m',
+			'age':34,
+			'direction':'lose',
+			'activity':'light',
+			'height':177.8,
+			'weight':95.25,
+			'change_rate':.45359237,
+			'protein_percent':33,
+			'fat_percent':34
+		})
 		
+	def log_in_user(self,USERNAME,PASSWORD):
+		user = User.objects.create_user(username=USERNAME,password=PASSWORD)
+		self.client.post('/meals/logging_in', data={'username':USERNAME, 'password':PASSWORD})
+		return user
+
+	def test_meal_maker_url_renders_correct_template(self):
+		user = self.log_in_user(USERNAME,PASSWORD)
+		self.create_default_macro(user.username)
+
 		response = self.client.get('/meals/meal_maker/')
 		self.assertEqual(response.status_code,200)
 		self.assertTemplateUsed(response,'meal_maker.html')
 
+	def test_get_meal_maker_template_returns_correct_html(self):
+		
+		user = self.log_in_user(USERNAME,PASSWORD)
+		self.create_default_macro(user.username)
+
+		request = HttpRequest()
+		request.user = user
+		response = get_meal_maker_template(request)
+		expected_html = render_to_string('meal_maker.html',{'tdee':2111})
+		self.assertMultiLineEqual(response.content.decode(),expected_html)
+		
 
 class LoginLogoffTest(TestCase):
 	

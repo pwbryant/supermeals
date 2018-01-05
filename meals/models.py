@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator,MinValueValidator
-
+from decimal import Decimal
 # Create your models here.
 
 class Macros(models.Model):
@@ -42,22 +42,22 @@ class Macros(models.Model):
 
 	def calc_tdee(self):
 		activity_factor = {
-			'none':1.2,
-			'light':1.375,
-			'medium':1.55,
-			'high':1.725,
-			'very high':1.9
+			'none':Decimal('1.2'),
+			'light':Decimal('1.375'),
+			'medium':Decimal('1.55'),
+			'high':Decimal('1.725'),
+			'very high':Decimal('1.9')
 		}[self.activity]
 
 		direction_factor = {
-			 'maintain': 0,
-			 'lose': -1,
-			 'gain': 1,
+			 'maintain': Decimal('0'),
+			 'lose': Decimal('-1'),
+			 'gain': Decimal('1'),
 		 }[self.direction];
 		
-		weight_change = self.change_rate / .45359237 * direction_factor * 500 #convert kg to lb by dividing by .45359237
+		weight_change = self.change_rate / Decimal('.45359237') * direction_factor * 500 #convert kg to lb by dividing by .45359237
 		
-		tdee = (10 * self.weight) + (6.25 * self.height) - (5 * self.age)
+		tdee = (Decimal('10') * self.weight) + (Decimal('6.25') * self.height) - (Decimal('5') * self.age)
 		if self.gender == 'm':
 			tdee += 5 
 		else:

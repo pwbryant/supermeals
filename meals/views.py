@@ -201,4 +201,6 @@ def save_my_macros_and_meal_templates(request):
 
 
 def get_meal_maker_template(request):
-	return render(request,'meal_maker.html') 
+	
+	macros = Macros.objects.get(user = request.user)
+	return render(request,'meal_maker.html',{'tdee':round(macros.calc_tdee())}) 

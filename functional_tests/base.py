@@ -77,6 +77,8 @@ class FunctionalTest(StaticLiveServerTestCase):
 			'age':34,
 			'height':177.8,
 			'weight':95.25,
+			'direction':'lose',
+			'activity':'light',
 			'change_rate':.45359237,
 			'protein_percent':33,
 			'fat_percent':34

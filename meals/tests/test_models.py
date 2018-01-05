@@ -60,7 +60,7 @@ class MacrosTest(BaseTest):
 		self.check_model_validation_error(Macros(**self.create_broken_field_dict('gender','',MACRO_INIT_FIELD_DICT)))#illegal gender
 		self.check_model_validation_error(Macros(**self.create_broken_field_dict('activity','str',MACRO_INIT_FIELD_DICT)))#illegal activity
 		self.check_model_validation_error(Macros(**self.create_broken_field_dict('direction','str',MACRO_INIT_FIELD_DICT)))#illegal direction
-		self.check_model_validation_error(Macros(**self.create_broken_field_dict('change_rate',Decimal('10.111'),MACRO_INIT_FIELD_DICT)))#illegal(too long)
+		self.check_model_validation_error(Macros(**self.create_broken_field_dict('change_rate',Decimal('1.1111111111'),MACRO_INIT_FIELD_DICT)))#illegal(too long)
 		self.check_model_validation_error(Macros(**self.create_broken_field_dict('fat_percent',Decimal('10.111'),MACRO_INIT_FIELD_DICT)))#illegal(too long)
 		self.check_model_validation_error(Macros(**self.create_broken_field_dict('protein_percent',Decimal('10.111'),MACRO_INIT_FIELD_DICT)))#illegal(too long)
  
