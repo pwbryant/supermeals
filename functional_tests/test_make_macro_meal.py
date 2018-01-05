@@ -8,7 +8,7 @@ import time
 class MakeMacroMealTest(FunctionalTest):
 
 	def test_make_macro_meal(self):
-		self.initialize_test('user')
+		self.initialize_test(self.USERNAME,self.PASSWORD)
 		#Joe now wants to make a meal that helps him achieve his macros
 		#so he clicks on the 'Meal Maker' tab
 		self.browser.find_element_by_id('id_meal_maker_tab_label').click()
@@ -17,11 +17,9 @@ class MakeMacroMealTest(FunctionalTest):
 		#He Notices in the upper left of the tab a text input with the label 
 		#'How Many Calories?', and the placeholder 'cals'.
 		self.check_element_content('label[for=id_goal_meal_cals]','css','text','How Many Calories?')
-
-		
-
-		self.fail('Finish The Test!')
+		self.create_default_macro(self.USERNAME)
 		self.check_element_content('id_goal_meal_cals','id','placeholder','2111')
+		self.fail('Finish The Test!')
 		#Below this input there is a table with the macros 'Fat'/'Carbs'/'Protein' and their
 		#respective percent breakdown.  
 

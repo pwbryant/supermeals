@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.http import HttpRequest
 from selenium import webdriver
 import time
+from meals.models import Macros
 
 class FunctionalTest(StaticLiveServerTestCase):
 
@@ -61,13 +62,23 @@ class FunctionalTest(StaticLiveServerTestCase):
 
 		self.assertEqual(content,comparison_text)
 
-	def initialize_test(self,guest_or_user):
+	def initialize_test(self,username,password):
 
 		self.browser.get(self.live_server_url)
-		
-		if guest_or_user == 'guest':
-			username,password = self.GUEST,self.GUESTPASS 
-		else:
-			username,password = self.USERNAME,self.PASSWORD 
 		USER = User.objects.create_user(username=username,password=password)
 		self.login_user(username,password)
+
+	def create_default_macro(self,username):
+		user = User.objects.get(username=username)
+		Macros.objects.create(**{
+			'user':user,
+			'unit_type':'imperial',
+			'gender':'m',
+			'age':34,
+			'height':177.8,
+			'weight':95.25,
+			'change_rate':.45359237,
+			'protein_percent':33,
+			'fat_percent':34
+		})
+		
