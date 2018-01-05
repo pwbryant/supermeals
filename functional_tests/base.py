@@ -7,6 +7,11 @@ import time
 
 class FunctionalTest(StaticLiveServerTestCase):
 
+	USERNAME = 'JoeSchmoe'
+	PASSWORD = '123pass123'
+	GUEST = 'guest'
+	GUESTPASS = '321!beware'
+
 	def setUp(self):
 		self.browser = webdriver.Firefox()
 
@@ -55,3 +60,14 @@ class FunctionalTest(StaticLiveServerTestCase):
 			content = element.get_attribute('value')
 
 		self.assertEqual(content,comparison_text)
+
+	def initialize_test(self,guest_or_user):
+
+		self.browser.get(self.live_server_url)
+		
+		if guest_or_user == 'guest':
+			username,password = self.GUEST,self.GUESTPASS 
+		else:
+			username,password = self.USERNAME,self.PASSWORD 
+		USER = User.objects.create_user(username=username,password=password)
+		self.login_user(username,password)
