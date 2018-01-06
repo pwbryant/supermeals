@@ -4,13 +4,14 @@ from django.contrib.auth.models import User
 from django.http import HttpRequest
 from selenium import webdriver
 import time
-from meals.models import Macros
+from decimal import Decimal
+from meals.models import Macros,MealTemplate
 
 class FunctionalTest(StaticLiveServerTestCase):
 
 	USERNAME = 'JoeSchmoe'
 	PASSWORD = '123pass123'
-	GUEST = 'guest'
+	GUESTNAME = 'guest'
 	GUESTPASS = '321!beware'
 
 	def setUp(self):
@@ -63,13 +64,13 @@ class FunctionalTest(StaticLiveServerTestCase):
 		self.assertEqual(content,comparison_text)
 
 	def initialize_test(self,username,password):
-
+		user = User.objects.create_user(username=username,password=password)
 		self.browser.get(self.live_server_url)
-		USER = User.objects.create_user(username=username,password=password)
 		self.login_user(username,password)
+		return user
+		
 
-	def create_default_macro(self,username):
-		user = User.objects.get(username=username)
+	def create_default_macro(self,user):
 		Macros.objects.create(**{
 			'user':user,
 			'unit_type':'imperial',
@@ -84,3 +85,8 @@ class FunctionalTest(StaticLiveServerTestCase):
 			'fat_percent':34
 		})
 		
+	def create_default_meal_templates(self,user):
+		MealTemplate.objects.create(user=user,name='meal_0',cals_percent=Decimal('28'))
+		MealTemplate.objects.create(user=user,name='meal_1',cals_percent=Decimal('28'))
+		MealTemplate.objects.create(user=user,name='meal_2',cals_percent=Decimal('28'))
+		MealTemplate.objects.create(user=user,name='meal_3',cals_percent=Decimal('16'))

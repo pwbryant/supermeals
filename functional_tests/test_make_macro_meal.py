@@ -1,6 +1,7 @@
 from .base import FunctionalTest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.select import Select
 from django.contrib.auth.models import User
 from meals.models import Macros
 import time
@@ -8,32 +9,41 @@ import time
 class MakeMacroMealTest(FunctionalTest):
 
 	def test_make_macro_meal(self):
-		self.initialize_test(self.USERNAME,self.PASSWORD)
-		self.create_default_macro(self.USERNAME)
+		user = self.initialize_test(self.USERNAME,self.PASSWORD)
+		self.create_default_macro(user)
+		self.create_default_meal_templates(user)
 		#Joe now wants to make a meal that helps him achieve his macros
 		#so he clicks on the 'Meal Maker' tab
 		self.browser.find_element_by_id('id_meal_maker_tab_label').click()
-		meal_maker_header = self.browser.find_element_by_id('id_meal_maker_headline').text
-		self.assertEqual(meal_maker_header,'Meal Maker')
-		#He Notices in the upper left of the tab a text input with the label 
-		#'How Many Calories?', and the placeholder 'cals'.
-		self.check_element_content('label[for=id_goal_meal_cals]','css','text','How Many Calories?')
+		self.check_element_content('id_meal_maker_headline','id','text','Meal Maker')
+		#He Notices in the upper left of the tab a healine showing his TDEE and text input with the label 
+		#'How Many Calories?', and the placeholder 'cals' and under that a dropdown with choices of Meal 1,2,3 602
+                #and Meal 4 305.
 		self.check_element_content('id_tdee','id','text','2111')
-		self.fail('Finish The Test!')
+		self.check_element_content('label[for=id_goal_meal_cals_div]','css','text','How Many Calories?')
+		self.check_element_content('id_goal_meal_cals','id','placeholder','cals')
+		set_cals_select = Select(self.browser.find_element_by_id('id_goal_meal_cals_select'))
+		options = set_cals_select.options
+		self.assertEqual(options[0].text,'Meal 1,2,3 - 591 cals')
+		self.assertEqual(options[1].text,'Meal 4 - 338 cals')
+		self.fail('Finish the test')
+
+		#Joe selects the second option 'Meal 4 - 305' and notices that that the grams column
+		#in the table below fills in.
 		#Below this input there is a table with the macros 'Fat'/'Carbs'/'Protein' and their
-		#respective percent breakdown.  
+		#respective percent breakdown.
 
 		table = self.browser.find_element_by_id('id_goal_meal_macros_table')
 		cells = table.find_elements_by_tag_name('td')
 		self.assertEqual(cells[0].text,'Fat')
 		self.assertEqual(cells[1].text,'34')
-		self.assertEqual(cells[2].text,'73')
+		self.assertEqual(cells[2].text,'12')
 		self.assertEqual(cells[3].text,'Carbs')
 		self.assertEqual(cells[4].text,'33')
-		self.assertEqual(cells[5].text,'160')
+		self.assertEqual(cells[5].text,'25')
 		self.assertEqual(cells[6].text,'Protein')
 		self.assertEqual(cells[7].text,'33')
-		self.assertEqual(cells[8].text,'160')
+		self.assertEqual(cells[8].text,'25')
 		#Macros.objects.create()	
 
 		#Below the table is a 'Customize Macro %' button

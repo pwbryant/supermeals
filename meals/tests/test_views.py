@@ -17,8 +17,7 @@ BAD_USERNAME,BAD_PASSWORD = 'bad','badpass'
 
 class MealMakerTest(TestCase):
 
-	def create_default_macro(self,username):
-		user = User.objects.get(username=username)
+	def create_default_macro(self,user):
 		Macros.objects.create(**{
 			'user':user,
 			'unit_type':'imperial',
@@ -33,6 +32,13 @@ class MealMakerTest(TestCase):
 			'fat_percent':34
 		})
 		
+	def create_default_meal_templates(self,user):
+		MealTemplate.objects.create(user=user,name='meal_0',cals_percent=Decimal('28'))
+		MealTemplate.objects.create(user=user,name='meal_1',cals_percent=Decimal('28'))
+		MealTemplate.objects.create(user=user,name='meal_2',cals_percent=Decimal('28'))
+		MealTemplate.objects.create(user=user,name='meal_3',cals_percent=Decimal('16'))
+
+
 	def log_in_user(self,USERNAME,PASSWORD):
 		user = User.objects.create_user(username=USERNAME,password=PASSWORD)
 		self.client.post('/meals/logging_in', data={'username':USERNAME, 'password':PASSWORD})
@@ -40,7 +46,7 @@ class MealMakerTest(TestCase):
 
 	def test_meal_maker_url_renders_correct_template(self):
 		user = self.log_in_user(USERNAME,PASSWORD)
-		self.create_default_macro(user.username)
+		self.create_default_macro(user)
 
 		response = self.client.get('/meals/meal_maker/')
 		self.assertEqual(response.status_code,200)
@@ -49,12 +55,22 @@ class MealMakerTest(TestCase):
 	def test_get_meal_maker_template_returns_correct_html(self):
 		
 		user = self.log_in_user(USERNAME,PASSWORD)
-		self.create_default_macro(user.username)
+		self.create_default_macro(user)
+		self.create_default_meal_templates(user)
 
 		request = HttpRequest()
 		request.user = user
 		response = get_meal_maker_template(request)
-		expected_html = render_to_string('meal_maker.html',{'tdee':2111})
+		expected_html = render_to_string('meal_maker.html',{
+			'tdee':2111,
+			'meal_templates':[{
+				'value':'591',
+				'text':'Meal 1,2,3 - 591 cals'
+			},{
+				'value':'338',
+				'text':'Meal 4 - 338 cals'
+			}]
+		})
 		self.assertMultiLineEqual(response.content.decode(),expected_html)
 		
 

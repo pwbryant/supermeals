@@ -4,9 +4,14 @@
 	<h1 id="id_meal_maker_headline">Meal Maker</h1>
 	<h4 id="id_tdee">{{ tdee }}</h4>
 	
-	<label for='id_goal_meal_cals'>How Many Calories?</label>
+	<label for='id_goal_meal_cals_div'>How Many Calories?</label>
+	<div id='id_goal_meal_cals_div'>
 	<input id='id_goal_meal_cals' type='text' name='goal_meal_cals' placeholder='cals'/>	
-	
+	<p>-OR-</p>
+	<select id='id_goal_meal_cals_select'>
+	{% for option in meal_templates %}
+		<option value='{{ option.value }}'>{{ option.text }}</option>
+	{% endfor %}
 	<table id='id_goal_meal_macros_table'>
 		<tr><td>Fat</td><td></td><td></td></tr>
 		<tr><td>Carbs</td><td></td><td></td></tr>

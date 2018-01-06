@@ -203,4 +203,25 @@ def save_my_macros_and_meal_templates(request):
 def get_meal_maker_template(request):
 	
 	macros = Macros.objects.get(user = request.user)
-	return render(request,'meal_maker.html',{'tdee':round(macros.calc_tdee())}) 
+	tdee = macros.calc_tdee()
+	meal_templates = MealTemplate.objects.filter(user=request.user)
+	meal_templates_list = []
+	unique_cals_dict = {}
+	for mt in meal_templates:
+		if mt.cals_percent not in unique_cals_dict:
+			unique_cals_dict[mt.cals_percent] = []
+		unique_cals_dict[mt.cals_percent].append(str(int(mt.name.split('_')[-1]) + 1))
+
+	for cp in unique_cals_dict.keys():
+		unique_cals_dict[cp].sort()
+		cals = round(tdee * cp / Decimal('100'))
+		meal_templates_list.append({
+			'value':cals,
+			'text': 'Meal ' + ','.join(unique_cals_dict[cp]) + ' - ' + str(cals) + ' cals' 
+		})
+
+	template_data = {
+		'tdee':round(macros.calc_tdee()),
+		'meal_templates':meal_templates_list
+	}
+	return render(request,'meal_maker.html',template_data) 
