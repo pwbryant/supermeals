@@ -26,26 +26,30 @@ class MakeMacroMealTest(FunctionalTest):
 		options = set_cals_select.options
 		self.assertEqual(options[0].text,'Meal 1,2,3 - 591 cals')
 		self.assertEqual(options[1].text,'Meal 4 - 338 cals')
-		self.fail('Finish the test')
 
-		#Joe selects the second option 'Meal 4 - 305' and notices that that the grams column
-		#in the table below fills in.
 		#Below this input there is a table with the macros 'Fat'/'Carbs'/'Protein' and their
 		#respective percent breakdown.
 
 		table = self.browser.find_element_by_id('id_goal_meal_macros_table')
-		cells = table.find_elements_by_tag_name('td')
-		self.assertEqual(cells[0].text,'Fat')
-		self.assertEqual(cells[1].text,'34')
-		self.assertEqual(cells[2].text,'12')
-		self.assertEqual(cells[3].text,'Carbs')
-		self.assertEqual(cells[4].text,'33')
-		self.assertEqual(cells[5].text,'25')
-		self.assertEqual(cells[6].text,'Protein')
-		self.assertEqual(cells[7].text,'33')
-		self.assertEqual(cells[8].text,'25')
-		#Macros.objects.create()	
+		header_cells = table.find_elements_by_css_selector('th')
+		self.assertEqual(header_cells[0].text,'')
+		self.assertEqual(header_cells[1].text,'Percent')
+		self.assertEqual(header_cells[2].text,'Grams')
+		body_cells = table.find_elements_by_css_selector('td')
+		self.assertEqual(body_cells[0].text,'Fat')
+		self.assertEqual(body_cells[1].text,'34')
+		self.assertEqual(body_cells[2].text,'-')
+		self.assertEqual(body_cells[3].text,'Carbs')
+		self.assertEqual(body_cells[4].text,'33')
+		self.assertEqual(body_cells[5].text,'-')
+		self.assertEqual(body_cells[6].text,'Protein')
+		self.assertEqual(body_cells[7].text,'33')
+		self.assertEqual(body_cells[8].text,'-')
+		
+		#Joe selects the second option 'Meal 4 - 305' and notices that a grams column
+		#in the table below fills in.
 
+		self.fail('Finish The Test!')
 		#Below the table is a 'Customize Macro %' button
 
 		#To the right of the macro table are a series of four rectangles labeled

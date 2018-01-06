@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login
 from decimal import Decimal
 from meals.forms import LoginForm, SignUpForm, MakeMacrosForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR,DEFAULT_INVALID_INT_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR
 from meals.models import Macros,MealTemplate
-from meals.views import save_my_macros,save_meal_templates,get_meal_maker_template
+from meals.views import save_my_macros,save_meal_templates,get_meal_maker_template,make_meal_template_unique_cal_dict_list,make_macro_breakdown_dict_list
 
 # Create your tests here.
 
@@ -18,19 +18,20 @@ BAD_USERNAME,BAD_PASSWORD = 'bad','badpass'
 class MealMakerTest(TestCase):
 
 	def create_default_macro(self,user):
-		Macros.objects.create(**{
+		macro = Macros.objects.create(**{
 			'user':user,
 			'unit_type':'imperial',
 			'gender':'m',
 			'age':34,
 			'direction':'lose',
 			'activity':'light',
-			'height':177.8,
-			'weight':95.25,
-			'change_rate':.45359237,
-			'protein_percent':33,
-			'fat_percent':34
+			'height':Decimal('177.8'),
+			'weight':Decimal('95.25'),
+			'change_rate':Decimal('.45359237'),
+			'protein_percent':Decimal('33'),
+			'fat_percent':Decimal('34')
 		})
+		return macro
 		
 	def create_default_meal_templates(self,user):
 		MealTemplate.objects.create(user=user,name='meal_0',cals_percent=Decimal('28'))
@@ -52,6 +53,39 @@ class MealMakerTest(TestCase):
 		self.assertEqual(response.status_code,200)
 		self.assertTemplateUsed(response,'meal_maker.html')
 
+	def test_make_meal_template_unique_cal_dict_list_returns_list_of_dicts(self):
+		user = self.log_in_user(USERNAME,PASSWORD)
+		macro = self.create_default_macro(user)
+		self.create_default_meal_templates(user)
+		
+		expected_result = [{
+				'value':591,
+				'text':'Meal 1,2,3 - 591 cals'
+			},{
+				'value':338,
+				'text':'Meal 4 - 338 cals'
+			}]
+		self.assertEqual(make_meal_template_unique_cal_dict_list(user,macro.calc_tdee()),expected_result)
+
+	def test_make_meal_template_macro_breakdown_dict_returns_list_of_dicts(self):
+		user = self.log_in_user(USERNAME,PASSWORD)
+		macro = self.create_default_macro(user)
+		self.create_default_meal_templates(user)
+		
+		expected_result = [{
+				'name':'Fat',
+				'percent':34
+			},{
+				'name':'Carbs',
+				'percent':33
+			},
+			{
+				'name':'Protein',
+				'percent':33
+			}
+		]
+		self.assertEqual(make_macro_breakdown_dict_list(macro),expected_result)
+
 	def test_get_meal_maker_template_returns_correct_html(self):
 		
 		user = self.log_in_user(USERNAME,PASSWORD)
@@ -69,7 +103,12 @@ class MealMakerTest(TestCase):
 			},{
 				'value':'338',
 				'text':'Meal 4 - 338 cals'
-			}]
+			}],
+			'macro_breakdown':[
+				{'percent':34,'name':'Fat'},
+				{'percent':33,'name':'Carbs'},
+				{'percent':33,'name':'Protein'}
+			]
 		})
 		self.assertMultiLineEqual(response.content.decode(),expected_html)
 		

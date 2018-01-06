@@ -199,19 +199,17 @@ def save_my_macros_and_meal_templates(request):
 
 	return render(request,'my_macros.html',error_dict) 
 
+def make_meal_template_unique_cal_dict_list(user,tdee):
 
-def get_meal_maker_template(request):
-	
-	macros = Macros.objects.get(user = request.user)
-	tdee = macros.calc_tdee()
-	meal_templates = MealTemplate.objects.filter(user=request.user)
+	meal_templates = MealTemplate.objects.filter(user=user)
 	meal_templates_list = []
 	unique_cals_dict = {}
+	#for the meal cals dropdown.
+	#the next two for loops take each uniqe cal to make label of all meals with that cal value
 	for mt in meal_templates:
 		if mt.cals_percent not in unique_cals_dict:
 			unique_cals_dict[mt.cals_percent] = []
 		unique_cals_dict[mt.cals_percent].append(str(int(mt.name.split('_')[-1]) + 1))
-
 	for cp in unique_cals_dict.keys():
 		unique_cals_dict[cp].sort()
 		cals = round(tdee * cp / Decimal('100'))
@@ -219,9 +217,40 @@ def get_meal_maker_template(request):
 			'value':cals,
 			'text': 'Meal ' + ','.join(unique_cals_dict[cp]) + ' - ' + str(cals) + ' cals' 
 		})
+	return meal_templates_list
 
+
+def make_macro_breakdown_dict_list(macro):
+
+	fat_percent = round(macro.fat_percent)
+	protein_percent = round(macro.protein_percent)
+	carbs_percent = 100 - (fat_percent + protein_percent)
+	return [{
+			'name':'Fat',
+			'percent':fat_percent
+		},
+		{
+			'name':'Carbs',
+			'percent':carbs_percent
+		},
+		{
+			'name':'Protein',
+			'percent':protein_percent
+		}
+	]
+
+	
+def get_meal_maker_template(request):
+		
+	macro = Macros.objects.get(user = request.user)
+	tdee = macro.calc_tdee()
+
+	meal_templates_dict_list = make_meal_template_unique_cal_dict_list(request.user,tdee)
+	macro_breakdown_dict_list = make_macro_breakdown_dict_list(macro)
+	#for macro summary table
 	template_data = {
-		'tdee':round(macros.calc_tdee()),
-		'meal_templates':meal_templates_list
+		'tdee':round(tdee),
+		'meal_templates':meal_templates_dict_list,
+		'macro_breakdown':macro_breakdown_dict_list
 	}
 	return render(request,'meal_maker.html',template_data) 

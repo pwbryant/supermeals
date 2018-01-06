@@ -12,9 +12,11 @@
 	{% for option in meal_templates %}
 		<option value='{{ option.value }}'>{{ option.text }}</option>
 	{% endfor %}
+	</select>
 	<table id='id_goal_meal_macros_table'>
-		<tr><td>Fat</td><td></td><td></td></tr>
-		<tr><td>Carbs</td><td></td><td></td></tr>
-		<tr><td>Protein</td><td></td><td></td></tr>
+		<tr><th></th><th>Percent</th><th>Grams</th></tr>
+		{% for macro in macro_breakdown %}
+			<tr><td>{{ macro.name }}</td><td>{{ macro.percent }}</td><td>-</td></tr>
+		{% endfor %}
 	</table>
 </div>
