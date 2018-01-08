@@ -16,7 +16,10 @@
 	<table id='id_goal_meal_macros_table'>
 		<tr><th></th><th>Percent</th><th>Grams</th></tr>
 		{% for macro in macro_breakdown %}
-			<tr><td>{{ macro.name }}</td><td>{{ macro.percent }}</td><td>-</td></tr>
+			<tr><td>{{ macro.name }}</td><td><span data-macro="{{ macro.data }}">{{ macro.percent }}</span></td><td>-</td></tr>
 		{% endfor %}
 	</table>
 </div>
+<script>
+	goal_meal_cals_dropdown_fills_in_grams();
+</script>

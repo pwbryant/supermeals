@@ -9,6 +9,8 @@ from decimal import Decimal
 from meals.forms import LoginForm, SignUpForm, MakeMacrosForm, MealTemplateForm
 from meals.models import Macros,MealTemplate
 
+KG_TO_LB = .45359237
+IN_TO_CM = .3937
 # Create your views here.
 def home_or_login(request):
 	if request.user.is_authenticated:
@@ -122,7 +124,7 @@ def save_meal_templates(request):
 			pass
 	return {'status':1}
 
-def create_macro_form_dict_from(POST):
+def create_macro_form_dict(POST):
 
 	macro_form_dict = {}
 	macro_form_dict['unit_type'] = POST['unit_type']
@@ -130,13 +132,13 @@ def create_macro_form_dict_from(POST):
 		height1 = POST.get('i_height_0','')
 		height2 = POST.get('i_height_1','')
 		if height1 != '' and height2 != '':
-			macro_form_dict['height'] = str(round(((int(height1) * 12) + int(height2)) /.3937,2))
+			macro_form_dict['height'] = str(round(((int(height1) * 12) + int(height2)) / IN_TO_CM,2))
 		macro_form_dict['weight'] = POST.get('i_weight','')
 		macro_form_dict['change_rate'] = POST.get('i_change_rate','')
 		if macro_form_dict['weight'] != '':
-			macro_form_dict['weight'] = str(round(int(macro_form_dict['weight']) * .45359237,2))
+			macro_form_dict['weight'] = str(round(int(macro_form_dict['weight']) * KG_TO_LB,2))
 		if macro_form_dict['change_rate'] != '':
-			macro_form_dict['change_rate'] = str(round(int(macro_form_dict['change_rate']) * .45359237,2))
+			macro_form_dict['change_rate'] = str(round(int(macro_form_dict['change_rate']) * KG_TO_LB,8))
 
 	if macro_form_dict['unit_type'] == 'metric':
 		macro_form_dict['height'] = POST.get('m_height',0)
@@ -156,7 +158,7 @@ def create_macro_form_dict_from(POST):
 	return macro_form_dict
 
 def save_my_macros(request):
-	macro_form_dict = create_macro_form_dict_from(request.POST) 
+	macro_form_dict = create_macro_form_dict(request.POST) 
 	macro_form = MakeMacrosForm(macro_form_dict,unit_type=macro_form_dict['unit_type'])	
 	if not macro_form.is_valid():
 		return {'status':0,
@@ -222,20 +224,23 @@ def make_meal_template_unique_cal_dict_list(user,tdee):
 
 def make_macro_breakdown_dict_list(macro):
 
-	fat_percent = round(macro.fat_percent)
-	protein_percent = round(macro.protein_percent)
-	carbs_percent = 100 - (fat_percent + protein_percent)
+	fat_percent = macro.fat_percent
+	protein_percent = macro.protein_percent
+	carbs_percent = Decimal(100 - (round(fat_percent) + round(protein_percent)))
 	return [{
 			'name':'Fat',
-			'percent':fat_percent
+			'percent':round(fat_percent),
+			'data':fat_percent
 		},
 		{
 			'name':'Carbs',
-			'percent':carbs_percent
+			'percent':100 - (round(fat_percent) + round(protein_percent)),
+			'data':Decimal(100 - (fat_percent + protein_percent))
 		},
 		{
 			'name':'Protein',
-			'percent':protein_percent
+			'percent':round(protein_percent),
+			'data':protein_percent
 		}
 	]
 

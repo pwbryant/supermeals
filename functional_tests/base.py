@@ -71,19 +71,21 @@ class FunctionalTest(StaticLiveServerTestCase):
 		
 
 	def create_default_macro(self,user):
-		Macros.objects.create(**{
+		macro = Macros.objects.create(**{
 			'user':user,
 			'unit_type':'imperial',
 			'gender':'m',
 			'age':34,
-			'height':177.8,
-			'weight':95.25,
+			'height':Decimal('177.8'),
+			'weight':Decimal('95.25'),
 			'direction':'lose',
 			'activity':'light',
-			'change_rate':.45359237,
-			'protein_percent':33,
-			'fat_percent':34
+			'change_rate':Decimal('.45359237'),
+			'protein_percent':Decimal('33'),
+			'fat_percent':Decimal('34')
 		})
+
+		return macro
 		
 	def create_default_meal_templates(self,user):
 		MealTemplate.objects.create(user=user,name='meal_0',cals_percent=Decimal('28'))

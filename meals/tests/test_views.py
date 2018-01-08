@@ -17,6 +17,31 @@ BAD_USERNAME,BAD_PASSWORD = 'bad','badpass'
 
 class MealMakerTest(TestCase):
 
+	MACRO_BREAKDOWN = [
+		{
+			'name':'Fat',
+			'percent':34,
+			'data':Decimal('34.00')
+		},{
+			'name':'Carbs',
+			'percent':33,
+			'data':Decimal('33.00')
+		},
+		{
+			'name':'Protein',
+			'percent':33,
+			'data':Decimal('33.00')
+		}
+	]
+
+	MEAL_TEMPLATES = [{
+				'value':591,
+				'text':'Meal 1,2,3 - 591 cals'
+			},{
+				'value':338,
+				'text':'Meal 4 - 338 cals'
+			}]
+
 	def create_default_macro(self,user):
 		macro = Macros.objects.create(**{
 			'user':user,
@@ -58,13 +83,7 @@ class MealMakerTest(TestCase):
 		macro = self.create_default_macro(user)
 		self.create_default_meal_templates(user)
 		
-		expected_result = [{
-				'value':591,
-				'text':'Meal 1,2,3 - 591 cals'
-			},{
-				'value':338,
-				'text':'Meal 4 - 338 cals'
-			}]
+		expected_result = self.MEAL_TEMPLATES
 		self.assertEqual(make_meal_template_unique_cal_dict_list(user,macro.calc_tdee()),expected_result)
 
 	def test_make_meal_template_macro_breakdown_dict_returns_list_of_dicts(self):
@@ -72,18 +91,7 @@ class MealMakerTest(TestCase):
 		macro = self.create_default_macro(user)
 		self.create_default_meal_templates(user)
 		
-		expected_result = [{
-				'name':'Fat',
-				'percent':34
-			},{
-				'name':'Carbs',
-				'percent':33
-			},
-			{
-				'name':'Protein',
-				'percent':33
-			}
-		]
+		expected_result = self.MACRO_BREAKDOWN 
 		self.assertEqual(make_macro_breakdown_dict_list(macro),expected_result)
 
 	def test_get_meal_maker_template_returns_correct_html(self):
@@ -97,18 +105,8 @@ class MealMakerTest(TestCase):
 		response = get_meal_maker_template(request)
 		expected_html = render_to_string('meal_maker.html',{
 			'tdee':2111,
-			'meal_templates':[{
-				'value':'591',
-				'text':'Meal 1,2,3 - 591 cals'
-			},{
-				'value':'338',
-				'text':'Meal 4 - 338 cals'
-			}],
-			'macro_breakdown':[
-				{'percent':34,'name':'Fat'},
-				{'percent':33,'name':'Carbs'},
-				{'percent':33,'name':'Protein'}
-			]
+			'meal_templates':self.MEAL_TEMPLATES,
+			'macro_breakdown':self.MACRO_BREAKDOWN
 		})
 		self.assertMultiLineEqual(response.content.decode(),expected_html)
 		
@@ -317,7 +315,7 @@ class MyMacrosTabTest(TestCase):
 		macro_obj = Macros.objects.first()
 		self.assertEqual(macro_obj.height,Decimal('177.80'))
 		self.assertEqual(macro_obj.weight,Decimal('95.25'))
-		self.assertEqual(macro_obj.change_rate,Decimal('0.91'))
+		self.assertEqual(macro_obj.change_rate,Decimal('0.90718474'))
 
 	def test_save_my_macros_saves_metric_macros_in_metric(self):
 		request = self.setup_user_request_for_post_to_view(self.METRIC_MACRO_DATA)

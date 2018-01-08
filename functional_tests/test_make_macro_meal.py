@@ -10,7 +10,7 @@ class MakeMacroMealTest(FunctionalTest):
 
 	def test_make_macro_meal(self):
 		user = self.initialize_test(self.USERNAME,self.PASSWORD)
-		self.create_default_macro(user)
+		macro = self.create_default_macro(user)
 		self.create_default_meal_templates(user)
 		#Joe now wants to make a meal that helps him achieve his macros
 		#so he clicks on the 'Meal Maker' tab
@@ -48,7 +48,12 @@ class MakeMacroMealTest(FunctionalTest):
 		
 		#Joe selects the second option 'Meal 4 - 305' and notices that a grams column
 		#in the table below fills in.
-
+		set_cals_select = Select(self.browser.find_element_by_id('id_goal_meal_cals_select'))
+		set_cals_select.options[1].click()
+		body_cells = table.find_elements_by_css_selector('td')
+		self.assertEqual(body_cells[2].text,'13')
+		self.assertEqual(body_cells[5].text,'28')
+		self.assertEqual(body_cells[8].text,'28')
 		self.fail('Finish The Test!')
 		#Below the table is a 'Customize Macro %' button
 
