@@ -24,8 +24,9 @@ class MakeMacroMealTest(FunctionalTest):
 		self.check_element_content('id_goal_meal_cals','id','placeholder','cals')
 		set_cals_select = Select(self.browser.find_element_by_id('id_goal_meal_cals_select'))
 		options = set_cals_select.options
-		self.assertEqual(options[0].text,'Meal 1,2,3 - 591 cals')
-		self.assertEqual(options[1].text,'Meal 4 - 338 cals')
+		self.assertEqual(options[0].text,'Saved Cals')
+		self.assertEqual(options[1].text,'Meal 1,2,3 - 591 cals')
+		self.assertEqual(options[2].text,'Meal 4 - 338 cals')
 
 		#Below this input there is a table with the macros 'Fat'/'Carbs'/'Protein' and their
 		#respective percent breakdown.
@@ -49,11 +50,31 @@ class MakeMacroMealTest(FunctionalTest):
 		#Joe selects the second option 'Meal 4 - 305' and notices that a grams column
 		#in the table below fills in.
 		set_cals_select = Select(self.browser.find_element_by_id('id_goal_meal_cals_select'))
-		set_cals_select.options[1].click()
+		set_cals_select.options[2].click()
 		body_cells = table.find_elements_by_css_selector('td')
 		self.assertEqual(body_cells[2].text,'13')
 		self.assertEqual(body_cells[5].text,'28')
 		self.assertEqual(body_cells[8].text,'28')
+
+		#Joe realized he wants to enter a value not on his saved tab so he enters 500 into the text input
+		#and when he does so he sees that the dropdown resets to the default position
+		cals_input_id = ['id_goal_meal_cals']
+		cals_input = ['500']
+		self.fill_input(cals_input_id,cals_input)	
+		self.assertEqual(set_cals_select.first_selected_option.text,'Saved Cals')
+		#set_cals_select = Select(self.browser.find_element_by_id('id_goal_meal_cals_select'))
+		
+		#He also notices that the grams values chanage as well
+		body_cells = table.find_elements_by_css_selector('td')
+		self.assertEqual(body_cells[2].text,'19')
+		self.assertEqual(body_cells[5].text,'41')
+		self.assertEqual(body_cells[8].text,'41')
+
+		#Joe realizes he actually does want to enter his saved amount so he reslects the 388 cal option and noctices
+		#that the text input clears out.
+
+		set_cals_select.options[2].click()
+		self.check_element_content('id_goal_meal_cals','id','text','')
 		self.fail('Finish The Test!')
 		#Below the table is a 'Customize Macro %' button
 

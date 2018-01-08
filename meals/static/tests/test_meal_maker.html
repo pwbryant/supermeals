@@ -15,6 +15,7 @@
 
 		<input id='id_goal_meal_cals' type='text' name='goal_meal_cals' placeholder='cals'/>
 		<select id='id_goal_meal_cals_select'>
+			<option value="header">Saved Cals</option>
 			<option value="602">Meal 1,2,3 - 602 cals</option>
 			<option value="305">Meal 4 - 305 cals</option>
 		</select>
@@ -48,6 +49,34 @@
 			assert.equal(protein_grams,'25');	
 		});		
 
+		QUnit.test('meal cal input fills in breakdown table grams',function (assert) {
+			goal_meal_cals_input_fills_in_grams();
+			$('#id_goal_meal_cals').val('500');
+			$('#id_goal_meal_cals').trigger('keyup');
+			fat_grams = $('#id_goal_meal_macros_table td:eq(2)').text()
+			carbs_grams = $('#id_goal_meal_macros_table td:eq(5)').text()
+			protein_grams = $('#id_goal_meal_macros_table td:eq(8)').text()
+			
+			assert.equal(fat_grams,'19');	
+			assert.equal(carbs_grams,'41');	
+			assert.equal(protein_grams,'41');	
+		});		
+
+		QUnit.test('meal cal selection clears meal cal input',function (assert) {
+			goal_meal_cals_dropdown_fills_in_grams();
+			$('#id_goal_meal_cals').val('500');
+			$('#id_goal_meal_cals_select').val('305').trigger('change');
+			$('#id_goal_meal_cals_select>option:eq(1)').prop('selected',true);
+			cals_input = $('#id_goal_meal_cals').val();
+			assert.equal(cals_input,'');
+		});		
+
+		QUnit.test('meal cal input sets dropdown to header',function (assert) {
+			goal_meal_cals_dropdown_fills_in_grams();
+			$('#id_goal_meal_cals').val('500');
+			select_val = $('#id_goal_meal_cals_select option:selected').val();
+			assert.equal(select_val,'header');
+		});		
 	</script>
 </body>
 </html>

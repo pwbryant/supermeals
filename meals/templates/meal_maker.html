@@ -9,6 +9,7 @@
 	<input id='id_goal_meal_cals' type='text' name='goal_meal_cals' placeholder='cals'/>	
 	<p>-OR-</p>
 	<select id='id_goal_meal_cals_select'>
+		<option value='header'>Saved Cals</option>
 	{% for option in meal_templates %}
 		<option value='{{ option.value }}'>{{ option.text }}</option>
 	{% endfor %}
@@ -22,4 +23,5 @@
 </div>
 <script>
 	goal_meal_cals_dropdown_fills_in_grams();
+	goal_meal_cals_input_fills_in_grams();
 </script>
