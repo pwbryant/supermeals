@@ -10,12 +10,42 @@ class MakeMacroMealTest(FunctionalTest):
 
 	def test_make_macro_meal(self):
 		user = self.initialize_test(self.USERNAME,self.PASSWORD)
-		macro = self.create_default_macro(user)
-		self.create_default_meal_templates(user)
+		#macro = self.create_default_macro(user)
+		#self.create_default_meal_templates(user)
+		
 		#Joe now wants to make a meal that helps him achieve his macros
 		#so he clicks on the 'Meal Maker' tab
 		self.browser.find_element_by_id('id_meal_maker_tab_label').click()
 		self.check_element_content('id_meal_maker_headline','id','text','Meal Maker')
+
+		#Joe however, did not set any macros in the my macros tab, but he can still make a meal.
+		#He notices an input to enter the desired calories.
+		self.check_element_content('label[for=id_goal_meal_cals_div]','css','text','How Many Calories?')
+		self.check_element_content('id_goal_meal_cals','id','placeholder','Cals')
+
+		#Below he sees a table like area for entering the percentages/grams for each macros	
+		macro_div = self.browser.find_element_by_id('id_goal_meal_macros_div')
+		macro_spans = macro_div.find_elements_by_css_selector('span')
+		self.assertEqual(macro_spans[0].text,'')
+		self.assertEqual(macro_spans[1].text,'Percent')
+		self.assertEqual(macro_spans[2].text,'Grams')
+		self.assertEqual(macro_spans[3].text,'Fat')
+		self.assertEqual(macro_spans[4].text,'Carbs')
+
+		self.check_element_content('id_goal_meal_fat_percent','id','placeholder','%')
+		self.check_element_content('id_goal_meal_fat_grams','id','placeholder','g')
+		self.check_element_content('id_goal_meal_carbs_percent','id','placeholder','%')
+		self.check_element_content('id_goal_meal_carbs_grams','id','placeholder','g')
+		self.check_element_content('id_goal_meal_protein_percent','id','placeholder','%')
+		self.check_element_content('id_goal_meal_protein_grams','id','placeholder','g')
+
+		#Joe enters 500 cals and 34,33,33 % for Fat, Carbs and Protein respectively and notices that the gram
+		#inputs fill in with 19, 41, 41
+		self.fill_input(['id_goal_meal_cals','id_goal_meal_fat_percent','id_goal_meal_carbs_percent','id_goal_meal_protein_percent'],[500,34,33,33])	
+		self.check_element_content('id_goal_meal_fat_grams','id','value','19')
+		self.check_element_content('id_goal_meal_carbs_grams','id','value','41')
+		self.check_element_content('id_goal_meal_protein_grams','id','value','41')
+
 		#He Notices in the upper left of the tab a healine showing his TDEE and text input with the label 
 		#'How Many Calories?', and the placeholder 'cals' and under that a dropdown with choices of Meal 1,2,3 602
                 #and Meal 4 305.

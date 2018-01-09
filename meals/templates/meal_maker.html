@@ -6,22 +6,33 @@
 	
 	<label for='id_goal_meal_cals_div'>How Many Calories?</label>
 	<div id='id_goal_meal_cals_div'>
-	<input id='id_goal_meal_cals' type='text' name='goal_meal_cals' placeholder='cals'/>	
-	<p>-OR-</p>
-	<select id='id_goal_meal_cals_select'>
-		<option value='header'>Saved Cals</option>
-	{% for option in meal_templates %}
-		<option value='{{ option.value }}'>{{ option.text }}</option>
-	{% endfor %}
-	</select>
-	<table id='id_goal_meal_macros_table'>
-		<tr><th></th><th>Percent</th><th>Grams</th></tr>
-		{% for macro in macro_breakdown %}
-			<tr><td>{{ macro.name }}</td><td><span data-macro="{{ macro.data }}">{{ macro.percent }}</span></td><td>-</td></tr>
+	<input id='id_goal_meal_cals' type='text' name='goal_meal_cals' placeholder='Cals'/>	
+	{% if meal_templates %}
+		<p>-OR-</p>
+		<select id='id_goal_meal_cals_select'>
+			<option value='header'>Saved Cals</option>
+		{% for option in meal_templates %}
+			<option value='{{ option.value }}'>{{ option.text }}</option>
 		{% endfor %}
-	</table>
+		</select>
+	{% endif %}
+	<div id='id_goal_meal_macros_div'>
+		<span></span><span>Percent</span><span>Grams</span><br>
+		{% if macro_breakdown %}
+			<span>{{ macro.name }}</span><span data-macro="{{ macro.data }}">{{ macro.percent }}</span><br>
+			<span>{{ macro.name }}</span><span data-macro="{{ macro.data }}">{{ macro.percent }}</span><br>
+			<span>{{ macro.name }}</span><span data-macro="{{ macro.data }}">{{ macro.percent }}</span><br>
+		{% else %}
+			<span>Fat</span><input id='id_goal_meal_fat_percent' class='choose_macros' type='text' placeholder='%' data-value="0"/><input id='id_goal_meal_fat_g' class='choose_macros' type='text' placeholder='g'/><br>
+			<span>Carbs</span><input id='id_goal_meal_carbs_percent' class='choose_macros' type='text' placeholder='%' data-value="0"/><input id='id_goal_meal_carbs_g' class='choose_macros' type='text' placeholder='g'/><br>
+			<span>Protein</span><input id='id_goal_meal_protein_percent' class='choose_macros' type='text' placeholder='%' data-value="0"/><input id='id_goal_meal_protein_g' class='choose_macros' type='text' placeholder='g'/><br>
+			<span id='id_goal_meal_macro_percent_total'>100</span><br>
+		{% endif %}
+	</div>
 </div>
 <script>
 	goal_meal_cals_dropdown_fills_in_grams();
 	goal_meal_cals_input_fills_in_grams();
+	goal_meal_choose_macro_handler();
 </script>
+

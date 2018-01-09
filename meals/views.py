@@ -247,15 +247,19 @@ def make_macro_breakdown_dict_list(macro):
 	
 def get_meal_maker_template(request):
 		
-	macro = Macros.objects.get(user = request.user)
-	tdee = macro.calc_tdee()
+	macro_set = Macros.objects.filter(user = request.user)
+	if len(macro_set) > 0:
+		macro = macro_set[0]
+		tdee = macro.calc_tdee()
 
-	meal_templates_dict_list = make_meal_template_unique_cal_dict_list(request.user,tdee)
-	macro_breakdown_dict_list = make_macro_breakdown_dict_list(macro)
-	#for macro summary table
-	template_data = {
-		'tdee':round(tdee),
-		'meal_templates':meal_templates_dict_list,
-		'macro_breakdown':macro_breakdown_dict_list
-	}
+		meal_templates_dict_list = make_meal_template_unique_cal_dict_list(request.user,tdee)
+		macro_breakdown_dict_list = make_macro_breakdown_dict_list(macro)
+		template_data = {
+			'tdee':round(tdee),
+			'meal_templates':meal_templates_dict_list,
+			'macro_breakdown':macro_breakdown_dict_list
+		}
+	else:
+		template_data = {}
+
 	return render(request,'meal_maker.html',template_data) 
