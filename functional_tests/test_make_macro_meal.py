@@ -25,66 +25,68 @@ class MakeMacroMealTest(FunctionalTest):
 
 		#Below he sees a table like area for entering the percentages/grams for each macros	
 		macro_div = self.browser.find_element_by_id('id_goal_meal_macros_div')
-		macro_spans = macro_div.find_elements_by_css_selector('span')
-		self.assertEqual(macro_spans[0].text,'')
-		self.assertEqual(macro_spans[1].text,'Percent')
-		self.assertEqual(macro_spans[2].text,'Grams')
-		self.assertEqual(macro_spans[3].text,'Fat')
-		self.assertEqual(macro_spans[4].text,'Carbs')
+		macro_spans = macro_div.find_elements_by_css_selector('label')
+		self.assertEqual(macro_spans[0].text,'Percent')
+		self.assertEqual(macro_spans[1].text,'Grams')
+		self.assertEqual(macro_spans[2].text,'Fat')
+		self.assertEqual(macro_spans[3].text,'Carbs')
 
 		self.check_element_content('id_goal_meal_fat_percent','id','placeholder','%')
-		self.check_element_content('id_goal_meal_fat_grams','id','placeholder','g')
+		self.check_element_content('id_goal_meal_fat_g','id','placeholder','g')
 		self.check_element_content('id_goal_meal_carbs_percent','id','placeholder','%')
-		self.check_element_content('id_goal_meal_carbs_grams','id','placeholder','g')
+		self.check_element_content('id_goal_meal_carbs_g','id','placeholder','g')
 		self.check_element_content('id_goal_meal_protein_percent','id','placeholder','%')
-		self.check_element_content('id_goal_meal_protein_grams','id','placeholder','g')
+		self.check_element_content('id_goal_meal_protein_g','id','placeholder','g')
 
 		#Joe enters 500 cals and 34,33,33 % for Fat, Carbs and Protein respectively and notices that the gram
 		#inputs fill in with 19, 41, 41
 		self.fill_input(['id_goal_meal_cals','id_goal_meal_fat_percent','id_goal_meal_carbs_percent','id_goal_meal_protein_percent'],[500,34,33,33])	
-		self.check_element_content('id_goal_meal_fat_grams','id','value','19')
-		self.check_element_content('id_goal_meal_carbs_grams','id','value','41')
-		self.check_element_content('id_goal_meal_protein_grams','id','value','41')
+		self.check_element_content('id_goal_meal_fat_g','id','value','19')
+		self.check_element_content('id_goal_meal_carbs_g','id','value','41')
+		self.check_element_content('id_goal_meal_protein_g','id','value','41')
 
+		#Joe realizes he needs to know his TDEE so he does that and then comes back where 
 		#He Notices in the upper left of the tab a healine showing his TDEE and text input with the label 
 		#'How Many Calories?', and the placeholder 'cals' and under that a dropdown with choices of Meal 1,2,3 602
                 #and Meal 4 305.
+		macro = self.create_default_macro(user)
+		self.create_default_meal_templates(user)
+		self.browser.find_element_by_id('id_meal_maker_tab_label').click()
 		self.check_element_content('id_tdee','id','text','2111')
 		self.check_element_content('label[for=id_goal_meal_cals_div]','css','text','How Many Calories?')
-		self.check_element_content('id_goal_meal_cals','id','placeholder','cals')
+		self.check_element_content('id_goal_meal_cals','id','placeholder','Cals')
 		set_cals_select = Select(self.browser.find_element_by_id('id_goal_meal_cals_select'))
 		options = set_cals_select.options
 		self.assertEqual(options[0].text,'Saved Cals')
 		self.assertEqual(options[1].text,'Meal 1,2,3 - 591 cals')
 		self.assertEqual(options[2].text,'Meal 4 - 338 cals')
 
-		#Below this input there is a table with the macros 'Fat'/'Carbs'/'Protein' and their
+		#Below this input there is an  table like input area with the macros 'Fat'/'Carbs'/'Protein' and their
 		#respective percent breakdown.
 
-		table = self.browser.find_element_by_id('id_goal_meal_macros_table')
-		header_cells = table.find_elements_by_css_selector('th')
-		self.assertEqual(header_cells[0].text,'')
-		self.assertEqual(header_cells[1].text,'Percent')
-		self.assertEqual(header_cells[2].text,'Grams')
-		body_cells = table.find_elements_by_css_selector('td')
-		self.assertEqual(body_cells[0].text,'Fat')
-		self.assertEqual(body_cells[1].text,'34')
-		self.assertEqual(body_cells[2].text,'-')
-		self.assertEqual(body_cells[3].text,'Carbs')
-		self.assertEqual(body_cells[4].text,'33')
-		self.assertEqual(body_cells[5].text,'-')
-		self.assertEqual(body_cells[6].text,'Protein')
-		self.assertEqual(body_cells[7].text,'33')
-		self.assertEqual(body_cells[8].text,'-')
+		table = self.browser.find_element_by_id('id_goal_meal_macros_div')
+		labels = table.find_elements_by_css_selector('label')
+		self.assertEqual(labels[0].text,'Percent')
+		self.assertEqual(labels[1].text,'Grams')
+		self.assertEqual(labels[2].text,'Fat')
+		self.assertEqual(labels[3].text,'Carbs')
+		self.assertEqual(labels[4].text,'Protein')
+		#time.sleep(20)
+		inputs = table.find_elements_by_css_selector('input')
+		self.assertEqual(inputs[0].get_attribute('value'),'34')
+		self.assertEqual(inputs[1].get_attribute('placeholder'),'-')
+		self.assertEqual(inputs[2].get_attribute('value'),'33')
+		self.assertEqual(inputs[3].get_attribute('placeholder'),'-')
+		self.assertEqual(inputs[4].get_attribute('value'),'33')
+		self.assertEqual(inputs[5].get_attribute('placeholder'),'-')
 		
 		#Joe selects the second option 'Meal 4 - 305' and notices that a grams column
 		#in the table below fills in.
 		set_cals_select = Select(self.browser.find_element_by_id('id_goal_meal_cals_select'))
 		set_cals_select.options[2].click()
-		body_cells = table.find_elements_by_css_selector('td')
-		self.assertEqual(body_cells[2].text,'13')
-		self.assertEqual(body_cells[5].text,'28')
-		self.assertEqual(body_cells[8].text,'28')
+		self.assertEqual(inputs[1].get_attribute('value'),'13')
+		self.assertEqual(inputs[3].get_attribute('value'),'28')
+		self.assertEqual(inputs[5].get_attribute('value'),'28')
 
 		#Joe realized he wants to enter a value not on his saved tab so he enters 500 into the text input
 		#and when he does so he sees that the dropdown resets to the default position
@@ -96,9 +98,9 @@ class MakeMacroMealTest(FunctionalTest):
 		
 		#He also notices that the grams values chanage as well
 		body_cells = table.find_elements_by_css_selector('td')
-		self.assertEqual(body_cells[2].text,'19')
-		self.assertEqual(body_cells[5].text,'41')
-		self.assertEqual(body_cells[8].text,'41')
+		self.assertEqual(inputs[1].get_attribute('value'),'19')
+		self.assertEqual(inputs[3].get_attribute('value'),'41')
+		self.assertEqual(inputs[5].get_attribute('value'),'41')
 
 		#Joe realizes he actually does want to enter his saved amount so he reslects the 388 cal option and noctices
 		#that the text input clears out.

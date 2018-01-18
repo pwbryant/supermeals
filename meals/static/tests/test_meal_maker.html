@@ -32,11 +32,11 @@
 		</select>
 
 		<div id='id_goal_meal_macros_div'>
-			<span></span><span>Percent</span><span>Grams</span><br>
-			<span>Fat</span><input id='id_goal_meal_fat_percent' class='choose_macros' type='text' placeholder='%' data-value="0"/><input id='id_goal_meal_fat_g' class='choose_macros' type='text' placeholder='g'/><br>
-			<span>Carbs</span><input id='id_goal_meal_carbs_percent' class='choose_macros' type='text' placeholder='%' data-value="0"/><input id='id_goal_meal_carbs_g' class='choose_macros' type='text' placeholder='g'/><br>
-			<span>Protein</span><input id='id_goal_meal_protein_percent' class='choose_macros' type='text' placeholder='%' data-value="0"/><input id='id_goal_meal_protein_g' class='choose_macros' type='text' placeholder='g'/><br>
-			<span id='id_goal_meal_macro_percent_total'>100</span>
+			<label for='id_goal_meal_fat_percent'>Percent</label><label for='id_goal_meal_fat_g'>Grams</label><br>
+			<label for='id_goal_meal_fat_percent'>Fat</label><input id='id_goal_meal_fat_percent' class='choose_macros' type='text' placeholder='%' data-value="0"/><input id='id_goal_meal_fat_g' class='choose_macros' type='text' placeholder='g'/><br>
+			<label for='id_goal_meal_carbs_percent'>Carbs</label><input id='id_goal_meal_carbs_percent' class='choose_macros' type='text' placeholder='%' data-value="0"/><input id='id_goal_meal_carbs_g' class='choose_macros' type='text' placeholder='g'/><br>
+			<label for='id_goal_meal_protein_percent'>Protein</label><input id='id_goal_meal_protein_percent' class='choose_macros' type='text' placeholder='%' data-value="0"/><input id='id_goal_meal_protein_g' class='choose_macros' type='text' placeholder='g'/><br>
+			<label for='id_goal_meal_macro_percent_total'>% Remaining:</label><span id='id_goal_meal_macro_percent_total'>100</span><br>
 		</div>
 
 	</div>
@@ -88,34 +88,40 @@
 			percent_total = $('#id_goal_meal_macro_percent_total').html();
 			assert.equal(percent_total,'100');
 		});
-		/*
+		
 		//macros breakdown table and goal cals selection
 		QUnit.test('meal cal selection fills in breakdown table grams',function (assert) {
 			goal_meal_cals_dropdown_fills_in_grams();
+			$('#id_goal_meal_fat_percent').val('34');
+			$('#id_goal_meal_carbs_percent').val('33');
+			$('#id_goal_meal_protein_percent').val('33');
 			$('#id_goal_meal_cals_select').val('305').trigger('change');
 			$('#id_goal_meal_cals_select>option:eq(1)').prop('selected',true);
-			fat_grams = $('#id_goal_meal_macros_table td:eq(2)').text()
-			carbs_grams = $('#id_goal_meal_macros_table td:eq(5)').text()
-			protein_grams = $('#id_goal_meal_macros_table td:eq(8)').text()
+			fat_grams = $('#id_goal_meal_fat_g').val()
+			carbs_grams = $('#id_goal_meal_carbs_g').val()
+			protein_grams = $('#id_goal_meal_carbs_g').val()
 			
 			assert.equal(fat_grams,'12');	
 			assert.equal(carbs_grams,'25');	
 			assert.equal(protein_grams,'25');	
 		});		
-
+		
 		QUnit.test('meal cal input fills in breakdown table grams',function (assert) {
 			goal_meal_cals_input_fills_in_grams();
+			$('#id_goal_meal_fat_percent').val('34');
+			$('#id_goal_meal_carbs_percent').val('33');
+			$('#id_goal_meal_protein_percent').val('33');
 			$('#id_goal_meal_cals').val('500');
 			$('#id_goal_meal_cals').trigger('keyup');
-			fat_grams = $('#id_goal_meal_macros_table td:eq(2)').text()
-			carbs_grams = $('#id_goal_meal_macros_table td:eq(5)').text()
-			protein_grams = $('#id_goal_meal_macros_table td:eq(8)').text()
+			fat_grams = $('#id_goal_meal_fat_g').val()
+			carbs_grams = $('#id_goal_meal_carbs_g').val()
+			protein_grams = $('#id_goal_meal_protein_g').val()
 			
 			assert.equal(fat_grams,'19');	
 			assert.equal(carbs_grams,'41');	
 			assert.equal(protein_grams,'41');	
 		});		
-
+		
 		QUnit.test('meal cal selection clears meal cal input',function (assert) {
 			goal_meal_cals_dropdown_fills_in_grams();
 			$('#id_goal_meal_cals').val('500');
@@ -124,14 +130,14 @@
 			cals_input = $('#id_goal_meal_cals').val();
 			assert.equal(cals_input,'');
 		});		
-
+			
 		QUnit.test('meal cal input sets dropdown to header',function (assert) {
 			goal_meal_cals_dropdown_fills_in_grams();
 			$('#id_goal_meal_cals').val('500');
 			select_val = $('#id_goal_meal_cals_select option:selected').val();
 			assert.equal(select_val,'header');
 		});
-		*/		
+		
 	</script>
 </body>
 </html>

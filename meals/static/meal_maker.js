@@ -6,20 +6,20 @@ MACRO_FACTORS = {
 var get_goal_meal_cals_and_set_grams = function(this_) {
 	if ($.trim(this_.value) != 'header' && $.trim(this_.value) != '') {
 		var cals = parseFloat(this_.value),
-		fat_percent = parseFloat($('#id_goal_meal_macros_table td:eq(1)').text()),
-		carbs_percent = parseFloat($('#id_goal_meal_macros_table td:eq(4)').text()),
-		protein_percent = parseFloat($('#id_goal_meal_macros_table td:eq(7)').text()),
+		fat_percent = parseFloat($('#id_goal_meal_fat_percent').val()),
+		carbs_percent = parseFloat($('#id_goal_meal_carbs_percent').val()),
+		protein_percent = parseFloat($('#id_goal_meal_protein_percent').val()),
 		fat_grams = Math.round(fat_percent / 100 * cals / 9),
 		carbs_grams = Math.round(carbs_percent / 100 * cals / 4),
 		protein_grams = Math.round(protein_percent / 100 * cals / 4)
 		;
-		$('#id_goal_meal_macros_table td:eq(2)').text(fat_grams);
-		$('#id_goal_meal_macros_table td:eq(5)').text(carbs_grams);
-		$('#id_goal_meal_macros_table td:eq(8)').text(protein_grams);
+		$('#id_goal_meal_fat_g').val(fat_grams);
+		$('#id_goal_meal_carbs_g').val(carbs_grams);
+		$('#id_goal_meal_protein_g').val(protein_grams);
 	} else {
-		$('#id_goal_meal_macros_table td:eq(2)').text('-');
-		$('#id_goal_meal_macros_table td:eq(5)').text('-');
-		$('#id_goal_meal_macros_table td:eq(8)').text('-');
+		$('#id_goal_meal_fat_g').val('-');
+		$('#id_goal_meal_carbs_g').val('-');
+		$('#id_goal_meal_protein_g').val('-');
 	}
 }
 //tested

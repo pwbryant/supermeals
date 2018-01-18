@@ -103,7 +103,7 @@ class MealMakerTest(TestCase):
 		response = get_meal_maker_template(request)
 		expected_html = render_to_string('meal_maker.html',{})
 		self.assertMultiLineEqual(response.content.decode(),expected_html)
-		self.assertNotIn('id_goal_meal_macros_table',response.content.decode())
+		self.assertIn('%',response.content.decode())
 		self.assertNotIn('id_goal_meal_cals_select',response.content.decode())
 		
 	def test_get_meal_maker_template_has_macro_returns_correct_html(self):
@@ -121,7 +121,7 @@ class MealMakerTest(TestCase):
 			'macro_breakdown':self.MACRO_BREAKDOWN
 		})
 		self.assertMultiLineEqual(response.content.decode(),expected_html)
-		self.assertIn('id_goal_meal_macros_table',response.content.decode())
+		self.assertNotIn("value='34'",response.content.decode())
 		self.assertIn('id_goal_meal_cals_select',response.content.decode())
 
 class LoginLogoffTest(TestCase):
