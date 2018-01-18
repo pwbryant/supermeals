@@ -18,6 +18,22 @@
 			output = $('#' + test_id).val();
 			return output;
 		}
+				
+		var fill_macro_percents = function(fat_pct,carbs_pct,protein_pct) {
+			$('#id_goal_meal_fat_percent').val(fat_pct);
+			$('#id_goal_meal_carbs_percent').val(carbs_pct);
+			$('#id_goal_meal_protein_percent').val(protein_pct);
+		}
+		
+		var check_macro_grams = function(assert_,fat_exp,carbs_exp,protein_exp) {
+			fat_grams = $('#id_goal_meal_fat_g').val()
+			carbs_grams = $('#id_goal_meal_carbs_g').val()
+			protein_grams = $('#id_goal_meal_protein_g').val()
+			
+			assert_.equal(fat_grams,fat_exp);	
+			assert_.equal(carbs_grams,carbs_exp);	
+			assert_.equal(protein_grams,protein_exp);	
+		}
 	</script>
 </head>
 <body>
@@ -92,34 +108,20 @@
 		//macros breakdown table and goal cals selection
 		QUnit.test('meal cal selection fills in breakdown table grams',function (assert) {
 			goal_meal_cals_dropdown_fills_in_grams();
-			$('#id_goal_meal_fat_percent').val('34');
-			$('#id_goal_meal_carbs_percent').val('33');
-			$('#id_goal_meal_protein_percent').val('33');
+			fill_macro_percents('34','33','33');
 			$('#id_goal_meal_cals_select').val('305').trigger('change');
 			$('#id_goal_meal_cals_select>option:eq(1)').prop('selected',true);
-			fat_grams = $('#id_goal_meal_fat_g').val()
-			carbs_grams = $('#id_goal_meal_carbs_g').val()
-			protein_grams = $('#id_goal_meal_carbs_g').val()
 			
-			assert.equal(fat_grams,'12');	
-			assert.equal(carbs_grams,'25');	
-			assert.equal(protein_grams,'25');	
+			check_macro_grams(assert,'12','25','25');
 		});		
 		
 		QUnit.test('meal cal input fills in breakdown table grams',function (assert) {
 			goal_meal_cals_input_fills_in_grams();
-			$('#id_goal_meal_fat_percent').val('34');
-			$('#id_goal_meal_carbs_percent').val('33');
-			$('#id_goal_meal_protein_percent').val('33');
+			fill_macro_percents('34','33','33');
 			$('#id_goal_meal_cals').val('500');
 			$('#id_goal_meal_cals').trigger('keyup');
-			fat_grams = $('#id_goal_meal_fat_g').val()
-			carbs_grams = $('#id_goal_meal_carbs_g').val()
-			protein_grams = $('#id_goal_meal_protein_g').val()
 			
-			assert.equal(fat_grams,'19');	
-			assert.equal(carbs_grams,'41');	
-			assert.equal(protein_grams,'41');	
+			check_macro_grams(assert,'19','41','41');
 		});		
 		
 		QUnit.test('meal cal selection clears meal cal input',function (assert) {
@@ -129,6 +131,18 @@
 			$('#id_goal_meal_cals_select>option:eq(1)').prop('selected',true);
 			cals_input = $('#id_goal_meal_cals').val();
 			assert.equal(cals_input,'');
+		});		
+
+		QUnit.test('meal cal selection fills in grams and subsequent change of percentage changes grams',function (assert) {
+			goal_meal_cals_dropdown_fills_in_grams();
+			goal_meal_choose_macro_handler();
+			fill_macro_percents('34','33','33');
+			$('#id_goal_meal_cals_select>option:eq(2)').prop('selected',true);
+			$('#id_goal_meal_fat_percent').val('30');
+			$('#id_goal_meal_fat_percent').trigger('keyup');
+			
+			new_fat =  $('#id_goal_meal_fat_g').val();
+			assert.equal(new_fat,'10');
 		});		
 			
 		QUnit.test('meal cal input sets dropdown to header',function (assert) {

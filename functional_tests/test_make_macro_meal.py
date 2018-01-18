@@ -97,16 +97,22 @@ class MakeMacroMealTest(FunctionalTest):
 		#set_cals_select = Select(self.browser.find_element_by_id('id_goal_meal_cals_select'))
 		
 		#He also notices that the grams values chanage as well
-		body_cells = table.find_elements_by_css_selector('td')
 		self.assertEqual(inputs[1].get_attribute('value'),'19')
 		self.assertEqual(inputs[3].get_attribute('value'),'41')
 		self.assertEqual(inputs[5].get_attribute('value'),'41')
 
 		#Joe realizes he actually does want to enter his saved amount so he reslects the 388 cal option and noctices
-		#that the text input clears out.
+		#that the text input clears out. He also changes the Fat and Carbs percents to 30 and 37 % respectively
 
 		set_cals_select.options[2].click()
 		self.check_element_content('id_goal_meal_cals','id','text','')
+		macro_input_ids = ['id_goal_meal_fat_percent','id_goal_meal_carbs_percent']
+		self.fill_input(macro_input_ids,[],clear=True)	
+		macro_inputs = ['30','37']
+		self.fill_input(macro_input_ids,macro_inputs)	
+		self.assertEqual(inputs[1].get_attribute('value'),'11')
+		self.assertEqual(inputs[3].get_attribute('value'),'31')
+		self.assertEqual(inputs[5].get_attribute('value'),'28')
 		self.fail('Finish The Test!')
 		#Below the table is a 'Customize Macro %' button
 

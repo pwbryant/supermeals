@@ -20,14 +20,18 @@ class FunctionalTest(StaticLiveServerTestCase):
 	def tearDown(self):
 		self.browser.quit()
 	
-	def fill_input(self,element_ids,values):
+	def fill_input(self,element_ids,values,clear=None):
 		for i in range(len(element_ids)):
 			element = self.browser.find_element_by_id(element_ids[i])
-			if element.get_attribute('type') == 'text':
-				element.send_keys(values[i])
+			
+			if clear:
+				element.clear()
+			else:
+				if element.get_attribute('type') == 'text':
+					element.send_keys(values[i])
 
-			if element.get_attribute('type') == 'radio':
-				element.click()
+				if element.get_attribute('type') == 'radio':
+					element.click()
 
 	def login_user(self,username,password = False):
 
