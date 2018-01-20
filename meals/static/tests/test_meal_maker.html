@@ -17,13 +17,13 @@
 			$('#' + input_id).trigger('keyup');
 			output = $('#' + test_id).val();
 			return output;
-		}
+		};
 				
 		var fill_macro_percents = function(fat_pct,carbs_pct,protein_pct) {
 			$('#id_goal_meal_fat_percent').val(fat_pct);
 			$('#id_goal_meal_carbs_percent').val(carbs_pct);
 			$('#id_goal_meal_protein_percent').val(protein_pct);
-		}
+		};
 		
 		var check_macro_grams = function(assert_,fat_exp,carbs_exp,protein_exp) {
 			fat_grams = $('#id_goal_meal_fat_g').val()
@@ -33,28 +33,44 @@
 			assert_.equal(fat_grams,fat_exp);	
 			assert_.equal(carbs_grams,carbs_exp);	
 			assert_.equal(protein_grams,protein_exp);	
-		}
+		};
+		
+		var fill_macros_with_keyup = function(goal_cals,pct_ids,pct_amts) {
+		
+			$('#id_goal_meal_cals').val(goal_cals);
+			for (i=0; i<pct_ids.length; i++) {	
+				$('#' + pct_ids[i]).val(pct_amts[i]);
+				$('#' + pct_ids[i]).trigger('keyup');
+			}
+		};
+		
 	</script>
 </head>
 <body>
 	<div id="qunit"></div>
 	<div id="qunit-fixture">
-
-		<input id='id_goal_meal_cals' type='text' name='goal_meal_cals' placeholder='cals'/>
-		<select id='id_goal_meal_cals_select'>
-			<option value="header">Saved Cals</option>
-			<option value="602">Meal 1,2,3 - 602 cals</option>
-			<option value="305">Meal 4 - 305 cals</option>
-		</select>
-
-		<div id='id_goal_meal_macros_div'>
-			<label for='id_goal_meal_fat_percent'>Percent</label><label for='id_goal_meal_fat_g'>Grams</label><br>
-			<label for='id_goal_meal_fat_percent'>Fat</label><input id='id_goal_meal_fat_percent' class='choose_macros' type='text' placeholder='%' data-value="0"/><input id='id_goal_meal_fat_g' class='choose_macros' type='text' placeholder='g'/><br>
-			<label for='id_goal_meal_carbs_percent'>Carbs</label><input id='id_goal_meal_carbs_percent' class='choose_macros' type='text' placeholder='%' data-value="0"/><input id='id_goal_meal_carbs_g' class='choose_macros' type='text' placeholder='g'/><br>
-			<label for='id_goal_meal_protein_percent'>Protein</label><input id='id_goal_meal_protein_percent' class='choose_macros' type='text' placeholder='%' data-value="0"/><input id='id_goal_meal_protein_g' class='choose_macros' type='text' placeholder='g'/><br>
-			<label for='id_goal_meal_macro_percent_total'>% Remaining:</label><span id='id_goal_meal_macro_percent_total'>100</span><br>
+		<div id='id_meal_maker_side_bar'>
+			<div id='id_goal_meal_cals_div'>
+				<input id='id_goal_meal_cals' type='text' name='goal_meal_cals' placeholder='cals'/>
+				<select id='id_goal_meal_cals_select'>
+					<option value="header">Saved Cals</option>
+					<option value="602">Meal 1,2,3 - 602 cals</option>
+					<option value="305">Meal 4 - 305 cals</option>
+				</select>
+			</div>
+			<div id='id_goal_meal_macros_div'>
+				<label for='id_goal_meal_fat_percent'>Percent</label><label for='id_goal_meal_fat_g'>Grams</label><br>
+				<label for='id_goal_meal_fat_percent'>Fat</label><input id='id_goal_meal_fat_percent' class='choose_macros' type='text' placeholder='%' data-value="0"/><input id='id_goal_meal_fat_g' class='choose_macros' type='text' placeholder='g'/><br>
+				<label for='id_goal_meal_carbs_percent'>Carbs</label><input id='id_goal_meal_carbs_percent' class='choose_macros' type='text' placeholder='%' data-value="0"/><input id='id_goal_meal_carbs_g' class='choose_macros' type='text' placeholder='g'/><br>
+				<label for='id_goal_meal_protein_percent'>Protein</label><input id='id_goal_meal_protein_percent' class='choose_macros' type='text' placeholder='%' data-value="0"/><input id='id_goal_meal_protein_g' class='choose_macros' type='text' placeholder='g'/><br>
+				<label for='id_goal_meal_macro_percent_total'>% Remaining:</label><span id='id_goal_meal_macro_percent_total'>100</span><br>
+			</div>
+			<button id='id_create_macro_bars_button' class='btn' disabled>Create Macro Bars</button>
 		</div>
-
+		<div id='id_goal_meal_bars_div'>
+			<div id='id_goal_cal_bar_div'>
+			</div>
+		</div>
 	</div>
 	
 
@@ -63,8 +79,18 @@
 	<!------------------------------------------------------------------------------------------------------------------ -->
 	<!--QUnit TESTS -->
 	<script>
+		//bar tests
+		/*
+		QUnit.test("calling create macro bar for cals create the cals svg that is x height and y width", function (assert) {
+			create_macro_bar();
+			cal_bar = $('#id_goal_cal_bar');
+			assert.equal(cal_bar.height(),0);
+			assert.equal(cal_bar.width(),0);
+		});
+		*/
+		//macro break down % to g tests
 		QUnit.test("keystroke in percentage creates grams", function (assert) {
-			goal_meal_choose_macro_handler();
+			MM_FUNK.goal_meal_choose_macro_handler();
 			
 			fat_grams = parseFloat(insert_macro_val_trigger_keyup_return_output(500,'id_goal_meal_fat_percent',34,'id_goal_meal_fat_g'));
 			carbs_grams = parseFloat(insert_macro_val_trigger_keyup_return_output(500,'id_goal_meal_carbs_percent',33,'id_goal_meal_carbs_g'));
@@ -75,7 +101,7 @@
 			assert.equal(protein_grams.toFixed(0),41);
 		});
 		QUnit.test("keystroke in protein grams creates % in protein %", function (assert) {
-			goal_meal_choose_macro_handler();
+			MM_FUNK.goal_meal_choose_macro_handler();
 			
 			fat_pct = parseFloat(insert_macro_val_trigger_keyup_return_output(500,'id_goal_meal_fat_g',19,'id_goal_meal_fat_percent'));
 			carbs_pct = parseFloat(insert_macro_val_trigger_keyup_return_output(500,'id_goal_meal_carbs_g',41,'id_goal_meal_carbs_percent'));
@@ -86,28 +112,65 @@
 			assert.equal(protein_pct.toFixed(0),33);
 		});
 		QUnit.test("choose_macro_handler can handle deletes", function (assert) {
-			goal_meal_choose_macro_handler();
+			MM_FUNK.goal_meal_choose_macro_handler();
 			fat_pct = insert_macro_val_trigger_keyup_return_output(500,'id_goal_meal_fat_g','','id_goal_meal_fat_percent');
 			assert.equal(fat_pct,'');
 		});
+		//macro totaller
 		QUnit.test("macro_percent_totaler tallys the macro percent total correctly", function (assert) {
-			goal_meal_choose_macro_handler();
+			MM_FUNK.goal_meal_choose_macro_handler();
 			insert_macro_val_trigger_keyup_return_output(500,'id_goal_meal_fat_percent',40,'id_goal_meal_fat_g');
 			insert_macro_val_trigger_keyup_return_output(500,'id_goal_meal_carbs_percent',33,'id_goal_meal_carbs_g');
 			percent_total = $('#id_goal_meal_macro_percent_total').html();
 			assert.equal(percent_total,'27');
 		});
 		QUnit.test("macro_percent_totaler doesn't break upon delete", function (assert) {
-			goal_meal_choose_macro_handler();
+			MM_FUNK.goal_meal_choose_macro_handler();
 			insert_macro_val_trigger_keyup_return_output(500,'id_goal_meal_fat_percent',40,'id_goal_meal_fat_g');
 			insert_macro_val_trigger_keyup_return_output(500,'id_goal_meal_fat_percent','','id_goal_meal_fat_g');
 			percent_total = $('#id_goal_meal_macro_percent_total').html();
 			assert.equal(percent_total,'100');
 		});
-		
+
+		//set initial macros
+		QUnit.test("set initial macro pcts totals correctly upon page load if there are preloaded amts", function (assert) {
+			fill_macro_percents('30','40','30');
+			MM_FUNK.set_initial_macro_percent_tally();
+			percent_total = $('#id_goal_meal_macro_percent_total').html();
+			assert.equal(percent_total,'0');
+		});
+		QUnit.test("set initial macro pcts totals correctly upon page load if there aren't preloaded amts", function (assert) {
+			MM_FUNK.set_initial_macro_percent_tally();
+			percent_total = $('#id_goal_meal_macro_percent_total').html();
+			assert.equal(percent_total,'100');
+		});
+		//enableing disabling create macro bars button
+		QUnit.test("macro_percent_totaler enables create button when total pct == 0", function (assert) {
+			MM_FUNK.goal_meal_choose_macro_handler();
+			fill_macros_with_keyup(500,['id_goal_meal_fat_percent','id_goal_meal_carbs_percent','id_goal_meal_protein_percent'],[40,30,30]);
+			is_button_disabled = $('#id_create_macro_bars_button').is(':disabled');
+			assert.equal(is_button_disabled,false);
+		});
+		QUnit.test("macro_percent_totaler disables create button when total pct != 0", function (assert) {
+			MM_FUNK.goal_meal_choose_macro_handler();
+			fill_macros_with_keyup(500,['id_goal_meal_fat_percent','id_goal_meal_carbs_percent','id_goal_meal_protein_percent'],[40,30,10]);
+			is_button_disabled = $('#id_create_macro_bars_button').is(':disabled');
+			assert.equal(is_button_disabled,true);
+		});
+		QUnit.test("set inital macros totaler enables Create Macro Button when totaler == 0", function (assert) {
+			fill_macro_percents('30','40','30');
+			MM_FUNK.set_initial_macro_percent_tally();
+			is_button_disabled = $('#id_create_macro_bars_button').is(':disabled');
+			assert.equal(is_button_disabled,false);
+		});
+		QUnit.test("set inital macros totaler disables Create Macro Button when totaler != 0", function (assert) {
+			MM_FUNK.set_initial_macro_percent_tally();
+			is_button_disabled = $('#id_create_macro_bars_button').is(':disabled');
+			assert.equal(is_button_disabled,true);
+		});
 		//macros breakdown table and goal cals selection
 		QUnit.test('meal cal selection fills in breakdown table grams',function (assert) {
-			goal_meal_cals_dropdown_fills_in_grams();
+			MM_FUNK.goal_meal_cals_dropdown_fills_in_grams();
 			fill_macro_percents('34','33','33');
 			$('#id_goal_meal_cals_select').val('305').trigger('change');
 			$('#id_goal_meal_cals_select>option:eq(1)').prop('selected',true);
@@ -116,7 +179,7 @@
 		});		
 		
 		QUnit.test('meal cal input fills in breakdown table grams',function (assert) {
-			goal_meal_cals_input_fills_in_grams();
+			MM_FUNK.goal_meal_cals_input_fills_in_grams();
 			fill_macro_percents('34','33','33');
 			$('#id_goal_meal_cals').val('500');
 			$('#id_goal_meal_cals').trigger('keyup');
@@ -125,7 +188,7 @@
 		});		
 		
 		QUnit.test('meal cal selection clears meal cal input',function (assert) {
-			goal_meal_cals_dropdown_fills_in_grams();
+			MM_FUNK.goal_meal_cals_dropdown_fills_in_grams();
 			$('#id_goal_meal_cals').val('500');
 			$('#id_goal_meal_cals_select').val('305').trigger('change');
 			$('#id_goal_meal_cals_select>option:eq(1)').prop('selected',true);
@@ -134,8 +197,8 @@
 		});		
 
 		QUnit.test('meal cal selection fills in grams and subsequent change of percentage changes grams',function (assert) {
-			goal_meal_cals_dropdown_fills_in_grams();
-			goal_meal_choose_macro_handler();
+			MM_FUNK.goal_meal_cals_dropdown_fills_in_grams();
+			MM_FUNK.goal_meal_choose_macro_handler();
 			fill_macro_percents('34','33','33');
 			$('#id_goal_meal_cals_select>option:eq(2)').prop('selected',true);
 			$('#id_goal_meal_fat_percent').val('30');
@@ -146,7 +209,7 @@
 		});		
 			
 		QUnit.test('meal cal input sets dropdown to header',function (assert) {
-			goal_meal_cals_dropdown_fills_in_grams();
+			MM_FUNK.goal_meal_cals_dropdown_fills_in_grams();
 			$('#id_goal_meal_cals').val('500');
 			select_val = $('#id_goal_meal_cals_select option:selected').val();
 			assert.equal(select_val,'header');

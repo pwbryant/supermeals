@@ -113,11 +113,16 @@ class MakeMacroMealTest(FunctionalTest):
 		self.assertEqual(inputs[1].get_attribute('value'),'11')
 		self.assertEqual(inputs[3].get_attribute('value'),'31')
 		self.assertEqual(inputs[5].get_attribute('value'),'28')
-		self.fail('Finish The Test!')
-		#Below the table is a 'Customize Macro %' button
 
 		#To the right of the macro table are a series of four rectangles labeled
-		#'Calories', 'Fat', 'Carbs', 'Protein', below which are a series of 0s
+		#'Calories', 'Fat', 'Carbs', 'Protein'.
+		cal_bar_div = self.browser.find_element_by_id('id_goal_cal_bar_div')
+		self.check_element_content('label[for="id_goal_cal_bar"]','css','text','Cals')
+		cal_bar = cal_bar_div.find_element_by_id('id_goal_cal_bar')
+		self.assertEqual(cal_bar.get_attribute('height'),0)
+		self.assertEqual(cal_bar.get_attribute('weight'),0)
+		self.fail('Finish The Test!')
+		#Below which are a series of 0s
 		#like 0, 0g, 0g, 0g for macro amounts.
 
 		#Each of the macro rectangles has a standard deviation bar covering the macro 
