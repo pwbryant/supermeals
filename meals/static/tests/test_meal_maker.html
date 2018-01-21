@@ -7,6 +7,7 @@
 	<link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.4.1.css">
 	<script src="https://code.jquery.com/qunit/qunit-2.4.1.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="../d3/d3.min.js"></script>
 	<script src="../meal_maker.js"></script>
 	<script>
 		//helper functions
@@ -51,8 +52,8 @@
 	<div id="qunit-fixture">
 		<div id='id_meal_maker_side_bar'>
 			<div id='id_goal_meal_cals_div'>
-				<input id='id_goal_meal_cals' type='text' name='goal_meal_cals' placeholder='cals'/>
-				<select id='id_goal_meal_cals_select'>
+				<input id='id_goal_meal_cals' class='goal_cal_inputs' type='text' name='goal_meal_cals' placeholder='cals'/>
+				<select id='id_goal_meal_cals_select' class='goal_cal_inputs'>
 					<option value="header">Saved Cals</option>
 					<option value="602">Meal 1,2,3 - 602 cals</option>
 					<option value="305">Meal 4 - 305 cals</option>
@@ -79,13 +80,13 @@
 	<!------------------------------------------------------------------------------------------------------------------ -->
 	<!--QUnit TESTS -->
 	<script>
-		//bar tests
 		/*
+		//bar tests
 		QUnit.test("calling create macro bar for cals create the cals svg that is x height and y width", function (assert) {
 			create_macro_bar();
 			cal_bar = $('#id_goal_cal_bar');
-			assert.equal(cal_bar.height(),0);
-			assert.equal(cal_bar.width(),0);
+			assert.equal(cal_bar.height(),200);
+			assert.equal(cal_bar.width(),50);
 		});
 		*/
 		//macro break down % to g tests
@@ -145,41 +146,45 @@
 			assert.equal(percent_total,'100');
 		});
 		//enableing disabling create macro bars button
-		QUnit.test("macro_percent_totaler enables create button when total pct == 0", function (assert) {
+		
+		QUnit.test("create button not enabled when total pct == 0 and CAL_GOAL == 0", function (assert) {
+			MM_FUNK.CAL_GOAL = 0;
+			MM_FUNK.goal_cal_inputs_trigger();
 			MM_FUNK.goal_meal_choose_macro_handler();
 			fill_macros_with_keyup(500,['id_goal_meal_fat_percent','id_goal_meal_carbs_percent','id_goal_meal_protein_percent'],[40,30,30]);
 			is_button_disabled = $('#id_create_macro_bars_button').is(':disabled');
-			assert.equal(is_button_disabled,false);
+			assert.equal(is_button_disabled,true);
 		});
-		QUnit.test("macro_percent_totaler disables create button when total pct != 0", function (assert) {
+		QUnit.test("macro_percent_totaler not enabled create button when total pct != 0 and CAL_GOAL != 0", function (assert) {
+			MM_FUNK.CAL_GOAL = 0;
+			MM_FUNK.goal_cal_inputs_trigger();
 			MM_FUNK.goal_meal_choose_macro_handler();
-			fill_macros_with_keyup(500,['id_goal_meal_fat_percent','id_goal_meal_carbs_percent','id_goal_meal_protein_percent'],[40,30,10]);
+			fill_macros_with_keyup(500,['id_goal_meal_fat_percent','id_goal_meal_carbs_percent','id_goal_meal_protein_percent'],[10,10,10]);
+			$('#id_goal_meal_cals').trigger('keyup');
 			is_button_disabled = $('#id_create_macro_bars_button').is(':disabled');
 			assert.equal(is_button_disabled,true);
 		});
-		QUnit.test("set inital macros totaler enables Create Macro Button when totaler == 0", function (assert) {
-			fill_macro_percents('30','40','30');
-			MM_FUNK.set_initial_macro_percent_tally();
+		
+		QUnit.test("macro_percent_totaler does enables create button when total pct == 0 and CAL_GOAL != 0", function (assert) {
+			MM_FUNK.CAL_GOAL = 0;
+			MM_FUNK.goal_cal_inputs_trigger();
+			MM_FUNK.goal_meal_choose_macro_handler();
+			fill_macros_with_keyup(500,['id_goal_meal_fat_percent','id_goal_meal_carbs_percent','id_goal_meal_protein_percent'],[40,30,30]);
+			$('#id_goal_meal_cals').trigger('keyup');
 			is_button_disabled = $('#id_create_macro_bars_button').is(':disabled');
 			assert.equal(is_button_disabled,false);
-		});
-		QUnit.test("set inital macros totaler disables Create Macro Button when totaler != 0", function (assert) {
-			MM_FUNK.set_initial_macro_percent_tally();
-			is_button_disabled = $('#id_create_macro_bars_button').is(':disabled');
-			assert.equal(is_button_disabled,true);
 		});
 		//macros breakdown table and goal cals selection
 		QUnit.test('meal cal selection fills in breakdown table grams',function (assert) {
-			MM_FUNK.goal_meal_cals_dropdown_fills_in_grams();
+			MM_FUNK.goal_cal_inputs_trigger();
 			fill_macro_percents('34','33','33');
 			$('#id_goal_meal_cals_select').val('305').trigger('change');
 			$('#id_goal_meal_cals_select>option:eq(1)').prop('selected',true);
-			
 			check_macro_grams(assert,'12','25','25');
 		});		
 		
 		QUnit.test('meal cal input fills in breakdown table grams',function (assert) {
-			MM_FUNK.goal_meal_cals_input_fills_in_grams();
+			MM_FUNK.goal_cal_inputs_trigger();
 			fill_macro_percents('34','33','33');
 			$('#id_goal_meal_cals').val('500');
 			$('#id_goal_meal_cals').trigger('keyup');
@@ -188,7 +193,7 @@
 		});		
 		
 		QUnit.test('meal cal selection clears meal cal input',function (assert) {
-			MM_FUNK.goal_meal_cals_dropdown_fills_in_grams();
+			MM_FUNK.goal_cal_inputs_trigger();
 			$('#id_goal_meal_cals').val('500');
 			$('#id_goal_meal_cals_select').val('305').trigger('change');
 			$('#id_goal_meal_cals_select>option:eq(1)').prop('selected',true);
@@ -197,7 +202,7 @@
 		});		
 
 		QUnit.test('meal cal selection fills in grams and subsequent change of percentage changes grams',function (assert) {
-			MM_FUNK.goal_meal_cals_dropdown_fills_in_grams();
+			MM_FUNK.goal_cal_inputs_trigger();
 			MM_FUNK.goal_meal_choose_macro_handler();
 			fill_macro_percents('34','33','33');
 			$('#id_goal_meal_cals_select>option:eq(2)').prop('selected',true);
@@ -209,10 +214,23 @@
 		});		
 			
 		QUnit.test('meal cal input sets dropdown to header',function (assert) {
-			MM_FUNK.goal_meal_cals_dropdown_fills_in_grams();
+			MM_FUNK.goal_cal_inputs_trigger();
 			$('#id_goal_meal_cals').val('500');
 			select_val = $('#id_goal_meal_cals_select option:selected').val();
 			assert.equal(select_val,'header');
+		});
+		QUnit.test('meal cal input sets CAL_GOAL',function (assert) {
+			MM_FUNK.CAL_GOAL = 0;
+			MM_FUNK.goal_cal_inputs_trigger();
+			$('#id_goal_meal_cals').val('500');
+			$('#id_goal_meal_cals').trigger('keyup');
+			assert.equal(MM_FUNK.CAL_GOAL,500);
+		});
+		QUnit.test('meal cal dropdown sets CAL_GOAL',function (assert) {
+			MM_FUNK.CAL_GOAL = 0;
+			MM_FUNK.goal_cal_inputs_trigger();
+			$('#id_goal_meal_cals_select').val('305').trigger('change');
+			assert.equal(MM_FUNK.CAL_GOAL,305);
 		});
 		
 	</script>

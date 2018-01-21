@@ -7,10 +7,10 @@
 		
 		<label for='id_goal_meal_cals_div'>How Many Calories?</label>
 		<div id='id_goal_meal_cals_div'>
-			<input id='id_goal_meal_cals' type='text' name='goal_meal_cals' placeholder='Cals'/>	
+			<input id='id_goal_meal_cals' class='goal_cal_inputs' type='text' name='goal_meal_cals' placeholder='Cals'/>	
 			{% if meal_templates %}
 				<p>-OR-</p>
-				<select id='id_goal_meal_cals_select'>
+				<select id='id_goal_meal_cals_select' class='goal_cal_inputs'>
 					<option value='header'>Saved Cals</option>
 				{% for option in meal_templates %}
 					<option value='{{ option.value }}'>{{ option.text }}</option>
@@ -39,8 +39,8 @@
 	</div>
 </div>
 <script>
-	MM_FUNK.goal_meal_cals_dropdown_fills_in_grams();
-	MM_FUNK.goal_meal_cals_input_fills_in_grams();
+	MM_FUNK.goal_cal_inputs_trigger();
+	MM_FUNK.create_macro_button_sets_bar_vars();
 	MM_FUNK.goal_meal_choose_macro_handler();
 	MM_FUNK.set_initial_macro_percent_tally();
 </script>
