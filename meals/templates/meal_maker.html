@@ -33,14 +33,13 @@
 		</div>
 		<button id='id_create_macro_bars_button' class='btn' disabled>Create Macro Bars</button>
 	</div>
-	<div id='id_goal_meal_bars_div'>
-		<div id='id_goal_cal_bar_div'>
-		</div>
+	<div id='id_goal_macros_div'>
+		<svg id='id_goal_macros_svg' style="width:100%;height:100%"></svg>
 	</div>
 </div>
 <script>
 	MM_FUNK.goal_cal_inputs_trigger();
-	MM_FUNK.create_macro_button_sets_bar_vars();
+	MM_FUNK.create_macro_button_trigger();
 	MM_FUNK.goal_meal_choose_macro_handler();
 	MM_FUNK.set_initial_macro_percent_tally();
 </script>

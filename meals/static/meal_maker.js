@@ -73,21 +73,63 @@ var MM_FUNK = (function() {
 	set_mm_funk_goal_cals = function(obj,this_) {
 		if ($.trim(this_.value) != 'header' && $.trim(this_.value) != '' && isNaN(this_.value) == false) {
 			obj.CAL_GOAL = parseFloat(this_.value);
-		} else {
-			obj.CAL_GOAL = 0;
+		} else { obj.CAL_GOAL = 0;
 		}	
+	},
+	set_macro_bar_vars = function(obj) {
+		obj.SCALE_CAL_TO_HEIGHT.domain([0,obj.CAL_GOAL]);
+		obj.SCALE_CAL_TO_HEIGHT.range([0,obj.CAL_BAR_HEIGHT]);
+		obj.MACROS_SVG =d3.select('#id_goal_macros_svg') 
+		obj.MACROS= {};
+		var svg_width = $('#id_goal_macros_svg').width(),
+		max_bar_height =$('#id_goal_macros_svg').height() * .5, 
+		space = svg_width * .1,
+		bar_space = space / 3.0,
+		bar_width = (svg_width - space) / 4.0,
+		macro_names = ['cals','fat','carbs','protein'];
+
+		for(i=0; i<macro_names.length;i++) {
+			var macro = macro_names[i];
+			if (macro === 'cals') {
+				obj.MACROS[macro] = {'ratio':1}
+			} else {
+				obj.MACROS[macro] = {'ratio':$('#id_goal_meal_' + macro  + '_percent').val()/100.0}
+			}
+			obj.MACROS[macro]['height'] = max_bar_height * obj.MACROS[macro]['ratio'];
+			obj.MACROS[macro]['width'] = bar_width;
+			obj.MACROS[macro]['x'] = i * (bar_width + bar_space);
+			obj.MACROS[macro]['y'] = max_bar_height - obj.MACROS[macro]['height'];
+			obj.MACROS[macro]['macro'] = macro;
+		}
+	},
+	create_macro_bars = function(obj) {
+		var macro_data = Object.values(obj.MACROS);
+		obj.MACROS_SVG.selectAll(".goal_bars").data(macro_data)
+			.enter()
+			.append('rect')
+			.attr({
+				"height": function(d) { return d.height; },
+				"width": function(d) { return d.width; },
+				"x": function(d) { return d.x; },
+				"y": function(d) { return d.y; },
+				'class': '.goal_macro_bars',
+				'fill':'red',
+				'stroke':'black',
+				'id': function(d) { return 'id_goal_' + d.macro + '_bar'; }
+			});
 	};
 
-	//macro breakdown functions
+	//macro breakdown functions 
 	return {
 		CAL_GOAL: 0,//initialize value
 		CAL_BAR_HEIGHT: 200,
+		CAL_BAR_WIDTH: 200,
 		SCALE_CAL_TO_HEIGHT : d3.scale.linear().domain([0,1]).range([0,1]),//initialize value
-		create_macro_button_sets_bar_vars : function() {
+		create_macro_button_trigger : function() {
 			mm_funk_obj = this;
 			$('#id_create_macro_bars_button').on('click',function() {
-				mm_funk_obj.SCALE_CAL_TO_HEIGHT.domain([0,mm_funk_obj.CAL_GOAL]);
-				mm_funk_obj.SCALE_CAL_TO_HEIGHT.range([0,mm_funk_obj.CAL_BAR_HEIGHT]);
+				set_macro_bar_vars(mm_funk_obj);
+				create_macro_bars(mm_funk_obj);
 			});
 		},
 		goal_cal_inputs_trigger : function() {
@@ -127,22 +169,7 @@ var MM_FUNK = (function() {
 	//scope function
 	//constants
 	/*
-	var GOAL_BAR_HEIGHT = '100px',
-		GOAL_BAR_WIDTH = '50px',
-		SCALE_GOAL_MACRO_TO_HEIGHT = d3.scale.linear().domain()
 	var create_macro_bar = function(macro_name,macro_amt,) {
-		var svg = d3.select('#id_goal_cal_bar_div').append('svg')
-				.attr('width','50px')
-				.attr('height','100px')
-				.attr('id','id_goal_cal_bar')
-		
-		svg.selectAll(".goal_bars").data([macro_amt])
-			.enter()
-			.append('rect')
-			.attr({
-				'height':'100%',
-				'weight':'100%'
-			})
 	}
 	*/
 })();

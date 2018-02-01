@@ -68,9 +68,8 @@
 			</div>
 			<button id='id_create_macro_bars_button' class='btn' disabled>Create Macro Bars</button>
 		</div>
-		<div id='id_goal_meal_bars_div'>
-			<div id='id_goal_cal_bar_div'>
-			</div>
+		<div id='id_goal_macros_div'>
+			<svg id='id_goal_macros_svg'></svg>
 		</div>
 	</div>
 	
@@ -80,15 +79,31 @@
 	<!------------------------------------------------------------------------------------------------------------------ -->
 	<!--QUnit TESTS -->
 	<script>
-		/*
+		
 		//bar tests
-		QUnit.test("calling create macro bar for cals create the cals svg that is x height and y width", function (assert) {
-			create_macro_bar();
-			cal_bar = $('#id_goal_cal_bar');
-			assert.equal(cal_bar.height(),200);
-			assert.equal(cal_bar.width(),50);
+		QUnit.test("calling create macro bars with create macros button creates the macro bars", function (assert) {
+			fill_macro_percents('30','40','30');
+			$('#id_goal_meal_cals').val('500');
+			MM_FUNK.create_macro_button_trigger();
+			$('#id_create_macro_bars_button').trigger('click');
+			var svg = $('#id_goal_macros_svg'),
+			bar_width = (svg.width() - (svg.width() * .1)) / 4.0,
+			cal_bar = d3.select('#id_goal_cals_bar'),
+			fat_bar = d3.select('#id_goal_fat_bar'),
+			carbs_bar = d3.select('#id_goal_carbs_bar'),
+			protein_bar = d3.select('#id_goal_protein_bar');
+
+			assert.equal(cal_bar.attr('width'),bar_width);
+			assert.equal(fat_bar.attr('width'),bar_width);
+			assert.equal(carbs_bar.attr('width'),bar_width);
+			assert.equal(protein_bar.attr('width'),bar_width);
+
+			assert.equal(cal_bar.attr('height')/svg.height(),.5);
+			assert.equal(fat_bar.attr('height')/cal_bar.attr('height'),.3);
+			assert.equal(carbs_bar.attr('height')/cal_bar.attr('height'),.4);
+			assert.equal(protein_bar.attr('height')/cal_bar.attr('height'),.3);
 		});
-		*/
+
 		//macro break down % to g tests
 		QUnit.test("keystroke in percentage creates grams", function (assert) {
 			MM_FUNK.goal_meal_choose_macro_handler();
