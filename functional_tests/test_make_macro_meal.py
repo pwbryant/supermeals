@@ -140,11 +140,20 @@ class MakeMacroMealTest(FunctionalTest):
 		self.assertEqual(float(protein_bar.get_attribute('width')),bar_width)
 		#Below which are a series of 0s
 		#like 0, 0g, 0g, 0g for macro amounts.
+		labels = self.browser.find_elements_by_tag_name('text')
+		self.assertEqual(labels[0].text,'Cals: 0')
+		self.assertEqual(labels[1].text,'Fat: 0g')
+		self.assertEqual(labels[2].text,'Carbs: 0g')
+		self.assertEqual(labels[3].text,'Protein: 0g')
 
+		#Each of the macro rectangles has a standard deviation bar 
+		fat_error = self.browser.find_element_by_id('id_goal_fat_error_bar')
+		carbs_error = self.browser.find_element_by_id('id_goal_carbs_error_bar')
+		protein_error = self.browser.find_element_by_id('id_goal_protein_error_bar')
+		self.assertEqual(self.get_bar_ratio(fat_error.get_attribute('height'),cal_bar.get_attribute('height')),.10)
+		self.assertEqual(self.get_bar_ratio(carbs_error.get_attribute('height'),cal_bar.get_attribute('height')),.10)
+		self.assertEqual(self.get_bar_ratio(protein_error.get_attribute('height'),cal_bar.get_attribute('height')),.10)
 		self.fail('Finish The Test!')
-		#Each of the macro rectangles has a standard deviation bar covering the macro 
-		#percentage range.
-
 		#To the right of that is a an input with the place holder 
 		#'Search for ingredients' with a magnifying glass icon button
 

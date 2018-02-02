@@ -10,7 +10,6 @@ var MM_FUNK = (function() {
 		} else {
 			$('#id_create_macro_bars_button').attr('disabled',true)
 		}
-		
 	},goal_meal_macro_percent_totaler = function(this_) {
 		var percent_id = 'id_goal_meal_' + $(this_).attr('id').split('_')[3]  + '_percent', 
 		new_macro_percent = parseFloat($('#' + percent_id).val());
@@ -102,7 +101,8 @@ var MM_FUNK = (function() {
 			obj.MACROS[macro]['y'] = max_bar_height - obj.MACROS[macro]['height'];
 			obj.MACROS[macro]['macro'] = macro;
 			obj.MACROS[macro]['label'] = macro.charAt(0).toUpperCase() + macro.slice(1);
-			obj.MACROS[macro]['label_y'] = macro_label_y ;
+			obj.MACROS[macro]['label_y'] = macro_label_y; 
+			obj.MACROS[macro]['error'] = max_bar_height * .1;
 		}
 	},
 	create_macro_bars = function(obj) {
@@ -119,6 +119,24 @@ var MM_FUNK = (function() {
 				'fill':'red',
 				'stroke':'black',
 				'id': function(d) { return 'id_goal_' + d.macro + '_bar'; }
+			});
+	},
+	create_macro_error_bars = function(obj) {
+		
+		var macros_copy = Object.assign({},obj.MACROS);
+		delete macros_copy['cals']; 
+		macro_data = Object.values(macros_copy);
+		obj.MACROS_SVG.selectAll(".goal_error_bars").data(macro_data)
+			.enter()
+			.append('rect')
+			.attr({
+				"height": function(d) { return d.error; },
+				"width":  function(d) { return d.width * .1; },
+				"x": function(d) { return d.x + (d.width / 2) - (5/2); },
+				"y": function(d) { return d.y - (d.error / 2); },
+				'class': '.goal_error_bars',
+				'fill':'green',
+				'id': function(d) { return 'id_goal_' + d.macro + '_error_bar'; }
 			});
 	},
 	create_macro_bar_labels = function(obj) {
@@ -155,6 +173,7 @@ var MM_FUNK = (function() {
 			$('#id_create_macro_bars_button').on('click',function() {
 				create_macros_obj(mm_funk_obj);
 				create_macro_bars(mm_funk_obj);
+				create_macro_error_bars(mm_funk_obj);
 				create_macro_bar_labels(mm_funk_obj);
 			});
 		},
