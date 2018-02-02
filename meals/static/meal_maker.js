@@ -76,13 +76,14 @@ var MM_FUNK = (function() {
 		} else { obj.CAL_GOAL = 0;
 		}	
 	},
-	set_macro_bar_vars = function(obj) {
+	create_macros_obj = function(obj) {
 		obj.SCALE_CAL_TO_HEIGHT.domain([0,obj.CAL_GOAL]);
 		obj.SCALE_CAL_TO_HEIGHT.range([0,obj.CAL_BAR_HEIGHT]);
 		obj.MACROS_SVG =d3.select('#id_goal_macros_svg') 
 		obj.MACROS= {};
 		var svg_width = $('#id_goal_macros_svg').width(),
 		max_bar_height =$('#id_goal_macros_svg').height() * .5, 
+		macro_label_y = $('#id_goal_macros_svg').height() * .60, 
 		space = svg_width * .1,
 		bar_space = space / 3.0,
 		bar_width = (svg_width - space) / 4.0,
@@ -100,6 +101,8 @@ var MM_FUNK = (function() {
 			obj.MACROS[macro]['x'] = i * (bar_width + bar_space);
 			obj.MACROS[macro]['y'] = max_bar_height - obj.MACROS[macro]['height'];
 			obj.MACROS[macro]['macro'] = macro;
+			obj.MACROS[macro]['label'] = macro.charAt(0).toUpperCase() + macro.slice(1);
+			obj.MACROS[macro]['label_y'] = macro_label_y ;
 		}
 	},
 	create_macro_bars = function(obj) {
@@ -117,7 +120,29 @@ var MM_FUNK = (function() {
 				'stroke':'black',
 				'id': function(d) { return 'id_goal_' + d.macro + '_bar'; }
 			});
+	},
+	create_macro_bar_labels = function(obj) {
+		var macro_data = Object.values(obj.MACROS);
+		obj.MACROS_SVG.selectAll(".goal_bar_labels").data(macro_data)
+			.enter()
+			.append('text')
+			.text(function(d) {
+				if (d.macro != 'cals') {
+					return d.label + ': 0g';
+				} else {
+					return d.label + ': 0';
+				}
+			})
+			.attr({
+				"x": function(d) { return d.x; },
+				"y": function(d) { return d.label_y; },
+				'fill':'black',
+				'id': function(d) { return 'id_goal_' + d.macro + '_bar_label'; },
+				'class': '.goal_macro_bar_label'
+			});
+		
 	};
+	
 
 	//macro breakdown functions 
 	return {
@@ -128,8 +153,9 @@ var MM_FUNK = (function() {
 		create_macro_button_trigger : function() {
 			mm_funk_obj = this;
 			$('#id_create_macro_bars_button').on('click',function() {
-				set_macro_bar_vars(mm_funk_obj);
+				create_macros_obj(mm_funk_obj);
 				create_macro_bars(mm_funk_obj);
+				create_macro_bar_labels(mm_funk_obj);
 			});
 		},
 		goal_cal_inputs_trigger : function() {

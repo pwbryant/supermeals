@@ -7,6 +7,9 @@ from meals.models import Macros
 import time
 
 class MakeMacroMealTest(FunctionalTest):
+	
+	def get_bar_ratio(self,num_height,denom_height):
+		return round(float(num_height) / float(denom_height),2)
 
 	def test_make_macro_meal(self):
 		user = self.initialize_test(self.USERNAME,self.PASSWORD)
@@ -114,17 +117,31 @@ class MakeMacroMealTest(FunctionalTest):
 		self.assertEqual(inputs[3].get_attribute('value'),'31')
 		self.assertEqual(inputs[5].get_attribute('value'),'28')
 
-		self.fail('Finish The Test!')
 		#To the right of the macro table are a series of four rectangles labeled
 		#'Calories', 'Fat', 'Carbs', 'Protein'.
-		cal_bar_div = self.browser.find_element_by_id('id_goal_cal_bar_div')
-		self.check_element_content('label[for="id_goal_cal_bar"]','css','text','Cals')
-		cal_bar = cal_bar_div.find_element_by_id('id_goal_cal_bar')
-		self.assertEqual(cal_bar.get_attribute('height'),0)
-		self.assertEqual(cal_bar.get_attribute('weight'),0)
+		self.browser.find_element_by_id('id_create_macro_bars_button').click()
+		goal_svg = self.browser.find_element_by_id('id_goal_macros_svg')
+		cal_bar = goal_svg.find_element_by_id('id_goal_cals_bar')
+		fat_bar = goal_svg.find_element_by_id('id_goal_fat_bar')
+		carbs_bar = goal_svg.find_element_by_id('id_goal_carbs_bar')
+		protein_bar = goal_svg.find_element_by_id('id_goal_protein_bar')
+		
+		svg_height = self.browser.find_element_by_id('id_goal_macros_div').size['height']
+		svg_width = self.browser.find_element_by_id('id_goal_macros_div').size['width']
+		bar_width = (svg_width - (svg_width * .1)) / 4.0	
+
+		self.assertEqual(self.get_bar_ratio(cal_bar.get_attribute('height'),svg_height),.50)
+		self.assertEqual(float(cal_bar.get_attribute('width')),bar_width)
+		self.assertEqual(self.get_bar_ratio(fat_bar.get_attribute('height'),cal_bar.get_attribute('height')),.30)
+		self.assertEqual(float(fat_bar.get_attribute('width')),bar_width)
+		self.assertEqual(self.get_bar_ratio(carbs_bar.get_attribute('height'),cal_bar.get_attribute('height')),.37)
+		self.assertEqual(float(carbs_bar.get_attribute('width')),bar_width)
+		self.assertEqual(self.get_bar_ratio(protein_bar.get_attribute('height'),cal_bar.get_attribute('height')),.33)
+		self.assertEqual(float(protein_bar.get_attribute('width')),bar_width)
 		#Below which are a series of 0s
 		#like 0, 0g, 0g, 0g for macro amounts.
 
+		self.fail('Finish The Test!')
 		#Each of the macro rectangles has a standard deviation bar covering the macro 
 		#percentage range.
 

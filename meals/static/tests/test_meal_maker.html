@@ -44,7 +44,15 @@
 				$('#' + pct_ids[i]).trigger('keyup');
 			}
 		};
-		
+	
+		var fill_macros_add_cals_click_create_button = function(goal_cals,pct_ids,pct_amts) {
+
+			$('#id_goal_meal_cals').val(goal_cals);
+			for (i=0; i<pct_ids.length; i++) {	
+				$('#' + pct_ids[i]).val(pct_amts[i]);
+			}
+			$('#id_create_macro_bars_button').trigger('click');
+		}	
 	</script>
 </head>
 <body>
@@ -81,11 +89,24 @@
 	<script>
 		
 		//bar tests
-		QUnit.test("calling create macro bars with create macros button creates the macro bars", function (assert) {
-			fill_macro_percents('30','40','30');
-			$('#id_goal_meal_cals').val('500');
+		QUnit.test("calling create macro bars with create macros labels beneath macro bars", function (assert) {
 			MM_FUNK.create_macro_button_trigger();
-			$('#id_create_macro_bars_button').trigger('click');
+			fill_macros_add_cals_click_create_button('500',['id_goal_meal_fat_percent','id_goal_meal_carbs_percent','id_goal_meal_protein_percent'],['30','40','30'])
+		
+			var cals_label = $('#id_goal_cals_bar_label').html(),
+			fat_label = $('#id_goal_fat_bar_label').html(),
+			carbs_label = $('#id_goal_carbs_bar_label').html(),
+			protein_label = $('#id_goal_protein_bar_label').html();
+
+			assert.equal(cals_label,'Cals: 0');
+			assert.equal(fat_label,'Fat: 0g');
+			assert.equal(carbs_label,'Carbs: 0g');
+			assert.equal(protein_label,'Protein: 0g');
+		});
+		QUnit.test("calling create macro bars with create macros button creates the macro bars", function (assert) {
+			MM_FUNK.create_macro_button_trigger();
+			fill_macros_add_cals_click_create_button('500',['id_goal_meal_fat_percent','id_goal_meal_carbs_percent','id_goal_meal_protein_percent'],['30','40','30'])
+
 			var svg = $('#id_goal_macros_svg'),
 			bar_width = (svg.width() - (svg.width() * .1)) / 4.0,
 			cal_bar = d3.select('#id_goal_cals_bar'),
