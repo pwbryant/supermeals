@@ -19,7 +19,6 @@ class MakeMacroMealTest(FunctionalTest):
 		#Joe now wants to make a meal that helps him achieve his macros
 		#so he clicks on the 'Meal Maker' tab
 		self.browser.find_element_by_id('id_meal_maker_tab_label').click()
-		self.check_element_content('id_meal_maker_headline','id','text','Meal Maker')
 
 		#Joe however, did not set any macros in the my macros tab, but he can still make a meal.
 		#He notices an input to enter the desired calories.
@@ -55,7 +54,7 @@ class MakeMacroMealTest(FunctionalTest):
 		macro = self.create_default_macro(user)
 		self.create_default_meal_templates(user)
 		self.browser.find_element_by_id('id_meal_maker_tab_label').click()
-		self.check_element_content('id_tdee','id','text','2111')
+		self.check_element_content('id_tdee','id','text','TDEE: 2111')
 		self.check_element_content('label[for=id_goal_meal_cals_div]','css','text','How Many Calories?')
 		self.check_element_content('id_goal_meal_cals','id','placeholder','Cals')
 		set_cals_select = Select(self.browser.find_element_by_id('id_goal_meal_cals_select'))
@@ -130,7 +129,7 @@ class MakeMacroMealTest(FunctionalTest):
 		svg_width = self.browser.find_element_by_id('id_goal_macros_div').size['width']
 		bar_width = (svg_width - (svg_width * .1)) / 4.0	
 
-		self.assertEqual(self.get_bar_ratio(cal_bar.get_attribute('height'),svg_height),.50)
+		self.assertEqual(self.get_bar_ratio(cal_bar.get_attribute('height'),svg_height),.85)
 		self.assertEqual(float(cal_bar.get_attribute('width')),bar_width)
 		self.assertEqual(self.get_bar_ratio(fat_bar.get_attribute('height'),cal_bar.get_attribute('height')),.30)
 		self.assertEqual(float(fat_bar.get_attribute('width')),bar_width)
@@ -153,18 +152,25 @@ class MakeMacroMealTest(FunctionalTest):
 		self.assertEqual(self.get_bar_ratio(fat_error.get_attribute('height'),cal_bar.get_attribute('height')),.10)
 		self.assertEqual(self.get_bar_ratio(carbs_error.get_attribute('height'),cal_bar.get_attribute('height')),.10)
 		self.assertEqual(self.get_bar_ratio(protein_error.get_attribute('height'),cal_bar.get_attribute('height')),.10)
-		self.fail('Finish The Test!')
 		#To the right of that is a an input with the place holder 
 		#'Search for ingredients' with a magnifying glass icon button
-
+		
+		self.check_element_content('id_meal_maker_food_search_input','id','placeholder','Search For Food')
 		#All the above only takes up the top of the page, the bottom half contains a 
 		#page wide div with the large text 'Add Ingredients using Search'
 
+		self.check_element_content('id_meal_maker_ingredient_placeholder_text','id','text','Add Ingredients Using Search')
 		#Joe is going to attempt to make a salad that will fit his macro percentages
 		#He starts by entering '600' into the 'How Many Calories?' input box
+		cals_input_id = ['id_goal_meal_cals']
+		cals_input = ['600']
+		self.fill_input(cals_input_id,[],clear=True)	
+		self.fill_input(cals_input_id,cals_input)	
 
 		#He starts by typeing 'garbonzo beans' in the search bar and hits Enter. 
-
+		self.fill_input(['id_meal_maker_food_search_input'],['garbonzo beans'])	
+		time.sleep(5)
+		self.fail('Finish The Test!')
 		#In the area below the search bar several results appear, appearing as
 		# the result text, and a + button
 
