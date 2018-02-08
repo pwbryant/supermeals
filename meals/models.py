@@ -73,3 +73,19 @@ class MealTemplate(models.Model):
 	name = models.TextField(blank=False)	
 	cals_percent = models.DecimalField(max_digits=4,decimal_places=2,blank=False)
 	
+class Foods(models.Model):
+
+	name = models.TextField(blank=False)
+	cals_per_gram = models.DecimalField(max_digits=6,decimal_places=4,blank=False)
+	fat_per_gram = models.DecimalField(max_digits=6,decimal_places=4,blank=False)
+	carbs_per_gram = models.DecimalField(max_digits=6,decimal_places=4,blank=False)
+	protein_per_gram = models.DecimalField(max_digits=6,decimal_places=4,blank=False)
+
+	def as_dict(self):
+		return {
+			"name":self.name,
+			"cals_per_gram":self.cals_per_gram,
+			"fat_per_gram":self.fat_per_gram,
+			"carbs_per_gram":self.carbs_per_gram,
+			"protein_per_gram":self.protein_per_gram
+		}

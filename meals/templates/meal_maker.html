@@ -9,7 +9,7 @@
 		grid-template-columns: repeat(12,1fr);
 		grid-template-rows: auto 400px;
 		grid-template-areas:
-			"sb m m m m m m m m m m s"
+			"sb m m m m m m m m s s s"
 			"in in in in in in in in in in in in";
 	}
 	#id_goal_meal_macros_div {
@@ -30,11 +30,15 @@
 		grid-area: m;
 	}
 	.search_area {
+		margin-right:15px;
 		grid-area: s;
+		display:grid;
+		justify-content:end;
 	}
 	.ingredient_area {
 		grid-area: in;
 	}
+
 </style>
 <div class='meal_maker_container'>
 	<div id='id_meal_maker_side_bar' class='sidebar'>
@@ -71,7 +75,8 @@
 		<svg id='id_goal_macros_svg' style="height:100%;width:100%"></svg>
 	</div>
 	<div id='id_meal_maker_food_search_div' class='search_area'>
-		<input id='id_meal_maker_food_search_input' type='text' placeholder='Search For Food'/>
+		<span id='id_meal_maker_food_search_span'><input id='id_meal_maker_food_search_input' type='text' placeholder='Search For Food'/><button id='id_food_search_icon_button' class="icon"><i class='glyphicon glyphicon-search'></i></button></span>
+		
 	</div>
 	<div id='id_meal_maker_ingredient_div' class='ingredient_area'>
 		<span id='id_meal_maker_ingredient_placeholder_text'>Add Ingredients Using Search</span>

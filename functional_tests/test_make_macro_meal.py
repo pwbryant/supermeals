@@ -5,6 +5,7 @@ from selenium.webdriver.support.select import Select
 from django.contrib.auth.models import User
 from meals.models import Macros
 import time
+import numpy as np
 
 class MakeMacroMealTest(FunctionalTest):
 	
@@ -130,13 +131,10 @@ class MakeMacroMealTest(FunctionalTest):
 		bar_width = (svg_width - (svg_width * .1)) / 4.0	
 
 		self.assertEqual(self.get_bar_ratio(cal_bar.get_attribute('height'),svg_height),.85)
-		self.assertEqual(float(cal_bar.get_attribute('width')),bar_width)
+		self.assertTrue(np.isclose(float(cal_bar.get_attribute('width')),bar_width)) # all bars set to same width
 		self.assertEqual(self.get_bar_ratio(fat_bar.get_attribute('height'),cal_bar.get_attribute('height')),.30)
-		self.assertEqual(float(fat_bar.get_attribute('width')),bar_width)
 		self.assertEqual(self.get_bar_ratio(carbs_bar.get_attribute('height'),cal_bar.get_attribute('height')),.37)
-		self.assertEqual(float(carbs_bar.get_attribute('width')),bar_width)
 		self.assertEqual(self.get_bar_ratio(protein_bar.get_attribute('height'),cal_bar.get_attribute('height')),.33)
-		self.assertEqual(float(protein_bar.get_attribute('width')),bar_width)
 		#Below which are a series of 0s
 		#like 0, 0g, 0g, 0g for macro amounts.
 		labels = self.browser.find_elements_by_tag_name('text')
@@ -167,9 +165,12 @@ class MakeMacroMealTest(FunctionalTest):
 		self.fill_input(cals_input_id,[],clear=True)	
 		self.fill_input(cals_input_id,cals_input)	
 
-		#He starts by typeing 'garbonzo beans' in the search bar and hits Enter. 
+		#He starts by typeing 'garbonzo beans' in the search bar and clicks the search icon . 
+		#And he sees the area below the search bar fill up with the top 10 results
 		self.fill_input(['id_meal_maker_food_search_input'],['garbonzo beans'])	
-		time.sleep(5)
+		self.browser.find_element_by_id('id_food_search_icon_button').click()
+		search_results = self.browser.find_elements_by_class_name('search_results')
+		self.assertEqual(len(search_results),10)
 		self.fail('Finish The Test!')
 		#In the area below the search bar several results appear, appearing as
 		# the result text, and a + button

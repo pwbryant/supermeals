@@ -6,9 +6,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
 from decimal import Decimal
 from meals.forms import LoginForm, SignUpForm, MakeMacrosForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR,DEFAULT_INVALID_INT_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR
-from meals.models import Macros,MealTemplate
+from meals.models import Macros,MealTemplate,Foods
 from meals.views import save_my_macros,save_meal_templates,get_meal_maker_template,make_meal_template_unique_cal_dict_list,make_macro_breakdown_dict_list
-
+import json
 # Create your tests here.
 
 USERNAME,EMAIL,PASSWORD = 'JoeSchmoe','joe@joemail.com','321pass123!'
@@ -16,7 +16,12 @@ GUEST_USERNAME,GUEST_PASSWORD = 'guest','321!beware'
 BAD_USERNAME,BAD_PASSWORD = 'bad','badpass'
 
 class MealMakerTest(TestCase):
+	
+	fixtures = ['db.json']
 
+	#################################
+	##constants
+	#################################
 	MACRO_BREAKDOWN = [
 		{
 			'name':'Fat',
@@ -42,6 +47,9 @@ class MealMakerTest(TestCase):
 				'text':'Meal 4 - 338 cals'
 			}]
 
+	#################################
+	##helper functions
+	#################################
 	def create_default_macro(self,user):
 		macro = Macros.objects.create(**{
 			'user':user,
@@ -70,6 +78,18 @@ class MealMakerTest(TestCase):
 		self.client.post('/meals/logging_in', data={'username':USERNAME, 'password':PASSWORD})
 		return user
 
+	#################################
+	##search
+	#################################
+	def test_search_food_url_returns_food_dict_with_status_of_1_if_success(self):
+		user = self.log_in_user(USERNAME,PASSWORD)
+		response = self.client.post('/meals/search_foods',data={'search_terms':'garbonzo beans'})
+		response_dict = json.loads(response.content)
+		self.assertTrue(len(response_dict['data']) > 0)
+	
+	#################################
+	##open tab
+	#################################
 	def test_meal_maker_url_renders_correct_template(self):
 		user = self.log_in_user(USERNAME,PASSWORD)
 		self.create_default_macro(user)

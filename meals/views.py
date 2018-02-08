@@ -1,13 +1,15 @@
 from django.shortcuts import render,redirect
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.db.utils import IntegrityError
 from django.db import transaction
+from django.db.models import Q
+from django.core.serializers.json import DjangoJSONEncoder
 import json
 from decimal import Decimal
 from meals.forms import LoginForm, SignUpForm, MakeMacrosForm, MealTemplateForm
-from meals.models import Macros,MealTemplate
+from meals.models import Macros,MealTemplate,Foods
 
 KG_TO_LB = .45359237
 IN_TO_CM = .3937
@@ -263,3 +265,15 @@ def get_meal_maker_template(request):
 		template_data = {}
 
 	return render(request,'meal_maker.html',template_data) 
+
+def search_foods(request):
+	
+	search_terms = request.POST['search_terms'].split(' ')
+	query_build_list = []
+
+	for term in search_terms:
+		query_build_list.append("Q(name__icontains = '%s')" % term)
+	query_str = ' | '.join(query_build_list)
+	query = eval(query_str)
+	search_result_dicts = [f.as_dict() for f in Foods.objects.filter(query)[:10]]
+	return HttpResponse(json.dumps({'data':search_result_dicts},cls=DjangoJSONEncoder),content_type='application/json' )

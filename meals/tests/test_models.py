@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError,transaction
 
-from meals.models import Macros,MealTemplate
+from meals.models import Macros,MealTemplate,Foods
 
 GUEST_USER = User.objects.get(username='guest')
 USER = User.objects.get(username='paul')
@@ -160,3 +160,11 @@ class MealTemplateTest(BaseTest):
 		#cals not here because no validation restraints are present
 		self.check_model_validation_error(MealTemplate(**self.create_broken_field_dict('name','',MEAL_TEMPLATE_ARGS)))#illegal name
 		self.assertEqual(Macros.objects.all().count(),0)
+
+class FoodsTest(TestCase):
+	
+	def test_saving_and_retrieving_foods(self):
+		Foods.objects.create(name='food name',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,protein_per_gram=1)
+		saved_foods = Foods.objects.all()
+		self.assertEqual(saved_foods.count(),1)
+
