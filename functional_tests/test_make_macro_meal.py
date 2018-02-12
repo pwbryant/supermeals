@@ -3,11 +3,13 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
 from django.contrib.auth.models import User
-from meals.models import Macros
+from meals.models import Macros,Foods
 import time
 import numpy as np
 
 class MakeMacroMealTest(FunctionalTest):
+
+	fixtures = ['db.json']
 	
 	def get_bar_ratio(self,num_height,denom_height):
 		return round(float(num_height) / float(denom_height),2)
@@ -74,7 +76,6 @@ class MakeMacroMealTest(FunctionalTest):
 		self.assertEqual(labels[2].text,'Fat')
 		self.assertEqual(labels[3].text,'Carbs')
 		self.assertEqual(labels[4].text,'Protein')
-		#time.sleep(20)
 		inputs = table.find_elements_by_css_selector('input')
 		self.assertEqual(inputs[0].get_attribute('value'),'34')
 		self.assertEqual(inputs[1].get_attribute('placeholder'),'-')
@@ -167,18 +168,25 @@ class MakeMacroMealTest(FunctionalTest):
 
 		#He starts by typeing 'garbonzo beans' in the search bar and clicks the search icon . 
 		#And he sees the area below the search bar fill up with the top 10 results
-		self.fill_input(['id_meal_maker_food_search_input'],['garbonzo beans'])	
+		self.fill_input(['id_meal_maker_food_search_input'],['garbanzo beans'])	
 		self.browser.find_element_by_id('id_food_search_icon_button').click()
-		search_results = self.browser.find_elements_by_class_name('search_results')
+		search_results = self.browser.find_elements_by_class_name('search_result')
 		self.assertEqual(len(search_results),10)
-		self.fail('Finish The Test!')
-		#In the area below the search bar several results appear, appearing as
-		# the result text, and a + button
 
-		#Joe clicks on the first result
+		#Joe clicks on the first result ( on the add + icon )
 		#and notices that in the lower left, a series of rectangles appear with the 
 		#result text as the header, and '0g' under the bars to the left. The left-most
 		#rectangle has a small drag box at the bottom.
+		print(search_results[0].find_elements_by_class_name('icon'))
+		print(search_results[0].find_elements_by_class_name('icon')[0])
+		search_results[0].find_elements_by_class_name('icon')[0].click()
+		ing_1_svg = self.browser.find_element_by_id('id_ingredient_1_svg')
+		cal_bar = goal_svg.find_element_by_id('id_ingredient_1_cals_bar')
+		fat_bar = goal_svg.find_element_by_id('id_ingredient_1_fat_bar')
+		carbs_bar = goal_svg.find_element_by_id('id_ingredient_1_carbs_bar')
+		protein_bar = goal_svg.find_element_by_id('id_ingredient_1_protein_bar')
+		self.fail('Finish The Test!')
+
 
 		#He then searches for 'carrots', clicks the '+' button on the first result
 		#and notices again, that a series of rectanlges and labels (except title) 

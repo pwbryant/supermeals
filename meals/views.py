@@ -221,6 +221,7 @@ def make_meal_template_unique_cal_dict_list(user,tdee):
 			'value':cals,
 			'text': 'Meal ' + ','.join(unique_cals_dict[cp]) + ' - ' + str(cals) + ' cals' 
 		})
+	meal_templates_list.sort(key=lambda x: x['text'])
 	return meal_templates_list
 
 
@@ -267,8 +268,7 @@ def get_meal_maker_template(request):
 	return render(request,'meal_maker.html',template_data) 
 
 def search_foods(request):
-	
-	search_terms = request.POST['search_terms'].split(' ')
+	search_terms = request.GET['search_terms'].split(' ')
 	query_build_list = []
 
 	for term in search_terms:
@@ -276,4 +276,4 @@ def search_foods(request):
 	query_str = ' | '.join(query_build_list)
 	query = eval(query_str)
 	search_result_dicts = [f.as_dict() for f in Foods.objects.filter(query)[:10]]
-	return HttpResponse(json.dumps({'data':search_result_dicts},cls=DjangoJSONEncoder),content_type='application/json' )
+	return HttpResponse(json.dumps({'search_results':search_result_dicts},cls=DjangoJSONEncoder),content_type='application/json' )

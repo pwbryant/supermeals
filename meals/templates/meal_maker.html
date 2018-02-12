@@ -30,10 +30,13 @@
 		grid-area: m;
 	}
 	.search_area {
-		margin-right:15px;
 		grid-area: s;
+		/*
+		margin-right:15px;
 		display:grid;
 		justify-content:end;
+		grid-template-rows: auto;
+		*/
 	}
 	.ingredient_area {
 		grid-area: in;
@@ -76,13 +79,14 @@
 	</div>
 	<div id='id_meal_maker_food_search_div' class='search_area'>
 		<span id='id_meal_maker_food_search_span'><input id='id_meal_maker_food_search_input' type='text' placeholder='Search For Food'/><button id='id_food_search_icon_button' class="icon"><i class='glyphicon glyphicon-search'></i></button></span>
-		
+		<div id='id_meal_maker_food_search_results_div'></div>
 	</div>
 	<div id='id_meal_maker_ingredient_div' class='ingredient_area'>
 		<span id='id_meal_maker_ingredient_placeholder_text'>Add Ingredients Using Search</span>
 	</div>
 </div>
 <script>
+	MM_FUNK.meal_maker_food_search_trigger();
 	MM_FUNK.goal_cal_inputs_trigger();
 	MM_FUNK.create_macro_button_trigger();
 	MM_FUNK.goal_meal_choose_macro_handler();

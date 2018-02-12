@@ -159,6 +159,43 @@ var MM_FUNK = (function() {
 				'class': '.goal_macro_bar_label'
 			});
 		
+	},
+	format_food_search_results = function(search_results) {
+
+		var search_results_html = '';	
+		search_results.forEach(function(e,i) {
+			search_results_html += "<div class='search_result'><span>" + e.name + "</span><button id='id_search_result_food_" + i + "' class='icon'><i class='glyphicon glyphicon-plus'></i></button></div>"; 
+		});
+		return search_results_html;
+	},
+	meal_maker_food_search = function(obj) { var search_terms = $.trim($('#id_meal_maker_food_search_input').val());
+		if(search_terms != '') {
+			$.get('/meals/search_foods/',{'search_terms':search_terms},function(data) {
+				var search_results = data['search_results'],
+				search_results_html = '';
+				if(search_results.length > 0) {
+					obj.SEARCH_RESULTS = search_results; 
+					search_results_html = format_food_search_results(search_results);
+					$('#id_meal_maker_food_search_results_div').html(search_results_html);
+					obj.add_search_result_add_button_trigger();
+					obj.SEARCH_RESULT_ADD_BUTTON_LISTENER_EXISTS = true;
+				} else {
+					search_results_html = '<span>No Foods Found</span>';
+					$('#id_meal_maker_food_search_results_div').html(search_results_html);
+				}
+
+			});
+		} else {
+			$('#id_meal_maker_food_search_input').val('');
+			$('#id_meal_maker_food_search_results_div').html('');
+		}
+	},
+	create_food_macros_obj = function(search_add_button,obj) {
+		console.log(search_add_button);
+		var search_result_index = parseFloat(search_add_button.id[search_add_button.id.length-1]),
+		search_result_obj = obj.SEARCH_RESULTS[search_result_index];
+		console.log(search_result_index);
+		console.log(search_result_obj);
 	};
 	
 
@@ -168,6 +205,20 @@ var MM_FUNK = (function() {
 		CAL_BAR_HEIGHT: 200,
 		CAL_BAR_WIDTH: 200,
 		SCALE_CAL_TO_HEIGHT : d3.scale.linear().domain([0,1]).range([0,1]),//initialize value
+		SEARCH_RESULT_ADD_BUTTON_LISTENER_EXISTS: 0,
+		add_search_result_add_button_trigger : function() {
+			mm_funk_obj = this;
+			$('.search_result>button').on('click',function() {
+				create_food_macros_obj(this,mm_funk_obj);
+
+			});
+		},
+		meal_maker_food_search_trigger: function() {
+			mm_funk_obj = this;
+			$('#id_food_search_icon_button').on('click',function() {
+				meal_maker_food_search(mm_funk_obj);
+			});
+		},
 		create_macro_button_trigger : function() {
 			mm_funk_obj = this;
 			$('#id_create_macro_bars_button').on('click',function() {

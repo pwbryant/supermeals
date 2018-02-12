@@ -52,7 +52,28 @@
 				$('#' + pct_ids[i]).val(pct_amts[i]);
 			}
 			$('#id_create_macro_bars_button').trigger('click');
-		}	
+		};	
+		
+		var test_macro_bars_creation = function(assert,svg_target_tag,bar_target_tag) {
+
+			var svg = $('#id_' + svg_target_tag + '_svg'),
+			bar_width = (svg.width() - (svg.width() * .1)) / 4.0,
+			cal_bar = d3.select('#id_' + bar_target_tag + '_cals_bar'),
+			fat_bar = d3.select('#id_' + bar_target_tag + '_fat_bar'),
+			carbs_bar = d3.select('#id_' + bar_target_tag + '_carbs_bar'),
+			protein_bar = d3.select('#id_' + bar_target_tag + '_protein_bar');
+
+			assert.equal(cal_bar.attr('width'),bar_width);
+			assert.equal(fat_bar.attr('width'),bar_width);
+			assert.equal(carbs_bar.attr('width'),bar_width);
+			assert.equal(protein_bar.attr('width'),bar_width);
+
+			assert.equal(cal_bar.attr('height')/svg.height(),.85);
+			assert.equal(fat_bar.attr('height')/cal_bar.attr('height'),.3);
+			assert.equal(carbs_bar.attr('height')/cal_bar.attr('height'),.4);
+			assert.equal(protein_bar.attr('height')/cal_bar.attr('height'),.3);
+
+		};
 	</script>
 </head>
 <body>
@@ -79,6 +100,10 @@
 		<div id='id_goal_macros_div'>
 			<svg id='id_goal_macros_svg'></svg>
 		</div>
+		<div id='id_meal_maker_food_search_div' class='search_area'>
+			<span id='id_meal_maker_food_search_span'><input id='id_meal_maker_food_search_input' type='text' placeholder='Search For Food'/><button id='id_food_search_icon_button' class="icon"><i class='glyphicon glyphicon-search'></i></button></span>
+		</div>
+		
 	</div>
 	
 
@@ -87,8 +112,15 @@
 	<!------------------------------------------------------------------------------------------------------------------ -->
 	<!--QUnit TESTS -->
 	<script>
-		
+
 		//bar tests
+		//ingredient bars
+		QUnit.test("calling create ingredient bars with add icon button creates the ing bars", function (assert) {
+			MM_FUNK.add_search_result_ingredient_button_trigger();
+			test_macro_bars_creation(assert,'ingredient_1','ingredient_1');
+		});
+
+		//macro goal bars
 		QUnit.test("calling create macro bars with create macros labels beneath macro bars", function (assert) {
 			MM_FUNK.create_macro_button_trigger();
 			fill_macros_add_cals_click_create_button('500',['id_goal_meal_fat_percent','id_goal_meal_carbs_percent','id_goal_meal_protein_percent'],['30','40','30'])
@@ -106,23 +138,7 @@
 		QUnit.test("calling create macro bars with create macros button creates the macro bars", function (assert) {
 			MM_FUNK.create_macro_button_trigger();
 			fill_macros_add_cals_click_create_button('500',['id_goal_meal_fat_percent','id_goal_meal_carbs_percent','id_goal_meal_protein_percent'],['30','40','30'])
-
-			var svg = $('#id_goal_macros_svg'),
-			bar_width = (svg.width() - (svg.width() * .1)) / 4.0,
-			cal_bar = d3.select('#id_goal_cals_bar'),
-			fat_bar = d3.select('#id_goal_fat_bar'),
-			carbs_bar = d3.select('#id_goal_carbs_bar'),
-			protein_bar = d3.select('#id_goal_protein_bar');
-
-			assert.equal(cal_bar.attr('width'),bar_width);
-			assert.equal(fat_bar.attr('width'),bar_width);
-			assert.equal(carbs_bar.attr('width'),bar_width);
-			assert.equal(protein_bar.attr('width'),bar_width);
-
-			assert.equal(cal_bar.attr('height')/svg.height(),.5);
-			assert.equal(fat_bar.attr('height')/cal_bar.attr('height'),.3);
-			assert.equal(carbs_bar.attr('height')/cal_bar.attr('height'),.4);
-			assert.equal(protein_bar.attr('height')/cal_bar.attr('height'),.3);
+			test_macro_bars_creation(assert,'goal_macros','goal');
 		});
 
 		//macro break down % to g tests
@@ -183,16 +199,16 @@
 		});
 		//enableing disabling create macro bars button
 		
-		QUnit.test("create button not enabled when total pct == 0 and CAL_GOAL == 0", function (assert) {
-			MM_FUNK.CAL_GOAL = 0;
+		QUnit.test("create button not enabled when total pct == 0 and cal_goal == 0", function (assert) {
+			MM_FUNK.cal_goal = 0;
 			MM_FUNK.goal_cal_inputs_trigger();
 			MM_FUNK.goal_meal_choose_macro_handler();
 			fill_macros_with_keyup(500,['id_goal_meal_fat_percent','id_goal_meal_carbs_percent','id_goal_meal_protein_percent'],[40,30,30]);
 			is_button_disabled = $('#id_create_macro_bars_button').is(':disabled');
 			assert.equal(is_button_disabled,true);
 		});
-		QUnit.test("macro_percent_totaler not enabled create button when total pct != 0 and CAL_GOAL != 0", function (assert) {
-			MM_FUNK.CAL_GOAL = 0;
+		QUnit.test("macro_percent_totaler not enabled create button when total pct != 0 and cal_goal != 0", function (assert) {
+			MM_FUNK.cal_goal = 0;
 			MM_FUNK.goal_cal_inputs_trigger();
 			MM_FUNK.goal_meal_choose_macro_handler();
 			fill_macros_with_keyup(500,['id_goal_meal_fat_percent','id_goal_meal_carbs_percent','id_goal_meal_protein_percent'],[10,10,10]);
@@ -201,8 +217,8 @@
 			assert.equal(is_button_disabled,true);
 		});
 		
-		QUnit.test("macro_percent_totaler does enables create button when total pct == 0 and CAL_GOAL != 0", function (assert) {
-			MM_FUNK.CAL_GOAL = 0;
+		QUnit.test("macro_percent_totaler does enables create button when total pct == 0 and cal_goal != 0", function (assert) {
+			MM_FUNK.cal_goal = 0;
 			MM_FUNK.goal_cal_inputs_trigger();
 			MM_FUNK.goal_meal_choose_macro_handler();
 			fill_macros_with_keyup(500,['id_goal_meal_fat_percent','id_goal_meal_carbs_percent','id_goal_meal_protein_percent'],[40,30,30]);

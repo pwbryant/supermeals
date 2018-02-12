@@ -27,6 +27,6 @@ urlpatterns = [
 	url(r'^get_my_macros/$', views.get_my_macros, name='get_my_macros'),
 	url(r'^save_my_macros$', views.save_my_macros_and_meal_templates, name='save_my_macros_and_meal_templates'),
 	url(r'^meal_maker/$', views.get_meal_maker_template, name='get_meal_maker_template'),
-	url(r'^search_foods$', views.search_foods, name='search_foods'),
+	url(r'^search_foods/$', views.search_foods, name='search_foods'),
 ]
 	

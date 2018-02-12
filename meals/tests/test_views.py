@@ -81,11 +81,11 @@ class MealMakerTest(TestCase):
 	#################################
 	##search
 	#################################
-	def test_search_food_url_returns_food_dict_with_status_of_1_if_success(self):
+	def test_search_food_url_returns_food_dict_with_array_greater_than_0(self):
 		user = self.log_in_user(USERNAME,PASSWORD)
-		response = self.client.post('/meals/search_foods',data={'search_terms':'garbonzo beans'})
-		response_dict = json.loads(response.content)
-		self.assertTrue(len(response_dict['data']) > 0)
+		response = self.client.get('/meals/search_foods/',data={'search_terms':'garbonzo beans'})
+		response_dict = json.loads(response.content.decode())
+		self.assertTrue(len(response_dict['search_results']) > 0)
 	
 	#################################
 	##open tab
