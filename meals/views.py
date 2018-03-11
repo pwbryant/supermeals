@@ -29,7 +29,7 @@ def to_login(request):
 def logging_in(request):
 	if request.POST.get('guest'):
 		username = 'guest'
-		password = '321!beware'	
+		password = 'password'	
 	else:
 		username,password = request.POST.get('username'),request.POST.get('password')
 	user = authenticate(request,username=username,password=password)
