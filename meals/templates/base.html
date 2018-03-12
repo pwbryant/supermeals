@@ -5,28 +5,53 @@
 		<meta http-equiv="X-UA-Compatible" content="ID=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Meal Lab</title>
-		<link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Philosopher" rel="stylesheet">
+		<link href="/static/meals/css/meals.css" rel="stylesheet">
 	</head>
 	<body>
-		<div id='id_header_bar'>
-			{% if user.is_authenticated and user.get_username != 'guest' %}
-				{{ user }}
-				<a id="id_logoff" type="button" href="/meals/logging_off/">Logoff</a>
-			{% else %}
-				<a id="id_sign_up" type="button" href="/meals/sign_up/">Sign up</a>
-				<!--this is supposed to go to /loggin_off so that the guest user gets logged of and page
-				gets redirected to the login page-->
-				<a id="id_login" type="button" href="/meals/logging_off">Login</a>
-			{% endif %}
-		</div>
-		{% block body %}
-		{% endblock %}		
+        <div class="container">
+            <div class="header">
+                <div class="header__nav">
+                    <div id="id-my-macros-tab" class="header__nav-tab">My Macros</div>
+                    <div id="id-meal-maker-tab" class="header__nav-tab">Meal Maker</div>
+                    <div id="id-my-meals-tab" class="header__nav-tab">My Meals</div>
+                    <div id="id-add-recipes-tab" class="header__nav-tab">Add Recipes</div>
+                    <div id="id-add-food-tab" class="header__nav-tab">Add Food to Database</div>
+                </div>
+                <div class="header__nav">
+                    {% if user.is_authenticated and user.get_username != 'guest' %}
+                        {{ user }}
+                        <a id="id-logoff" href="/meals/logging-off/">
+                            <button class="header__nav-tab">Logoff</button>
+                        </a>
+                    {% else %}
+                        <a id="id-sign-up" href="/meals/sign-up/">
+                            <div class="header__nav-tab">Sign up</div>
+                        </a>
+                        <!--this is supposed to go to /loggin-off so that the guest user gets logged of and page
+                        gets redirected to the login page-->
+                        <a id="id-login" href="/meals/logging-off">
+                            <div class="header__nav-tab">Login</div>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="content">
+                <div id="id-my-macros-container" class="page-content"></div>
+                <div id="id-meal-maker-container" class="page-content"></div>
+                <div id="id-my-meals-container" class="page-content"></div>
+                <div id="id-add-recipes-container" class="page-content"></div>
+                <div id="id-add-food-container" class="page-content"></div>
+                <h1 id='id-home-headline'>Meal Lab</h1>
+            </div> 
+        </div>
 
 		<script src="http://code.jquery.com/jquery.js"></script>
+        <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
 		<script src="/static/bootstrap/js/bootstrap.min.js"></script>
-		<script src="/static/calc_my_macros.js"></script>
-		<script src="/static/d3/d3.min.js"></script>
-		<script src="/static/meal_maker.js"></script>
+		<script src="/static/meals/js/calc_my_macros.js"></script>
+		<script src="/static/meals/js/meal_maker.js"></script>
+        <!--<script src="/static/d3/d3.min.js"></script>-->
 		<script>
 			hide_home_header_on_tab_select();
 			key_press_hides_error();

@@ -1,116 +1,103 @@
-<!doctype html>
-<style>
-	#id_choose_macros_form_container {
-		display:none;
-	}
-	#id_meal_template_meals_number_form_container {
-		display:none;
-	}
-	#id_my_macros_successful_save_div {
-		display:none;
-	}
-</style>
-<div id='id my_macros_container'>
-	<h1 id="id_my_macros_headline">Find Total Daily Energy Expenditure (TDEE)</h1>
-	<div id="id_tdee_form_container">
-		<div id='id_unit_type_div'>
-			{% for choice in form.unit_type %}
-				{{ choice }}
-			{% endfor %}
-		</div>
-		<div id='id_gender_div'>
-			{% for choice in form.gender %}
-				{% if forloop.counter != 1 %}
-					{{ choice }}
-				{% endif %}
-			{% endfor %}
-		</div>
-		<div id="id_age_div">{{ form.age.label_tag }}{{ form.age }}</div>
-		<div id="id_weight_div">
-			<label for='id_weight'>Weight:</label>
-			<span id='id_weight'>
-				{% if form.unit_type.initial == "imperial" %}
-					{{ form.i_weight }}
-				{% endif %}
-				{% if form.unit_type.initial == "metric" %}
-					{{ form.m_weight }}
-				{% endif %}
-			</span>
-		</div>
-		<div id="id_height_div">
-			<label for='id_height'>Height:</label>
-			<span id='id_height'>
-				{% if form.unit_type.initial == "imperial" %}
-					{{ form.i_height_0 }}
-					{{ form.i_height_1 }}
-				{% endif %}
-				{% if form.unit_type.initial == "metric" %}
-					{{ form.m_height }}
-				{% endif %}
-			</span>
-		</div>
-		
-		<div id='id_activity_div'>
-			{% for choice in form.activity %}
-				{{ choice }}
-			{% endfor %}
-		</div>
-		<label for='id_direction_div'>Desired Weight Change</label>
-		<div id='id_direction_div'>	
-			{% for choice in form.direction %}
-				{{ choice }}
-			{% endfor %}
-		</div>
-		<div id='id_change_rate_div'>
-			<label for='id_change_rate'>Rate of Change</label>
-			<span id="id_change_rate">
-			{% if form.unit_type.initial == "imperial" %}
-				{{ form.i_change_rate }}
-			{% endif %}
-			{% if form.unit_type.initial == "metric" %}
-				{{ form.m_change_rate }}
-			{% endif %}
-			</span>
-		</div>
-		<button id='id_calc_tdee' onclick="form_validation('id_tdee_form_container')">Calculate</button>
-		<div id='id_calc_tdee_errors'></div>
-		<div id="id_tdee_result"></div>
-		<div id="id_change_tdee_result"></div>
-		<input id="id_hidden_tdee" name='tdee' type='hidden'/>
-	</div>
-	<div id="id_choose_macros_form_container">
-		<p>Choose Macro Ratios</p>
+<h1 id="id-my-macros-headline" class="headline--md">Find Total Daily Energy Expenditure (TDEE)</h1>
+<div id="id-tdee-form-container" class="content-box">
+    <div id='id-unit-type-container'>
+        
+        {% for choice in form.unit_type %}
+            {{ choice }}
+        {% endfor %}
+    </div>
+    <div id='id-gender-container'>
+        {% for choice in form.gender %}
+            {% if forloop.counter != 1 %}
+                {{ choice }}
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div id="id-age-container">{{ form.age.label_tag }}{{ form.age }}</div>
+    <div id="id-weight-container">
+        <label for='id-weight'>Weight:</label>
+        <span id='id-weight'>
+            {% if form.unit_type.initial == "imperial" %}
+                {{ form.i_weight }}
+            {% endif %}
+            {% if form.unit_type.initial == "metric" %}
+                {{ form.m_weight }}
+            {% endif %}
+        </span>
+    </div>
+    <div id="id-height-container">
+        <label for='id-height'>Height:</label>
+        <span id='id-height'>
+            {% if form.unit_type.initial == "imperial" %}
+                {{ form.i_height_0 }}
+                {{ form.i_height_1 }}
+            {% endif %}
+            {% if form.unit_type.initial == "metric" %}
+                {{ form.m_height }}
+            {% endif %}
+        </span>
+    </div>
+    
+    <div id='id-activity-container'>
+        {% for choice in form.activity %}
+            {{ choice }}
+        {% endfor %}
+    </div>
+    <label for='id-direction-container'>Desired Weight Change</label>
+    <div id='id-direction-container'>	
+        {% for choice in form.direction %}
+            {{ choice }}
+        {% endfor %}
+    </div>
+    <div id='id-change-rate-container'>
+        <label for='id-change-rate'>Rate of Change</label>
+        <span id="id-change-rate">
+        {% if form.unit_type.initial == "imperial" %}
+            {{ form.i_change_rate }}
+        {% endif %}
+        {% if form.unit_type.initial == "metric" %}
+            {{ form.m_change_rate }}
+        {% endif %}
+        </span>
+    </div>
+    <button id='id-calc-tdee' onclick="form-validation('id-tdee-form-container')">Calculate</button>
+    <div id='id-calc-tdee-errors'></div>
+    <div id="id-tdee-result"></div>
+    <div id="id-change-tdee-result"></div>
+    <input id="id-hidden-tdee" name='tdee' type='hidden'/>
+</div>
+<div id="id-choose-macros-form-container">
+    <p>Choose Macro Ratios</p>
 
-		<span class='choose_macro_titles'>%</span><span class='choose_macro_titles'>g</span><br>
-		<div id='id_choose_protein_div'><label for='id_protein_percent'><span class='choose_macro_titles'>Protein</span></label>{{ form.protein_percent }}{{ form.protein_g }}</div>
-		<div id='id_choose_fat_div'><label for='id_fat_percent'><span class='choose_macro_titles'>Fat</span></label>{{ form.fat_percent }}{{ form.fat_g }}</div>
-		<div id='id_choose_carbs_div'><label for='id_carbs_percent'><span class='choose_macro_titles'>Carbs</span></label>{{ form.carbs_percent }}{{ form.carbs_g }}</div>
-		<span class='choose_macro_titles'>% Remaining</span><span id="id_macro_percent_total">100</span>
-		<br><button id='id_choose_macros_continue_button' class="btn" disabled>Continue</button>
-	</div>
-	<div id="id_meal_template_meals_number_form_container">
-		<span id="id_meal_template_header">Break Up Your Daily Calories Into Meals/Snacks</span>
-		
-		<label for="id_meal_template_meals_number">Number of meals/snacks per day?</label>
-		<input id='id_meal_template_meals_number' class='form-control' type='text' name='meal_number' placeholder='# meals/snacks' data-type="number"/>
-		<button id='id_meal_template_set_cals_continue_button' class='btn' disabled>Continue</button>
-	</div>
-	<div id="id_meal_template_set_meal_cals_form_container"></div>
-	{% csrf_token %}
-	{% if form.errors %}
-		<div class="form-group has-error">
-			<div class="help-block">{{ form.errors }}</div>
-		</div>
-	{% endif %}
-	{% if errors %}
-		<div class="form-group has-error">
-			<div class="help-block">{{ errors }}</div>
-		</div>
-	{% endif %}
-	<div id='id_client_side_form_errors'></div>
-	<div id="id_my_macros_successful_save_div" class='alert alert-success'>
-		Macros Successfully Saved! Now Go Make a Meal!
-	</div>
+    <span class='choose-macro-titles'>%</span><span class='choose-macro-titles'>g</span><br>
+    <div id='id-choose-protein-div'><label for='id-protein-percent'><span class='choose-macro-titles'>Protein</span></label>{{ form.protein_percent }}{{ form.protein_g }}</div>
+    <div id='id-choose-fat-div'><label for='id-fat-percent'><span class='choose-macro-titles'>Fat</span></label>{{ form.fat_percent }}{{ form.fat_g }}</div>
+    <div id='id-choose-carbs-div'><label for='id-carbs-percent'><span class='choose-macro-titles'>Carbs</span></label>{{ form.carbs_percent }}{{ form.carbs_g }}</div>
+    <span class='choose-macro-titles'>% Remaining</span><span id="id-macro-percent-total">100</span>
+    <br><button id='id-choose-macros-continue-button' class="btn" disabled>Continue</button>
+</div>
+<div id="id-meal-template-meals-number-form-container">
+    <span id="id-meal-template-header">Break Up Your Daily Calories Into Meals/Snacks</span>
+    
+    <label for="id-meal-template-meals-number">Number of meals/snacks per day?</label>
+    <input id='id-meal-template-meals-number' class='form-control' type='text' name='meal-number' placeholder='# meals/snacks' data-type="number"/>
+    <button id='id-meal-template-set-cals-continue-button' class='btn' disabled>Continue</button>
+</div>
+<div id="id-meal-template-set-meal-cals-form-container"></div>
+{% csrf_token %}
+{% if form.errors %}
+    <div class="form-group has-error">
+        <div class="help-block">{{ form.errors }}</div>
+    </div>
+{% endif %}
+{% if errors %}
+    <div class="form-group has-error">
+        <div class="help-block">{{ errors }}</div>
+    </div>
+{% endif %}
+<div id='id-client-side-form-errors'></div>
+<div id="id-my-macros-successful-save-div" class='alert alert-success'>
+    Macros Successfully Saved! Now Go Make a Meal!
 </div>
 <script>
 	switch_between_imperial_metric();

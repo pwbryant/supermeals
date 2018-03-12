@@ -20,18 +20,18 @@ var hide_home_header_on_tab_select = function() {
 
 //not tested
 var get_my_macros_page_content = function() {
-	$('#id_my_macros_tab_label').on('click',function() {
-		$.get('/meals/get_my_macros/',function(data) {
-			$('#id_my_macros_form_container').html(data);
+	$('#id-my-macros-tab').on('click',function() {
+		$.get('/meals/get-my-macros/',function(data) {
+			$('#id-my-macros-container').html(data);
 		});
 	});
 };
 
 //not tested
 var get_meal_maker_page_content = function() {
-	$('#id_meal_maker_tab_label').on('click',function() {
-		$.get('/meals/meal_maker/',function(data) {
-			$('#id_meal_maker_container').html(data);
+	$('#id_meal_maker_tab').on('click',function() {
+		$.get('/meals/meal-maker/',function(data) {
+			$('#id-meal-maker-container').html(data);
 		});
 	});
 };

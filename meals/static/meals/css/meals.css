@@ -1,0 +1,72 @@
+    /* Position */
+    /* Display & Box Model */
+    /* Style */
+
+html, body {
+    /* Display & Box Model */
+    height: 100vh;
+    margin: 0;
+    /* Style */
+    background-color: #e9e1cf;
+    font-family: "Philosopher"; 
+}
+
+.container {
+    /* Display & Box Model */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.header {
+    /* Display & Box Model */
+    display: flex;
+    height:10%;
+    justify-content: space-between;
+    width: 100%;
+    /* Style */
+    background-color: #0d1650;
+}
+
+.header__nav {
+    /* Display & Box Model */
+    display: flex;
+    height: 100%;
+}
+
+.header__nav-tab {
+    /* Display & Box Model */
+    padding: 10px;
+    /* Style */
+    color: #f9e34b;
+    font-size: 25px;
+}
+
+.header__nav-tab:hover {
+    /* Style */
+    background-color: #f9e34b; 
+    color: #0d1650;
+}
+
+.page-content {
+    /* Display & Box Model */
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+
+}
+
+.content {
+    /* Display & Box Model */
+    height:90%;
+    /* Style */
+    border: 1px solid #dac15b;
+}
+
+.content-box {
+    
+    /* Style */
+    background-color: #e4b93f;
+}
+
+/* Layout */
