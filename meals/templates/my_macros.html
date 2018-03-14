@@ -1,87 +1,130 @@
 <h1 id="id-my-macros-headline" class="headline--md">Find Total Daily Energy Expenditure (TDEE)</h1>
-<div id="id-tdee-form-container" class="content-box">
-    <div id='id-unit-type-container'>
-        
-        {% for choice in form.unit_type %}
-            {{ choice }}
-        {% endfor %}
-    </div>
-    <div id='id-gender-container'>
-        {% for choice in form.gender %}
-            {% if forloop.counter != 1 %}
-                {{ choice }}
-            {% endif %}
-        {% endfor %}
-    </div>
-    <div id="id-age-container">{{ form.age.label_tag }}{{ form.age }}</div>
-    <div id="id-weight-container">
-        <label for='id-weight'>Weight:</label>
-        <span id='id-weight'>
-            {% if form.unit_type.initial == "imperial" %}
-                {{ form.i_weight }}
-            {% endif %}
-            {% if form.unit_type.initial == "metric" %}
-                {{ form.m_weight }}
-            {% endif %}
-        </span>
-    </div>
-    <div id="id-height-container">
-        <label for='id-height'>Height:</label>
-        <span id='id-height'>
-            {% if form.unit_type.initial == "imperial" %}
-                {{ form.i_height_0 }}
-                {{ form.i_height_1 }}
-            {% endif %}
-            {% if form.unit_type.initial == "metric" %}
-                {{ form.m_height }}
-            {% endif %}
-        </span>
-    </div>
-    
-    <div id='id-activity-container'>
-        {% for choice in form.activity %}
-            {{ choice }}
-        {% endfor %}
-    </div>
-    <label for='id-direction-container'>Desired Weight Change</label>
-    <div id='id-direction-container'>	
-        {% for choice in form.direction %}
-            {{ choice }}
-        {% endfor %}
-    </div>
-    <div id='id-change-rate-container'>
-        <label for='id-change-rate'>Rate of Change</label>
-        <span id="id-change-rate">
-        {% if form.unit_type.initial == "imperial" %}
-            {{ form.i_change_rate }}
-        {% endif %}
-        {% if form.unit_type.initial == "metric" %}
-            {{ form.m_change_rate }}
-        {% endif %}
-        </span>
-    </div>
-    <button id='id-calc-tdee' onclick="form-validation('id-tdee-form-container')">Calculate</button>
-    <div id='id-calc-tdee-errors'></div>
-    <div id="id-tdee-result"></div>
-    <div id="id-change-tdee-result"></div>
-    <input id="id-hidden-tdee" name='tdee' type='hidden'/>
+<div class="l-tdee">
+    <!--<div id="id-tdee-form-container" >-->
+        <div class="content-box l-tdee--top l-flex--col">
+            <div class="content-box__header">Unit Type</div>
+            <div id="unit-input-container" class="content-box__content l-flex--row-left">
+                <input class="radio__input" name="unit-type" type="radio" value="i" checked/>
+                <label class="radio__label">Imperial</label>
+                <input class="radio__input" name="unit-type" type="radio" value="m"/>
+                <label class="radio__label">Metric</label>
+            </div>
+        </div>
+        <div class="content-box l-tdee--side l-flex--col">
+            <div class="content-box__header">Physical Traits</div>
+            <div id="gender-input" class="radio l-flex--row-left">
+                <label class="radio__label">Male</label>
+                <input class="radio__button" name="gender" type="radio" value="m">
+                <label class="radio__label">Female</label>
+                <input class="radio__button" name="gender" type="radio" value="f">
+            </div>
+            <div id="age-input" class="input l-flex--col">
+                <label class="input__label">Age:</label>
+                <input class="input__input--sm" type="text" placeholder="Age"/>
+            </div>
+            <div id="weight-input" class="input l-flex--col">
+                <label class="input__label">Weight:</label>
+                    {% if form.unit_type.initial == "imperial" %}
+                        <input type="text" placeholder="Weight(lb)" class="input__input--sm"/>
+                    {% endif %}
+                    {% if form.unit_type.initial == "metric" %}
+                        <input type="text" placeholder="Weight(kg)" class="input__input--sm"/>
+                    {% endif %}
+            </div>
+            <div id="height-input" class="input l-flex--col">
+                <label class="input__label">Height:</label>
+          
+                {% if form.unit_type.initial == "imperial" %}
+                    <input class="input__input--sm" type="text" placeholder="ft"/>
+                    <input class="input__input--sm" type="text" placeholder="in"/>
+                {% endif %}
+                {% if form.unit_type.initial == "metric" %}
+                    <input class="input__input--sm" type="text" placeholder="cm"/>
+                    {{ form.m_height }}
+                {% endif %}
+            </div>
+        </div>        
+        <div class="content-box l-tdee--mid-top">
+            <div class="content-box__header">Activity Level</div>
+            <div id="activity-container" class="content-box__content l-flex--row-btw">
+                <div class="text-box">
+                    <div class="radio-input">
+                        <input class="radio-input__input" type="radio" name="activity"/>
+                    </div>
+                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+                </div>
+                <div class="text-box">
+                    <div class="radio-input">
+                        <input class="radio-input__input" type="radio" name="activity"/>
+                    </div>
+                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+                </div>
+                <div class="text-box">
+                    <div class="radio-input">
+                        <input class="radio-input__input" type="radio" name="activity"/>
+                    </div>
+                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+                </div>
+                <div class="text-box">
+                    <div class="radio-input">
+                        <input class="radio-input__input" type="radio" name="activity"/>
+                    </div>
+                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+                </div>
+                <div class="text-box">
+                    <div class="radio-input">
+                        <input class="radio-input__input" type="radio" name="activity"/>
+                    </div>
+                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+                </div>
+            </div>
+        </div>
+        <div class="content-box l-tdee--mid-bottom">
+            <div class="content-box__header">Weight Change</div>
+            <label for="id-direction-container">Desired Weight Change</label>
+            <div id="id-direction-container">	
+                {% for choice in form.direction %}
+                    {{ choice }}
+                {% endfor %}
+            </div>
+            <div id="id-change-rate-container">
+                <label for="id-change-rate">Rate of Change</label>
+                <span id="id-change-rate">
+                {% if form.unit_type.initial == "imperial" %}
+                    {{ form.i_change_rate }}
+                {% endif %}
+                {% if form.unit_type.initial == "metric" %}
+                    {{ form.m_change_rate }}
+                {% endif %}
+                </span>
+            </div>
+        </div>
+        <div class="l-tdee--footer">
+            <button id="id-calc-tdee" onclick="form-validation("id-tdee-form-container")">Calculate</button>
+            <div id="id-calc-tdee-errors"></div>
+            <div id="id-tdee-result"></div>
+            <div id="id-change-tdee-result"></div>
+            <input id="id-hidden-tdee" name="tdee" type="hidden"/>
+        </div>
+    <!--</div>-->
 </div>
+<!--
 <div id="id-choose-macros-form-container">
     <p>Choose Macro Ratios</p>
 
-    <span class='choose-macro-titles'>%</span><span class='choose-macro-titles'>g</span><br>
-    <div id='id-choose-protein-div'><label for='id-protein-percent'><span class='choose-macro-titles'>Protein</span></label>{{ form.protein_percent }}{{ form.protein_g }}</div>
-    <div id='id-choose-fat-div'><label for='id-fat-percent'><span class='choose-macro-titles'>Fat</span></label>{{ form.fat_percent }}{{ form.fat_g }}</div>
-    <div id='id-choose-carbs-div'><label for='id-carbs-percent'><span class='choose-macro-titles'>Carbs</span></label>{{ form.carbs_percent }}{{ form.carbs_g }}</div>
-    <span class='choose-macro-titles'>% Remaining</span><span id="id-macro-percent-total">100</span>
-    <br><button id='id-choose-macros-continue-button' class="btn" disabled>Continue</button>
+    <span class="choose-macro-titles">%</span><span class="choose-macro-titles">g</span><br>
+    <div id="id-choose-protein-div"><label for="id-protein-percent"><span class="choose-macro-titles">Protein</span></label>{{ form.protein_percent }}{{ form.protein_g }}</div>
+    <div id="id-choose-fat-div"><label for="id-fat-percent"><span class="choose-macro-titles">Fat</span></label>{{ form.fat_percent }}{{ form.fat_g }}</div>
+    <div id="id-choose-carbs-div"><label for="id-carbs-percent"><span class="choose-macro-titles">Carbs</span></label>{{ form.carbs_percent }}{{ form.carbs_g }}</div>
+    <span class="choose-macro-titles">% Remaining</span><span id="id-macro-percent-total">100</span>
+    <br><button id="id-choose-macros-continue-button" class="btn" disabled>Continue</button>
 </div>
 <div id="id-meal-template-meals-number-form-container">
     <span id="id-meal-template-header">Break Up Your Daily Calories Into Meals/Snacks</span>
     
     <label for="id-meal-template-meals-number">Number of meals/snacks per day?</label>
-    <input id='id-meal-template-meals-number' class='form-control' type='text' name='meal-number' placeholder='# meals/snacks' data-type="number"/>
-    <button id='id-meal-template-set-cals-continue-button' class='btn' disabled>Continue</button>
+    <input id="id-meal-template-meals-number" class="form-control" type="text" name="meal-number" placeholder="# meals/snacks" data-type="number"/>
+    <button id="id-meal-template-set-cals-continue-button" class="btn" disabled>Continue</button>
 </div>
 <div id="id-meal-template-set-meal-cals-form-container"></div>
 {% csrf_token %}
@@ -95,10 +138,11 @@
         <div class="help-block">{{ errors }}</div>
     </div>
 {% endif %}
-<div id='id-client-side-form-errors'></div>
-<div id="id-my-macros-successful-save-div" class='alert alert-success'>
+<div id="id-client-side-form-errors"></div>
+<div id="id-my-macros-successful-save-div" class="alert alert-success">
     Macros Successfully Saved! Now Go Make a Meal!
 </div>
+-->
 <script>
 	switch_between_imperial_metric();
 	calc_tdee();

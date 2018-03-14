@@ -12,11 +12,11 @@
         <div class="container">
             <div class="header">
                 <div class="header__nav">
-                    <div id="id-my-macros-tab" class="header__nav-tab">My Macros</div>
-                    <div id="id-meal-maker-tab" class="header__nav-tab">Meal Maker</div>
-                    <div id="id-my-meals-tab" class="header__nav-tab">My Meals</div>
-                    <div id="id-add-recipes-tab" class="header__nav-tab">Add Recipes</div>
-                    <div id="id-add-food-tab" class="header__nav-tab">Add Food to Database</div>
+                    <div id="my-macros-tab" class="header__nav-tab">My Macros</div>
+                    <div id="meal-maker-tab" class="header__nav-tab">Meal Maker</div>
+                    <div id="my-meals-tab" class="header__nav-tab">My Meals</div>
+                    <div id="add-recipes-tab" class="header__nav-tab">Add Recipes</div>
+                    <div id="add-food-tab" class="header__nav-tab">Add Food to Database</div>
                 </div>
                 <div class="header__nav">
                     {% if user.is_authenticated and user.get_username != 'guest' %}
@@ -37,15 +37,14 @@
                 </div>
             </div>
             <div class="content">
-                <div id="id-my-macros-container" class="page-content"></div>
-                <div id="id-meal-maker-container" class="page-content"></div>
-                <div id="id-my-meals-container" class="page-content"></div>
-                <div id="id-add-recipes-container" class="page-content"></div>
-                <div id="id-add-food-container" class="page-content"></div>
-                <h1 id='id-home-headline'>Meal Lab</h1>
+                <div id="my-macros-container" class="page-content hide"></div>
+                <div id="meal-maker-container" class="page-content hide"></div>
+                <div id="my-meals-container" class="page-content hide"></div>
+                <div id="add-recipes-container" class="page-content hide"></div>
+                <div id="add-food-container" class="page-content hide"></div>
             </div> 
         </div>
-
+        
 		<script src="http://code.jquery.com/jquery.js"></script>
         <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
 		<script src="/static/bootstrap/js/bootstrap.min.js"></script>

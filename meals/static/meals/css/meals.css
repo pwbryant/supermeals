@@ -2,6 +2,13 @@
     /* Display & Box Model */
     /* Style */
 
+/****************************************************/
+/* General tags and classes
+ * 
+ * Rules for tags and non-positional classes
+ * are found here.
+ *
+/****************************************************/
 html, body {
     /* Display & Box Model */
     height: 100vh;
@@ -10,6 +17,47 @@ html, body {
     background-color: #e9e1cf;
     font-family: "Philosopher"; 
 }
+
+.input__input--sm {
+    /* Display & Box Model */
+    border-radius: 10px;
+    height: 30px;
+    padding-left: 5px;
+    width: 70px;
+}
+
+.input__label {
+    /* Style */
+    color: #f9e34b;
+    font-size: 20px;
+}
+
+.radio__label {
+    /* Style */
+    color: #f9e34b;
+    font-size: 20px;
+}
+
+.text-box {
+    /* Display & Box Model */
+   flex-wrap: nowrap;
+   padding:5px;
+}
+
+.text-box__text {
+    /* Style */
+    color: #f9e34b;
+    color: #f9e34b;
+    font-size:25px;
+}
+
+/****************************************************/
+/* Positional tags and classes
+ * 
+ * Rules for positional classes (header, content, footer)
+ * are found here.
+ *
+/****************************************************/
 
 .container {
     /* Display & Box Model */
@@ -64,9 +112,97 @@ html, body {
 }
 
 .content-box {
-    
+    /* Display & Box Model */
+    padding: 5px;
     /* Style */
-    background-color: #e4b93f;
+    background-color: #0d1650;
 }
 
+.content-box__header {
+    /* Display & Box Model */
+    padding: 5px;
+    /* Style */
+    border-bottom: 3px solid #e4b93f;
+    color: #e9e1cf;
+    font-size: 25px;
+}
+
+/****************************************************/
+/* ID dependant classes
+ * 
+ * Rules for ID dependant classe, i.e #id .class {}
+ * are found here.
+ *
+/****************************************************/
+
+
+
+/****************************************************/
+/* Layout classes
+ * 
+ * Rules for layout classes
+ * are found here.
+ *
+/****************************************************/
 /* Layout */
+.l-tdee {
+    display: grid;
+    grid-gap:5px;
+    grid-template-rows: repeat(9,1fr);
+    grid-template-columns: repeat(9,1fr);
+    grid-template-areas: 
+    "h h h h h h h h h" 
+    "s s mt mt mt mt mt mt mt" 
+    "s s mt mt mt mt mt mt mt" 
+    "s s mt mt mt mt mt mt mt" 
+    "s s mt mt mt mt mt mt mt" 
+    "s s ml ml ml ml ml ml ml" 
+    "s s ml ml ml ml ml ml ml" 
+    "f f f f f f f f f" 
+    "f f f f f f f f f"; 
+}
+
+.l-tdee--top {
+    grid-area: h;
+}
+
+.l-tdee--side {
+    grid-area: s;
+}
+
+.l-tdee--mid-top {
+    grid-area: mt;
+}
+
+.l-tdee--mid-bottom {
+    grid-area: ml;
+}
+
+.l-tdee--footer {
+    grid-area: f;
+}
+
+.l-flex--col {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.l-flex--row-btw {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+.l-flex--row-left {
+    display: flex;
+    justify-content: start;
+    flex-direction: row;
+}
+
+/* Modifiers */
+.hide {
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+}

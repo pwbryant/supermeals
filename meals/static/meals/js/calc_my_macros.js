@@ -20,16 +20,17 @@ var hide_home_header_on_tab_select = function() {
 
 //not tested
 var get_my_macros_page_content = function() {
-	$('#id-my-macros-tab').on('click',function() {
+	$('#my-macros-tab').on('click',function() {
 		$.get('/meals/get-my-macros/',function(data) {
-			$('#id-my-macros-container').html(data);
+			$('#my-macros-container').removeClass("hide");
+			$('#my-macros-container').html(data);
 		});
 	});
 };
 
 //not tested
 var get_meal_maker_page_content = function() {
-	$('#id_meal_maker_tab').on('click',function() {
+	$('#meal-maker-tab').on('click',function() {
 		$.get('/meals/meal-maker/',function(data) {
 			$('#id-meal-maker-container').html(data);
 		});

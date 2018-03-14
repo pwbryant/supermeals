@@ -147,21 +147,17 @@ class MakeMacrosForm(forms.models.ModelForm):
 			'gender': forms.RadioSelect(),
 			'age': forms.fields.TextInput(attrs = {
 				'placeholder': 'Age',
-				'class': 'form-control input-sm',
 				'data-type':'number'
 			}),
 			'weight': forms.fields.TextInput(attrs = {
-				'class': 'form-control input-sm',
 				'data-type':'number'
 			}),
 			'height': forms.fields.TextInput(attrs = {
-				'class': 'form-control input-sm',
 				'data-type':'number'
 			}),
 			'activity': forms.RadioSelect(),
 			'direction': forms.RadioSelect(),
 			'change_rate': forms.fields.TextInput(attrs = {
-				'class': 'form-control input-sm',
 				'data-type':'number'
 			}),
 		}
