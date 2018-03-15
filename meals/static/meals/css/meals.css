@@ -32,10 +32,16 @@ html, body {
     font-size: 20px;
 }
 
-.radio__label {
+.radio-input__label {
     /* Style */
     color: #f9e34b;
     font-size: 20px;
+}
+
+.radio-input__input {
+    /* Display & Box Model */
+    height:2em;
+    width:2em;
 }
 
 .text-box {
@@ -63,7 +69,8 @@ html, body {
     /* Display & Box Model */
     display: flex;
     flex-direction: column;
-    height: 100%;
+    /* height: 100%; */
+    height: 500px;
 }
 
 .header {
@@ -100,6 +107,7 @@ html, body {
     /* Display & Box Model */
     display: flex;
     flex-direction: column;
+    height: 100%;
     padding: 20px;
 
 }
@@ -148,7 +156,8 @@ html, body {
 .l-tdee {
     display: grid;
     grid-gap:5px;
-    grid-template-rows: repeat(9,1fr);
+    grid-template-rows: auto;
+    /* grid-template-rows: repeat(9,1fr); */
     grid-template-columns: repeat(9,1fr);
     grid-template-areas: 
     "h h h h h h h h h" 
