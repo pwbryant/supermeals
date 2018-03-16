@@ -1,130 +1,128 @@
 <h1 id="my-macros-headline" class="headline--md">Find Total Daily Energy Expenditure (TDEE)</h1>
-<div class="l-tdee">
-    <!--<div id="tdee-form-container" >-->
-        <div class="content-box l-tdee--top l-flex--col">
-            <div class="content-box__header">Unit Type</div>
-            <div id="unit-input-container" class="content-box__content l-flex--row-left">
-                <div class="radio-input">
-                    <label class="radio-input__label">Imperial</label>
-                    <input class="radio-input__input" type="radio" name="unit-type" value="i" checked/>
-                </div>
-                <div class="radio-input">
-                    <label class="radio-input__label">Metric</label>
-                    <input class="radio-input__input" type="radio" name="unit-type" value="m"/>
-                </div>
+<div id="tdee-form-container" class="l-tdee" >
+    <div class="content-box l-tdee--top l-flex--col">
+        <div class="content-box__header">Unit Type</div>
+        <div id="unit-input-container" class="content-box__content l-flex--row-left">
+            <div class="radio-input">
+                <label class="radio-input__label">Imperial</label>
+                <input class="radio-input__input" type="radio" name="unit-type" value="i" checked/>
+            </div>
+            <div class="radio-input">
+                <label class="radio-input__label">Metric</label>
+                <input class="radio-input__input" type="radio" name="unit-type" value="m"/>
             </div>
         </div>
-        <div class="content-box l-tdee--side l-flex--col">
-            <div class="content-box__header">Physical Traits</div>
-            <div id="gender-input" class="radio l-flex--row-left">
-                <div class="radio-input">
-                    <label class="radio-input__label">Male</label>
-                    <input class="radio-input__input" type="radio" name="gender" value="m"/>
-                </div>
-                <div class="radio-input">
-                    <label class="radio-input__label">Female</label>
-                    <input class="radio-input__input" type="radio" name="gender" value="f"/>
-                </div>
+    </div>
+    <div class="content-box l-tdee--side l-flex--col">
+        <div class="content-box__header">Physical Traits</div>
+        <div id="gender-input" class="radio l-flex--row-left">
+            <div class="radio-input">
+                <label class="radio-input__label">Male</label>
+                <input class="radio-input__input" type="radio" name="gender" value="m"/>
             </div>
-            <div id="age-input" class="input l-flex--col">
-                <label class="input__label">Age:</label>
-                <input class="input__input--sm" type="text" placeholder="Age"/>
+            <div class="radio-input">
+                <label class="radio-input__label">Female</label>
+                <input class="radio-input__input" type="radio" name="gender" value="f"/>
             </div>
-            <div id="weight-input" class="input l-flex--col">
-                <label class="input__label">Weight:</label>
-                    {% if form.unit_type.initial == "imperial" %}
-                        <input type="text" placeholder="Weight(lb)" class="input__input--sm"/>
-                    {% endif %}
-                    {% if form.unit_type.initial == "metric" %}
-                        <input type="text" placeholder="Weight(kg)" class="input__input--sm"/>
-                    {% endif %}
-            </div>
-            <div id="height-input" class="input l-flex--col">
-                <label class="input__label">Height:</label>
-          
+        </div>
+        <div id="age-input" class="input l-flex--col">
+            <label class="input__label">Age:</label>
+            <input class="input__input--sm" type="text" name="age" placeholder="Age"/>
+        </div>
+        <div id="weight-input" class="input l-flex--col">
+            <label class="input__label">Weight:</label>
                 {% if form.unit_type.initial == "imperial" %}
-                    <input class="input__input--sm" type="text" placeholder="ft"/>
-                    <input class="input__input--sm" type="text" placeholder="in"/>
+                    <input type="text" class="input__input--sm" name="weight-i" placeholder="Weight(lb)"/>
                 {% endif %}
                 {% if form.unit_type.initial == "metric" %}
-                    <input class="input__input--sm" type="text" placeholder="cm"/>
-                    {{ form.m_height }}
+                    <input type="text" class="input__input--sm" name="weight-m" placeholder="Weight(kg)"/>
                 {% endif %}
+        </div>
+        <div id="height-input" class="input l-flex--col">
+            <label class="input__label">Height:</label>
+      
+            {% if form.unit_type.initial == "imperial" %}
+                <input class="input__input--sm" type="text" placeholder="ft"/>
+                <input class="input__input--sm" type="text" placeholder="in"/>
+            {% endif %}
+            {% if form.unit_type.initial == "metric" %}
+                <input class="input__input--sm" type="text" placeholder="cm"/>
+                {{ form.m_height }}
+            {% endif %}
+        </div>
+    </div>        
+    <div class="content-box l-tdee--mid-top">
+        <div class="content-box__header">Activity Level</div>
+        <div id="activity-container" class="content-box__content l-flex--row-btw">
+            <div class="text-box">
+                <div class="radio-input">
+                    <input class="radio-input__input" type="radio" name="activity"/>
+                </div>
+                <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
             </div>
-        </div>        
-        <div class="content-box l-tdee--mid-top">
-            <div class="content-box__header">Activity Level</div>
-            <div id="activity-container" class="content-box__content l-flex--row-btw">
-                <div class="text-box">
-                    <div class="radio-input">
-                        <input class="radio-input__input" type="radio" name="activity"/>
-                    </div>
-                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+            <div class="text-box">
+                <div class="radio-input">
+                    <input class="radio-input__input" type="radio" name="activity"/>
                 </div>
-                <div class="text-box">
-                    <div class="radio-input">
-                        <input class="radio-input__input" type="radio" name="activity"/>
-                    </div>
-                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+                <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+            </div>
+            <div class="text-box">
+                <div class="radio-input">
+                    <input class="radio-input__input" type="radio" name="activity"/>
                 </div>
-                <div class="text-box">
-                    <div class="radio-input">
-                        <input class="radio-input__input" type="radio" name="activity"/>
-                    </div>
-                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+                <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+            </div>
+            <div class="text-box">
+                <div class="radio-input">
+                    <input class="radio-input__input" type="radio" name="activity"/>
                 </div>
-                <div class="text-box">
-                    <div class="radio-input">
-                        <input class="radio-input__input" type="radio" name="activity"/>
-                    </div>
-                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+                <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+            </div>
+            <div class="text-box">
+                <div class="radio-input">
+                    <input class="radio-input__input" type="radio" name="activity"/>
                 </div>
-                <div class="text-box">
-                    <div class="radio-input">
-                        <input class="radio-input__input" type="radio" name="activity"/>
-                    </div>
-                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
-                </div>
+                <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
             </div>
         </div>
-        <div class="content-box l-tdee--mid-bottom l-flex--col">
-            <div class="content-box__header">Weight Change</div>
-            <div id="direction-container" class="content-box__content l-flex--row-left">
-                <div class="radio-input">
-                    <label class="radio-input__label">Lose</label>
-                    <input class="radio-input__input" type="radio" name="direction" value="lose"/>
-                </div>
-                <div class="radio-input">
-                    <label class="radio-input__label">Maintain</label>
-                    <input class="radio-input__input" type="radio" name="direction" value="maintain"/>
-                </div>
-                <div class="radio-input">
-                    <label class="radio-input__label">Gain</label>
-                    <input class="radio-input__input" type="radio" name="direction" value="gain"/>
-                </div>
+    </div>
+    <div class="content-box l-tdee--mid-bottom l-flex--col">
+        <div class="content-box__header">Weight Change</div>
+        <div id="direction-container" class="content-box__content l-flex--row-left">
+            <div class="radio-input">
+                <label class="radio-input__label">Lose</label>
+                <input class="radio-input__input" type="radio" name="direction" value="lose"/>
+            </div>
+            <div class="radio-input">
+                <label class="radio-input__label">Maintain</label>
+                <input class="radio-input__input" type="radio" name="direction" value="maintain"/>
+            </div>
+            <div class="radio-input">
+                <label class="radio-input__label">Gain</label>
+                <input class="radio-input__input" type="radio" name="direction" value="gain"/>
+            </div>
 
-            </div>
-            <div id="change-rate" class="input">
-                <label class="input__label">Rate of Change</label>
-                {% if form.unit_type.initial == "imperial" %}
-                    <input id="change-rate-i" class="input__input--sm" type="text" name="change-rate-i" data-type="number" placeholder="lb/wk"/>
-                {% endif %}
-                {% if form.unit_type.initial == "metric" %}
-                    <input id="change-rate-m" class="input__input--sm" type="text" name="change-rate-m" data-type="number" placeholder="kg/wk"/>
-                {% endif %}
-            </div>
         </div>
-        <div class="content-box l-tdee--footer l-flex--row-btw">
-                <button id="calc-tdee" onclick="form-validation("tdee-form-container")">Calculate</button>
-                <div id="tdee-result"></div>
-                <div id="change-tdee-result"></div>
-                <input id="hidden-tdee" name="tdee" type="hidden"/>
-                <div id="calc-tdee-errors"></div>
+        <div id="change-rate" class="input">
+            <label class="input__label">Rate of Change</label>
+            {% if form.unit_type.initial == "imperial" %}
+                <input id="change-rate-i" class="input__input--sm" type="text" name="change-rate-i" data-type="number" placeholder="lb/wk"/>
+            {% endif %}
+            {% if form.unit_type.initial == "metric" %}
+                <input id="change-rate-m" class="input__input--sm" type="text" name="change-rate-m" data-type="number" placeholder="kg/wk"/>
+            {% endif %}
         </div>
-    <!--</div>-->
+    </div>
+    <div class="content-box l-tdee--footer l-flex--row-btw">
+            <button id="calc-tdee" onclick="form-validation("tdee-form-container")">Calculate</button>
+            <div id="tdee-result"></div>
+            <div id="change-tdee-result"></div>
+            <input id="hidden-tdee" name="tdee" type="hidden"/>
+            <div id="calc-tdee-errors"></div>
+    </div>
 </div>
 <!--
-<div id="id-choose-macros-form-container">
+<div id="choose-macros-form-container">
     <p>Choose Macro Ratios</p>
 
     <span class="choose-macro-titles">%</span><span class="choose-macro-titles">g</span><br>

@@ -11,7 +11,7 @@
 		var fill_activity_direction_rate = function(act_,dir_,rate,rate_unit) {
 			$('input[name=activity]').val(act_);
 			$('input[value=' + dir_ + ']').prop('checked',true);
-			$('input[name=' + rate_unit + '_change_rate]').val(rate);
+			$('input[name="change-rate-' + rate_unit + '"]').val(rate);
 		}
 
 		var set_up_choose_macros_test = function(input_,value,result_id,result_value) {
@@ -50,38 +50,75 @@
 
 		<!--calc macros - calc tdee-->
 		<div id='tdee-form-container'>
-			<div id="unit-type-div">
-			<input id='unit-type-1' type='radio' name='unit-type' value='imperial' checked='checked'/>
-			<input id='unit-type-2' type='radio' name='unit-type' value='metric'/>
-			</div>
-			<div id="gender-div">
-			<input id='gender-1' type='radio' name='gender' value='m' checked='checked'/>
-			<input id='gender-2'type='radio' name='gender' value='f' />
-			</div>
-			<div id="age-div"><label for='age'>Age:</label><input id='age' type='text' name='age' value='34' data-type='number' /></div>
-			<div id="weight-div"><label for='weight'>Weight:</label><span id="weight"><input id='i-weight' type='text' name='i-weight' value='210' data-type='number'/>
-			<input type='text' name='m-weight' value='0' data-type='number'/></span>
-			</div>
-			<div id="height-div"><label for='height'>Height:</label><span id="height"><input id='i-height' type='text' name='i-height-0' value='5' data-type='number'/>
-			<input type='text' name='i-height-1' value='10' data-type='number'/>
-			<input type='text' name='m-height' value='0' data-type='number'/>
-			</span></div>
-			<div id="activity-div"><input type='radio' name='activity'  checked='checked'/></div>
-			<div id="direction-div"><input id='direction-0' type='radio' name='direction' value='lose'/>
-			<input id='direction-1' type='radio' name='direction' value='maintain' checked='checked' />
-			<input id='direction-2' type='radio' name='direction' value='gain' />
-			</div>
-			<div id='change-rate-div'><label for='change-rate'>Rate</label><span id='change-rate'>
-				<input id='i-change-rate' class='change-rate' type='text' name='i-change-rate' value='1' data-type='number' />
-			</div>
+            <div id="unit-input-container" class="content-box__content l-flex--row-left">
+                <div class="radio-input">
+                    <label class="radio-input__label">Imperial</label>
+                    <input class="radio-input__input" type="radio" name="unit-type" value="imperial" checked/>
+                </div>
+                <div class="radio-input">
+                    <label class="radio-input__label">Metric</label>
+                    <input class="radio-input__input" type="radio" name="unit-type" value="metric"/>
+                </div>
+            </div>
+            <div id="gender-input" class="radio l-flex--row-left">
+                <div class="radio-input">
+                    <label class="radio-input__label">Male</label>
+                    <input class="radio-input__input" type="radio" name="gender" value="m" checked/>
+                </div>
+                <div class="radio-input">
+                    <label class="radio-input__label">Female</label>
+                    <input class="radio-input__input" type="radio" name="gender" value="f"/>
+                </div>
+            </div>
+            <div id="age-input" class="input l-flex--col">
+                <label class="input__label">Age:</label>
+                <input class="input__input--sm" type="text" name="age" placeholder="Age" value="35"/>
+            </div>
+            <div id="weight-input" class="input l-flex--col">
+                <label class="input__label">Weight:</label>
+                <input type="text" class="input__input--sm" name="weight-i" placeholder="lbs" value="210" data-type="number"/>
+                <input type="text" class="input__input--sm" name="weight-m" placeholder="kgs" value="0" data-type="number"/>
+            </div>
+            <div id="height-input" class="input l-flex--col">
+                <label class="input__label">Height:</label>
+                <input type="text" class="input__input--sm" name="height-i-ft" placeholder="ft" value="5" data-type="number"/>
+                <input type="text" class="input__input--sm" name="height-i-in" placeholder="in" value="10" data-type="number"/>
+                <input type="text" class="input__input--sm" name="height-m" placeholder="cm" value="0" data-type="number"/>
+            </div>
+            <div id="activity-container" class="content-box__content l-flex--row-btw">
+                <div class="text-box">
+                    <div class="radio-input">
+                        <input class="radio-input__input" type="radio" name="activity" checked="checked"/>
+                    </div>
+                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+                </div>
+            </div>
+            <div id="direction-container" class="content-box__content l-flex--row-left">
+                <div class="radio-input">
+                    <label class="radio-input__label">Lose</label>
+                    <input class="radio-input__input" type="radio" name="direction" value="lose"/>
+                </div>
+                <div class="radio-input">
+                    <label class="radio-input__label">Maintain</label>
+                    <input class="radio-input__input" type="radio" name="direction" value="maintain" checked="checked"/>
+                </div>
+                <div class="radio-input">
+                    <label class="radio-input__label">Gain</label>
+                    <input class="radio-input__input" type="radio" name="direction" value="gain"/>
+                </div>
+            </div>
+            <div id="change-rate" class="input">
+                <label class="input__label">Rate of Change</label>
+                <input class="input__input--sm" type="text" name="change-rate-i" value="1" data-type="number" placeholder="lb/wk"/>
+            </div>
 			<button id="calc-tdee">Calculate</button>
-			<!--<button id="calc-tdee" >Calculate</button>-->
-
-		</div>
+        </div>
 		<div id="tdee-result"></div>
 		<div id="change-tdee-result"></div>
-		<div id="choose-macros-form-container" style="display:none;">
+        
 		<!--choose macros -->
+		<!--
+        <div id="choose-macros-form-container" style="display:none;">
 		<label for='protein-percent'>Protein</label><input id="protein-percent" class="choose-macros" type="text" placeholder="%" data-value="0" data-type="number" />
 		<input id="protein-g" class="choose-macros" type="text" placeholder="g" data-type="number"/>
 		<label for='fat-percent'>Fat</label><input id="fat-percent" class="choose-macros" type="text" placeholder="%" data-value="0" data-type="number"/>
@@ -93,7 +130,7 @@
 		<button id="choose-macros-continue-button" disabled>Continue</button>
 		</div>
 	</div>
-	
+        -->
 
 	<!--calc macros - Continue button reveals meal/snack number input -->
 	<button id='choose-macros-continue-button' class='btn'>Continue</button>
@@ -287,25 +324,26 @@
 		QUnit.test("imperial metric switch", function(assert) {
 			switch_between_imperial_metric()
 			$('#unit-type-metric-test').trigger('click');
-			var weight_placeholder = $('#m-weight').attr('placeholder')
+			var weight_placeholder = $('input[name="weight-m"]').attr('placeholder')
 			assert.equal(weight_placeholder,'kg')
-			var height_placeholder = $('#m-height').attr('placeholder')
+			var height_placeholder = $('input[name="height-m"]').attr('placeholder')
 			assert.equal(height_placeholder,'cm')
-			var rate_placeholder = $('#m-change-rate').attr('placeholder')
+			var rate_placeholder = $('input[name="change-rate-m"]').attr('placeholder')
 			assert.equal(rate_placeholder,'kg/wk')
 		});
 		//convert to metric (no html to test)
 		QUnit.test("convert to metric between metric english", function(assert) {
 			var in_cm = convert_between_metric_english(2,'in-to-cm'),
-			lb_kg = convert-between-metric-english(2,'lb-to-kg');
-			kg_lb = convert-between-metric-english(0.90718,'kg-to-lb');
+			lb_kg = convert_between_metric_english(2,'lb-to-kg'),
+			kg_lb = convert_between_metric_english(0.90718,'kg-to-lb');
 
+            console.log(in_cm);
 			assert.equal(in_cm.toFixed(5),5.08001);
 			assert.equal(lb_kg.toFixed(5),0.90718);
 			assert.equal(kg_lb.toFixed(1),2);
 		});
-        /*
 		//tdee stuff
+        /*
 		QUnit.test("calculate tdee displays id_choose_macros_form_container", function(assert) {
 		
 			calc_tdee();
@@ -337,16 +375,18 @@
 			$('#id_direction_2').trigger('click');
 			assert.equal($('#id_change_rate_div').css('display'),'block')
 		});
+        */
 		//calc tdees
 		QUnit.test("calculate tdee male at none activity lose 1lb/wk", function(assert) {
 			calc_tdee();
-			fill_activity_direction_rate('none','lose','1','i');
-			$('#id_calc_tdee').trigger('click');
-			var result1 = $('#id_tdee_result').html(),
-			result2 = $('#id_change_tdee_result').html();
+			//fill_activity_direction_rate('none','lose','1','i');
+			$('#calc-tdee').trigger('click');
+			var result1 = $('#tdee-result').html(),
+			result2 = $('#change-tdee-result').html();
 			assert.equal(parseFloat(result1).toFixed(0),2435);
 			assert.equal(parseFloat(result2).toFixed(0),1935);
 		});
+        /*
 		QUnit.test("calculate tdee male at none activity lose 1lb/wk in metric", function(assert) {
 			calc_tdee();
 			$('input[name=unit_type]').val('metric');
