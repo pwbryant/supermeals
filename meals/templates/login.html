@@ -19,11 +19,11 @@
 		}
 	</style>
 	<body>
-		<h1 id="id-login-headline">Meal Lab</h1>
-		<form id="id-user-login-form" method="POST" action="/meals/logging-in">
+		<h1 id="login-headline">Meal Lab</h1>
+		<form id="user-login-form" method="POST" action="/meals/logging-in">
 		{{ form.username }}
 		{{ form.password }}
-		<input id='id-login' type='submit' class="btn" value="Login">
+		<input id='login' type='submit' class="btn" value="Login">
 		{% csrf_token %}
 		{% if error %}
 			<div class='form-group has-error'>
@@ -32,9 +32,9 @@
 		{% endif %}
 		</form>
 
-		<form id="id-guest-login-form" method="POST" action="/meals/logging-in">
+		<form id="guest-login-form" method="POST" action="/meals/logging-in">
 		{% csrf_token %}
-		<input id='id-as-guest' name='guest' type='submit' class="btn" value="Continue as Guest">
+		<input id='guest' name='guest' type='submit' class="btn" value="Continue as Guest">
 		</form>
 		
 		<script src="http://code.jquery.com/jquery.js"></script>

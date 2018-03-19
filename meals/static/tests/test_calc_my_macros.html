@@ -16,7 +16,7 @@
 		}
 
 		var set_up_choose_macros_test = function(input_,value,result_id,result_value) {
-			$("#id_choose_macros_form_container").css("display","block");
+			$("#choose-macros-form-container").css("display","block");
 			$("#" + input_).val(value);
 			$("#" + result_id).html(result_value);
 			$("#" + input_).trigger("keyup");
@@ -341,13 +341,14 @@
 			assert.equal(lb_kg.toFixed(5),0.90718);
 			assert.equal(kg_lb.toFixed(1),2);
 		});
+        */
 		//tdee stuff
-		QUnit.test("calculate tdee displays id_choose_macros_form_container", function(assert) {
+		QUnit.test("calculate tdee displays choose-macros-form-container", function(assert) {
 		
 			calc_tdee();
-			assert.equal($("#id_choose_macros_form_container").css("display"),"none")
+			assert.equal($("#choose-macros-form-container").css("display"),"none")
 			$("#calc-tdee").trigger("click");
-			assert.equal($("#id_choose_macros_form_container").css("display"),"block")
+			assert.equal($("#choose-macros-form-container").css("display"),"block")
 		});
 		//hide change rate
 		QUnit.test("selection of maintaince makes the rate change input disappear", function(assert) {
@@ -373,7 +374,7 @@
 			$("#id_direction_2").trigger("click");
 			assert.equal($("#id_change_rate_div").css("display"),"block")
 		});
-        
+        /* 
 		//calc tdees
 		QUnit.test("calculate tdee male at none activity lose 1lb/wk", function(assert) {
 			calc_tdee();
