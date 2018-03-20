@@ -53,10 +53,19 @@ html, body {
 .text-box__text {
     /* Style */
     color: #f9e34b;
-    color: #f9e34b;
     font-size:25px;
 }
 
+
+.text--primary {
+    font-size:25px;
+    color: #f9e34b;
+}
+
+.text--highlight {
+    font-size:35px;
+    color: red;
+}
 /****************************************************/
 /* Positional tags and classes
  * 

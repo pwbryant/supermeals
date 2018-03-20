@@ -59,7 +59,6 @@ var save_my_macros_button_posts_form = function() {
 }
 
 
-
 //tested
 var switch_between_imperial_metric = function() {
 	$("input[name='unit-type']").on("click",function() {	
@@ -73,14 +72,15 @@ var switch_between_imperial_metric = function() {
             change_input += "<input type='text' name='change-rate-m' class='input__input--sm' placeholder='kg/wk' data-type='number' />";
 
 		} else {
-            weight_input += "<input type='text' name='weight-m' class='input__input--sm' placeholder='kg' data-type='number' />";
+            weight_input += "<input type='text' name='weight-i' class='input__input--sm' placeholder='lb' data-type='number' />";
             height_input += "<input type='text' name='height-i-ft' class='input__input--sm' placeholder='ft' data-type='number' />";
             height_input += "<input type='text' name='height-i-in' class='input__input--sm' placeholder='in' data-type='number' />";
-            change_input += "<input type='text' name='change-rate-m' class='input__input--sm' placeholder='kg/wk' data-type='number' />";
+            change_input += "<input type='text' name='change-rate-i' class='input__input--sm' placeholder='lb/wk' data-type='number' />";
 		}
+        console.log(change_input)
         $("#weight-input").html(weight_input);	
         $("#height-input").html(height_input);		
-        $("#change-rate").html(change_input);
+        $("#change-rate-input").html(change_input);
 	});
 
 }
@@ -124,6 +124,7 @@ var calc_tdee = function() {
 					"lose": -1,
 					"gain": 1,
 				}[tdee_data["direction"]];
+
 				if (tdee_data["unit-type"] == "imperial") {
 					tdee_data["weight"] = convert_between_metric_english(tdee_data["weight-i"],"lb-to-kg");
 					tdee_data["height"] = convert_between_metric_english(tdee_data["height-i-ft"] * 12 + tdee_data["height-i-in"],"in-to-cm");
@@ -133,7 +134,6 @@ var calc_tdee = function() {
 					tdee_data["height"] = tdee_data["height-m"];
 					tdee_data["change-rate"] = convert_between_metric_english(tdee_data["change-rate-m"],"kg-to-lb") * weight_change_direction * 500;
 				}
-                console.log(tdee_data);
 				var formula_data = {
 					"f":-161,
 					"m":5,
@@ -151,17 +151,13 @@ var calc_tdee = function() {
 				tdee_return_value = (formula_data["weight"] + formula_data["height"] - formula_data["age"]  + formula_data[tdee_data["gender"]]) * activity_data[tdee_data["activity"]],
 				change_tdee_return_value = ((formula_data["weight"] + formula_data["height"] - formula_data["age"]  + formula_data[tdee_data["gender"]]) * activity_data[tdee_data["activity"]]) + tdee_data["change-rate"];
 
-                console.log(formula_data);
-			    console.log(formula_data[tdee_data["gender"]]);	
-                console.log("**",formula_data["weight"], formula_data["height"] , formula_data["age"]  , formula_data[tdee_data["gender"]],"**")
-                console.log(tdee_return_value);
-                console.log(tdee_return_value * 1.375);
 			} else {
 				tdee_return_value = "Missing Value. Check Form.";
 			}
-
-			$("#tdee-result").html(Math.round(tdee_return_value));
-			$("#change-tdee-result").html(Math.round(change_tdee_return_value));
+            tdee_return_value = "Maintenance: " + Math.round(tdee_return_value).toString() + " Cals";
+            change_tdee_return_value = "Change: " + Math.round(change_tdee_return_value).toString() + " Cals";
+			$("#tdee-result").html(tdee_return_value);
+			$("#change-tdee-result").html(change_tdee_return_value);
             
 			$("#hidden-tdee").val(Math.round(change_tdee_return_value));
 			

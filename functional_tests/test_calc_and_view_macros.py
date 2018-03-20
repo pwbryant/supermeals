@@ -24,9 +24,12 @@ class CalcAndViewMacros(FunctionalTest):
         #options for weight gain,maintain,and loss, and the desired rate of change and a
         #Calculate button. The radio buttons for unit type, gender, activity, and weight change
         #have "Imperial", "Male", "Low Activity", and "Loss" preselected
-        self.assertTrue(self.browser.find_element_by_css_selector("input[name='unit-type'][value='i']").is_selected())
-        self.assertFalse(self.browser.find_element_by_css_selector("input[name='unit-type'][value='m']").is_selected())
+        self.check_element_content("unit-type","id","text","Unit Type","div")
+        self.assertTrue(self.browser.find_element_by_css_selector("input[name='unit-type'][value='imperial']").is_selected())
+        self.assertFalse(self.browser.find_element_by_css_selector("input[name='unit-type'][value='metric']").is_selected())
 
+
+        self.check_element_content("traits","id","text","Physical Traits","div")
         self.assertFalse(self.browser.find_element_by_css_selector("input[name='gender'][value='m']").is_selected())
         self.assertFalse(self.browser.find_element_by_css_selector("input[name='gender'][value='f']").is_selected())
         self.check_element_content("age-input","id","text","Age:","label")
@@ -40,34 +43,36 @@ class CalcAndViewMacros(FunctionalTest):
 
         self.check_element_content("input[type='radio'][value='none']","css","value","none")
 
+        self.check_element_content("activity","id","text","Activity Level","div")
         self.assertFalse(self.browser.find_elements_by_css_selector("input[type='radio'][value='none']")[0].is_selected())
         self.assertFalse(self.browser.find_elements_by_css_selector("input[type='radio'][value='light']")[0].is_selected())
         self.assertFalse(self.browser.find_elements_by_css_selector("input[type='radio'][value='medium']")[0].is_selected())
         self.assertFalse(self.browser.find_elements_by_css_selector("input[type='radio'][value='high']")[0].is_selected())
         self.assertFalse(self.browser.find_elements_by_css_selector("input[type='radio'][value='very high']")[0].is_selected())
 
-        self.assertTrue(self.browser.find_element_by_id("direction-0").is_selected())
-        self.assertFalse(self.browser.find_element_by_id("direction-1").is_selected())
-        self.assertFalse(self.browser.find_element_by_id("direction-2").is_selected())
-        self.check_element_content("label[for=id_direction_div]","css","text","Desired Weight Change")
+        self.check_element_content("weight-change","id","text","Weight Change","div")
+        self.assertTrue(self.browser.find_elements_by_css_selector("input[type='radio'][value='lose']")[0].is_selected())
+        self.assertFalse(self.browser.find_elements_by_css_selector("input[type='radio'][value='maintain']")[0].is_selected())
+        self.assertFalse(self.browser.find_elements_by_css_selector("input[type='radio'][value='gain']")[0].is_selected())
 
-        self.check_element_content("label[for=id_change_rate]","css","text","Rate of Change")
-        self.check_element_content("id_i_change_rate","id","placeholder","lb/wk")
 
-        self.check_element_content("id_calc_tdee","id","text","Calculate")
+        self.check_element_content("change-rate-input","id","text","Rate of Change","label")
+        self.check_element_content("change-rate-i","id","placeholder","lb/wk")
+
+        self.check_element_content("calc-tdee","id","text","Calculate")
 
         #Out of Joe wants to enter his info in metric so he selects the metric radio button
         #and notices that height fields turn into just one input field with "cm" placeholder, 
         #and the weight and rate of change fields have "kg" and "kg/wk" respectively.
 
-        self.browser.find_element_by_id("id_unit_type_1").click()
-        self.check_element_content("id_m_weight","id","placeholder","kg")
-        self.check_element_content("id_m_height","id","placeholder","cm")
-        self.check_element_content("id_m_change_rate","id","placeholder","kg/wk")
+        self.browser.find_element_by_css_selector("input[name='unit-type'][value='metric']").click()
+        self.check_element_content("input[name='weight-m']","css","placeholder","kg")
+        self.check_element_content("input[name='height-m']","css","placeholder","cm")
+        self.check_element_content("input[name='change-rate-m']","css","placeholder","kg/wk")
 
         #Joe suspects more content will be displayed after he hits Calculates, but as of now he only sees
         #the calc button at the bottom of the form
-        is_hidden_div = not self.browser.find_element_by_id("id_choose_macros_form_container").is_displayed()
+        is_hidden_div = not self.browser.find_element_by_id("choose-macros-form-container").is_displayed()
         self.assertTrue(is_hidden_div)
         isnt_hidden_div = not self.browser.find_element_by_id("id_fat_g").is_displayed()
         self.assertTrue(isnt_hidden_div)
