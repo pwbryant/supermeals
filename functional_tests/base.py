@@ -20,9 +20,9 @@ class FunctionalTest(StaticLiveServerTestCase):
 	def tearDown(self):
 		self.browser.quit()
 	
-	def fill_input(self,element_ids,values,clear=None):
-		for i in range(len(element_ids)):
-			element = self.browser.find_element_by_id(element_ids[i])
+	def fill_input(self,element_selectors,values,clear=None):
+		for i in range(len(element_selectors)):
+			element = self.browser.find_element_by_css_selector(element_selectors[i])
 			
 			if clear:
 				element.clear()
@@ -40,7 +40,7 @@ class FunctionalTest(StaticLiveServerTestCase):
 			if username == "guest":
 				login_button_id = "guest"
 			else:
-				self.fill_input(["username","password"],[username,password])
+				self.fill_input(["input[name='username'","input[name='password']"],[username,password])
 				login_button_id = "login"
 		else:
 			login_button_id = "login"

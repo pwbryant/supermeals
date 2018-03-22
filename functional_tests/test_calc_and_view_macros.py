@@ -30,8 +30,8 @@ class CalcAndViewMacros(FunctionalTest):
 
 
         self.check_element_content("traits","id","text","Physical Traits","div")
-        self.assertFalse(self.browser.find_element_by_css_selector("input[name='gender'][value='m']").is_selected())
-        self.assertFalse(self.browser.find_element_by_css_selector("input[name='gender'][value='f']").is_selected())
+        self.assertFalse(self.browser.find_element_by_css_selector("input[name='gender'][value='male']").is_selected())
+        self.assertFalse(self.browser.find_element_by_css_selector("input[name='gender'][value='female']").is_selected())
         self.check_element_content("age-input","id","text","Age:","label")
         self.check_element_content("age-input","id","placeholder","Age","input")
         self.check_element_content("weight-input","id","text","Weight:","label")
@@ -72,20 +72,20 @@ class CalcAndViewMacros(FunctionalTest):
 
         #Joe suspects more content will be displayed after he hits Calculates, but as of now he only sees
         #the calc button at the bottom of the form
-        is_hidden_div = not self.browser.find_element_by_id("choose-macros-form-container").is_displayed()
-        self.assertTrue(is_hidden_div)
-        isnt_hidden_div = not self.browser.find_element_by_id("id_fat_g").is_displayed()
-        self.assertTrue(isnt_hidden_div)
+        macros_form = self.browser.find_element_by_id("choose-macros-form-container")
+        self.assertTrue(macros_form.location['x'] < -9000 and macros_form.location['y'] < -9000) 
 
         #Joe changes back to imperial units and enters his info, and hits "Calculate", but too late he realized he had
         #female selected. Below the form, he sees his daily caloric expediture
-        self.browser.find_element_by_id("id_unit_type_0").click()
-        macro_form_ids = ["id_unit_type_0","id_gender_2","id_age","id_i_weight","id_i_height_0","id_i_height_1","id_activity_1","id_direction_0","id_i_change_rate"]
+        self.browser.find_element_by_css_selector("input[value='imperial']").click()
+        macro_form_selectors = ["input[value='imperial']","input[value='female']","input[name='age']","input[name='weight-i']",
+            "input[name='height-i-ft']","input[name='height-i-in']","input[value='none']","input[value='lose']",
+            "input[name='change-rate-i']"]
         macro_form_values = [None,None,"34","210","5","10",None,None,"1"]
-        self.fill_input(macro_form_ids,macro_form_values)	
-        self.browser.find_element_by_id("id_calc_tdee").click()
-        self.check_element_content("id_tdee_result","id","text","2383")
-        self.check_element_content("id_change_tdee_result","id","text","1883")
+        self.fill_input(macro_form_selectors,macro_form_values)	
+        self.browser.find_element_by_id("calc-tdee").click()
+        self.check_element_content("tdee-result","id","text","Maintenance: 2079 Cals")
+        self.check_element_content("change-tdee-result","id","text","Change: 1579 Cals")
 
         #After calculating TDEE, and area for choosing macro percent appers. With inputs for both
         #% and g for each macro, with % Remaing Footer, and a "Continue" button which is greyed out.

@@ -134,9 +134,10 @@ var calc_tdee = function() {
 					tdee_data["height"] = tdee_data["height-m"];
 					tdee_data["change-rate"] = convert_between_metric_english(tdee_data["change-rate-m"],"kg-to-lb") * weight_change_direction * 500;
 				}
+                console.log(tdee_data);
 				var formula_data = {
-					"f":-161,
-					"m":5,
+					"female":-161,
+					"male":5,
 					"weight":10 * tdee_data["weight"],
 					"height":6.25 * tdee_data["height"],
 					"age":5 * tdee_data["age"]
