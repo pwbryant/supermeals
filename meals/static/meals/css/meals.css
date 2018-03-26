@@ -7,7 +7,7 @@
  * 
  * Rules for tags and non-positional classes
  * are found here.
- *
+*/
 /****************************************************/
 html, body {
     /* Display & Box Model */
@@ -18,18 +18,21 @@ html, body {
     font-family: "Philosopher"; 
 }
 
-.hide {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
-}
-
-.input__input--sm {
+.input__input {
     /* Display & Box Model */
     border-radius: 10px;
     height: 30px;
     padding-left: 5px;
-    width: 70px;
+}
+
+.input__input--sm {
+    /* Display & Box Model */
+    width: 75px;
+}
+
+.input__input--md {
+    /* Display & Box Model */
+    width: 110px;
 }
 
 .input__label {
@@ -63,13 +66,20 @@ html, body {
 }
 
 .text--primary {
+    /* Style */
     font-size:25px;
     color: #f9e34b;
 }
 
 .text--highlight {
+    /* Style */
     font-size:35px;
     color: red;
+}
+
+.text--label {
+    color: #f9e34b;
+    font-size: 20px;
 }
 
 /****************************************************/
@@ -159,16 +169,18 @@ html, body {
  *
 /****************************************************/
 #choose-macros-form {
+    /* Display & Box Model */
     width: 30%;
     height: 30%;
 }
 
-
 #choose-macros-form .table-like__cell {
+    /* Display & Box Model */
     width: 20%;
 }
 
 .table-like__cell--header {
+    /* Display & Box Model */
     text-align: center;
 }
 /****************************************************/
@@ -180,9 +192,9 @@ html, body {
 /****************************************************/
 /* Layout */
 .l-tdee {
+    /* Display & Box Model */
     display: grid;
     grid-template-rows: auto;
-    /* grid-template-rows: repeat(9,1fr); */
     grid-template-columns: repeat(9,1fr);
     grid-template-areas: 
     "h h h h h h h h h" 
@@ -197,38 +209,53 @@ html, body {
 }
 
 .l-tdee--top {
+    /* Display & Box Model */
     grid-area: h;
 }
 
 .l-tdee--side {
+    /* Display & Box Model */
     grid-area: s;
 }
 
 .l-tdee--mid-top {
+    /* Display & Box Model */
     grid-area: mt;
 }
 
 .l-tdee--mid-bottom {
+    /* Display & Box Model */
     grid-area: ml;
 }
 
 .l-tdee--footer {
+    /* Display & Box Model */
     grid-area: f;
 }
 
-.l-flex--col {
+.l-flex--col-start {
+    /* Display & Box Model */
+    display: flex;
+    justify-content: start;
+    flex-direction: column;
+}
+
+.l-flex--col-btw {
+    /* Display & Box Model */
     display: flex;
     justify-content: space-between;
     flex-direction: column;
 }
 
 .l-flex--row-btw {
+    /* Display & Box Model */
     display: flex;
     justify-content: space-between;
     flex-direction: row;
 }
 
 .l-flex--row-left {
+    /* Display & Box Model */
     display: flex;
     justify-content: start;
     flex-direction: row;
@@ -236,7 +263,7 @@ html, body {
 
 /* Modifiers */
 .hide {
-    position: absolute !important;
-    top: -9999px !important;
-    left: -9999px !important;
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
 }

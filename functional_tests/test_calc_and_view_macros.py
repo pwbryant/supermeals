@@ -89,64 +89,66 @@ class CalcAndViewMacros(FunctionalTest):
 
         #After calculating TDEE, and area for choosing macro percent appers. With inputs for both
         #% and g for each macro, with % Remaing Footer, and a "Continue" button which is greyed out.
+        #macros_form = self.browser.find_element_by_id("choose-macros-form-container")
+        self.assertTrue(macros_form.location['x'] > 0 and macros_form.location['y'] > 0) 
 
-        isnt_hidden_div = self.browser.find_element_by_id("id_choose_macros_form_container").is_displayed()
-        self.assertTrue(isnt_hidden_div)
-        self.check_element_content("id_protein_percent","id","placeholder","%")
-        self.check_element_content("id_protein_g","id","placeholder","g")
-        self.check_element_content("id_fat_percent","id","placeholder","%")
-        self.check_element_content("id_fat_g","id","placeholder","g")
-        self.check_element_content("id_carbs_percent","id","placeholder","%")
-        self.check_element_content("id_carbs_g","id","placeholder","g")
-        macro_row_headers = self.browser.find_elements_by_class_name("choose_macro_titles")
-        self.assertEqual(macro_row_headers[0].text,"%")
-        self.assertEqual(macro_row_headers[1].text,"g")
-        self.assertEqual(macro_row_headers[2].text,"Protein")
-        self.assertEqual(macro_row_headers[3].text,"Fat")
-        self.assertEqual(macro_row_headers[4].text,"Carbs")
-        self.assertEqual(macro_row_headers[5].text,"% Remaining")
-        continue_button = self.browser.find_element_by_id("id_choose_macros_continue_button")
+        self.check_element_content("input[name='fat-pct']","css","placeholder","%")
+        self.check_element_content("input[name='fat-g']","css","placeholder","g")
+        self.check_element_content("input[name='carbs-pct']","css","placeholder","%")
+        self.check_element_content("input[name='carbs-g']","css","placeholder","g")
+        self.check_element_content("input[name='protein-pct']","css","placeholder","%")
+        self.check_element_content("input[name='protein-g']","css","placeholder","g")
+        choose_macro_form = self.browser.find_element_by_id("choose-macros-form")
+        macro_row_headers = choose_macro_form.find_elements_by_css_selector("span")
+        self.assertEqual(macro_row_headers[1].text,"%")
+        self.assertEqual(macro_row_headers[2].text,"g")
+        macro_row_labels = choose_macro_form.find_elements_by_css_selector("label")
+        self.assertEqual(macro_row_labels[0].text,"Fat")
+        self.assertEqual(macro_row_labels[1].text,"Carbs")
+        self.assertEqual(macro_row_labels[2].text,"Protein")
+        self.assertEqual(macro_row_labels[3].text,"% Left")
+        continue_button = self.browser.find_element_by_id("choose-macros-continue-button")
         self.assertFalse(continue_button.is_enabled())
 
         #Joe switches to Male and hits Calculate again and sees his new TDEE
-        self.fill_input(["id_gender_1"],[None])	
-        self.browser.find_element_by_id("id_calc_tdee").click()
-        self.check_element_content("id_tdee_result","id","text","2611")
-        self.check_element_content("id_change_tdee_result","id","text","2111")
+        self.fill_input(["input[value='male']"],[None])	
+        self.browser.find_element_by_id("calc-tdee").click()
+        self.check_element_content("tdee-result","id","text","Maintenance: 2279 Cals")
+        self.check_element_content("change-tdee-result","id","text","Change: 1779 Cals")
 
         #Joe comes wants to see what happens when he selcts the maintain button so he clicks it
         #and sees that the change input box disappears
-        self.fill_input(["id_direction_1"],[None])	
-        is_hidden_div = not self.browser.find_element_by_id("id_change_rate_div").is_displayed()
-        self.assertTrue(is_hidden_div)
+        self.fill_input(["input[value='maintain']"],[None])	
+        change_rate_input = self.browser.find_element_by_id("change-rate-input")
+        self.assertTrue(change_rate_input.location['x'] < -9000 and change_rate_input.location['y'] < -9000) 
 
         #He decides to choose the %50 carb, %30 fat, and %20 protein and notices that
         #after typeing in his percents, the inputs in the "g" column automatically get filled in
         #and the % remaing is updated
-        macro_form_ids = ["id_protein_percent","id_fat_percent","id_carbs_percent"]
-        macro_form_values = ["20","30","50"]
-        self.fill_input(macro_form_ids,macro_form_values)	
-        self.check_element_content("id_protein_g","id","value","106")
-        self.check_element_content("id_macro_percent_total","id","text","0")
+        macro_form_selectors = ["input[name='fat-pct']","input[name='carbs-pct']","input[name='protein-pct']"]
+        macro_form_values = ["30","50","20"]
+        self.fill_input(macro_form_selectors,macro_form_values)	
+        self.check_element_content("input[name='protein-g']","css","value","89")
+        self.check_element_content("choose-macros-total","id","text","0")
 
         #When the % Remaining equals 0, The Continue button becomes ungreyed and so Joe clicks it, and 
         #another section becomes visible which contains a header reading about optionlly breaking up
         #the daily calories, and an input ask prompting the user to enter how many meals/snacks 
         #per day?" And a "Set Calories" button which is disabled. 
-        continue_button = self.browser.find_element_by_id("id_choose_macros_continue_button")
+        continue_button = self.browser.find_element_by_id("choose-macros-continue-button")
         self.assertTrue(continue_button.is_enabled())
         continue_button.click()
-        self.check_element_content("id_meal_template_header","id","text","Break Up Your Daily Calories Into Meals/Snacks")
-        self.check_element_content("label[for=id_meal_template_meals_number]","css","text","Number of meals/snacks per day?")
-        self.check_element_content("id_meal_template_meals_number","id","placeholder","# meals/snacks")
+        self.check_element_content("#meal-template-meals-number-form-container .content-box__header","css","text","Break Up Your Daily Calories Into Meals/Snacks")
+        self.check_element_content("#meal-template-meals-number-form-container .input__label","css","text","Number of meals/snacks per day?")
+        self.check_element_content("input[name='meal-number']","css","placeholder","# meals/snacks")
 
-        set_cals_button = self.browser.find_element_by_id("id_meal_template_set_cals_continue_button")
+        set_cals_button = self.browser.find_element_by_id("meal-template-set-cals-continue-button")
         self.assertEqual(set_cals_button.text,"Continue")
         self.assertFalse(set_cals_button.is_enabled())
         #Joe enters 5, and clicks the Set Calories which becomes enabled once the the input is entered.
         #Another section appears where there are 5 inputs labeled meal/snack 1 - 5
         #with the inputs autofilled into five equal caloric chunks of 387.
-        self.fill_input(["id_meal_template_meals_number"],["5"])	
+        self.fill_input(["input[name='meal-number']"],["5"])	
         self.assertTrue(set_cals_button.is_enabled())
 
         empty_div = self.browser.find_element_by_id("id_meal_template_set_meal_cals_form_container").text

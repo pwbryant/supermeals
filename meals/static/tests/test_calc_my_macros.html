@@ -9,29 +9,29 @@
 	<script>
 		//helper functions
 		var fill_activity_direction_rate = function(act_,dir_,rate,rate_unit) {
-            console.log("fill",act_,dir_,rate,rate_unit);
 			$("input[name='activity']").val(act_);
 			$("input[value='" + dir_ + "']").prop("checked",true);
 			$("input[name='change-rate-" + rate_unit + "']").val(rate);
 		}
 
-		var set_up_choose_macros_test = function(input_,value,result_id,result_value) {
-			$("#choose-macros-form-container").css("display","block");
-			$("#" + input_).val(value);
+		var set_up_choose_macros_test = function(input_selector,value,result_id,result_value) {
+			$("#choose-macros-form-container").removeClass("hide");
+			$(input_selector).val(value);
 			$("#" + result_id).html(result_value);
-			$("#" + input_).trigger("keyup");
+			$(input_selector).trigger("keyup");
 		}
 		
 		var setup_set_cals_form = function() {
 			display_set_cals_form();
 			$("#change-tdee-result").html("1935");
-			$("#id_meal_template_meals_number").val("5");
-			$("#id_meal_template_set_cals_continue_button").trigger("click");
+			$("input[name='meal-number']").val("5");
+			$("#meal-template-set-cals-continue-button").trigger("click");
 		}
 	</script>
 	<script src="https://code.jquery.com/qunit/qunit-2.4.1.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="../meals/js/calc_my_macros.js"></script>
+	<link href="../meals/css/meals.css" type="stylesheet">
 </head>
 <body>
 	<div id="qunit"></div>
@@ -64,11 +64,11 @@
             <div id="gender-input" class="radio l-flex--row-left">
                 <div class="radio-input">
                     <label class="radio-input__label">Male</label>
-                    <input class="radio-input__input" type="radio" name="gender" value="m" checked/>
+                    <input class="radio-input__input" type="radio" name="gender" value="male" checked/>
                 </div>
                 <div class="radio-input">
                     <label class="radio-input__label">Female</label>
-                    <input class="radio-input__input" type="radio" name="gender" value="f"/>
+                    <input class="radio-input__input" type="radio" name="gender" value="female"/>
                 </div>
             </div>
             <div id="age-input" class="input l-flex--col">
@@ -108,9 +108,9 @@
                     <input class="radio-input__input" type="radio" name="direction" value="gain"/>
                 </div>
             </div>
-            <div id="change-rate" class="input">
+            <div id="change-rate-input" class="input">
                 <label class="input__label">Rate of Change</label>
-                <input class="input__input--sm" type="text" name="change-rate-i" value="1" data-type="number" placeholder="lb/wk"/>
+                <input id="change-rate-i" class="input__input--sm" type="text" name="change-rate-i" data-type="number" value="1"/>
             </div>
 			<button id="calc-tdee">Calculate</button>
         </div>
@@ -118,27 +118,49 @@
 		<div id="change-tdee-result"></div>
         
 		<!--choose macros -->
-		<!--
-        <div id="choose-macros-form-container" style="display:none;">
-		<label for="protein-percent">Protein</label><input id="protein-percent" class="choose-macros" type="text" placeholder="%" data-value="0" data-type="number" />
-		<input id="protein-g" class="choose-macros" type="text" placeholder="g" data-type="number"/>
-		<label for="fat-percent">Fat</label><input id="fat-percent" class="choose-macros" type="text" placeholder="%" data-value="0" data-type="number"/>
-		<input id="fat-g" class="choose-macros" type="text" placeholder="g" data-type="number"/>
-		<label for="carbs-percent">Carbs</label><input id="carbs-percent" class="choose-macros" type="text" placeholder="%" data-value="0" data-type="number"/>
-		<input id="carbs-g" class="choose-macros" type="text" placeholder="g" data-type="number"/>
-		<label for="macro-percent-total">Total</label></th><td><span id="macro-percent-total">100</span>
-
-		<button id="choose-macros-continue-button" disabled>Continue</button>
-		</div>
-	</div>
-        -->
-
+        <div id="choose-macros-form-container" class="content-box l-flex--col hide">
+            <div class="content-box__header">Choose Macro Ratios</div>
+            <div id="choose-macros-form">
+                <div class="l-flex--row-left">
+                    <span class="table-like__cell"></span><span class="text--primary table-like__cell table-like__cell--header">%</span><span class="text--primary table-like__cell table-like__cell--header">g</span>
+                </div>
+                <div id="choose-fat-inputs" class="input l-flex--row-left">
+                    <label class="input__label table-like__cell">Fat</label>
+                    <input class="input__input--sm table-like__cell" type="text" name="fat-pct" data-type="number" data-value="0" placeholder="%"/>
+                    <input class="input__input--sm table-like__cell" type="text" name="fat-g" data-type="number" data-value="0" placeholder="g"/>
+                </div>
+                <div id="choose-carbs-inputs" class="input l-flex--row-left">
+                    <label class="input__label table-like__cell">Carbs</label>
+                    <input class="input__input--sm table-like__cell" type="text" name="carbs-pct" data-type="number" data-value="0" placeholder="%"/>
+                    <input class="input__input--sm table-like__cell" type="text" name="carbs-g" data-type="number" data-value="0" placeholder="g"/>
+                </div>
+                <div id="choose-protein-inputs" class="input l-flex--row-left">
+                    <label class="input__label table-like__cell">Protein</label>
+                    <input class="input__input--sm table-like__cell" type="text" name="protein-pct" data-type="number" data-value="0" placeholder="%"/>
+                    <input class="input__input--sm table-like__cell" type="text" name="protein-g" data-type="number" data-value="0" placeholder="g"/>
+                </div>
+                <div id="choose-macros-totals-container" class="l-flex--row-left">
+                    <label class="input__label table-like__cell">% Left</label>
+                    <span id="choose-macros-totals-wrapper" class="table-like__cell">
+                        <span id="choose-macros-total" class="text--label">100</span><span class="text--label">%</span>
+                    </span>
+                </div>
+                <button id="choose-macros-continue-button" disabled>Continue</button>
+            </div>
+        </div> 
 	<!--calc macros - Continue button reveals meal/snack number input -->
 	<button id="choose-macros-continue-button" class="btn">Continue</button>
-	<div id="meal-template-meals-number-form-container" style="display:none">
-		<input id="meal-template-meals-number" type="text" data-type="number">
-		<button id="meal-template-set-cals-continue-button" class="btn" disabled>Continue</button>
-	</div>
+
+    <div id="meal-template-meals-number-form-container" class="content-box l-flex--col-btw">
+        <div class="content-box__header">Break Up Your Daily Calories Into Meals/Snacks</div>
+        <div id="meal-number-input" class="input l-flex--col-start">
+            <label class="input__label">Number of meals/snacks per day?</label>
+            <input class="input__input input__input--md" type="text" name="meal-number" placeholder="# meals/snacks" data-type="number"/>
+        </div>
+        <div class="l-flex--row-left">
+            <button id="meal-template-set-cals-continue-button" disabled>Continue</button>
+        </div>
+    </div>
 	<!--calc macros - set cals for daily meals-->
 	<div id="meal-template-set-meal-cals-form-container"></div>
 
@@ -184,7 +206,7 @@
 			assert.equal($("#id_meal_template_set_cals_total").css("color"), "rgb(0, 0, 0)");
 			
 		});
-		QUnit.test("If set cals total not equal to 0 the "Save Macros" button is disabled", function (assert) {
+		QUnit.test("If set cals total not equal to 0 the 'Save Macros' button is disabled", function (assert) {
 			setup_set_cals_form();
 			assert.equal($("#id_save_my_macros_button").prop("disabled"), false);
 			$("input[name=meal_0]").val("390");
@@ -193,7 +215,6 @@
 			$("input[name=meal_0]").val("387");
 			$("input[name=meal_0]").trigger("keyup");
 			assert.equal($("#id_save_my_macros_button").prop("disabled"), false);
-			
 		});
 		QUnit.test("Change of values in the set calorie inputs alters the calorie total in the last row of the set cals table", function (assert) {
 			setup_set_cals_form();
@@ -212,7 +233,7 @@
 			var equal_cals = $("input[name=meal_0]").val();
 			assert.equal(equal_cals,387);
 		});
-		QUnit.test("Click Set Calories button displays meal inputs that have "Meal 1" - n and Remaining Cals labels", function (assert) {
+		QUnit.test("Click Set Calories button displays meal inputs that have 'Meal 1' - n and Remaining Cals labels", function (assert) {
 			setup_set_cals_form();
 			var last_meal_label = $($("#id_meal_template_set_meal_cals_form_container label")[4]).html(),
 			remaining_cals_label = $($("#id_meal_template_set_meal_cals_form_container label")[5]).html();
@@ -224,101 +245,90 @@
 			var set_cals_table_input_num = $("#id_meal_template_set_meal_cals_form_container input").length;
 			assert.equal(set_cals_table_input_num,5);
 		});
+        */
 		//Set Calories button becomes enabled when meal number input is filled
 		QUnit.test("Continue button becomes enabled upon number input and disabled with str input", function (assert) {
 			set_cals_continue_button_is_enabled_upon_input_keyup();
-			assert.equal($("#id_meal_template_set_cals_continue_button").is(":enabled"), false);
-			$("#id_meal_template_meals_number").val("5");
-			$("#id_meal_template_meals_number").trigger("keyup");
-			assert.equal($("#id_meal_template_set_cals_continue_button").is(":enabled"), true);
-
-			$("#id_meal_template_meals_number").val("cat");
-			$("#id_meal_template_meals_number").trigger("keyup");
+			assert.equal($("#meal-template-set-cals-continue-button").is(":enabled"), false);
+			$("input[name='meal-number']").val("5");
+			$("input[name='meal-number']").trigger("keyup");
+			assert.equal($("#meal-template-set-cals-continue-button").is(":enabled"), true);
+            
+			$("input[name='meal-number']").val("cat");
+			$("input[name='meal-number']").trigger("keyup");
 			assert.equal($("#id_set_cals_continue_button").is(":enabled"), false);
 		});
-		
+
 		//Continue button reveals the meal/snacks input div
 		QUnit.test("continue button displays macro meals number div", function (assert) {
 			continue_button_displays_meal_snack_num_div();
 			choose_macro_handler();
-			set_up_choose_macros_test("id_protein_percent","50","change-tdee-result","1935");
-			set_up_choose_macros_test("id_fat_percent","20","change-tdee-result","1935");
-			set_up_choose_macros_test("id_carbs_percent","30","change-tdee-result","1935");
+			set_up_choose_macros_test("input[name='protein-pct']","50","change-tdee-result","1935");
+			set_up_choose_macros_test("input[name='fat-pct']","20","change-tdee-result","1935");
+			set_up_choose_macros_test("input[name='carbs-pct']","30","change-tdee-result","1935");
 			assert.equal($("#id_meal_template_meals_number_form_container").is(":visible"), false);
-			$("#id_choose_macros_continue_button").trigger("click");
+			$("#choose-macros-continue-button").trigger("click");
 			assert.equal($("#id_meal_template_meals_number_form_container").is(":visible"), true);
 		});
-
 		//choose macros
 		QUnit.test("macro_percent_totaler tallys the macro percent total correctly", function (assert) {
 			choose_macro_handler();
-			set_up_choose_macros_test("id_protein_percent","50","change-tdee-result","1935");
-			set_up_choose_macros_test("id_fat_percent","20","change-tdee-result","1935");
-			set_up_choose_macros_test("id_fat_percent","11","change-tdee-result","1935");
-			percent_total = $("#id_macro_percent_total").html();
-			assert.equal(percent_total,"39");
+			set_up_choose_macros_test("input[name='protein-pct']","50","change-tdee-result","1935");
+			set_up_choose_macros_test("input[name='fat-pct']","20","change-tdee-result","1935");
+			set_up_choose_macros_test("input[name='carbs-pct']","11","change-tdee-result","1935");
+			percent_total = $("#choose-macros-total").html();
+			assert.equal(percent_total,"19");
 		});
-		QUnit.test("macro_percent_totaler doesn"t break upon delete", function (assert) {
+		QUnit.test("macro_percent_totaler doesn't break upon delete", function (assert) {
 			choose_macro_handler();
-			set_up_choose_macros_test("id_protein_percent","50","change-tdee-result","1935");
-			set_up_choose_macros_test("id_protein_percent","","change-tdee-result","1935");
-			percent_total = $("#id_macro_percent_total").html();
+			set_up_choose_macros_test("input[name='protein-pct']","50","change-tdee-result","1935");
+			set_up_choose_macros_test("input[name='protein-pct']","","change-tdee-result","1935");
+			percent_total = $("#choose-macros-total").html();
 			assert.equal(percent_total,"100");
 		});
 		QUnit.test("choose_percent_totaler enables Continu button if total = 0,disables if not", function (assert) {
 			choose_macro_handler();
-			set_up_choose_macros_test("id_protein_percent","50","change-tdee-result","1935");
-			set_up_choose_macros_test("id_fat_percent","25","change-tdee-result","1935");
-			set_up_choose_macros_test("id_carbs_percent","25","change-tdee-result","1935");
-			assert.equal($("#id_choose_macros_continue_button").prop("disabled"),false);
-			set_up_choose_macros_test("id_carbs_percent","20","change-tdee-result","1935");
-			assert.equal($("#id_choose_macros_continue_button").prop("disabled"),true);
+			set_up_choose_macros_test("input[name='protein-pct']","50","change-tdee-result","1935");
+			set_up_choose_macros_test("input[name='fat-pct']","25","change-tdee-result","1935");
+			set_up_choose_macros_test("input[name='carbs-pct']","25","change-tdee-result","1935");
+			assert.equal($("#choose-macros-continue-button").prop("disabled"),false);
+			set_up_choose_macros_test("input[name='carbs-pct']","20","change-tdee-result","1935");
+			assert.equal($("#choose-macros-continue-button").prop("disabled"),true);
 		});
 		
 		QUnit.test("keystroke in protein percentage creates grams in protein g", function (assert) {
 			choose_macro_handler();
-			set_up_choose_macros_test("id_protein_percent","50","change-tdee-result","1935");
-			protein_grams = parseFloat($("#id_protein_g").val());
+			set_up_choose_macros_test("input[name='protein-pct']","50","change-tdee-result","1935");
+			protein_grams = parseFloat($("input[name='protein-g']").val());
 			assert.equal(protein_grams.toFixed(0),242);
 		});
 		QUnit.test("keystroke in protein grams creates % in protein %", function (assert) {
 			choose_macro_handler();
-			set_up_choose_macros_test("id_protein_g","241.875","change-tdee-result","1935");
-			protein_grams = parseFloat($("#id_protein_percent").val());
+			set_up_choose_macros_test("input[name='protein-g']","241.875","change-tdee-result","1935");
+			protein_grams = parseFloat($("input[name='protein-pct']").val());
 			assert.equal(protein_grams.toFixed(0),50);
 		});
 		QUnit.test("choose_macro_handler can handle deletes", function (assert) {
 			choose_macro_handler();
-			set_up_choose_macros_test("id_protein_percent","50","change-tdee-result","1935");
-			set_up_choose_macros_test("id_protein_percent","","change-tdee-result","1935");
-			protein_grams = $("#id_protein_g").val();
+			set_up_choose_macros_test("input[name='protein-pct']","50","change-tdee-result","1935");
+			set_up_choose_macros_test("input[name='protein-pct']","","change-tdee-result","1935");
+			protein_grams = $("input[name='protein-g']").val();
 			assert.equal(protein_grams,"");
-			set_up_choose_macros_test("id_protein_g","50","change-tdee-result","1935");
-			set_up_choose_macros_test("id_protein_g","","change-tdee-result","1935");
-			protein_percent = $("#id_protein_percent").val();
+			set_up_choose_macros_test("input[name='protein-g']","50","change-tdee-result","1935");
+			set_up_choose_macros_test("input[name='protein-g']","","change-tdee-result","1935");
+			protein_percent = $("input[name='protein-pct']").val();
 			assert.equal(protein_percent,"");
 		});
 		//error removal tests
 		QUnit.test("errors should be hidden on keypress", function (assert) {
 			key_press_hides_error();
-			$("input[type="text"]").trigger("keypress");
+			$("input[type='text']").trigger("keypress");
 			assert.equal($(".has-error").is(":visible"), false);
 		});
 
-		QUnit.test("errors aren"t hidden if no keypress", function (assert) {
+		QUnit.test("errors aren't hidden if no keypress", function (assert) {
 			key_press_hides_error();
 			assert.equal($(".has-error").is(":visible"), true);
-		});
-		//header removal tests	
-		QUnit.test("home header hidden on tab select", function (assert) {
-			hide_home_header_on_tab_select();
-			$("#id_tab1_label").trigger("click");
-			assert.equal($("#id_home_headline").is(":visible"), false);
-		});
-		
-		QUnit.test("home header not hidden if tab not selected", function (assert) {
-			hide_home_header_on_tab_select();
-			assert.equal($("#id_home_headline").is(":visible"), true);
 		});
 		//imperial to metric switch
 		QUnit.test("imperial metric switch", function(assert) {
@@ -341,47 +351,44 @@
 			assert.equal(lb_kg.toFixed(5),0.90718);
 			assert.equal(kg_lb.toFixed(1),2);
 		});
-        */
 		//tdee stuff
 		QUnit.test("calculate tdee displays choose-macros-form-container", function(assert) {
-		
 			calc_tdee();
-			assert.equal($("#choose-macros-form-container").css("display"),"none")
+            assert.equal($("#choose-macros-form-container").hasClass("hide"),true)
 			$("#calc-tdee").trigger("click");
-			assert.equal($("#choose-macros-form-container").css("display"),"block")
+            assert.equal($("#choose-macros-form-container").hasClass("hide"),false)
 		});
 		//hide change rate
 		QUnit.test("selection of maintaince makes the rate change input disappear", function(assert) {
 			change_change_rate_display();	
-			$("input[name=i_change_rate]").val("3");
-			assert.equal($("#id_change_rate_div").css("display"),"block")
+			$("input[name=change-rate-i]").val("3");
+			assert.equal($("#change-rate-input").hasClass("hide"),false)
 
-			$("#id_direction_1").trigger("click");
-			assert.equal($("#id_change_rate_div").css("display"),"none")
-			assert.equal($("input[name=i_change_rate").val(),"")
+			$("input[value='maintain']").trigger("click");
+			assert.equal($("#change-rate-input").hasClass("hide"),true)
+			assert.equal($("input[name=change-rate-i").val(),"0")
 		});
 		//show change rate
 		QUnit.test("selection of lose or gain makes the rate change input appear", function(assert) {
 			change_change_rate_display();	
-			$("#id_change_rate_div").css("display","none");
-			$("#id_direction_0").trigger("click");
-			assert.equal($("#id_change_rate_div").css("display"),"block")
+			$("#change-rate-input").addClass("hide");
+			$("input[value='lose']").trigger("click");
+			assert.equal($("#change-rate-input").hasClass("hide"),false);
 		});
 		QUnit.test("selection of lose or gain if change_rate not hidden then nothing", function(assert) {
 			change_change_rate_display();	
-			$("#id_direction_0").trigger("click");
-			assert.equal($("#id_change_rate_div").css("display"),"block")
+			$("input[value='lose']").trigger("click");
+			assert.equal($("#change-rate-input").css("display"),"block")
 			$("#id_direction_2").trigger("click");
-			assert.equal($("#id_change_rate_div").css("display"),"block")
+			assert.equal($("#change-rate-input").css("display"),"block")
 		});
-        /* 
 		//calc tdees
 		QUnit.test("calculate tdee male at none activity lose 1lb/wk", function(assert) {
 			calc_tdee();
 			fill_activity_direction_rate("none","lose","1","i");
 			$("#calc-tdee").trigger("click");
-			var result1 = $("#tdee-result").html(),
-			result2 = $("#change-tdee-result").html();
+			var result1 = $("#tdee-result").html().split(" ")[1],
+			result2 = $("#change-tdee-result").html().split(" ")[1];
 			assert.equal(parseFloat(result1).toFixed(0),2273);
 			assert.equal(parseFloat(result2).toFixed(0),1773);
 		});
@@ -393,8 +400,8 @@
 			$("input[name='change-rate-i']").attr("id","id_tmp").attr("name","change-rate-m");
 			fill_activity_direction_rate("none","lose",convert_between_metric_english(1,"lb-to-kg"),"m");
 			$("#calc-tdee").trigger("click");
-			var result1 = $("#tdee-result").html(),
-			result2 = $("#change-tdee-result").html();
+			var result1 = $("#tdee-result").html().split(" ")[1],
+			result2 = $("#change-tdee-result").html().split(" ")[1];
             
 			assert.equal(parseFloat(result1).toFixed(0),2273);
 			assert.equal(parseFloat(result2).toFixed(0),1773);
@@ -404,7 +411,7 @@
 			calc_tdee();
 			fill_activity_direction_rate("none","lose","2","i");
 			$("#calc-tdee").trigger("click");
-			var result = $("#change-tdee-result").html();
+			var result = $("#change-tdee-result").html().split(" ")[1];
 			assert.equal(parseFloat(result).toFixed(5),1273);
 		});
 		QUnit.test("calculate tdee male at none activity gain 1.5/wk", function(assert) {
@@ -413,7 +420,7 @@
 			fill_activity_direction_rate("none","gain","1.5","i");
 			$("input[name='direction']").val("gain")
 			$("#calc-tdee").trigger("click");
-			var result = $("#change-tdee-result").html();
+			var result = $("#change-tdee-result").html().split(" ")[1];
 			assert.equal(parseFloat(result).toFixed(5),3023);
 		});
 		QUnit.test("calculate tdee male at none activity maintain weight", function(assert) {
@@ -422,25 +429,25 @@
 			fill_activity_direction_rate("none","maintain","0","i");
 			$("input[name=direction]").val("maintain")
 			$("#calc-tdee").trigger("click");
-			var result = $("#tdee-result").html();
+			var result = $("#tdee-result").html().split(" ")[1];
 			assert.equal(parseFloat(result).toFixed(5),2273);
 		});
 		QUnit.test("calculate tdee female at none activity maintain weight", function(assert) {
 		
 			calc_tdee();
 			fill_activity_direction_rate("none","maintain","0","i");
-			$("input[name=gender]").val("f")
+			$("input[name=gender]").val("female")
 			$("#calc-tdee").trigger("click");
-			var result1 = $("#tdee-result").html(),
-			result2 = $("#change-tdee-result").html();
-			assert.equal(parseFloat(result1).toFixed(5),1728);
+			var result1 = $("#tdee-result").html().split(" ")[1],
+			result2 = $("#change-tdee-result").html().split(" ")[1];
+			assert.equal(parseFloat(result1).toFixed(5),2073);
 
 		});
 		QUnit.test("calculate tdee male at light activity maintain weight", function(assert) {
 			calc_tdee();
 			fill_activity_direction_rate("light","maintain","0","i");
 			$("#calc-tdee").trigger("click");
-			var result = $("#tdee-result").html();
+			var result = $("#tdee-result").html().split(" ")[1];
 			assert.equal(parseFloat(result).toFixed(5),2604);
 		});
 		QUnit.test("calculate tdee male at medium activity maintain weight", function(assert) {
@@ -448,7 +455,7 @@
 		
 			fill_activity_direction_rate("medium","maintain","0","i");
 			$("#calc-tdee").trigger("click");
-			var result = $("#tdee-result").html();
+			var result = $("#tdee-result").html().split(" ")[1];
 			assert.equal(parseFloat(result).toFixed(5),2935);
 		});
 		QUnit.test("calculate tdee male at high activity maintain weight", function(assert) {
@@ -456,7 +463,7 @@
 			calc_tdee();
 			fill_activity_direction_rate("high","maintain","0","i");
 			$("#calc-tdee").trigger("click");
-			var result = $("#tdee-result").html();
+			var result = $("#tdee-result").html().split(" ")[1];
 			assert.equal(parseFloat(result).toFixed(5),3267);
 		});
 		QUnit.test("calculate tdee male at very high activity maintain weight", function(assert) {
@@ -464,10 +471,9 @@
 			calc_tdee();
 			fill_activity_direction_rate("very high","maintain","0","i");
 			$("#calc-tdee").trigger("click");
-			var result = $("#tdee-result").html();
+			var result = $("#tdee-result").html().split(" ")[1];
 			assert.equal(parseFloat(result).toFixed(5),3598);
 		});
-        */
         
 	</script>
 </body>

@@ -77,7 +77,6 @@ var switch_between_imperial_metric = function() {
             height_input += "<input type='text' name='height-i-in' class='input__input--sm' placeholder='in' data-type='number' />";
             change_input += "<input type='text' name='change-rate-i' class='input__input--sm' placeholder='lb/wk' data-type='number' />";
 		}
-        console.log(change_input)
         $("#weight-input").html(weight_input);	
         $("#height-input").html(height_input);		
         $("#change-rate-input").html(change_input);
@@ -134,7 +133,6 @@ var calc_tdee = function() {
 					tdee_data["height"] = tdee_data["height-m"];
 					tdee_data["change-rate"] = convert_between_metric_english(tdee_data["change-rate-m"],"kg-to-lb") * weight_change_direction * 500;
 				}
-                console.log(tdee_data);
 				var formula_data = {
 					"female":-161,
 					"male":5,
@@ -162,7 +160,7 @@ var calc_tdee = function() {
             
 			$("#hidden-tdee").val(Math.round(change_tdee_return_value));
 			
-			$("#choose-macros-form-container").show();
+			$("#choose-macros-form-container").removeClass("hide");
 		}
 	});
 }
@@ -171,67 +169,71 @@ var calc_tdee = function() {
 var change_change_rate_display = function() {
 	$("input[name='direction']").on("click",function() {
 		if (this.value == "maintain") {
-			$("#id_change_rate_div").css("display","none");
-			$(".change_rate").val("");
+			$("#change-rate-input").addClass("hide");
+			$("#change-rate-i").val("0");
+			$("#change-rate-m").val("0");
 		} else {
-			$("#id_change_rate_div").css("display","block");
+			$("#change-rate-input").removeClass("hide");
+			$("#change-rate-i").val("");
+			$("#change-rate-m").val("");
 		}	
 	});
 }
 
 //tested
 var choose_macro_handler = function() {
-	$(".choose_macros").on("keyup",function() {	
-		if ($("#id_change_tdee_result") != "") {	
-			var tdee_result = $("#id_change_tdee_result").html();
+	$("#choose-macros-form input").on("keyup",function() {	
+		if ($("#change-tdee-result") != "") {	
+			var tdee_result = parseFloat($("#change-tdee-result").html().split(" ")[1]);
 		} else {
-			var tdee_result = $("#id_tdee_result").html();
+			var tdee_result = parseFloat($("#tdee-result").html().split(" ")[1]);
 		}
-		var input_array = this.id.split("_"),
+		var input_array = this.name.split("-"),
 		macro_value = parseFloat(this.value),
-		macro = input_array[1],
-		type = input_array[2],
+		macro = input_array[0],
+		type = input_array[1],
 		macro_factor = MACRO_FACTORS[macro];
-		if (type == "percent") {
+		if (type == "pct") {
 			return_value = (tdee_result * macro_value / 100.0 / macro_factor).toFixed(0);
-			var return_id = "#id_" + macro + "_g";
+			var return_selector = "input[name='" + macro + "-g']";
 		} else {
 			return_value = (macro_value * macro_factor / tdee_result * 100).toFixed(0);	
-			var return_id = "#id_" + macro + "_percent";
+			var return_selector = "input[name='" + macro + "-pct']";
 		}
 		if (isNaN(macro_value)) {
-			$(return_id).val("");
+			$(return_selector).val("");
 		} else {
-			$(return_id).val(return_value);
+			$(return_selector).val(return_value);
 		}
-		macro_percent_totaler("id_" + macro + "_percent")
+		macro_percent_totaler("input[name='" + macro + "-pct']")
+
 	});
 }
 
 //tested
-var macro_percent_totaler = function(percent_id) {
-	var new_macro_percent = parseFloat($("#" + percent_id).val());
+var macro_percent_totaler = function(percent_selector) {
+	var new_macro_percent = parseFloat($(percent_selector).val());
 
 	if (isNaN(new_macro_percent)) {
 		new_macro_percent = 0;
 
 	} 
-	old_macro_percent = parseFloat($("#" + percent_id).attr("data-value")),
+	old_macro_percent = parseFloat($(percent_selector).attr("data-value")),
 	percent_diff = new_macro_percent - old_macro_percent,
-	old_percent_total = parseFloat($("#id_macro_percent_total").html()),
+	old_percent_total = parseFloat($("#choose-macros-total").html()),
 	new_percent_total = old_percent_total - percent_diff;
-	$("#id_macro_percent_total").html(new_percent_total);
-	$("#" + percent_id).attr("data-value",new_macro_percent);
+	$("#choose-macros-total").html(new_percent_total);
+	$(percent_selector).attr("data-value",new_macro_percent);
 	if (new_percent_total == 0) {
-		$("#id_choose_macros_continue_button").prop("disabled",false);
+		$("#choose-macros-continue-button").prop("disabled",false);
 	} else {
-		$("#id_choose_macros_continue_button").prop("disabled",true);
+		$("#choose-macros-continue-button").prop("disabled",true);
 	}
 }
 
 //tested
 var continue_button_displays_meal_snack_num_div = function() {
-	$("#id_choose_macros_continue_button").on("click", function() {
+	$("#choose-macros-continue-button").on("click", function() {
 		var form_validated = form_validation("id_choose_macros_form_container");
 		if (form_validated) {
 			$("#id_meal_template_meals_number_form_container").show();
@@ -243,13 +245,13 @@ var continue_button_displays_meal_snack_num_div = function() {
 //tested
 var set_cals_continue_button_is_enabled_upon_input_keyup = function() {
 
-	$("#id_meal_template_meals_number").on("keyup",function() {
+	$("input[name='meal-number']").on("keyup",function() {
 		var input_value = $(this).val();
 		if (!(isNaN(input_value) | input_value == 0)) {
-			$("#id_meal_template_set_cals_continue_button").prop("disabled",false);
+			$("#meal-template-set-cals-continue-button").prop("disabled",false);
 		} else {
 
-			$("#id_meal_template_set_cals_continue_button").prop("disabled",true);
+			$("#meal-template-set-cals-continue-button").prop("disabled",true);
 		}
 	});
 }
@@ -258,10 +260,10 @@ var set_cals_continue_button_is_enabled_upon_input_keyup = function() {
 var display_set_cals_form = function() {
 
 	$("#id_meal_template_set_cals_continue_button").on("click",function() {
-		var tdee = $("#id_change_tdee_result").html(),
+		var tdee = $("#change-tdee-result").html(),
 		meal_num = $("#id_meal_template_meals_number").val();
 		if (tdee == "") {
-			tdee = $("#id_tdee_result").html();
+			tdee = $("#tdee-result").html();
 		}
 		var equal_cals = tdee / meal_num,
 		set_cals_form = "";
@@ -292,9 +294,9 @@ var meal_template_set_cals_totaler = function() {
 		cal_diff = new_cal - old_cal,
 		old_cal_total = parseFloat($("#id_meal_template_set_cals_total").html()),
 		new_cal_total = old_cal_total - cal_diff,
-		tdee = $("#id_change_tdee_result").html();
+		tdee = $("#change-tdee-result").html();
 		if (tdee === "") {
-			tdee = $("#id_tdee_result").html();
+			tdee = $("#tdee-result").html();
 		}
 		
 		$("#id_meal_template_set_cals_total").html(new_cal_total);
