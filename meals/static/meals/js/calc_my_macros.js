@@ -39,7 +39,7 @@ var get_meal_maker_page_content = function() {
 
 //not tested
 var save_my_macros_button_posts_form = function() {
-	$("#id_save_my_macros_button").on("click",function() {
+	$("#save-my_macros-button").on("click",function() {
 		var form_validated = form_validation("id_my_macros_form_container");
 		if (form_validated) {
 			var post_data = {};
@@ -236,7 +236,7 @@ var continue_button_displays_meal_snack_num_div = function() {
 	$("#choose-macros-continue-button").on("click", function() {
 		var form_validated = form_validation("id_choose_macros_form_container");
 		if (form_validated) {
-			$("#id_meal_template_meals_number_form_container").show();
+			$("#meal-template-meals-number-form-container").show();
 		}
 	});
 
@@ -259,21 +259,23 @@ var set_cals_continue_button_is_enabled_upon_input_keyup = function() {
 //tested
 var display_set_cals_form = function() {
 
-	$("#id_meal_template_set_cals_continue_button").on("click",function() {
-		var tdee = $("#change-tdee-result").html(),
-		meal_num = $("#id_meal_template_meals_number").val();
+	$("#meal-template-set-cals-continue-button").on("click",function() {
+		var tdee = parseFloat($("#change-tdee-result").html().split(" ")[1]),
+		meal_num = $("input[name='meal-number']").val();
 		if (tdee == "") {
 			tdee = $("#tdee-result").html();
 		}
 		var equal_cals = tdee / meal_num,
-		set_cals_form = "";
-
+		set_cals_form = "<div class='content-box l-flex-col--start'>";
+		set_cals_form += "<div class='content-box__header'>Set Your Meal Cals</div>";
 		for (i=0;i<meal_num;i++) {
-			set_cals_form += "<div id='id_meal_" + i + "_div'><label for='meal_" + i + "'>Meal " + (i + 1) + "</label><input name='meal_" + i + "' type='text' value='" + equal_cals + "' data-value='" + equal_cals + "' data-type='number'/></div><br>";
+			set_cals_form += "<div id='meal-" + i + "-input' class='input'>";
+			set_cals_form += "<label class='input__label'>Meal " + (i + 1) + "</label>";
+            set_cals_form += "<input class='input__input--sm' name='meal-" + i + "' type='text' value='" + equal_cals + "' data-value='" + equal_cals + "' data-type='number'/></div>";
 		}
-		set_cals_form += "<label for='remaining_cals'>Remaining Cals</label><span id='id_meal_template_set_cals_total' name='remaining_cals'>0</span>";
-		set_cals_form += "<br><button id='id_save_my_macros_button' class='btn'>Save Macro Info</button>";
-		$("#id_meal_template_set_meal_cals_form_container").html(set_cals_form)
+		set_cals_form += "<label class='input__label'>Remaining Cals</label><span id='meal-template-set-cals-total' name='remaining-cals'>0</span>";
+		set_cals_form += "<button id='save-my-macros-button'>Save Macro Info</button>";
+		$("#meal-template-set-meal-cals-form-container").html(set_cals_form)
 		save_my_macros_button_posts_form();
 		meal_template_set_cals_totaler();//start lister on new inputs 
 
@@ -283,8 +285,8 @@ var display_set_cals_form = function() {
 //tested
 var meal_template_set_cals_totaler = function() {
 
-	$("#id_meal_template_set_meal_cals_form_container input").on("keyup",function() {
-		current_cal_total = $("#id_meal_template_set_cals_total").html();
+	$("#meal-template-set-meal-cals-form-container input").on("keyup",function() {
+		current_cal_total = $("#meal-template-set-cals-total").html();
 		var new_cal = parseFloat($(this).val());
 		if (isNaN(new_cal)) {
 			new_cal = 0;
@@ -292,21 +294,21 @@ var meal_template_set_cals_totaler = function() {
 		} 
 		var old_cal = parseFloat($(this).attr("data-value")),
 		cal_diff = new_cal - old_cal,
-		old_cal_total = parseFloat($("#id_meal_template_set_cals_total").html()),
+		old_cal_total = parseFloat($("#meal-template-set-cals-total").html()),
 		new_cal_total = old_cal_total - cal_diff,
 		tdee = $("#change-tdee-result").html();
 		if (tdee === "") {
 			tdee = $("#tdee-result").html();
 		}
 		
-		$("#id_meal_template_set_cals_total").html(new_cal_total);
+		$("#meal-template-set-cals-total").html(new_cal_total);
 		$(this).attr("data-value",new_cal);
 		if (new_cal_total == 0) {
-			$("#id_save_my_macros_button").prop("disabled",false);
-			$("#id_meal_template_set_cals_total").css("color","black");
+			$("#save-my-macros-button").prop("disabled",false);
+			$("#meal-template-set-cals-total").css("color","black");
 		} else {
-			$("#id_save_my_macros_button").prop("disabled",true);
-			$("#id_meal_template_set_cals_total").css("color","red");
+			$("#save-my-macros-button").prop("disabled",true);
+			$("#meal-template-set-cals-total").css("color","red");
 		}
 	});
 }

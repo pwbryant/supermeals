@@ -151,11 +151,10 @@ class CalcAndViewMacros(FunctionalTest):
         self.fill_input(["input[name='meal-number']"],["5"])	
         self.assertTrue(set_cals_button.is_enabled())
 
-        empty_div = self.browser.find_element_by_id("id_meal_template_set_meal_cals_form_container").text
+        empty_div = self.browser.find_element_by_id("meal-template-set-meal-cals-form-container").text
         self.assertEqual(empty_div,"")
         set_cals_button.click()
-
-        set_meal_cals_table = self.browser.find_element_by_id("id_meal_template_set_meal_cals_form_container")
+        set_meal_cals_table = self.browser.find_element_by_id("meal-template-set-meal-cals-form-container")
         table_labels = set_meal_cals_table.find_elements_by_tag_name("label")
         self.assertEqual(table_labels[0].text,"Meal 1")
         self.assertEqual(table_labels[1].text,"Meal 2")
@@ -163,29 +162,28 @@ class CalcAndViewMacros(FunctionalTest):
         self.assertEqual(table_labels[3].text,"Meal 4")
         self.assertEqual(table_labels[4].text,"Meal 5")
         self.assertEqual(table_labels[5].text,"Remaining Cals")
-
-        meal_0_input = set_meal_cals_table.find_element_by_css_selector("input[name=meal_0]")
+        meal_0_input = set_meal_cals_table.find_element_by_css_selector("input[name=meal-0]")
         auto_filled_tdee_split_value = meal_0_input.get_attribute("value")
-        self.assertEqual(auto_filled_tdee_split_value,"422.2")
+        self.assertEqual(auto_filled_tdee_split_value,"355.8")
 
 
         #Joe wants to have one meal of 200 cals so he changes Meal 1 to 200
         #and he notices that the Remaining Cals changes to 187, and the Save button grays out.
         meal_0_input.clear()
         meal_0_input.send_keys(200)
-        remaining_cals_span = self.browser.find_element_by_id("id_meal_template_set_cals_total")
+        remaining_cals_span = self.browser.find_element_by_id("meal-template-set-cals-total")
         remaining_cals = remaining_cals_span.text
-        self.assertEqual(remaining_cals,"222.2")
+        self.assertEqual(remaining_cals,"155.8")
 
-        save_macros_button = self.browser.find_element_by_id("id_save_my_macros_button")
+        save_macros_button = self.browser.find_element_by_id("save-my-macros-button")
         self.assertEqual(save_macros_button.text,"Save Macro Info")
         self.assertFalse(save_macros_button.is_enabled())
 
         #Joe returns the meal 1 to 387 and when the save button is enabled he clicks it and soon gets a 
         #"Macros Sucessfully Saved" Alert message below the save button
         meal_0_input.clear()
-        meal_0_input.send_keys("422.2")
+        meal_0_input.send_keys("355.8")
         self.assertTrue(save_macros_button.is_enabled())
         save_macros_button.click()
-        successful_post_message = self.browser.find_element_by_id("id_my_macros_successful_save_div").text
+        successful_post_message = self.browser.find_element_by_id("my-macros-successful-save").text
         self.assertEqual(successful_post_message,"Macros Successfully Saved! Now Go Make a Meal!")
