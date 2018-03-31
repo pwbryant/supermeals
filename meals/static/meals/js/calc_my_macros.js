@@ -236,7 +236,7 @@ var continue_button_displays_meal_snack_num_div = function() {
 	$("#choose-macros-continue-button").on("click", function() {
 		var form_validated = form_validation("id_choose_macros_form_container");
 		if (form_validated) {
-			$("#meal-template-meals-number-form-container").show();
+			$("#meal-template-meals-number-form-container").removeClass("hide");
 		}
 	});
 
@@ -268,15 +268,17 @@ var display_set_cals_form = function() {
 		var equal_cals = tdee / meal_num,
 		set_cals_form = "<div class='content-box l-flex-col--start'>";
 		set_cals_form += "<div class='content-box__header'>Set Your Meal Cals</div>";
+        set_cals_form += "<div id='set-cals-form-container' class='l-flex--col-start'>";
 		for (i=0;i<meal_num;i++) {
-			set_cals_form += "<div id='meal-" + i + "-input' class='input'>";
+			set_cals_form += "<div id='meal-" + i + "-input' class='input l-flex--row-btw'>";
 			set_cals_form += "<label class='input__label'>Meal " + (i + 1) + "</label>";
             set_cals_form += "<input class='input__input--sm' name='meal-" + i + "' type='text' value='" + equal_cals + "' data-value='" + equal_cals + "' data-type='number'/></div>";
 		}
-		set_cals_form += "<label class='input__label'>Remaining Cals</label><span id='meal-template-set-cals-total' name='remaining-cals'>0</span>";
+		set_cals_form += "<div class='l-flex--row-btw'><label class='input__label'>Cals Left</label><span id='meal-template-set-cals-total' class='text--label' name='remaining-cals'>0</span></div>";
 		set_cals_form += "<button id='save-my-macros-button'>Save Macro Info</button>";
+        set_cals_form += "</div></div>"
 		$("#meal-template-set-meal-cals-form-container").html(set_cals_form)
-		save_my_macros_button_posts_form();
+		save_my_macros_button_posts_form();//listener for save button
 		meal_template_set_cals_totaler();//start lister on new inputs 
 
 	});
@@ -305,10 +307,10 @@ var meal_template_set_cals_totaler = function() {
 		$(this).attr("data-value",new_cal);
 		if (new_cal_total == 0) {
 			$("#save-my-macros-button").prop("disabled",false);
-			$("#meal-template-set-cals-total").css("color","black");
+			$("#meal-template-set-cals-total").removeClass("text--color-alert");
 		} else {
 			$("#save-my-macros-button").prop("disabled",true);
-			$("#meal-template-set-cals-total").css("color","red");
+			$("#meal-template-set-cals-total").addClass("text--color-alert");
 		}
 	});
 }
@@ -333,7 +335,6 @@ var form_validation = function(form_id) {
 			radio_names.push(name);
 		} 
 		if (error != "") {
-            console.log("error",error);
 			errors.push(error);
 		}
 	});
@@ -357,12 +358,10 @@ var form_validation = function(form_id) {
 			error_html += "<li>" + error + "</li>";
 		});
 		error_html += "</ul>";
-		//$("#id_calc_tdee_errors").html(error_html);
-		$("#id_client_side_form_errors").html(error_html);
+		$("#client-side-form-errors").html(error_html);
 		return 0;
 	} else {
-		//$("#id_calc_tdee_errors").html("");
-		$("#id_client_side_form_errors").html("");
+		$("#client-sid-form-errors").html("");
 		return 1;
 	}	
 }

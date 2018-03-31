@@ -2,7 +2,7 @@
 <div id="tdee-form-container" class="l-tdee" >
     <div id="unit-type" class="content-box l-tdee--top l-flex--col-start">
         <div class="content-box__header">Unit Type</div>
-        <div id="unit-input-container" class="content-box__content l-flex--row-left">
+        <div id="unit-input-container" class="content-box__content l-flex--row-start">
             <div class="radio-input">
                 <label class="radio-input__label">Imperial</label>
                 <input class="radio-input__input" type="radio" name="unit-type" value="imperial" checked/>
@@ -15,7 +15,7 @@
     </div>
     <div id="traits" class="content-box l-tdee--side l-flex--col-start">
         <div class="content-box__header">Physical Traits</div>
-        <div id="gender-inputs" class="radio l-flex--row-left">
+        <div id="gender-inputs" class="radio l-flex--row-start">
             <div class="radio-input">
                 <label class="radio-input__label">Male</label>
                 <input class="radio-input__input" type="radio" name="gender" value="male"/>
@@ -88,7 +88,7 @@
     </div>
     <div id="weight-change" class="content-box l-tdee--mid-bottom l-flex--col-start">
         <div class="content-box__header">Weight Change</div>
-        <div id="direction-inputs" class="content-box__content l-flex--row-left">
+        <div id="direction-inputs" class="content-box__content l-flex--row-start">
             <div class="radio-input">
                 <label class="radio-input__label">Lose</label>
                 <input class="radio-input__input" type="radio" name="direction" value="lose" checked/>
@@ -124,25 +124,25 @@
 <div id="choose-macros-form-container" class="content-box l-flex--col-start hide">
     <div class="content-box__header">Choose Macro Ratios</div>
     <div id="choose-macros-form">
-        <div class="l-flex--row-left">
+        <div class="l-flex--row-start">
             <span class="table-like__cell"></span><span class="text--primary table-like__cell table-like__cell--header">%</span><span class="text--primary table-like__cell table-like__cell--header">g</span>
         </div>
-        <div id="choose-fat-inputs" class="input l-flex--row-left">
+        <div id="choose-fat-inputs" class="input l-flex--row-start">
             <label class="input__label table-like__cell">Fat</label>
             <input class="input__input input__input--sm table-like__cell" type="text" name="fat-pct" data-type="number" data-value="0" placeholder="%"/>
             <input class="input__input input__input--sm table-like__cell" type="text" name="fat-g" data-type="number" data-value="0" placeholder="g"/>
         </div>
-        <div id="choose-carbs-inputs" class="input l-flex--row-left">
+        <div id="choose-carbs-inputs" class="input l-flex--row-start">
             <label class="input__label table-like__cell">Carbs</label>
             <input class="input__input input__input--sm table-like__cell" type="text" name="carbs-pct" data-type="number" data-value="0" placeholder="%"/>
             <input class="input__input input__input--sm table-like__cell" type="text" name="carbs-g" data-type="number" data-value="0" placeholder="g"/>
         </div>
-        <div id="choose-protein-inputs" class="input l-flex--row-left">
+        <div id="choose-protein-inputs" class="input l-flex--row-start">
             <label class="input__label table-like__cell">Protein</label>
             <input class="input__input input__input--sm table-like__cell" type="text" name="protein-pct" data-type="number" data-value="0" placeholder="%"/>
             <input class="input__input input__input--sm table-like__cell" type="text" name="protein-g" data-type="number" data-value="0" placeholder="g"/>
         </div>
-        <div id="choose-macros-totals-container" class="l-flex--row-left">
+        <div id="choose-macros-totals-container" class="l-flex--row-start">
             <label class="input__label table-like__cell">% Left</label>
             <span id="choose-macros-totals-wrapper" class="table-like__cell">
                 <span id="choose-macros-total" class="text--label">100</span><span class="text--label">%</span>
@@ -157,7 +157,7 @@
         <label class="input__label">Number of meals/snacks per day?</label>
         <input class="input__input input__input--md" type="text" name="meal-number" placeholder="# meals/snacks" data-type="number"/>
     </div>
-    <div class="l-flex--row-left">
+    <div class="l-flex--row-start">
         <button id="meal-template-set-cals-continue-button" disabled>Continue</button>
     </div>
 </div>

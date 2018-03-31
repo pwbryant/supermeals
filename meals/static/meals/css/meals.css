@@ -53,6 +53,11 @@ html, body {
     width:2em;
 }
 
+.table-like__cell--header {
+    /* Display & Box Model */
+    text-align: center;
+}
+
 .text-box {
     /* Display & Box Model */
    flex-wrap: nowrap;
@@ -65,19 +70,25 @@ html, body {
     font-size:25px;
 }
 
+.text--color-alert {
+    /* Style */
+    color: red !important;
+}
+
 .text--primary {
     /* Style */
-    font-size:25px;
     color: #f9e34b;
+    font-size:25px;
 }
 
 .text--highlight {
     /* Style */
-    font-size:35px;
     color: red;
+    font-size:35px;
 }
 
 .text--label {
+    /* Style */
     color: #f9e34b;
     font-size: 20px;
 }
@@ -179,10 +190,11 @@ html, body {
     width: 20%;
 }
 
-.table-like__cell--header {
+#set-cals-form-container {
     /* Display & Box Model */
-    text-align: center;
+    width: 15%;
 }
+
 /****************************************************/
 /* Layout classes
  * 
@@ -254,7 +266,7 @@ html, body {
     flex-direction: row;
 }
 
-.l-flex--row-left {
+.l-flex--row-start {
     /* Display & Box Model */
     display: flex;
     justify-content: start;

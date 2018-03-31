@@ -161,7 +161,7 @@ class CalcAndViewMacros(FunctionalTest):
         self.assertEqual(table_labels[2].text,"Meal 3")
         self.assertEqual(table_labels[3].text,"Meal 4")
         self.assertEqual(table_labels[4].text,"Meal 5")
-        self.assertEqual(table_labels[5].text,"Remaining Cals")
+        self.assertEqual(table_labels[5].text,"Cals Left")
         meal_0_input = set_meal_cals_table.find_element_by_css_selector("input[name=meal-0]")
         auto_filled_tdee_split_value = meal_0_input.get_attribute("value")
         self.assertEqual(auto_filled_tdee_split_value,"355.8")
@@ -186,4 +186,5 @@ class CalcAndViewMacros(FunctionalTest):
         self.assertTrue(save_macros_button.is_enabled())
         save_macros_button.click()
         successful_post_message = self.browser.find_element_by_id("my-macros-successful-save").text
+        time.sleep(6)
         self.assertEqual(successful_post_message,"Macros Successfully Saved! Now Go Make a Meal!")

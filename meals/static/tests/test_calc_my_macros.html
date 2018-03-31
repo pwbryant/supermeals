@@ -17,13 +17,13 @@
 		var set_up_choose_macros_test = function(input_selector,value,result_id,result_value) {
 			$("#choose-macros-form-container").removeClass("hide");
 			$(input_selector).val(value);
-			$("#" + result_id).html(result_value);
+			$("#" + result_id).html("str1: " + result_value + " str2");//str1&2 are just placeholders
 			$(input_selector).trigger("keyup");
 		}
 		
 		var setup_set_cals_form = function() {
 			display_set_cals_form();
-			$("#change-tdee-result").html("1935");
+			$("#change-tdee-result").html("str1: 1935 str2");//str1&2 are placeholders
 			$("input[name='meal-number']").val("5");
 			$("#meal-template-set-cals-continue-button").trigger("click");
 		}
@@ -151,7 +151,7 @@
 	<!--calc macros - Continue button reveals meal/snack number input -->
 	<button id="choose-macros-continue-button" class="btn">Continue</button>
 
-    <div id="meal-template-meals-number-form-container" class="content-box l-flex--col-btw">
+    <div id="meal-template-meals-number-form-container" class="content-box l-flex--col-btw hide">
         <div class="content-box__header">Break Up Your Daily Calories Into Meals/Snacks</div>
         <div id="meal-number-input" class="input l-flex--col-start">
             <label class="input__label">Number of meals/snacks per day?</label>
@@ -172,80 +172,78 @@
 	<!--QUnit TESTS -->
 	<script>
 		//form validation
-        /*
 		QUnit.test("validates form inputs, test catch empty field", function (assert) {
 			calc_tdee();
-			$("#id_i_weight").val("");
+			$("input[name='weight-i']").val("");
 			$("#calc-tdee").trigger("click");
-			error = $("#id_client_side_form_errors").html();
+			error = $("#client-side-form-errors").html();
 			assert.equal(error.includes("Missing Weight Value"),true);
 		});
 		QUnit.test("validates form inputs, test catch str int field", function (assert) {
 			calc_tdee();
-			$("#id_i_weight").val("str");
+			$("input[name='weight-i']").val("str");
 			$("#calc-tdee").trigger("click");
-			error = $("#id_client_side_form_errors").html();
+			error = $("#client-side-form-errors").html();
 			assert.equal(error.includes("Weight Field Forbids Non-Numeric Values"),true);
 		});
 		QUnit.test("validates form inputs, test catch empty radio", function (assert) {
 			calc_tdee();
-			$("#id_unit_type_1").prop("checked",false);
+			$("input[value='maintain']").prop("checked",false);
 			$("#calc-tdee").trigger("click");
-			error = $("#id_client_side_form_errors").html();
-			assert.equal(error.includes("Unit Type Option Needs To Be Selected"),true);
+			error = $("#client-side-form-errors").html();
+			assert.equal(error.includes("Direction Option Needs To Be Selected"),true);
 		});
 		//Set Calories form (note: meal_template_set_cals_totaler is initiated inside display_set_cals_form()
 		QUnit.test("If set cals total not equal to 0 the total is red, but returns to black once 0 again", function (assert) {
 			setup_set_cals_form();
-			$("input[name=meal_0]").val("390");
-			$("input[name=meal_0]").trigger("keyup");
-			assert.equal($("#id_meal_template_set_cals_total").css("color"), "rgb(255, 0, 0)");
+			$("input[name='meal-0']").val("390");
+			$("input[name='meal-0']").trigger("keyup");
+			assert.equal($("#meal-template-set-cals-total").hasClass("text--color-alert"), true);
 
-			$("input[name=meal_0]").val("387");
-			$("input[name=meal_0]").trigger("keyup");
-			assert.equal($("#id_meal_template_set_cals_total").css("color"), "rgb(0, 0, 0)");
-			
+			$("input[name='meal-0']").val("387");
+			$("input[name='meal-0']").trigger("keyup");
+			assert.equal($("#meal-template-set-cals-total").hasClass("text--color-alert"), false);
 		});
 		QUnit.test("If set cals total not equal to 0 the 'Save Macros' button is disabled", function (assert) {
 			setup_set_cals_form();
-			assert.equal($("#id_save_my_macros_button").prop("disabled"), false);
-			$("input[name=meal_0]").val("390");
-			$("input[name=meal_0]").trigger("keyup");
-			assert.equal($("#id_save_my_macros_button").prop("disabled"), true);
-			$("input[name=meal_0]").val("387");
-			$("input[name=meal_0]").trigger("keyup");
-			assert.equal($("#id_save_my_macros_button").prop("disabled"), false);
+			assert.equal($("#save-my-macros-button").prop("disabled"), false);
+			$("input[name='meal-0']").val("390");
+			$("input[name='meal-0']").trigger("keyup");
+			assert.equal($("#save-my-macros-button").prop("disabled"), true);
+			$("input[name='meal-0']").val("387");
+			$("input[name='meal-0']").trigger("keyup");
+			assert.equal($("#save-my-macros-button").prop("disabled"), false);
 		});
 		QUnit.test("Change of values in the set calorie inputs alters the calorie total in the last row of the set cals table", function (assert) {
 			setup_set_cals_form();
-			$("input[name=meal_0]").val("390");
-			$("input[name=meal_0]").trigger("keyup");
-			var new_tdee_total = $("#id_meal_template_set_cals_total").html();
+			$("input[name='meal-0']").val("390");
+			$("input[name='meal-0']").trigger("keyup");
+			var new_tdee_total = $("#meal-template-set-cals-total").html();
 			assert.equal(new_tdee_total,-3);
 
-			$("input[name=meal_0]").val("380");
-			$("input[name=meal_0]").trigger("keyup");
-			var new_tdee_total = $("#id_meal_template_set_cals_total").html();
+			$("input[name='meal-0']").val("380");
+			$("input[name='meal-0']").trigger("keyup");
+			var new_tdee_total = $("#meal-template-set-cals-total").html();
 			assert.equal(new_tdee_total,7);
 		});
 		QUnit.test("Click Set Calories button displays meal inputs that have evenly distibuted cals", function (assert) {
 			setup_set_cals_form();
-			var equal_cals = $("input[name=meal_0]").val();
+			var equal_cals = $("input[name='meal-0']").val();
 			assert.equal(equal_cals,387);
 		});
 		QUnit.test("Click Set Calories button displays meal inputs that have 'Meal 1' - n and Remaining Cals labels", function (assert) {
 			setup_set_cals_form();
-			var last_meal_label = $($("#id_meal_template_set_meal_cals_form_container label")[4]).html(),
-			remaining_cals_label = $($("#id_meal_template_set_meal_cals_form_container label")[5]).html();
+			var last_meal_label = $($("#meal-template-set-meal-cals-form-container label")[4]).html(),
+			remaining_cals_label = $($("#meal-template-set-meal-cals-form-container label")[5]).html();
 			assert.equal(last_meal_label,"Meal 5");
-			assert.equal(remaining_cals_label,"Remaining Cals");
+			assert.equal(remaining_cals_label,"Cals Left");
 		});
 		QUnit.test("Click Continue creates the same number of inputs elements as the number of meals", function (assert) {
 			setup_set_cals_form();
-			var set_cals_table_input_num = $("#id_meal_template_set_meal_cals_form_container input").length;
+			var set_cals_table_input_num = $("#meal-template-set-meal-cals-form-container input").length;
 			assert.equal(set_cals_table_input_num,5);
 		});
-        */
+
 		//Set Calories button becomes enabled when meal number input is filled
 		QUnit.test("Continue button becomes enabled upon number input and disabled with str input", function (assert) {
 			set_cals_continue_button_is_enabled_upon_input_keyup();
@@ -266,9 +264,9 @@
 			set_up_choose_macros_test("input[name='protein-pct']","50","change-tdee-result","1935");
 			set_up_choose_macros_test("input[name='fat-pct']","20","change-tdee-result","1935");
 			set_up_choose_macros_test("input[name='carbs-pct']","30","change-tdee-result","1935");
-			assert.equal($("#id_meal_template_meals_number_form_container").is(":visible"), false);
+			assert.equal($("#meal-template-meals-number-form-container").hasClass("hide"), true);
 			$("#choose-macros-continue-button").trigger("click");
-			assert.equal($("#id_meal_template_meals_number_form_container").is(":visible"), true);
+			assert.equal($("#meal-template-meals-number-form-container").hasClass("hide"), false);
 		});
 		//choose macros
 		QUnit.test("macro_percent_totaler tallys the macro percent total correctly", function (assert) {
@@ -300,6 +298,7 @@
 			choose_macro_handler();
 			set_up_choose_macros_test("input[name='protein-pct']","50","change-tdee-result","1935");
 			protein_grams = parseFloat($("input[name='protein-g']").val());
+            
 			assert.equal(protein_grams.toFixed(0),242);
 		});
 		QUnit.test("keystroke in protein grams creates % in protein %", function (assert) {
