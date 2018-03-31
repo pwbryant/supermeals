@@ -82,7 +82,7 @@ def create_meal_template_dict(POST):
 
     validation_errors = []
 
-    meal_num = POST.get('meal_number',-1)
+    meal_num = POST.get('meal-number',-1)
     tdee = POST.get('tdee',-1)
 
     if meal_num in ['',-1] or not meal_num.isdigit():
@@ -100,7 +100,7 @@ def create_meal_template_dict(POST):
     meal_template_dict = {}
     if meal_num > 0:
         for i in range(int(meal_num)):
-            cals = POST.get('meal_%d' % i,'')
+            cals = POST.get('meal-%d' % i,'')
             try:
                 cals = float(cals)
             except:
@@ -133,17 +133,16 @@ def save_meal_templates(request):
 
 
 def create_macro_form_dict(POST):
-
     macro_form_dict = {}
-    macro_form_dict['unit_type'] = POST['unit_type']
+    macro_form_dict['unit_type'] = POST['unit-type']
     if macro_form_dict['unit_type'] == 'imperial':
-        height1 = POST.get('i_height_0','')
-        height2 = POST.get('i_height_1','')
+        height1 = POST.get('height-i-ft','')
+        height2 = POST.get('height-i-in','')
         if height1 != '' and height2 != '':
             macro_form_dict['height'] = str(round(((int(height1) * 12) + int(height2)) / IN_TO_CM,2))
             
-        macro_form_dict['weight'] = POST.get('i_weight','')
-        macro_form_dict['change_rate'] = POST.get('i_change_rate','')
+        macro_form_dict['weight'] = POST.get('weight-i','')
+        macro_form_dict['change_rate'] = POST.get('change-rate-i','')
         if macro_form_dict['weight'] != '':
             macro_form_dict['weight'] = str(round(int(macro_form_dict['weight']) * KG_TO_LB,2))
 
@@ -151,18 +150,18 @@ def create_macro_form_dict(POST):
             macro_form_dict['change_rate'] = str(round(int(macro_form_dict['change_rate']) * KG_TO_LB,8))
 
     if macro_form_dict['unit_type'] == 'metric':
-        macro_form_dict['height'] = POST.get('m_height',0)
-        macro_form_dict['weight'] = POST.get('m_weight',0)
-        macro_form_dict['change_rate'] = POST.get('m_change_rate','')
+        macro_form_dict['height'] = POST.get('height-m',0)
+        macro_form_dict['weight'] = POST.get('weight-m',0)
+        macro_form_dict['change_rate'] = POST.get('change-rate-m','')
 
-    macro_form_dict['total_macro_percent'] = int(POST.get('protein_percent',0)) + int(POST.get('fat_percent',0)) + int(POST.get('carbs_percent',0))
+    macro_form_dict['total_macro_percent'] = int(POST.get('protein-pct',0)) + int(POST.get('fat-pct',0)) + int(POST.get('carbs-pct',0))
     macro_form_dict = {
                         **{
                             'gender':POST.get('gender',''),'age':POST.get('age',''),
                             'activity':POST.get('activity',''),'direction':POST.get('direction',''),
-                            'fat_percent':POST.get('fat_percent',''),'fat_g':POST.get('fat_g',''),
-                            'carbs_percent':POST.get('carbs_percent',''),'carbs_g':POST.get('carbs_g',''),
-                            'protein_percent':POST.get('protein_percent',''),'protein_g':POST.get('protein_g','')
+                            'fat_percent':POST.get('fat-pct',''),'fat_g':POST.get('fat-g',''),
+                            'carbs_percent':POST.get('carbs-pct',''),'carbs_g':POST.get('carbs-g',''),
+                            'protein_percent':POST.get('protein-pct',''),'protein_g':POST.get('protein-g','')
                         },
                     **macro_form_dict
                 }
@@ -194,7 +193,7 @@ def save_my_macros(request):
 
     return {'status':1,
             'form':macro_form,
-            'unit_type':macro_form_dict['unit_type']
+            'unit-type':macro_form_dict['unit_type']
     }
 
 
@@ -238,23 +237,23 @@ def make_meal_template_unique_cal_dict_list(user,tdee):
 
 def make_macro_breakdown_dict_list(macro):
 
-    fat_percent = macro.fat_percent
-    protein_percent = macro.protein_percent
-    carbs_percent = Decimal(100 - (round(fat_percent) + round(protein_percent)))
+    fat_pct = macro.fat_percent
+    protein_pct = macro.protein_percent
+    carbs_pct = Decimal(100 - (round(fat_pct) + round(protein_pct)))
     return [{
                 'name':'Fat',
-                'percent':round(fat_percent),
-                'data':fat_percent
+                'percent':round(fat_pct),
+                'data':fat_pct
         },
         {
             'name':'Carbs',
-            'percent':100 - (round(fat_percent) + round(protein_percent)),
-            'data':Decimal(100 - (fat_percent + protein_percent))
+            'percent':100 - (round(fat_pct) + round(protein_pct)),
+            'data':Decimal(100 - (fat_pct + protein_pct))
         },
         {
             'name':'Protein',
-            'percent':round(protein_percent),
-            'data':protein_percent
+            'percent':round(protein_pct),
+            'data':protein_pct
         }
     ]
 

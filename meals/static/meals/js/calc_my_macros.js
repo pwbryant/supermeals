@@ -39,18 +39,19 @@ var get_meal_maker_page_content = function() {
 
 //not tested
 var save_my_macros_button_posts_form = function() {
-	$("#save-my_macros-button").on("click",function() {
-		var form_validated = form_validation("id_my_macros_form_container");
+	$("#save-my-macros-button").on("click",function() {
+		var form_validated = form_validation("my-macros-form-container");
 		if (form_validated) {
 			var post_data = {};
-			$("#id_my_macros_form_container").find(":input[type='text'],:input[type='hidden'],:input[type='radio']:checked").each(function() {
+			$("#my-macros-forms-container").find(":input[type='text'],:input[type='hidden'],:input[type='radio']:checked").each(function() {
 			    post_data[this.name] = $(this).val();
 			});
-			$.post("/meals/save_my_macros",post_data,function(data) {
+            //post_data["csrfmiddlewaretoken"] = $("input[name='csrfmiddlewaretoken']").val();
+			$.post("/meals/save-my-macros",post_data,function(data) {
 				if (data == "1") {
-					$("#id_my_macros_successful_save_div").show();
+					$("#my-macros-successful-save").html("Macros Successfully Saved! Now Go Make a Meal!");
 				} else {
-					$("#id_my_macros_form_container").html(data);
+					$("#my-macros-form-container").html(data);
 				}
 				
 			});
@@ -153,10 +154,10 @@ var calc_tdee = function() {
 			} else {
 				tdee_return_value = "Missing Value. Check Form.";
 			}
-            tdee_return_value = "Maintenance: " + Math.round(tdee_return_value).toString() + " Cals";
-            change_tdee_return_value = "Change: " + Math.round(change_tdee_return_value).toString() + " Cals";
-			$("#tdee-result").html(tdee_return_value);
-			$("#change-tdee-result").html(change_tdee_return_value);
+            tdee_return_value_str = "Maintenance: " + Math.round(tdee_return_value).toString() + " Cals";
+            change_tdee_return_value_str = "Change: " + Math.round(change_tdee_return_value).toString() + " Cals";
+			$("#tdee-result").html(tdee_return_value_str);
+			$("#change-tdee-result").html(change_tdee_return_value_str);
             
 			$("#hidden-tdee").val(Math.round(change_tdee_return_value));
 			

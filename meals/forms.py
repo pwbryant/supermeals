@@ -85,37 +85,30 @@ class MakeMacrosForm(forms.models.ModelForm):
 	
 	m_height = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		"placeholder":"cm",
-		"class":"form-control input-sm",
 		"data-type":"number"
 	}),required=False)
 	m_weight = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		"placeholder":"kg",
-		"class":"form-control input-sm",
 		"data-type":"number"
 	}),required=False)
 	m_change_rate = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		"placeholder":"kg/wk",
-		"class":"form-control input-sm change_rate",
 		"data-type":"number"
 	}),required=False)
 	i_height_0 = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		"placeholder":"ft",
-		"class":"form-control input-sm",
 		"data-type":"number"
 	}),required=False)
 	i_height_1 = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		"placeholder":"in",
-		"class":"form-control input-sm",
 		"data-type":"number"
 	}),required=False)
 	i_weight = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		"placeholder":"lb",
-		"class":"form-control input-sm",
 		"data-type":"number"
 	}),required=False)
 	i_change_rate = forms.CharField(widget=forms.fields.TextInput(attrs= {
 		"placeholder":"lb/wk",
-		"class":"form-control input-sm change_rate",
 		"data-type":"number"
 	}),required=False)
 

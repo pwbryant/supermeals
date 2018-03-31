@@ -186,5 +186,4 @@ class CalcAndViewMacros(FunctionalTest):
         self.assertTrue(save_macros_button.is_enabled())
         save_macros_button.click()
         successful_post_message = self.browser.find_element_by_id("my-macros-successful-save").text
-        time.sleep(6)
         self.assertEqual(successful_post_message,"Macros Successfully Saved! Now Go Make a Meal!")
