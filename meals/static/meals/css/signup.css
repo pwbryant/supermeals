@@ -1,0 +1,19 @@
+
+/****************************************************/
+/* ID dependant classes
+ * 
+ * Rules for ID dependant classe, i.e #id .class {}
+ * are found here.
+ *
+/****************************************************/
+
+
+#signup-form-content {
+    padding: 15%;
+}
+
+#signup-form-content > div {
+    padding: 1%;
+}
+
+

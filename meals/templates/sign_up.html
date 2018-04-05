@@ -3,27 +3,44 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="ID-edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="/static/meals/css/meals.css" rel="stylesheet">
+		<link href="/static/meals/css/signup.css" rel="stylesheet">
 
 		<title>Meal Lab Sign Up</title>
-		<link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 	</head>
 	<body>
-		<form id='id_create_account_form' method="POST" action="/meals/create_account">
-			{{ form.username }}
-			{{ form.email }}
-			{{ form.password }}
-			<input id='id_create' type='submit' class="btn" value="Create Account">
-			<button id='id_cancel' type='button' class="btn" onclick="location.href='/'">Cancel</button>
-			{% csrf_token %}
-			{% if form.errors %}
-				<div class='form-group has-error'>
-					<span class='help-block'>{{ form.username.errors }}</span>
-					<span class='help-block'>{{ form.password.errors }}</span>
-				</div>
-			{% endif %}
-		</form>
+        <div class="signup-container" >
+            <form id='create-account-form' method="POST" action="/meals/create-account">
+                <div id="signup-form-content" class="content-box">   
+                    <div id="username-input" class="input l-flex--col-start">
+                        <label class="input__label">{{ form.username.label }}:</label>
+                        {{ form.username }}
+                    </div>
+                    <div id="email-input" class="input l-flex--col-start">
+                        <label class="input__label">{{ form.email.label }}:</label>
+                        {{ form.email }}
+                    </div>
+                    <div id="password-input" class="input l-flex--col-start">
+                        <label class="input__label">{{ form.password.label }}:</label>
+                        {{ form.password }}
+                    </div>
+                    <div id="signup-form-buttons">
+                        <input id='create' type='submit' class="btn" value="Create Account">
+                        <button id='cancel' type='button' class="btn" onclick="location.href='/'">Cancel</button>
+                    </div>
+                    {% csrf_token %}
+                    {% if form.errors %}
+                        <div class='has-error'>
+                            <span class='help-block'>{{ form.username.errors }}</span>
+                            <span class='help-block'>{{ form.password.errors }}</span>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </form>
+        </div>
+
 		<script src="http://code.jquery.com/jquery.js"></script>
-		<script src="/static/bootstrap/js/bootstrap.min.js"></script>
 		<script src="/static/meals.js"></script>
 		<script>
 			initialize();

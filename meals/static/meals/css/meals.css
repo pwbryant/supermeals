@@ -1,6 +1,3 @@
-    /* Position */
-    /* Display & Box Model */
-    /* Style */
 
 /****************************************************/
 /* General tags and classes
@@ -32,7 +29,12 @@ html, body {
 
 .input__input--md {
     /* Display & Box Model */
-    width: 110px;
+    width: 115px;
+}
+
+.input__input--lg {
+    /* Display & Box Model */
+    width: 250px;
 }
 
 .input__label {
@@ -271,6 +273,13 @@ html, body {
     display: flex;
     justify-content: start;
     flex-direction: row;
+}
+
+.l-flex--center {
+    /* Display & Box Model */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Modifiers */

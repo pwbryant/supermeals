@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 from decimal import Decimal
-from meals.forms import LoginForm, SignUpForm, MakeMacrosForm, MealTemplateForm
+from meals.forms import SignUpForm, MakeMacrosForm, MealTemplateForm
 from meals.models import Macros,MealTemplate,Foods
 
 KG_TO_LB = .45359237
@@ -16,37 +16,7 @@ IN_TO_CM = .3937
 
 # Create your views here.
 def home_or_login(request):
-    if request.user.is_authenticated:
-        return render(request, 'base.html') 
-    else:
-        return redirect('meals/login/')
-
-
-def to_login(request):
-    
-    return render(request, 'login.html', {'form': LoginForm()}) 
-
-
-def logging_in(request):
-    if request.POST.get('guest'):
-        username = 'guest'
-        password = 'password'	
-    else:
-        username,password = request.POST.get('username'),request.POST.get('password')
-
-    user = authenticate(request,username=username,password=password)
-    if user is not None:
-        login(request, user)
-        return redirect('/')	
-    else:
-        error = 'Username or Password incorrect' 
-        return render(request,'login.html',{"error":error,"form":LoginForm()})
-
-
-def logging_off(request):
-
-    logout(request)
-    return redirect('/')	
+    return render(request, 'base.html') 
 
 
 def sign_up(request):
@@ -78,7 +48,17 @@ def get_my_macros(request):
     })
     
 
-def create_meal_template_dict(POST):
+def get_validation_errors(POST):
+    """
+    Validates mean_num and tdee from POST since these aren't
+    part of a form
+
+    Args:
+        POST: request object's POST dict
+
+    Returns:
+        tuple of tdee, meal_num, and the validation error list
+    """
 
     validation_errors = []
 
@@ -97,6 +77,24 @@ def create_meal_template_dict(POST):
     else:
         tdee = int(tdee) 
 
+    return (tdee, meal_num, validation_errors,)
+
+
+
+
+def create_meal_template_dict(POST):
+    """
+    Creates dict containing fields needed for MealTemplate model.
+
+    Args:
+        POST: request object's POST dict
+
+    Returns:
+        tuple containing dict used for creating a MealTemplate
+        and a list that collects validation errors.
+    """
+
+    tdee, meal_num, validation_errors = validate_POST(POST)
     meal_template_dict = {}
     if meal_num > 0:
         for i in range(int(meal_num)):
@@ -118,6 +116,17 @@ def create_meal_template_dict(POST):
 
     
 def save_meal_templates(request):
+    """
+    If validation errors present return a failed status key and errors,
+    else return status of 1 (success).
+
+    Args:
+        request: HttpRequest object
+
+    Returns:
+        dict with a status key, and possibly validation errors
+    """
+
     meal_template_dict,validation_errors = create_meal_template_dict(request.POST)
     if len(validation_errors) > 0:
         return {'status':0,'errors':'<ul>' + validation_errors + '</ul>'}
@@ -133,6 +142,15 @@ def save_meal_templates(request):
 
 
 def create_macro_form_dict(POST):
+    """
+    Creates dict containing fields needed for MakeMacroForm model.
+
+    Args:
+        POST: request object's POST dict
+
+    Returns:
+        dict with fields for MakeMacroForm model
+    """
     macro_form_dict = {}
     macro_form_dict['unit_type'] = POST['unit-type']
     if macro_form_dict['unit_type'] == 'imperial':
@@ -169,6 +187,16 @@ def create_macro_form_dict(POST):
 
 
 def save_my_macros(request):
+    """
+    Attempts to save new Macro model object, but passes still
+    with Integrity Error.   
+    Args:
+        request: HTTP request object
+
+    Returns:
+        dict with status, form, and unit-type upon 
+        success or failure     
+    """
     macro_form_dict = create_macro_form_dict(request.POST) 
     macro_form = MakeMacrosForm(macro_form_dict,unit_type=macro_form_dict['unit_type'])	
     if not macro_form.is_valid():
@@ -198,6 +226,15 @@ def save_my_macros(request):
 
 
 def save_my_macros_and_meal_templates(request):
+    """
+    Controls the processing and saving of Macros and MealTemplate models
+
+    Args:
+        request: HTTP request object
+
+    Returns:
+        If success HttpResponse(1), else, renders my_macros, dict of errors
+    """
     
     my_macro_response = save_my_macros(request)
     meal_template_response = save_meal_templates(request)
@@ -214,6 +251,17 @@ def save_my_macros_and_meal_templates(request):
 
 
 def make_meal_template_unique_cal_dict_list(user,tdee):
+    """
+    Creates dictionaries to be used for the MealTemplate dropdown in the
+    meal maker tab.
+
+    Args:
+        user: User object for session
+        tdee: Total Daily Energy Expenditure
+        
+    Returns:
+        list of dictionaries corresponding to each unique calorie amount
+    """
 
     meal_templates = MealTemplate.objects.filter(user=user)
     meal_templates_list = []
@@ -236,14 +284,24 @@ def make_meal_template_unique_cal_dict_list(user,tdee):
 
 
 def make_macro_breakdown_dict_list(macro):
+    """
+    Creates dictionaries to be used for the Macro inputs on the
+    meal maker tab.
+
+    Args:
+        macro: Saved Macro object
+        
+    Returns:
+        list of dictionaries corresponding to each macro
+    """
 
     fat_pct = macro.fat_percent
     protein_pct = macro.protein_percent
     carbs_pct = Decimal(100 - (round(fat_pct) + round(protein_pct)))
     return [{
-                'name':'Fat',
-                'percent':round(fat_pct),
-                'data':fat_pct
+            'name':'Fat',
+            'percent':round(fat_pct),
+            'data':fat_pct
         },
         {
             'name':'Carbs',
@@ -259,6 +317,16 @@ def make_macro_breakdown_dict_list(macro):
 
     
 def get_meal_maker_template(request):
+    """
+    Get saved Macros and MealTemplates to pass to meal_maker.html.
+
+    Args:
+        request: HttpRequest object
+        
+    Returns:
+        renders meal_maker.html with dict of saved info from MyMacros tab
+        such as tdee, MealTemplate info, and the Macros breakdow
+    """
             
     macro_set = Macros.objects.filter(user = request.user)
     if len(macro_set) > 0:
@@ -279,6 +347,15 @@ def get_meal_maker_template(request):
 
 
 def search_foods(request):
+    """
+    Seach usda foods db based on 'search_terms' key, submitted by user.
+    
+    Args:
+        request: HttpRequest object
+        
+    Returns:
+        HttpResponse of search results as json
+    """
     search_terms = request.GET['search_terms'].split(' ')
     query_build_list = []
 

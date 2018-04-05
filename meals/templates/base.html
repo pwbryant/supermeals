@@ -21,16 +21,14 @@
                 <div class="header__nav">
                     {% if user.is_authenticated and user.get_username != 'guest' %}
                         {{ user }}
-                        <a id="id-logoff" href="/meals/logging-off/">
-                            <button class="header__nav-tab">Logoff</button>
+                        <a id="logoff" href="/accounts/logout/?next=/accounts/login/">
+                            <div class="header__nav-tab">Logout</div>
                         </a>
                     {% else %}
-                        <a id="id-sign-up" href="/meals/sign-up/">
+                        <a id="sign-up" href="/meals/sign-up/">
                             <div class="header__nav-tab">Sign up</div>
                         </a>
-                        <!--this is supposed to go to /loggin-off so that the guest user gets logged of and page
-                        gets redirected to the login page-->
-                        <a id="id-login" href="/meals/logging-off">
+                        <a id="login" href="/accounts/login/">
                             <div class="header__nav-tab">Login</div>
                         </a>
                     {% endif %}

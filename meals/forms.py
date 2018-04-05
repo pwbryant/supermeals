@@ -23,35 +23,6 @@ OUT_OF_RANGE_MACRO_ERROR = "Macro Percent Out Of Range"
 MACROS_DONT_ADD_UP_ERROR = "Macro Percentages Do Not Add Up Too 100"
 EMPTY_CALS_ERROR = "Meal/Snack Calories Missing"
 
-class HorizontalRadioRenderer(forms.RadioSelect):
-	def render(self):
-		return mark_safe(u"\n".join([u"%s\n" % w for w in self]))
-
-class LoginForm(forms.models.ModelForm):
-	
-	class Meta:
-
-		model = User
-		fields = ("username","password",)
-		widgets = {
-			"username": forms.fields.TextInput(attrs = {
-				"placeholder": "Username",
-				"class": "form-control input-sm",
-				"id": "username",
-			}),
-			"password": forms.fields.TextInput(attrs = {
-				"placeholder": "Password",
-				"class": "form-control input-sm",
-                                "id": "password",
-			}),
-		}
-
-		#error constants
-		error_messages = {
-			"username": {"required": EMPTY_USERNAME_ERROR},
-			"password": {"required": EMPTY_PASSWORD_ERROR}
-		}
-
 
 class SignUpForm(forms.models.ModelForm):
 	
@@ -62,15 +33,15 @@ class SignUpForm(forms.models.ModelForm):
 		widgets = {
 			"username": forms.fields.TextInput(attrs = {
 				"placeholder": "Username",
-				"class": "form-control input-sm",
+				"class": "input__input input__input--lg",
 			}),
 			"email": forms.fields.TextInput(attrs = {
 				"placeholder": "Email",
-				"class": "form-control input-sm",
+				"class": "input__input input__input--lg",
 			}),
 			"password": forms.fields.TextInput(attrs = {
 				"placeholder": "Password",
-				"class": "form-control input-sm",
+				"class": "input__input input__input--lg",
 			}),
 		}
 
