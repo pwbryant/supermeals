@@ -15,6 +15,26 @@ html, body {
     font-family: "Philosopher"; 
 }
 
+.btn {
+    background-color: #ca365d;
+    border: none;
+    border-radius: 10px;
+    color: #f9e34b;
+    font-family: "Philosopher"; 
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.headline {
+    padding 3px; 
+    font-weight: bold;
+}
+
+.headline--md {
+    font-size: 30px;
+}
+
 .input__input {
     /* Display & Box Model */
     border-radius: 10px;
@@ -85,7 +105,7 @@ html, body {
 
 .text--highlight {
     /* Style */
-    color: red;
+    color: #ca365d;
     font-size:35px;
 }
 
@@ -252,6 +272,7 @@ html, body {
     display: flex;
     justify-content: start;
     flex-direction: column;
+    padding: 5px;
 }
 
 .l-flex--col-btw {
@@ -259,6 +280,7 @@ html, body {
     display: flex;
     justify-content: space-between;
     flex-direction: column;
+    padding: 5px;
 }
 
 .l-flex--row-btw {
@@ -266,6 +288,7 @@ html, body {
     display: flex;
     justify-content: space-between;
     flex-direction: row;
+    padding: 5px;
 }
 
 .l-flex--row-start {
@@ -273,6 +296,7 @@ html, body {
     display: flex;
     justify-content: start;
     flex-direction: row;
+    padding: 5px;
 }
 
 .l-flex--center {
@@ -280,6 +304,7 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 5px;
 }
 
 /* Modifiers */

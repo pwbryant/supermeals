@@ -4,14 +4,14 @@
 		<meta http-equiv="X-UA-Compatible" content="ID-edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link href="/static/meals/css/meals.css" rel="stylesheet">
-		<link href="/static/meals/css/signup.css" rel="stylesheet">
+		<link href="/static/meals/css/authenticate.css" rel="stylesheet">
 
 		<title>Meal Lab Sign Up</title>
 	</head>
 	<body>
         <div class="signup-container" >
             <form id='create-account-form' method="POST" action="/meals/create-account">
-                <div id="signup-form-content" class="content-box">   
+                <div class="content-box auth-form-content">   
                     <div id="username-input" class="input l-flex--col-start">
                         <label class="input__label">{{ form.username.label }}:</label>
                         {{ form.username }}

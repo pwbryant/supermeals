@@ -8,11 +8,11 @@
 /****************************************************/
 
 
-#signup-form-content {
+.auth-form-content {
     padding: 15%;
 }
 
-#signup-form-content > div {
+.auth-form-content > div {
     padding: 1%;
 }
 

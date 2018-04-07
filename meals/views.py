@@ -48,7 +48,7 @@ def get_my_macros(request):
     })
     
 
-def get_validation_errors(POST):
+def validate_POST(POST):
     """
     Validates mean_num and tdee from POST since these aren't
     part of a form

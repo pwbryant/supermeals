@@ -1,5 +1,5 @@
 <div id="my-macros-forms-container">
-    <h2 id="my-macros-headline" class="headline--md">Find Total Daily Energy Expenditure (TDEE)</h2>
+    <div id="my-macros-headline" class="headline--md">Find Total Daily Energy Expenditure (TDEE)</div>
     <div id="tdee-form-container" class="l-tdee" >
         <div id="unit-type" class="content-box l-tdee--top l-flex--col-start">
             <div class="content-box__header">Unit Type</div>
@@ -59,31 +59,31 @@
                     <div class="radio-input">
                         <input class="radio-input__input" type="radio" name="activity" value="none"/>
                     </div>
-                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+                    <span class="text-box__text">xxxx xx xxxx xx xx xxx xx xx xx </span>
                 </div>
                 <div class="text-box">
                     <div class="radio-input">
                         <input class="radio-input__input" type="radio" name="activity" value="light"/>
                     </div>
-                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+                    <span class="text-box__text">xxxx xx xxxx xx xx xxx xx xx xx </span>
                 </div>
                 <div class="text-box">
                     <div class="radio-input">
                         <input class="radio-input__input" type="radio" name="activity" value="medium"/>
                     </div>
-                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+                    <span class="text-box__text">xxxx xx xxxx xx xx xxx xx xx xx </span>
                 </div>
                 <div class="text-box">
                     <div class="radio-input">
                         <input class="radio-input__input" type="radio" name="activity" value="high"/>
                     </div>
-                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+                    <span class="text-box__text">xxxx xx xxxx xx xx xxx xx xx xx </span>
                 </div>
                 <div class="text-box">
                     <div class="radio-input">
                         <input class="radio-input__input" type="radio" name="activity" value="very high"/>
                     </div>
-                    <span class="text-box__text">xxx xxx xxx xxx xxx xxxx xx xxx xxxx xxxx xx xxxx xx xx xxx xx xx xx </span>
+                    <span class="text-box__text">xxxx xx xxxx xx xx xxx xx xx xx </span>
                 </div>
             </div>
         </div>
@@ -115,7 +115,7 @@
             </div>
         </div>
         <div class="content-box l-tdee--footer l-flex--row-btw">
-                <button id="calc-tdee" onclick="form-validation('tdee-form-container')">Calculate</button>
+                <button id="calc-tdee" class="btn" onclick="form-validation('tdee-form-container')">Calculate</button>
                 <div id="tdee-result" class="text--highlight"></div>
                 <div id="change-tdee-result" class="text--highlight"></div>
                 <input id="hidden-tdee" name="tdee" type="hidden"/>
@@ -149,17 +149,17 @@
                     <span id="choose-macros-total" class="text--label">100</span><span class="text--label">%</span>
                 </span>
             </div>
-            <button id="choose-macros-continue-button" disabled>Continue</button>
+            <button id="choose-macros-continue-button" class="btn" disabled>Continue</button>
         </div>
     </div>
-    <div id="meal-template-meals-number-form-container" class="content-box l-flex--col-btw">
+    <div id="meal-template-meals-number-form-container" class="content-box l-flex--col-btw hide">
         <div class="content-box__header">Break Up Your Daily Calories Into Meals/Snacks</div>
         <div id="meal-number-input" class="input l-flex--col-start">
             <label class="input__label">Number of meals/snacks per day?</label>
             <input class="input__input input__input--md" type="text" name="meal-number" placeholder="# meals/snacks" data-type="number"/>
         </div>
         <div class="l-flex--row-start">
-            <button id="meal-template-set-cals-continue-button" disabled>Continue</button>
+            <button id="meal-template-set-cals-continue-button" class="btn" disabled>Continue</button>
         </div>
     </div>
     <div id="meal-template-set-meal-cals-form-container"></div>

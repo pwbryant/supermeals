@@ -162,6 +162,7 @@ var calc_tdee = function() {
 			$("#hidden-tdee").val(Math.round(change_tdee_return_value));
 			
 			$("#choose-macros-form-container").removeClass("hide");
+            document.getElementById("choose-macros-continue-button").scrollIntoView();
 		}
 	});
 }
@@ -235,9 +236,10 @@ var macro_percent_totaler = function(percent_selector) {
 //tested
 var continue_button_displays_meal_snack_num_div = function() {
 	$("#choose-macros-continue-button").on("click", function() {
-		var form_validated = form_validation("id_choose_macros_form_container");
+		var form_validated = form_validation("choose-macros-form-container");
 		if (form_validated) {
 			$("#meal-template-meals-number-form-container").removeClass("hide");
+            document.getElementById("meal-template-set-cals-continue-button").scrollIntoView();
 		}
 	});
 
@@ -276,11 +278,12 @@ var display_set_cals_form = function() {
             set_cals_form += "<input class='input__input--sm' name='meal-" + i + "' type='text' value='" + equal_cals + "' data-value='" + equal_cals + "' data-type='number'/></div>";
 		}
 		set_cals_form += "<div class='l-flex--row-btw'><label class='input__label'>Cals Left</label><span id='meal-template-set-cals-total' class='text--label' name='remaining-cals'>0</span></div>";
-		set_cals_form += "<button id='save-my-macros-button'>Save Macro Info</button>";
+		set_cals_form += "<button id='save-my-macros-button' class='btn'>Save Macro Info</button>";
         set_cals_form += "</div></div>"
 		$("#meal-template-set-meal-cals-form-container").html(set_cals_form)
 		save_my_macros_button_posts_form();//listener for save button
 		meal_template_set_cals_totaler();//start lister on new inputs 
+        document.getElementById("save-my-macros-button").scrollIntoView();
 
 	});
 }

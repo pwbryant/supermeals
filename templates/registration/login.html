@@ -1,57 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
+	<head>
         <title>Login</title>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="ID-edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="/static/meals/css/meals.css" rel="stylesheet">
+		<link href="/static/meals/css/authenticate.css" rel="stylesheet">
+
     </head>
 
     <body>
-            
+        <div id="login-container"> 
+            <div id="login-errors">
 
-        {% if form.errors %}
-        <p>Your username and password didn't match. Please try again.</p>
-        {% endif %}
+                {% if form.errors %}
+                <p>Your username and password didn't match. Please try again.</p>
+                {% endif %}
 
-        {% if next %}
-            {% if user.is_authenticated %}
-                <p>Your account doesn't have access to this page. To proceed,
-                    please login with an account that has access.</p>
-            {% else %}
-                <p>Please login to see this page.</p>
-            {% endif %}
-        {% endif %}
-
-        <form method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-
-            <div>
-                <td>{{ form.username.label_tag }}</td>
-                <td>{{ form.username }}</td>
-            </div>
-            <div>
-                <td>{{ form.password.label_tag }}</td>
-                <td>{{ form.password }}</td>
+                {% if next %}
+                    {% if user.is_authenticated %}
+                        <p>Your account doesn't have access to this page. To proceed,
+                            please login with an account that has access.</p>
+                    {% else %}
+                        <p>Please login to see this page.</p>
+                    {% endif %}
+                {% endif %}
             </div>
 
-            <div>
-                <input type="submit" value="login" />
-                <input type="hidden" name="next" value="{{ next }}" />
-            </div>
-            <p>- Or -</p>
-            <div>
-                <input type="submit" value="As Guest" />
-            </div>
+            <form method="post" action="{% url 'login' %}">
+                <div id="login-form" class="content-box auth-form-content">
+                    {% csrf_token %}
 
-            <script src="http://code.jquery.com/jquery.js"></script>
-            <script>
-                    $("input[value='As Guest']").on("click", function() {
-                        $("input[name='username']").val('guest');
-                        $("input[name='password']").val('pass4guest');
-                    });
-            </script>
+                    <div id="login-username-input" class="input l-flex--col-start">
+                        <label class="input__label">Username:</label>
+                        <input class="input__input input__input--lg" name="username" placeholder="Username"/>
+                    </div>
 
-        </form>
+                    <div id="login-password-input" class="input l-flex--col-start">
+                        <label class="input__label">Password:</label>
+                        <input class="input__input input__input--lg" name="password" placeholder="Password"/>
+                    </div>
 
+                    <div>
+                        <input class="btn" type="submit" value="Login" />
+                        <input class="btn" type="hidden" name="next" value="{{ next }}" />
+                    </div>
+                    <p class="text--label">- Or -</p>
+                    <div>
+                        <input class="btn" type="submit" value="Login As Guest" />
+                    </div>
+                </div>
+            </form>
+
+
+        </div>
+        <script src="http://code.jquery.com/jquery.js"></script>
+        <script>
+                $("input[value='Login As Guest']").on("click", function() {
+                    $("input[name='username']").val('guest');
+                    $("input[name='password']").val('pass4guest');
+                });
+        </script>
     </body>
+
 </html>
 
