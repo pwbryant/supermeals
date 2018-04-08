@@ -5,7 +5,7 @@ from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
 from decimal import Decimal
-from meals.forms import LoginForm, SignUpForm, MakeMacrosForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR,DEFAULT_INVALID_INT_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR
+from meals.forms import SignUpForm, MakeMacrosForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR,DEFAULT_INVALID_INT_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR
 from meals.models import Macros,MealTemplate,Foods
 from meals.views import save_my_macros,save_meal_templates,get_meal_maker_template,make_meal_template_unique_cal_dict_list,make_macro_breakdown_dict_list
 import json
@@ -67,15 +67,15 @@ class MealMakerTest(TestCase):
             return macro
             
     def create_default_meal_templates(self,user):
-        MealTemplate.objects.create(user=user,name='meal_0',cals_percent=Decimal('28'))
-        MealTemplate.objects.create(user=user,name='meal_1',cals_percent=Decimal('28'))
-        MealTemplate.objects.create(user=user,name='meal_2',cals_percent=Decimal('28'))
-        MealTemplate.objects.create(user=user,name='meal_3',cals_percent=Decimal('16'))
-
+        meal_template1 = MealTemplate.objects.create(user=user,name='meal_0',cals_percent=Decimal('28'))
+        meal_template2 = MealTemplate.objects.create(user=user,name='meal_1',cals_percent=Decimal('28'))
+        meal_template3 = MealTemplate.objects.create(user=user,name='meal_2',cals_percent=Decimal('28'))
+        meal_template4 = MealTemplate.objects.create(user=user,name='meal_3',cals_percent=Decimal('16'))
+        return(meal_template1,meal_template2,meal_template3,meal_template4)
 
     def log_in_user(self,USERNAME,PASSWORD):
         user = User.objects.create_user(username=USERNAME,password=PASSWORD)
-        self.client.post('/meals/logging-in', data={'username':USERNAME, 'password':PASSWORD})
+        self.client.post('/accounts/login/', data={'username':USERNAME, 'password':PASSWORD})
         return user
 
     #################################
@@ -83,7 +83,7 @@ class MealMakerTest(TestCase):
     #################################
     def test_search_food_url_returns_food_dict_with_array_greater_than_0(self):
         user = self.log_in_user(USERNAME,PASSWORD)
-        response = self.client.get('/meals/search_foods/',data={'search_terms':'garbonzo beans'})
+        response = self.client.get('/meals/search-foods/',data={'search_terms':'garbonzo beans'})
         response_dict = json.loads(response.content.decode())
         self.assertTrue(len(response_dict['search_results']) > 0)
     
@@ -129,14 +129,14 @@ class MealMakerTest(TestCase):
     def test_get_meal_maker_template_has_macro_returns_correct_html(self):
             
         user = self.log_in_user(USERNAME,PASSWORD)
-        self.create_default_macro(user)
-        self.create_default_meal_templates(user)
-
+        default_macro = self.create_default_macro(user)
+        meal_templates = self.create_default_meal_templates(user)
+        
         request = HttpRequest()
         request.user = user
         response = get_meal_maker_template(request)
         expected_html = render_to_string('meal_maker.html',{
-                'tdee':2111,
+                'tdee':1883,
                 'meal_templates':self.MEAL_TEMPLATES,
                 'macro_breakdown':self.MACRO_BREAKDOWN
         })
@@ -149,50 +149,42 @@ class LoginLogoffTest(TestCase):
     def test_anonymous_user_home_redirects_to_login_template(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], 'meals/login/')
-
-    def test_login_page_uses_login_form(self):
-        response = self.client.get('/meals/login/')
-        self.assertIsInstance(response.context['form'], LoginForm)
+        self.assertEqual(response['location'], '/accounts/login/')
 
     def test_can_login_as_authenticated_user(self):
         username,password = USERNAME,PASSWORD
         user = User.objects.create_user(username=username,password=password)
-        response = self.client.post('/meals/logging-in', data={'username':username, 'password':password})
+        response = self.client.post('/accounts/login/', data={'username':username, 'password':password})
         
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/')
 
     def test_can_login_as_guest(self):
         guest_user = User.objects.create_user(username=GUEST_USERNAME,password=GUEST_PASSWORD)
-        response = self.client.post('/meals/logging-in', data={'username':GUEST_USERNAME, 'password':GUEST_PASSWORD})
+        response = self.client.post('/accounts/login/', data={'username':GUEST_USERNAME, 'password':GUEST_PASSWORD})
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/')
 
     def test_login_error_renders_login_page(self):
-        response = self.client.post('/meals/logging-in', data={'username':BAD_USERNAME, 'password':BAD_PASSWORD})
+        response = self.client.post('/accounts/login/', data={'username':BAD_USERNAME, 'password':BAD_PASSWORD})
         self.assertEqual(response.status_code,200)
-        self.assertTemplateUsed(response,'login.html')
-
-    def test_login_error_login_page_gets_back_login_form(self):
-        response = self.client.post('/meals/logging-in', data={'username':BAD_USERNAME, 'password':BAD_PASSWORD})
-        self.assertIsInstance(response.context['form'], LoginForm)
+        self.assertTemplateUsed(response,'registration/login.html')
 
     def test_login_error_shows_up_on_login_page(self):
-        response = self.client.post('/meals/logging-in', data={'username':BAD_USERNAME, 'password':BAD_PASSWORD})
-        expected_error = "Username or Password incorrect"
+        response = self.client.post('/accounts/login/', data={'username':BAD_USERNAME, 'password':BAD_PASSWORD})
+        expected_error = "Your username and password didn't match. Please try again."
         self.assertContains(response,expected_error)
 
     def test_logoff(self):
         guest_user = User.objects.create_user(username=GUEST_USERNAME,password=GUEST_PASSWORD)
-        response = self.client.post('/meals/logging-in', data={'username':GUEST_USERNAME, 'password':GUEST_PASSWORD})
+        response = self.client.post('/accounts/login/', data={'username':GUEST_USERNAME, 'password':GUEST_PASSWORD})
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'base.html')
 
-        response = self.client.post('/meals/logging-off/')
+        response = self.client.post('/accounts/logout/')
         response = self.client.get('/')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], 'meals/login/')
+        self.assertEqual(response['location'], '/accounts/login/')
 
 
 class CreateAccountTest(TestCase):

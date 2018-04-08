@@ -33,10 +33,10 @@
             <div id="weight-input" class="input l-flex--col-start">
                 <label class="input__label">Weight:</label>
                     {% if form.unit_type.initial == "imperial" %}
-                        <input type="text" class="input__input input__input--sm" name="weight-i" placeholder="Weight(lb)"/>
+                        <input type="text" class="input__input input__input--sm" name="weight-i" placeholder="lbs"/>
                     {% endif %}
                     {% if form.unit_type.initial == "metric" %}
-                        <input type="text" class="input__input input__input--sm" name="weight-m" placeholder="Weight(kg)"/>
+                        <input type="text" class="input__input input__input--sm" name="weight-m" placeholder="kgs"/>
                     {% endif %}
             </div>
             <div id="height-input" class="input l-flex--col-start">

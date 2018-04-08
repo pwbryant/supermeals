@@ -20,7 +20,6 @@
                 </div>
                 <div class="header__nav">
                     {% if user.is_authenticated and user.get_username != 'guest' %}
-                        {{ user }}
                         <a id="logoff" href="/accounts/logout/?next=/accounts/login/">
                             <div class="header__nav-tab">Logout</div>
                         </a>
@@ -30,6 +29,9 @@
                         </a>
                         <a id="login" href="/accounts/login/">
                             <div class="header__nav-tab">Login</div>
+                        </a>
+                        <a id="logoff" href="/accounts/logout/?next=/accounts/login/">
+                            <div class="header__nav-tab">Logout</div>
                         </a>
                     {% endif %}
                 </div>
@@ -44,12 +46,13 @@
         </div>
         
 		<script src="http://code.jquery.com/jquery.js"></script>
-        <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+        <!--<script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>-->
 		<script src="/static/bootstrap/js/bootstrap.min.js"></script>
 		<script src="/static/meals/js/calc_my_macros.js"></script>
 		<script src="/static/meals/js/meal_maker.js"></script>
         <!--<script src="/static/d3/d3.min.js"></script>-->
 		<script>
+            set_navs_to_active();
 			hide_home_header_on_tab_select();
 			key_press_hides_error();
 			get_my_macros_page_content();

@@ -40,12 +40,12 @@ class FunctionalTest(StaticLiveServerTestCase):
 			if username == "guest":
 				login_button_id = "guest"
 			else:
-				self.fill_input(["input[name='username'","input[name='password']"],[username,password])
-				login_button_id = "login"
+                            self.fill_input(["input[name='username']","input[name='password']"],[username,password])
+                            login_button = "input[value='Login']"
 		else:
-			login_button_id = "login"
+			login_button = "input[value='Login']"
 
-		self.browser.find_element_by_id(login_button_id).click()
+		self.browser.find_element_by_css_selector(login_button).click()
 
 	def check_element_content(self,selector,selector_type,comparison_type, comparison_text,child=None):
 	

@@ -35,7 +35,7 @@ class CalcAndViewMacros(FunctionalTest):
         self.check_element_content("age-input","id","text","Age:","label")
         self.check_element_content("age-input","id","placeholder","Age","input")
         self.check_element_content("weight-input","id","text","Weight:","label")
-        self.check_element_content("weight-input","id","placeholder","Weight(lb)","input")
+        self.check_element_content("weight-input","id","placeholder","lbs","input")
 
         self.check_element_content("height-input","id","text","Height:","label")
         self.check_element_content("input[placeholder='ft']","css","placeholder","ft")

@@ -11,9 +11,17 @@ var key_press_hides_error = function () {
 	});
 };
 
+//not tested
+var set_navs_to_active = function() {
+	$(".header__nav-tab").on("click",function() {
+        $(".header__nav-tab").removeClass('active');
+        $(this).addClass('active');
+    });
+}
+
 //tested
 var hide_home_header_on_tab_select = function() {
-	$(".nav-tabs").on("click",function() {
+	$(".header__nav-tab").on("click",function() {
 		$("#id_home_headline").hide();
 	});
 };

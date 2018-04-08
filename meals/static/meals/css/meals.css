@@ -15,6 +15,10 @@ html, body {
     font-family: "Philosopher"; 
 }
 
+a {
+    text-decoration:none;
+}
+
 .btn {
     background-color: #ca365d;
     border: none;
@@ -155,10 +159,12 @@ html, body {
     font-size: 25px;
 }
 
-.header__nav-tab:hover {
+.header__nav-tab:hover,.header__nav-tab.active {
     /* Style */
-    background-color: #f9e34b; 
+    background-color: #ca365d;
+    /*background-color: #f9e34b; 
     color: #0d1650;
+    */
 }
 
 .page-content {

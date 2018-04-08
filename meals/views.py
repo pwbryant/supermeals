@@ -16,7 +16,11 @@ IN_TO_CM = .3937
 
 # Create your views here.
 def home_or_login(request):
-    return render(request, 'base.html') 
+    
+    if request.user.is_authenticated():
+        return render(request, 'base.html') 
+    else:
+        return redirect('login') 
 
 
 def sign_up(request):
