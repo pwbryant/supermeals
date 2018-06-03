@@ -186,7 +186,7 @@ var MM_FUNK = (function() {
 					obj.SEARCH_RESULTS = search_results; 
 					search_results_html = format_food_search_results(search_results);
 					$('#meal-maker-food-search-results-container').html(search_results_html);
-					obj.add_search_result_add_button_trigger();
+					obj.add_search_result_button_trigger();
 					obj.SEARCH_RESULT_ADD_BUTTON_LISTENER_EXISTS = true;
 				} else {
 					search_results_html = '<span>No Foods Found</span>';
@@ -203,8 +203,16 @@ var MM_FUNK = (function() {
 		var search_result_index = parseFloat(search_add_button.id[search_add_button.id.length-1]),
 		search_result_obj = obj.SEARCH_RESULTS[search_result_index];
         console.log(search_result_obj);
+        return search_result_obj;
         
-	};
+	},
+    create_result_html_svg = function(food_macros_obj) {
+        console.log('in html svg funk');
+        let food_div = "<div class='ingredient-container'>";
+        food_div += '</div>';
+        $('#meal-maker-ingredient-content').append(food_div);
+    }
+    ;
 
 	//macro breakdown functions 
 	return {
@@ -213,10 +221,11 @@ var MM_FUNK = (function() {
 		CAL_BAR_WIDTH: 200,
 		SCALE_CAL_TO_HEIGHT : d3.scaleLinear().domain([0,1]).range([0,1]),//initialize value
 		SEARCH_RESULT_ADD_BUTTON_LISTENER_EXISTS: 0,
-		add_search_result_add_button_trigger : function() {
+		add_search_result_button_trigger : function() {
 			mm_funk_obj = this;
 			$('.search-result>button').on('click',function() {
-				create_food_macros_obj(this,mm_funk_obj);
+				const food_macros_obj = create_food_macros_obj(this,mm_funk_obj);
+                create_result_html_svg(food_macros_obj);
 
 			});
 		},

@@ -1,3 +1,54 @@
+/****************************************************/
+/* General tags and classes
+ * 
+ * Rules for tags and non-positional classes
+ * are found here.
+*/
+/****************************************************/
+.ingredient-container {
+    height: 100%;
+    width: 20%;
+    background-color: blue;
+}
+
+.item {
+    width: 50px;
+}
+
+/****************************************************/
+/* Positional tags and classes
+ * 
+ * Rules for positional classes (header, content, footer)
+ * are found here.
+ *
+/****************************************************/
+.sidebar {
+    grid-area: sb;
+}
+.macro-area {
+    grid-area: m;
+}
+.search-area {
+    grid-area: s;
+    overflow: auto;
+}
+.ingredient-area {
+    grid-area: in;
+}
+
+
+/****************************************************/
+/* ID specific 
+ * 
+ *
+/****************************************************/
+
+#goal-meal-macros-container {
+    display: grid;
+    grid-gap:5px;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto;
+}
 
 #meal-maker-container {
     height: 100%;
@@ -11,37 +62,22 @@
         "in in in in in in in in in in in in";
 }
 
-#goal-meal-macros-container {
-    display: grid;
-    grid-gap:5px;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: auto;
+#meal-maker-ingredient-container {
+    display:flex;
+    flex-direction: column;
 }
 
-.item {
-    width: 50px;
+
+#meal-maker-ingredient-header {
+    height: 10%;
 }
 
-.sidebar {
-    grid-area: sb;
-}
-.macro-area {
-    grid-area: m;
-}
-.search-area {
-    grid-area: s;
-}
-.ingredient-area {
-    grid-area: in;
+#meal-maker-ingredient-content {
+    flex: 1;
+    display: flex;
 }
 
 #tdee {
     color: blue;
 }
 
-.test-item {
-    background-color: red;
-    width: 10%;
-    height: 90%;
-
-}
