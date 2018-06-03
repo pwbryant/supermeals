@@ -40,7 +40,8 @@ var get_my_macros_page_content = function() {
 var get_meal_maker_page_content = function() {
 	$("#meal-maker-tab").on("click",function() {
 		$.get("/meals/meal-maker/",function(data) {
-			$("#id-meal-maker-container").html(data);
+			$("#meal-maker-container").removeClass("hide");
+			$("#meal-maker-container").html(data);
 		});
 	});
 };
@@ -373,7 +374,7 @@ var form_validation = function(form_id) {
 		$("#client-side-form-errors").html(error_html);
 		return 0;
 	} else {
-		$("#client-sid-form-errors").html("");
+		$("#client-side-form-errors").html("");
 		return 1;
 	}	
 }

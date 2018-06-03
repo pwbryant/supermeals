@@ -25,7 +25,7 @@ EMPTY_CALS_ERROR = "Meal/Snack Calories Missing"
 
 
 class SignUpForm(forms.models.ModelForm):
-	
+	required=False
 	class Meta:
 
 		model = User

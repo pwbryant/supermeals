@@ -1,0 +1,73 @@
+/****************************************************/
+/* ID dependant classes
+ * 
+ * Rules for ID dependant classe, i.e #id .class {}
+ * are found here.
+ *
+/****************************************************/
+#choose-macros-form {
+    /* Display & Box Model */
+    width: 30%;
+    height: 30%;
+}
+
+#choose-macros-form .table-like__cell {
+    /* Display & Box Model */
+    width: 20%;
+}
+
+#set-cals-form-container {
+    /* Display & Box Model */
+    width: 15%;
+}
+
+/****************************************************/
+/* Layout classes
+ * 
+ * Rules for layout classes
+ * are found here.
+ *
+/****************************************************/
+/* Layout */
+.l-tdee {
+    /* Display & Box Model */
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: repeat(9,1fr);
+    grid-template-areas: 
+    "h h h h h h h h h" 
+    "s s mt mt mt mt mt mt mt" 
+    "s s mt mt mt mt mt mt mt" 
+    "s s mt mt mt mt mt mt mt" 
+    "s s mt mt mt mt mt mt mt" 
+    "s s ml ml ml ml ml ml ml" 
+    "s s ml ml ml ml ml ml ml" 
+    "f f f f f f f f f" 
+    "f f f f f f f f f"; 
+}
+
+.l-tdee--top {
+    /* Display & Box Model */
+    grid-area: h;
+}
+
+.l-tdee--side {
+    /* Display & Box Model */
+    grid-area: s;
+}
+
+.l-tdee--mid-top {
+    /* Display & Box Model */
+    grid-area: mt;
+}
+
+.l-tdee--mid-bottom {
+    /* Display & Box Model */
+    grid-area: ml;
+}
+
+.l-tdee--footer {
+    /* Display & Box Model */
+    grid-area: f;
+}
+

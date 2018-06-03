@@ -368,4 +368,7 @@ def search_foods(request):
     query_str = ' | '.join(query_build_list)
     query = eval(query_str)
     search_result_dicts = [f.as_dict() for f in Foods.objects.filter(query)[:10]]
-    return HttpResponse(json.dumps({'search_results':search_result_dicts},cls=DjangoJSONEncoder),content_type='application/json' )
+    print('serach results',len(search_result_dicts))
+    print('table count',Foods.objects.all().count())
+    return HttpResponse(json.dumps({'search-results':search_result_dicts},cls=DjangoJSONEncoder),content_type='application/json' )
+

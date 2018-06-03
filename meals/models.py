@@ -89,3 +89,8 @@ class Foods(models.Model):
 			"carbs_per_gram":self.carbs_per_gram,
 			"protein_per_gram":self.protein_per_gram
 		}
+
+class Temp(models.Model):
+
+	field1 = models.TextField(blank=False)
+	field2 = models.TextField(blank=False)

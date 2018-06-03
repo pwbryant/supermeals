@@ -50,7 +50,7 @@ class FunctionalTest(StaticLiveServerTestCase):
 	def check_element_content(self,selector,selector_type,comparison_type, comparison_text,child=None):
 	
 		if selector_type == "id":
-			element = self.browser.find_element_by_id(selector)
+                    element = self.browser.find_element_by_id(selector)
 		
 		if selector_type == "css":
 			element = self.browser.find_element_by_css_selector(selector)

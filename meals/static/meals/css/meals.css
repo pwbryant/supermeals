@@ -1,321 +1,47 @@
 
-/****************************************************/
-/* General tags and classes
- * 
- * Rules for tags and non-positional classes
- * are found here.
-*/
-/****************************************************/
-html, body {
-    /* Display & Box Model */
-    height: 100vh; 
-    margin: 0;
-    /* Style */
-    background-color: #e9e1cf;
-    font-family: "Philosopher"; 
-}
-
-a {
-    text-decoration:none;
-}
-
-.btn {
-    background-color: #ca365d;
-    border: none;
-    border-radius: 10px;
-    color: #f9e34b;
-    font-family: "Philosopher"; 
-    font-size: 20px;
-    font-weight: bold;
-    padding: 10px;
-}
-
-.headline {
-    padding 3px; 
-    font-weight: bold;
-}
-
-.headline--md {
-    font-size: 30px;
-}
-
-.input__input {
-    /* Display & Box Model */
-    border-radius: 10px;
-    height: 30px;
-    padding-left: 5px;
-}
-
-.input__input--sm {
-    /* Display & Box Model */
-    width: 75px;
-}
-
-.input__input--md {
-    /* Display & Box Model */
-    width: 115px;
-}
-
-.input__input--lg {
-    /* Display & Box Model */
-    width: 250px;
-}
-
-.input__label {
-    /* Style */
-    color: #f9e34b;
-    font-size: 20px;
-}
-
-.radio-input__label {
-    /* Style */
-    color: #f9e34b;
-    font-size: 20px;
-}
-
-.radio-input__input {
-    /* Display & Box Model */
-    height:2em;
-    width:2em;
-}
-
-.table-like__cell--header {
-    /* Display & Box Model */
-    text-align: center;
-}
-
-.text-box {
-    /* Display & Box Model */
-   flex-wrap: nowrap;
-   padding:5px;
-}
-
-.text-box__text {
-    /* Style */
-    color: #f9e34b;
-    font-size:25px;
-}
-
-.text--color-alert {
-    /* Style */
-    color: red !important;
-}
-
-.text--primary {
-    /* Style */
-    color: #f9e34b;
-    font-size:25px;
-}
-
-.text--highlight {
-    /* Style */
-    color: #ca365d;
-    font-size:35px;
-}
-
-.text--label {
-    /* Style */
-    color: #f9e34b;
-    font-size: 20px;
-}
-
-/****************************************************/
-/* Positional tags and classes
- * 
- * Rules for positional classes (header, content, footer)
- * are found here.
- *
-/****************************************************/
-
-.container {
-    /* Display & Box Model */
-    display: flex;
-    flex-direction: column;
-    /* height: 100%; */
-    height: 500px;
-}
-
-.header {
-    /* Display & Box Model */
-    display: flex;
-    height:10%;
-    justify-content: space-between;
-    width: 100%;
-    /* Style */
-    background-color: #0d1650;
-}
-
-.header__nav {
-    /* Display & Box Model */
-    display: flex;
+#meal-maker-container {
     height: 100%;
+    width: 100%;
+    display: grid; 
+    grid-gap: 3px;
+    grid-template-columns: repeat(12,1fr);
+    grid-template-rows: auto 50%;
+    grid-template-areas:
+        "sb m m m m m m m m s s s"
+        "in in in in in in in in in in in in";
 }
 
-.header__nav-tab {
-    /* Display & Box Model */
-    padding: 10px;
-    /* Style */
-    color: #f9e34b;
-    font-size: 25px;
-}
-
-.header__nav-tab:hover,.header__nav-tab.active {
-    /* Style */
-    background-color: #ca365d;
-    /*background-color: #f9e34b; 
-    color: #0d1650;
-    */
-}
-
-.page-content {
-    /* Display & Box Model */
-    display: flex;
-    flex-direction: column;
-    /*height: 100%;*/
-    padding: 20px;
-
-}
-
-.content {
-    /* Display & Box Model */
-    height:90%;
-    /* Style */
-    border: 1px solid #dac15b;
-}
-
-.content-box {
-    /* Display & Box Model */
-    padding: 5px;
-    margin: 5px;
-    /* Style */
-    background-color: #0d1650;
-}
-
-.content-box__header {
-    /* Display & Box Model */
-    padding: 5px;
-    /* Style */
-    border-bottom: 3px solid #e4b93f;
-    color: #e9e1cf;
-    font-size: 25px;
-}
-
-/****************************************************/
-/* ID dependant classes
- * 
- * Rules for ID dependant classe, i.e #id .class {}
- * are found here.
- *
-/****************************************************/
-#choose-macros-form {
-    /* Display & Box Model */
-    width: 30%;
-    height: 30%;
-}
-
-#choose-macros-form .table-like__cell {
-    /* Display & Box Model */
-    width: 20%;
-}
-
-#set-cals-form-container {
-    /* Display & Box Model */
-    width: 15%;
-}
-
-/****************************************************/
-/* Layout classes
- * 
- * Rules for layout classes
- * are found here.
- *
-/****************************************************/
-/* Layout */
-.l-tdee {
-    /* Display & Box Model */
+#goal-meal-macros-container {
     display: grid;
+    grid-gap:5px;
+    grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: auto;
-    grid-template-columns: repeat(9,1fr);
-    grid-template-areas: 
-    "h h h h h h h h h" 
-    "s s mt mt mt mt mt mt mt" 
-    "s s mt mt mt mt mt mt mt" 
-    "s s mt mt mt mt mt mt mt" 
-    "s s mt mt mt mt mt mt mt" 
-    "s s ml ml ml ml ml ml ml" 
-    "s s ml ml ml ml ml ml ml" 
-    "f f f f f f f f f" 
-    "f f f f f f f f f"; 
 }
 
-.l-tdee--top {
-    /* Display & Box Model */
-    grid-area: h;
+.item {
+    width: 50px;
 }
 
-.l-tdee--side {
-    /* Display & Box Model */
+.sidebar {
+    grid-area: sb;
+}
+.macro-area {
+    grid-area: m;
+}
+.search-area {
     grid-area: s;
 }
-
-.l-tdee--mid-top {
-    /* Display & Box Model */
-    grid-area: mt;
+.ingredient-area {
+    grid-area: in;
 }
 
-.l-tdee--mid-bottom {
-    /* Display & Box Model */
-    grid-area: ml;
+#tdee {
+    color: blue;
 }
 
-.l-tdee--footer {
-    /* Display & Box Model */
-    grid-area: f;
-}
+.test-item {
+    background-color: red;
+    width: 10%;
+    height: 90%;
 
-.l-flex--col-start {
-    /* Display & Box Model */
-    display: flex;
-    justify-content: start;
-    flex-direction: column;
-    padding: 5px;
-}
-
-.l-flex--col-btw {
-    /* Display & Box Model */
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-    padding: 5px;
-}
-
-.l-flex--row-btw {
-    /* Display & Box Model */
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row;
-    padding: 5px;
-}
-
-.l-flex--row-start {
-    /* Display & Box Model */
-    display: flex;
-    justify-content: start;
-    flex-direction: row;
-    padding: 5px;
-}
-
-.l-flex--center {
-    /* Display & Box Model */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 5px;
-}
-
-/* Modifiers */
-.hide {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
 }
