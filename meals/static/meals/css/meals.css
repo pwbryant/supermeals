@@ -6,9 +6,32 @@
 */
 /****************************************************/
 .ingredient-container {
-    height: 100%;
-    width: 20%;
     background-color: blue;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin-left: 5px;
+    width: 20%;
+}
+
+.ingredient-container-header {
+    height: 10%;
+}
+
+.ingredient-container-bars {
+    display: flex;
+    justify-content: end;
+    height: 80%;
+
+}
+
+.ingredient-container-footer {
+    height: 10%;
+}
+
+.ingredient-macro-svg {
+    background-color: yellow;
+    margin-left: 5%;
 }
 
 .item {

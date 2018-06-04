@@ -1,18 +1,19 @@
 var MM_FUNK = (function() { 
-	var MACRO_FACTORS = {
+	const MACRO_FACTORS = {
 		'fat':9,
 		'carbs':4,
 		'protein':4
-	},
-    enable_disable_create_macro_bars_button = function(obj) {
+	};
+    const MACRO_NAMES = ['cals', 'fat', 'carbs', 'protein'];
+    const enable_disable_create_macro_bars_button = function(obj) {
 		var pct_amt = parseFloat($('#goal-meal-macro-percent-total').html());
 		if (pct_amt == 0 && obj.CAL_GOAL != 0) {
 			$('#create-macro-bars-button').attr('disabled',false)
 		} else {
 			$('#create-macro-bars-button').attr('disabled',true)
 		}
-	},
-    goal_meal_macro_percent_totaler = function(this_) {
+	};
+    const goal_meal_macro_percent_totaler = function(this_) {
 		let new_macro_percent = parseFloat($(this_).val());
 		const old_macro_percent = parseFloat($(this_).attr('data-value'));
 
@@ -27,8 +28,8 @@ var MM_FUNK = (function() {
 		$('#goal-meal-macro-percent-total').html(new_percent_total);
 		$(this_).attr('data-value',new_macro_percent);
 
-	},
-    get_goal_meal_cals_and_set_grams= function(this_) {
+	};
+    const get_goal_meal_cals_and_set_grams= function(this_) {
 		if ($.trim(this_.value) != 'header' && $.trim(this_.value) != '' && isNaN(this_.value) == false) {
 			var cals = parseFloat(this_.value),
 			fat_percent = parseFloat($('#goal-meal-fat-percent').val()),
@@ -46,8 +47,8 @@ var MM_FUNK = (function() {
 			$('#goal-meal-carbs-g').val('-');
 			$('#goal-meal-protein-g').val('-');
 		}
-	},
-	convert_macro_pct_grams = function(this_) {
+	};
+	const convert_macro_pct_grams = function(this_) {
 		let cals = $('#goal-meal-cals').val();
 		if (cals == '') {
 			cals = parseFloat($('#goal-meal-cals-select').find(':selected').val());
@@ -76,14 +77,14 @@ var MM_FUNK = (function() {
 			$(return_id).val(return_value);
 		}
 
-	},
-	set_mm_funk_goal_cals = function(obj,this_) {
+	};
+	const set_mm_funk_goal_cals = function(obj,this_) {
 		if ($.trim(this_.value) != 'header' && $.trim(this_.value) != '' && isNaN(this_.value) == false) {
 			obj.CAL_GOAL = parseFloat(this_.value);
 		} else { obj.CAL_GOAL = 0;
 		}	
-	},
-	create_macros_obj = function(obj) {
+	};
+	const create_macros_obj = function(obj) {
 		obj.SCALE_CAL_TO_HEIGHT.domain([0,obj.CAL_GOAL]);
 		obj.SCALE_CAL_TO_HEIGHT.range([0,obj.CAL_BAR_HEIGHT]);
 		obj.MACROS_SVG =d3.select('#goal-macros-svg') 
@@ -112,8 +113,8 @@ var MM_FUNK = (function() {
 			obj.MACROS[macro]['label_y'] = macro_label_y; 
 			obj.MACROS[macro]['error'] = max_bar_height * .1;
 		}
-	},
-	create_macro_bars = function(obj) {
+	};
+	const create_macro_bars = function(obj) {
 		var macro_data = Object.values(obj.MACROS);
 		obj.MACROS_SVG.selectAll(".goal-bars").data(macro_data)
 			.enter()
@@ -130,8 +131,8 @@ var MM_FUNK = (function() {
 			.attr(	'id', function(d) {  
                     return 'goal-' + d.macro + '-bar'; }
 			);
-	},
-	create_macro_error_bars = function(obj) {
+	};
+	const create_macro_error_bars = function(obj) {
 		
 		var macros_copy = Object.assign({},obj.MACROS);
 		delete macros_copy['cals']; 
@@ -147,8 +148,8 @@ var MM_FUNK = (function() {
 			.attr('fill','green')
 			.attr('id', function(d) { return 'goal-' + d.macro + '-error-bar'; }
 			);
-	},
-	create_macro_bar_labels = function(obj) {
+	};
+	const create_macro_bar_labels = function(obj) {
 		var macro_data = Object.values(obj.MACROS);
 		obj.MACROS_SVG.selectAll(".goal-bar-labels").data(macro_data)
 			.enter()
@@ -168,16 +169,16 @@ var MM_FUNK = (function() {
             })
             .attr('class', '.goal-macro-bar-label');
 		
-	},
-	format_food_search_results = function(search_results) {
+	};
+	const format_food_search_results = function(search_results) {
 
 		var search_results_html = '';	
 		search_results.forEach(function(e,i) {
 			search_results_html += "<div class='search-result'><span>" + e.name + "</span><button id='search-result-food-" + i + "' class='icon'><i class='fa fa-plus'></i></button></div>"; 
 		});
 		return search_results_html;
-	},
-	meal_maker_food_search = function(obj) { var search_terms = $.trim($('#meal-maker-food-search-input').val());
+	};
+	const meal_maker_food_search = function(obj) { var search_terms = $.trim($('#meal-maker-food-search-input').val());
 		if(search_terms != '') {
 			$.get('/meals/search-foods/',{'search_terms':search_terms},function(data) {
 				var search_results = data['search-results'],
@@ -198,21 +199,51 @@ var MM_FUNK = (function() {
 			$('#meal-maker-food-search-input').val('');
 			$('#meal-maker-food-search-results-container').html('');
 		}
-	},
-	create_food_macros_obj = function(search_add_button,obj) {
+	};
+	const create_food_macros_obj = function(search_add_button,obj) {
 		var search_result_index = parseFloat(search_add_button.id[search_add_button.id.length-1]),
 		search_result_obj = obj.SEARCH_RESULTS[search_result_index];
-        console.log(search_result_obj);
         return search_result_obj;
         
-	},
-    create_result_html_svg = function(food_macros_obj) {
-        console.log('in html svg funk');
-        let food_div = "<div class='ingredient-container'>";
+	};
+    const create_ingredient_macro_containers = function(food_macros_obj) {
+        
+        let food_div = `<div id='ingredient-${food_macros_obj.id}-container' class='ingredient-container'>`;
+        food_div += `<div class='ingredient-container-header'>header</div>`;
+        food_div += `<div id='ingredient-${food_macros_obj.id}-bars' class='ingredient-container-bars'>`;
+        for (let i=0; i<4; i++) {
+            food_div += `<svg id='ingredient-${food_macros_obj.id}-${MACRO_NAMES[i]}-svg' class='ingredient-${food_macros_obj.id}-svg ingredient-macro-svg' style='height:100%;width:20%'></svg>`;
+
+        }
         food_div += '</div>';
+        food_div += "<div class='ingredient-container-footer'>footer</div>";
+        food_div += '</div>'; 
+            
         $('#meal-maker-ingredient-content').append(food_div);
-    }
-    ;
+    };
+    const create_ingredient_macros_bars = function(food_macros_obj) {
+
+
+        const cals_per_gram = food_macros_obj['cals_per_gram'];
+
+        $(`.ingredient-${food_macros_obj.id}-svg`).each(function(i,e) {
+            let svg = d3.select(`#${e.id}`);
+            const svg_height = $(`#${e.id}`).height();
+            const macro = e.id.split('-')[2]; //id format ingrdient-id-macro-svg
+            const macro_per_gram = food_macros_obj[`${macro}_per_gram`];
+            const macro_to_cal_ratio = macro_per_gram / cals_per_gram;
+            const rect_height = svg_height * macro_to_cal_ratio;
+            svg.selectAll('.rects')
+                .data([food_macros_obj])
+                .enter()
+                .append('rect')
+                .attr('height', rect_height)
+                .attr('width', '100%')
+                .attr('y', svg_height - rect_height)
+                .attr('fill', 'black');
+        });
+    };
+    
 
 	//macro breakdown functions 
 	return {
@@ -225,8 +256,8 @@ var MM_FUNK = (function() {
 			mm_funk_obj = this;
 			$('.search-result>button').on('click',function() {
 				const food_macros_obj = create_food_macros_obj(this,mm_funk_obj);
-                create_result_html_svg(food_macros_obj);
-
+                create_ingredient_macro_containers(food_macros_obj);
+                create_ingredient_macros_bars(food_macros_obj);
 			});
 		},
 		meal_maker_food_search_trigger: function() {
