@@ -5,6 +5,11 @@
  * are found here.
 */
 /****************************************************/
+.slider-active {
+    stroke: orange;
+    stroke-width: 2px;
+}
+
 .ingredient-container {
     background-color: blue;
     display: flex;
