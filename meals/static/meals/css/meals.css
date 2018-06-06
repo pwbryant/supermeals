@@ -43,6 +43,16 @@
     width: 50px;
 }
 
+.macro-bar-container {
+    height: 100%;
+    padding-right:3px;
+    width: 20%; 
+}
+
+.macro-bar-svg {
+    height: 90%;
+    width : 100%;
+}
 /****************************************************/
 /* Positional tags and classes
  * 
@@ -54,6 +64,8 @@
     grid-area: sb;
 }
 .macro-area {
+    display: flex;
+    justify-content: space-around;
     grid-area: m;
 }
 .search-area {
@@ -76,6 +88,11 @@
     grid-gap:5px;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: auto;
+}
+
+#goal-macros-bar-contatiner {
+
+    display: flex;
 }
 
 #meal-maker-container {
