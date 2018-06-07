@@ -1,10 +1,13 @@
 var MM_FUNK = (function() { 
+    
 	const MACRO_FACTORS = {
 		'fat':9,
 		'carbs':4,
 		'protein':4
 	};
+    
     const MACRO_NAMES = ['cals', 'fat', 'carbs', 'protein'];
+
     const enable_disable_create_macro_bars_button = function(obj) {
 		var pct_amt = parseFloat($('#goal-meal-macro-percent-total').html());
 		if (pct_amt == 0 && obj.CAL_GOAL != 0) {
@@ -13,6 +16,7 @@ var MM_FUNK = (function() {
 			$('#create-macro-bars-button').attr('disabled',true)
 		}
 	};
+    
     const goal_meal_macro_percent_totaler = function(this_) {
 		let new_macro_percent = parseFloat($(this_).val());
 		const old_macro_percent = parseFloat($(this_).attr('data-value'));
@@ -29,6 +33,7 @@ var MM_FUNK = (function() {
 		$(this_).attr('data-value',new_macro_percent);
 
 	};
+
     const get_goal_meal_cals_and_set_grams= function(this_) {
 		if ($.trim(this_.value) != 'header' && $.trim(this_.value) != '' && isNaN(this_.value) == false) {
 			var cals = parseFloat(this_.value),
@@ -48,6 +53,7 @@ var MM_FUNK = (function() {
 			$('#goal-meal-protein-g').val('-');
 		}
 	};
+    
 	const convert_macro_pct_grams = function(this_) {
 		let cals = $('#goal-meal-cals').val();
 		if (cals == '') {
@@ -132,6 +138,7 @@ var MM_FUNK = (function() {
             .attr('class', '.goal-macro-bar')
             .attr('fill','red')
 	};
+
 	const create_macro_error_bars = function(obj) {
 		
 		var macros_copy = Object.assign({},obj.MACROS);
@@ -149,27 +156,18 @@ var MM_FUNK = (function() {
 			.attr('id', function(d) { return 'goal-' + d.macro + '-error-bar'; }
 			);
 	};
-	const create_macro_bar_labels = function(obj) {
-		var macro_data = Object.values(obj.MACROS);
-		obj.MACROS_SVG.selectAll(".goal-bar-labels").data(macro_data)
-			.enter()
-			.append('text')
-			.text(function(d) {
-				if (d.macro != 'cals') {
-					return d.label + ': 0g';
-				} else {
-					return d.label + ': 0';
-				}
-			})
-            .attr('x', function(d) { return d.x; })
-            .attr('y', function(d) { return d.label_y; })
-            .attr('fill','black')
-            .attr('id', function(d) { 
-                return 'goal-' + d.macro + '-bar-label';
-            })
-            .attr('class', '.goal-macro-bar-label');
+
+	const create_macro_bar_labels = function(macro, macro_bars_obj) {
+
+        const macro_title = macro[0].toUpperCase() + macro.slice(1,);
+        const label = `<span class='macro-label'>${macro_title}: </span>`;
+        const amt = `<span id='${macro}-amt' class='macro-amt'>0</span>`;
+        const unit = `<span class='macro-unit'>g</span>`;
+
+        $(`#${macro}-label-container`).html(label + amt + unit);
 		
 	};
+    
 	const format_food_search_results = function(search_results) {
 
 		var search_results_html = '';	
@@ -178,6 +176,7 @@ var MM_FUNK = (function() {
 		});
 		return search_results_html;
 	};
+
 	const meal_maker_food_search = function(obj) { var search_terms = $.trim($('#meal-maker-food-search-input').val());
 		if(search_terms != '') {
 			$.get('/meals/search-foods/',{'search_terms':search_terms},function(data) {
@@ -200,27 +199,25 @@ var MM_FUNK = (function() {
 			$('#meal-maker-food-search-results-container').html('');
 		}
 	};
+
 	const create_food_macros_obj = function(search_add_button,obj) {
 		var search_result_index = parseFloat(search_add_button.id[search_add_button.id.length-1]),
 		search_result_obj = obj.SEARCH_RESULTS[search_result_index];
         return search_result_obj;
         
 	};
+
     const create_ingredient_macro_containers = function(food_macros_obj) {
         
         let food_div = `<div id='ingredient-${food_macros_obj.id}-container' class='ingredient-container'>`;
         food_div += `<div class='ingredient-container-header'>header</div>`;
-        food_div += `<div id='ingredient-${food_macros_obj.id}-bars' class='ingredient-container-bars'>`;
-        for (let i=0; i<4; i++) {
-            food_div += `<svg id='ingredient-${food_macros_obj.id}-${MACRO_NAMES[i]}-svg' class='ingredient-${food_macros_obj.id}-svg ingredient-macro-svg' style='height:100%;width:20%'></svg>`;
-
-        }
-        food_div += '</div>';
+        food_div += `<div id='ingredient-${food_macros_obj.id}-bars' class='ingredient-container-bars'></div>`;
         food_div += "<div class='ingredient-container-footer'>footer</div>";
         food_div += '</div>'; 
             
         $('#meal-maker-ingredient-content').append(food_div);
     };
+
     const draw_ingredient_bar = function(macro, svg, food_macros_obj) {
 
         const cals_per_gram = food_macros_obj['cals_per_gram'];
@@ -243,6 +240,7 @@ var MM_FUNK = (function() {
             .attr('y', svg_height - bar_height - slider_height)
             .attr('fill', 'black');
     };
+
     const draw_slider_bar = function(macro, svg, food_macros_obj) {
         
         const cal_bar_height = food_macros_obj.cal_bar_height;
@@ -265,9 +263,11 @@ var MM_FUNK = (function() {
                 })
                 .on('end', dragended));
     };
+
     const dragstarted = function() {
         d3.select(this).raise().classed('slider-active', true);
     };
+
     const dragged = function(d,this_) {
         d3.select(this_).attr('y', function() {
             const y = d3.event.y;
@@ -281,13 +281,25 @@ var MM_FUNK = (function() {
         });
         return d3.select(this_).attr('y');
     };
+
     const dragended = function() {
         d3.select(this).raise().classed('slider-active', false);
     };
-    const create_ingredient_macros_bars = function(food_macros_obj) {
 
-        food_macros_obj.svg_height = $($('.ingredient-macro-svg')[0]).height();
-        food_macros_obj.svg_width = $($('.ingredient-macro-svg')[0]).width();
+    const create_ingredient_macro_svg = function(svg_id, macro, food_macros_obj) {
+
+        const svg_html = `<svg id='${svg_id}' class='ingredient-${food_macros_obj.id}-svg ingredient-macro-svg' style='height:100%;width:20%'></svg>`;
+
+        $(`#ingredient-${food_macros_obj.id}-bars`).append(svg_html);
+
+    };
+
+    const assign_food_macros_obj_svg_attrs = function(svg_id ,macro, food_macros_obj) {
+
+        const svg_element = $(`#${svg_id}`);
+
+        food_macros_obj.svg_height = svg_element.height();
+        food_macros_obj.svg_width = svg_element.width();
         food_macros_obj.cal_bar_height = food_macros_obj.svg_height * .9;
         food_macros_obj.bar_width = food_macros_obj.svg_width * .5;
         food_macros_obj.bar_margin_left = (food_macros_obj.svg_width - food_macros_obj.bar_width) / 2;
@@ -295,19 +307,41 @@ var MM_FUNK = (function() {
         food_macros_obj.slider_width = food_macros_obj.svg_width * .8;  
         food_macros_obj.slider_margin_left = (food_macros_obj.svg_width - food_macros_obj.slider_width) / 2;
 
-        $(`.ingredient-${food_macros_obj.id}-svg`).each(function(i,svg_element) {
+    };
 
-            const macro = svg_element.id.split('-')[2]; 
-            const macro_key = `${macro}_obj`; 
-            let svg = d3.select(`#${svg_element.id}`);
-            //id format ingrdient-id-macro-svg
-            draw_ingredient_bar(macro, svg, food_macros_obj);
-            if (macro == 'cals') {
-                draw_slider_bar(macro, svg, food_macros_obj);
-            }
-        });
+    const create_ingredient_macros_bars = function(macro, food_macros_obj) {
+
+        const svg_id = `ingredient-${food_macros_obj.id}-${macro}-svg`;
+
+        create_ingredient_macro_svg(svg_id, macro, food_macros_obj);
+        assign_food_macros_obj_svg_attrs(svg_id, macro, food_macros_obj);
+        
+        let svg = d3.select(`#${svg_id}`);
+        //id format ingrdient-id-macro-svg
+        draw_ingredient_bar(macro, svg, food_macros_obj);
+        if (macro == 'cals') {
+            draw_slider_bar(macro, svg, food_macros_obj);
+        }
     };
     
+    const create_ingredient_goal_macros_bars = function(macro) {
+    
+        const svg = d3.select(`#${macro}-bar-svg`);
+        const svg_element = $(`#${macro}-bar-svg`);
+        const bar_width = svg_element.width();
+        const y = svg_element.height();
+
+        svg.selectAll('.rects')
+            .data([0])
+            .enter()
+            .append('rect')
+            .attr('height', 0)
+            .attr('width', bar_width)
+            .attr('x', 0)
+            .attr('y', y)
+            .attr('fill', 'black');
+    };
+
 
 	//macro breakdown functions 
 	return {
@@ -321,8 +355,11 @@ var MM_FUNK = (function() {
 			$('.search-result>button').on('click',function() {
 				const food_macros_obj = create_food_macros_obj(this,mm_funk_obj);
                 create_ingredient_macro_containers(food_macros_obj);
-                create_ingredient_macros_bars(food_macros_obj);
-                ////create_ingredient_labels(food_macros_obj);
+                MACRO_NAMES.forEach(function(macro) {
+                    create_ingredient_macros_bars(macro, food_macros_obj);
+                    create_ingredient_goal_macros_bars(macro);
+                    //create_ingredient_labels(food_macros_obj);
+                });
 			});
 		},
 		meal_maker_food_search_trigger: function() {
@@ -340,7 +377,7 @@ var MM_FUNK = (function() {
                     create_macro_bar_container(macro);
                     create_macro_bar(macro, macro_bars_obj);
                     //create_macro_error_bars();
-                    //create_macro_bar_labels();
+                    create_macro_bar_labels(macro, macro_bars_obj);
                 });
 			});
 		},
