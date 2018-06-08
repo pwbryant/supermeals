@@ -122,19 +122,21 @@ var MM_FUNK = (function() {
 	const create_macro_bar = function(macro, macro_bars_obj) {
 
         macro_bars_obj[macro].svg = d3.select('#' + macro + '-bar-svg');
-        macro_bars_obj[macro].bar_height = macro_bars_obj.cal_bar_height * macro_bars_obj[macro].ratio;
+        macro_bars_obj[macro].macro_bar_height = macro_bars_obj.cal_bar_height * macro_bars_obj[macro].ratio;
+        macro_bars_obj[macro].macro_y = macro_bars_obj.cal_bar_height - macro_bars_obj[macro].macro_bar_height 
 
 		macro_bars_obj[macro].svg
-            .selectAll(".goal-bars").data([macro_bars_obj])
+            .selectAll(".goal-bars").data([macro_bars_obj[macro]])
 			.enter()
 			.append('rect')
             .attr("height", function(d) {
-                return d[macro].bar_height
+                return d.macro_bar_height
             }) 
             .attr('width', '100%')
             .attr('y', function(d) { 
-                return d.cal_bar_height - d[macro].bar_height
+                return d.macro_y;
             })
+            .attr('id', `${macro}-goal-macro-bar`)
             .attr('class', '.goal-macro-bar')
             .attr('fill','red')
 	};
@@ -186,7 +188,7 @@ var MM_FUNK = (function() {
 					obj.SEARCH_RESULTS = search_results; 
 					search_results_html = format_food_search_results(search_results);
 					$('#meal-maker-food-search-results-container').html(search_results_html);
-					obj.add_ingredient();
+					obj.add_food();
 					obj.SEARCH_RESULT_ADD_BUTTON_LISTENER_EXISTS = true;
 				} else {
 					search_results_html = '<span>No Foods Found</span>';
@@ -202,66 +204,102 @@ var MM_FUNK = (function() {
 
 	const create_food_macros_obj = function(search_add_button,obj) {
 		var search_result_index = parseFloat(search_add_button.id[search_add_button.id.length-1]),
-		search_result_obj = obj.SEARCH_RESULTS[search_result_index];
-        return search_result_obj;
-        
+		food_macros_obj = obj.SEARCH_RESULTS[search_result_index];
+
+		MACRO_NAMES.forEach(function(macro) {
+            food_macros_obj[macro] = {'name':macro};
+            let macro_per_gram = `${macro}_per_gram`;
+            food_macros_obj[macro][macro_per_gram] = food_macros_obj[macro_per_gram];
+			if (macro === 'cals') {
+				food_macros_obj[macro]['goal_ratio'] = 1;
+			} else {
+				food_macros_obj[macro]['goal_ratio'] = $('#goal-meal-' + macro  + '-percent').val()/100.0
+			}
+
+		});
+        return food_macros_obj;
 	};
 
-    const create_ingredient_macro_containers = function(food_macros_obj) {
-        
-        let food_div = `<div id='ingredient-${food_macros_obj.id}-container' class='ingredient-container'>`;
-        food_div += `<div class='ingredient-container-header'>header</div>`;
-        food_div += `<div id='ingredient-${food_macros_obj.id}-bars' class='ingredient-container-bars'></div>`;
-        food_div += "<div class='ingredient-container-footer'>footer</div>";
-        food_div += '</div>'; 
-            
-        $('#meal-maker-ingredient-content').append(food_div);
+    const add_scales_to_food_macros_obj = function(food_macros_obj) {
+
+        const goal_cal_bar_height = $('#cals-bar-svg').height();
+        food_macros_obj['cal_to_goal_cal_height_scale']= d3
+            .scaleLinear()
+            .domain([0,food_macros_obj.cal_bar_height])
+            .range([0,goal_cal_bar_height]);
     };
 
-    const draw_ingredient_bar = function(macro, svg, food_macros_obj) {
+    const create_food_macro_containers = function(food_macros_obj) {
+        
+        let food_div = `<div id='food-${food_macros_obj.id}-container' class='food-container'>`;
+        food_div += `<div class='food-container-header'>header</div>`;
+        food_div += `<div id='food-${food_macros_obj.id}-bars' class='food-container-bars'></div>`;
+        food_div += "<div class='food-container-footer'>footer</div>";
+        food_div += '</div>'; 
+            
+        $('#meal-maker-food-content').append(food_div);
+    };
 
-        const cals_per_gram = food_macros_obj['cals_per_gram'];
-        const macro_per_gram = food_macros_obj[`${macro}_per_gram`];
-        const macro_to_cal_ratio = macro_per_gram / cals_per_gram;
+    const draw_food_bar = function(macro, svg, food_macros_obj) {
 
-        const bar_width = food_macros_obj.bar_width;
-        const bar_height = food_macros_obj.cal_bar_height * macro_to_cal_ratio; 
-        const bar_margin_left = food_macros_obj.bar_margin_left;
-        const svg_height = food_macros_obj.svg_height;
-        const slider_height = food_macros_obj.slider_height;
+        food_macros_obj[macro].macro_to_cal_ratio = food_macros_obj[`${macro}_per_gram`] / food_macros_obj['cals_per_gram'];
+
+        food_macros_obj[macro].food_bar_height = food_macros_obj.cal_bar_height * food_macros_obj[macro].macro_to_cal_ratio; 
+        food_macros_obj[macro].food_y = food_macros_obj.svg_height - food_macros_obj[macro].food_bar_height - food_macros_obj.slider_height;
 
         svg.selectAll('.rects')
-            .data([0])
+            .data([food_macros_obj[macro]])
             .enter()
             .append('rect')
-            .attr('height', bar_height)
-            .attr('width', bar_width)
-            .attr('x', bar_margin_left)
-            .attr('y', svg_height - bar_height - slider_height)
-            .attr('fill', 'black');
+            .attr('height', function(d) { 
+                return d.food_bar_height; 
+            })
+
+            .attr('width', food_macros_obj.bar_width)
+            .attr('x', food_macros_obj.bar_margin_left)
+            .attr('y', function(d) { 
+                return d.food_y;
+            })
+            .attr('fill', 'black')
+            .attr('id', `${macro}-food-macro-bar`)
+            .attr('class', 'food-macro-bar');
     };
 
     const draw_slider_bar = function(macro, svg, food_macros_obj) {
         
-        const cal_bar_height = food_macros_obj.cal_bar_height;
-        const slider_height = food_macros_obj.slider_height;
-        const slider_width = food_macros_obj.slider_width;
-        const slider_margin_left = food_macros_obj.slider_margin_left;
-
         svg.selectAll('.slider')
             .data([food_macros_obj]).enter()
             .append('rect')
-            .attr('height', slider_height)
-            .attr('width', slider_width)
-            .attr('x', slider_margin_left)
-            .attr('y', cal_bar_height)
+            .attr('height', function(d) { return d.slider_height; })
+            .attr('width', function(d) { return d.slider_width; })
+            .attr('x', function(d) { return d.slider_margin_left; })
+            .attr('y', function(d) { return d.cal_bar_height; })
             .attr('fill','green')
             .call(d3.drag()
                 .on('start', dragstarted)
                 .on('drag', function(d) {
-                    dragged(d,this);
+                    const y_delta = dragged(d,this);
+                    move_these_macro_bars(y_delta, d);
                 })
                 .on('end', dragended));
+    };
+
+    const move_these_macro_bars = function(y_delta, food_macros_obj) {
+        
+        const cal_goal_y_delta = food_macros_obj.cal_to_goal_cal_height_scale(y_delta);
+
+        MACRO_NAMES.forEach(function(macro) {
+            const bar_id = `#${macro}-${food_macros_obj.id}-goal-macro-bar`; 
+            d3.select(bar_id).attr('y', function(d) {
+
+                d.food_goal_y += (cal_goal_y_delta * food_macros_obj[macro].macro_to_cal_ratio);
+                return d.food_goal_y;
+            });
+            d3.select(bar_id).attr('height', function(d) {
+                d.food_goal_bar_height -= (cal_goal_y_delta * food_macros_obj[macro].macro_to_cal_ratio);
+                return d.food_goal_bar_height;
+            });
+        });
     };
 
     const dragstarted = function() {
@@ -269,6 +307,8 @@ var MM_FUNK = (function() {
     };
 
     const dragged = function(d,this_) {
+        const old_y = d3.select(this_).attr('y');
+ 
         d3.select(this_).attr('y', function() {
             const y = d3.event.y;
             if (y < 0) {
@@ -279,22 +319,24 @@ var MM_FUNK = (function() {
                 return y;
             }
         });
-        return d3.select(this_).attr('y');
+        const new_y = d3.select(this_).attr('y');
+        const y_delta = new_y - old_y;
+        return y_delta;
     };
 
     const dragended = function() {
         d3.select(this).raise().classed('slider-active', false);
     };
 
-    const create_ingredient_macro_svg = function(svg_id, macro, food_macros_obj) {
+    const create_food_macro_svg = function(svg_id, macro, food_macros_obj) {
 
-        const svg_html = `<svg id='${svg_id}' class='ingredient-${food_macros_obj.id}-svg ingredient-macro-svg' style='height:100%;width:20%'></svg>`;
+        const svg_html = `<svg id='${svg_id}' class='food-${food_macros_obj.id}-svg food-macro-svg' style='height:100%;width:20%'></svg>`;
 
-        $(`#ingredient-${food_macros_obj.id}-bars`).append(svg_html);
+        $(`#food-${food_macros_obj.id}-bars`).append(svg_html);
 
     };
 
-    const assign_food_macros_obj_svg_attrs = function(svg_id ,macro, food_macros_obj) {
+    const assign_food_macros_obj_bar_attrs = function(svg_id ,macro, food_macros_obj) {
 
         const svg_element = $(`#${svg_id}`);
 
@@ -309,56 +351,53 @@ var MM_FUNK = (function() {
 
     };
 
-    const create_ingredient_macros_bars = function(macro, food_macros_obj) {
-
-        const svg_id = `ingredient-${food_macros_obj.id}-${macro}-svg`;
-
-        create_ingredient_macro_svg(svg_id, macro, food_macros_obj);
-        assign_food_macros_obj_svg_attrs(svg_id, macro, food_macros_obj);
-        
-        let svg = d3.select(`#${svg_id}`);
-        //id format ingrdient-id-macro-svg
-        draw_ingredient_bar(macro, svg, food_macros_obj);
-        if (macro == 'cals') {
-            draw_slider_bar(macro, svg, food_macros_obj);
-        }
-    };
-    
-    const create_ingredient_goal_macros_bars = function(macro) {
+    const create_food_goal_macros_bars = function(macro, food_macros_obj) {
     
         const svg = d3.select(`#${macro}-bar-svg`);
         const svg_element = $(`#${macro}-bar-svg`);
-        const bar_width = svg_element.width();
-        const y = svg_element.height();
+
+        food_macros_obj[macro].food_goal_y = svg_element.height();
+        food_macros_obj[macro].food_goal_bar_height = 0;
 
         svg.selectAll('.rects')
-            .data([0])
+            .data([food_macros_obj[macro]])
             .enter()
             .append('rect')
-            .attr('height', 0)
-            .attr('width', bar_width)
+            .attr('height', function(d) { return d.food_goal_bar_height; })
+            .attr('width', svg_element.width())
             .attr('x', 0)
-            .attr('y', y)
-            .attr('fill', 'black');
+            .attr('y', function(d) { return d.food_goal_y; })
+            .attr('fill', 'black')
+            .attr('id', `${macro}-${food_macros_obj.id}-goal-macro-bar`)
+            .attr('class', `food-${food_macros_obj.id}-goal-macro-bar`)
     };
 
 
 	//macro breakdown functions 
 	return {
 		CAL_GOAL: 0,//initialize value
-		CAL_BAR_HEIGHT: 200,
-		CAL_BAR_WIDTH: 200,
-		SCALE_CAL_TO_HEIGHT : d3.scaleLinear().domain([0,1]).range([0,1]),//initialize value
+		CAL_BAR_HEIGHT: 0,//initialize value
 		SEARCH_RESULT_ADD_BUTTON_LISTENER_EXISTS: 0,
-		add_ingredient : function() {
+		add_food : function() {
 			mm_funk_obj = this;
 			$('.search-result>button').on('click',function() {
 				const food_macros_obj = create_food_macros_obj(this,mm_funk_obj);
-                create_ingredient_macro_containers(food_macros_obj);
+                create_food_macro_containers(food_macros_obj);
                 MACRO_NAMES.forEach(function(macro) {
-                    create_ingredient_macros_bars(macro, food_macros_obj);
-                    create_ingredient_goal_macros_bars(macro);
-                    //create_ingredient_labels(food_macros_obj);
+                    const svg_id = `food-${food_macros_obj.id}-${macro}-svg`;
+
+                    create_food_macro_svg(svg_id, macro, food_macros_obj);
+                    assign_food_macros_obj_bar_attrs(svg_id, macro, food_macros_obj);
+                    
+                    let svg = d3.select(`#${svg_id}`);
+                    //id format ingrdient-id-macro-svg
+                    draw_food_bar(macro, svg, food_macros_obj);
+                    if (macro == 'cals') {
+                        add_scales_to_food_macros_obj(food_macros_obj)
+                        draw_slider_bar(macro, svg, food_macros_obj);
+                    }
+                    create_food_goal_macros_bars(macro, food_macros_obj);
+                    //create_food_labels(food_macros_obj);
                 });
 			});
 		},

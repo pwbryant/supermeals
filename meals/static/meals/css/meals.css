@@ -10,7 +10,7 @@
     stroke-width: 2px;
 }
 
-.ingredient-container {
+.food-container {
     background-color: blue;
     display: flex;
     flex-direction: column;
@@ -19,22 +19,22 @@
     width: 20%;
 }
 
-.ingredient-container-header {
+.food-container-header {
     height: 10%;
 }
 
-.ingredient-container-bars {
+.food-container-bars {
     display: flex;
     justify-content: end;
     height: 80%;
 
 }
 
-.ingredient-container-footer {
+.food-container-footer {
     height: 10%;
 }
 
-.ingredient-macro-svg {
+.food-macro-svg {
     background-color: yellow;
     margin-left: 5%;
 }
@@ -72,7 +72,7 @@
     grid-area: s;
     overflow: auto;
 }
-.ingredient-area {
+.food-area {
     grid-area: in;
 }
 
@@ -107,17 +107,17 @@
         "in in in in in in in in in in in in";
 }
 
-#meal-maker-ingredient-container {
+#meal-maker-food-container {
     display:flex;
     flex-direction: column;
 }
 
 
-#meal-maker-ingredient-header {
+#meal-maker-food-header {
     height: 10%;
 }
 
-#meal-maker-ingredient-content {
+#meal-maker-food-content {
     flex: 1;
     display: flex;
 }
