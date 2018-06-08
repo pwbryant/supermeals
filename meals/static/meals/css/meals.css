@@ -11,13 +11,14 @@
 }
 
 .food-container {
-    background-color: blue;
+    background-color: lightblue;
     display: flex;
     flex-direction: column;
     height: 100%;
     margin-left: 5px;
     width: 20%;
 }
+
 
 .food-container-header {
     height: 10%;
@@ -35,7 +36,6 @@
 }
 
 .food-macro-svg {
-    background-color: yellow;
     margin-left: 5%;
 }
 

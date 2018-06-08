@@ -138,7 +138,8 @@ var MM_FUNK = (function() {
             })
             .attr('id', `${macro}-goal-macro-bar`)
             .attr('class', '.goal-macro-bar')
-            .attr('fill','red')
+            .attr('fill','white')
+            .attr('stroke','black')
 	};
 
 	const create_macro_error_bars = function(obj) {
@@ -205,11 +206,16 @@ var MM_FUNK = (function() {
 	const create_food_macros_obj = function(search_add_button,obj) {
 		var search_result_index = parseFloat(search_add_button.id[search_add_button.id.length-1]),
 		food_macros_obj = obj.SEARCH_RESULTS[search_result_index];
+        food_macros_obj.food_order = obj.FOOD_COUNT;
 
 		MACRO_NAMES.forEach(function(macro) {
-            food_macros_obj[macro] = {'name':macro};
+            food_macros_obj[macro] = {};
+            food_macros_obj[macro].name = macro;
+            food_macros_obj[macro].food_id = food_macros_obj.id;
             let macro_per_gram = `${macro}_per_gram`;
             food_macros_obj[macro][macro_per_gram] = food_macros_obj[macro_per_gram];
+            food_macros_obj[macro].food_order = obj.FOOD_COUNT;
+            food_macros_obj[macro].color_count = 10;
 			if (macro === 'cals') {
 				food_macros_obj[macro]['goal_ratio'] = 1;
 			} else {
@@ -240,6 +246,21 @@ var MM_FUNK = (function() {
         $('#meal-maker-food-content').append(food_div);
     };
 
+    const assign_food_macros_obj_bar_attrs = function(svg_id ,macro, food_macros_obj) {
+
+        const svg_element = $(`#${svg_id}`);
+
+        food_macros_obj.svg_height = svg_element.height();
+        food_macros_obj.svg_width = svg_element.width();
+        food_macros_obj.cal_bar_height = food_macros_obj.svg_height * .9;
+        food_macros_obj.bar_width = food_macros_obj.svg_width * .5;
+        food_macros_obj.bar_margin_left = (food_macros_obj.svg_width - food_macros_obj.bar_width) / 2;
+        food_macros_obj.slider_height = food_macros_obj.svg_height - food_macros_obj.cal_bar_height;  
+        food_macros_obj.slider_width = food_macros_obj.svg_width * .8;  
+        food_macros_obj.slider_margin_left = (food_macros_obj.svg_width - food_macros_obj.slider_width) / 2;
+
+    };
+
     const draw_food_bar = function(macro, svg, food_macros_obj) {
 
         food_macros_obj[macro].macro_to_cal_ratio = food_macros_obj[`${macro}_per_gram`] / food_macros_obj['cals_per_gram'];
@@ -260,7 +281,9 @@ var MM_FUNK = (function() {
             .attr('y', function(d) { 
                 return d.food_y;
             })
-            .attr('fill', 'black')
+            .attr('fill', function(d) { 
+                return d3.schemeCategory10[d.food_order % d.color_count];
+            })
             .attr('id', `${macro}-food-macro-bar`)
             .attr('class', 'food-macro-bar');
     };
@@ -280,8 +303,33 @@ var MM_FUNK = (function() {
                 .on('drag', function(d) {
                     const y_delta = dragged(d,this);
                     move_these_macro_bars(y_delta, d);
+                    move_other_macro_bars(y_delta, d);
                 })
                 .on('end', dragended));
+    };
+
+    const create_food_goal_macros_bars = function(macro, food_macros_obj) {
+    
+        const svg = d3.select(`#${macro}-bar-svg`);
+        const svg_element = $(`#${macro}-bar-svg`);
+
+        food_macros_obj[macro].food_goal_y = svg_element.height();
+        food_macros_obj[macro].food_goal_bar_height = 0;
+
+        svg.selectAll('.rects')
+            .data([food_macros_obj[macro]])
+            .enter()
+            .append('rect')
+            .attr('height', function(d) { return d.food_goal_bar_height; })
+            .attr('width', svg_element.width())
+            .attr('x', 0)
+            .attr('y', function(d) { return d.food_goal_y; })
+            .attr('fill', function(d) {
+                return d3.schemeCategory10[d.food_order % d.color_count];
+             })
+            .attr('id', `${macro}-${food_macros_obj.id}-goal-macro-bar`)
+            .attr('class', 
+                    `food-${food_macros_obj.id}-goal-macro-bar ${macro}-goal-macro-bar`)
     };
 
     const move_these_macro_bars = function(y_delta, food_macros_obj) {
@@ -301,6 +349,23 @@ var MM_FUNK = (function() {
             });
         });
     };
+
+    const move_other_macro_bars = function(y_delta, food_macros_obj) {
+        
+        const cal_goal_y_delta = food_macros_obj.cal_to_goal_cal_height_scale(y_delta);
+
+        MACRO_NAMES.forEach(function(macro) {
+            const bar_class = `.${macro}-goal-macro-bar`; 
+            d3.selectAll(bar_class).attr('y', function(d) {
+                if (d.food_id != food_macros_obj.id & d.food_order < food_macros_obj.food_order) {
+                    d.food_goal_y += (cal_goal_y_delta * food_macros_obj[macro].macro_to_cal_ratio);
+                    return d.food_goal_y;
+                }
+                return d.food_goal_y;
+            });
+        });
+    };
+
 
     const dragstarted = function() {
         d3.select(this).raise().classed('slider-active', true);
@@ -336,51 +401,16 @@ var MM_FUNK = (function() {
 
     };
 
-    const assign_food_macros_obj_bar_attrs = function(svg_id ,macro, food_macros_obj) {
-
-        const svg_element = $(`#${svg_id}`);
-
-        food_macros_obj.svg_height = svg_element.height();
-        food_macros_obj.svg_width = svg_element.width();
-        food_macros_obj.cal_bar_height = food_macros_obj.svg_height * .9;
-        food_macros_obj.bar_width = food_macros_obj.svg_width * .5;
-        food_macros_obj.bar_margin_left = (food_macros_obj.svg_width - food_macros_obj.bar_width) / 2;
-        food_macros_obj.slider_height = food_macros_obj.svg_height - food_macros_obj.cal_bar_height;  
-        food_macros_obj.slider_width = food_macros_obj.svg_width * .8;  
-        food_macros_obj.slider_margin_left = (food_macros_obj.svg_width - food_macros_obj.slider_width) / 2;
-
-    };
-
-    const create_food_goal_macros_bars = function(macro, food_macros_obj) {
-    
-        const svg = d3.select(`#${macro}-bar-svg`);
-        const svg_element = $(`#${macro}-bar-svg`);
-
-        food_macros_obj[macro].food_goal_y = svg_element.height();
-        food_macros_obj[macro].food_goal_bar_height = 0;
-
-        svg.selectAll('.rects')
-            .data([food_macros_obj[macro]])
-            .enter()
-            .append('rect')
-            .attr('height', function(d) { return d.food_goal_bar_height; })
-            .attr('width', svg_element.width())
-            .attr('x', 0)
-            .attr('y', function(d) { return d.food_goal_y; })
-            .attr('fill', 'black')
-            .attr('id', `${macro}-${food_macros_obj.id}-goal-macro-bar`)
-            .attr('class', `food-${food_macros_obj.id}-goal-macro-bar`)
-    };
-
 
 	//macro breakdown functions 
 	return {
 		CAL_GOAL: 0,//initialize value
 		CAL_BAR_HEIGHT: 0,//initialize value
 		SEARCH_RESULT_ADD_BUTTON_LISTENER_EXISTS: 0,
-		add_food : function() {
+        FOOD_COUNT: 0, add_food : function() {
 			mm_funk_obj = this;
 			$('.search-result>button').on('click',function() {
+                mm_funk_obj.FOOD_COUNT += 1;
 				const food_macros_obj = create_food_macros_obj(this,mm_funk_obj);
                 create_food_macro_containers(food_macros_obj);
                 MACRO_NAMES.forEach(function(macro) {
