@@ -19,9 +19,10 @@
     width: 20%;
 }
 
-
 .food-container-header {
-    height: 10%;
+    height: 15%;
+    margin-left: 10px;
+    font-size: 20px;
 }
 
 .food-container-bars {
@@ -32,7 +33,9 @@
 }
 
 .food-container-footer {
-    height: 10%;
+    height: 15%;
+    margin-left: 15px;
+    font-size: 20px;
 }
 
 .food-macro-svg {
