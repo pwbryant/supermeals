@@ -1,6 +1,7 @@
 var MM_FUNK = (function() { 
     
 	const MACRO_FACTORS = {
+		'cals':1,
 		'fat':9,
 		'carbs':4,
 		'protein':4
@@ -164,10 +165,18 @@ var MM_FUNK = (function() {
 
         const macro_title = macro[0].toUpperCase() + macro.slice(1,);
         const label = `<span class='macro-label'>${macro_title}: </span>`;
-        const amt = `<span id='${macro}-amt' class='macro-amt'>0</span>`;
-        const unit = `<span class='macro-unit'>g</span>`;
+        const amt = `<span id='${macro}-amt' class='macro-amt'></span>`;
 
-        $(`#${macro}-label-container`).html(label + amt + unit);
+        if (macro != 'cals') {
+            const unit = `<span class='macro-unit'>g</span>`;
+            $(`#${macro}-label-container`).html(label + amt + unit);
+        } else {
+            $(`#${macro}-label-container`).html(label + amt);
+        }
+
+        d3.select(`#${macro}-amt`)
+            .data([{'macro_amt': 0, 'name': macro}])
+            .text(function(d) { return d.macro_amt; });
 		
 	};
     
@@ -240,6 +249,11 @@ var MM_FUNK = (function() {
             .scaleLinear()
             .domain([0,food_macros_obj.cal_bar_height])
             .range([0,food_g_in_goal_cals]);
+
+        food_macros_obj['food_cal_bar_height_to_goal_cal_scale']= d3
+            .scaleLinear()
+            .domain([0,food_macros_obj.cal_bar_height])
+            .range([0,food_macros_obj.cal_goal]);
     };
 
     const create_food_macro_containers = function(food_macros_obj) {
@@ -326,6 +340,7 @@ var MM_FUNK = (function() {
                     update_food_amt_label(y_delta, d);
                     move_these_macro_bars(y_delta, d);
                     move_other_macro_bars(y_delta, d);
+                    update_macro_amt_labels(y_delta, d);
                 })
                 .on('end', dragended));
     };
@@ -404,6 +419,16 @@ var MM_FUNK = (function() {
         });
     };
 
+    const update_macro_amt_labels = function(y_delta, food_macros_obj) {
+
+        d3.selectAll('.macro-amt').text(function(d) {
+            const macro_obj = food_macros_obj[d.name];
+            const cal_change = -1 * food_macros_obj.food_cal_bar_height_to_goal_cal_scale(y_delta); // negate so direction is correct
+            const macro_change = cal_change * macro_obj.macro_to_cal_ratio / MACRO_FACTORS[d.name];
+            d.macro_amt += macro_change;
+            return Math.round(d.macro_amt);
+        });
+    };
 
     const dragstarted = function() {
         d3.select(this).raise().classed('slider-active', true);
