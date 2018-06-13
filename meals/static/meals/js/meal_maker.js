@@ -263,7 +263,9 @@ var MM_FUNK = (function() {
         if (food_name.length > 20) {
             food_name = food_name.slice(0,20) + '...';
         }
-        food_div += `<div class='food-container-header'>${food_name}</div>`;
+        food_div += `<div class='food-container-header l-flex--row-btw'>
+            <span>${food_name}</span><i id='exit-${food_id}' class='fa fa-times-circle food-exit'></i>
+        </div>`;
         food_div += `<div id='food-${food_id}-bars' class='food-container-bars'></div>`;
         food_div += `<div id='food-container-footer-${food_id}' class='food-container-footer'>`;
 
@@ -279,6 +281,56 @@ var MM_FUNK = (function() {
         d3.select(`#food-amt-${food_id}`)
             .data([{'food_amt':food_macros_obj.food_amt}])
             .text(function(d) { return d.food_amt; });
+        
+        //set up remove food listener
+        remove_food(food_macros_obj);
+    };
+
+    const remove_food = function(food_macros_obj) {
+        const icon_id = `#exit-${food_macros_obj.id}`;
+        $(icon_id).on('click', function() {
+            const food_id = food_macros_obj.id;
+            const container_id = `#food-${food_id}-container`;
+            const y_delta = -1 * (food_macros_obj.slider_y - food_macros_obj.cal_bar_height);// has to be negated to move in the right direction
+            //remove food container
+            $(container_id).remove();
+            
+            remove_food_macro_bars(food_macros_obj);
+            adjust_remaining_macro_bars(food_macros_obj);
+            update_macro_amt_labels(y_delta,food_macros_obj);
+        });
+    };
+
+    const remove_food_macro_bars = function(food_macros_obj) {
+        
+        const food_id = food_macros_obj.id;
+        const food_class = `.food-${food_id}-goal-macro-bar`;
+        const macro_heights = $(food_class).toArray().reduce(function(map, e) {
+            const element = $(e);
+            const height = parseFloat(element.attr('height'));
+            const macro = element.attr('id').split('-')[0];
+            map[macro] = height;
+            return map;
+        }, {});
+
+        $(food_class).remove();
+        food_macros_obj.macro_heights = macro_heights;
+
+
+    };
+
+    const adjust_remaining_macro_bars = function(food_macros_obj) {
+        
+        const macro_heights = food_macros_obj.macro_heights;
+        const food_order = food_macros_obj.food_order;
+
+        d3.selectAll('.goal-macro-bar').transition().attr('y', function(d) {
+            if (d.food_order < food_order) {
+                d.food_goal_y += macro_heights[d.name];
+            }
+            return d.food_goal_y;
+        });
+
     };
 
     const assign_food_macros_obj_bar_attrs = function(svg_id ,macro, food_macros_obj) {
@@ -293,6 +345,7 @@ var MM_FUNK = (function() {
         food_macros_obj.slider_height = food_macros_obj.svg_height - food_macros_obj.cal_bar_height;  
         food_macros_obj.slider_width = food_macros_obj.svg_width * .8;  
         food_macros_obj.slider_margin_left = (food_macros_obj.svg_width - food_macros_obj.slider_width) / 2;
+        food_macros_obj.slider_y = food_macros_obj.cal_bar_height;
 
     };
 
@@ -324,6 +377,7 @@ var MM_FUNK = (function() {
     };
 
     const draw_slider_bar = function(macro, svg, food_macros_obj) {
+        food_macros_obj.slider_y = food_macros_obj.cal_bar_height;
         
         svg.selectAll('.slider')
             .data([food_macros_obj]).enter()
@@ -331,8 +385,10 @@ var MM_FUNK = (function() {
             .attr('height', function(d) { return d.slider_height; })
             .attr('width', function(d) { return d.slider_width; })
             .attr('x', function(d) { return d.slider_margin_left; })
-            .attr('y', function(d) { return d.cal_bar_height; })
+            .attr('y', function(d) { return d.slider_y; })
             .attr('fill','green')
+            .attr('id', function(d) { return `food-${d.id}-slider`; })
+            .attr('class', 'slider')
             .call(d3.drag()
                 .on('start', dragstarted)
                 .on('drag', function(d) {
@@ -366,9 +422,10 @@ var MM_FUNK = (function() {
              })
             .attr('id', `${macro}-${food_macros_obj.id}-goal-macro-bar`)
             .attr('class', 
-                    `food-${food_macros_obj.id}-goal-macro-bar ${macro}-goal-macro-bar`)
+                    `food-${food_macros_obj.id}-goal-macro-bar ${macro}-goal-macro-bar goal-macro-bar`)
     };
     
+
     const update_food_amt_label = function(y_delta, food_macros_obj) {
         // food_amt is negative y_delat due to nature of
         // d3 y values
@@ -440,12 +497,13 @@ var MM_FUNK = (function() {
         d3.select(this_).attr('y', function() {
             const y = d3.event.y;
             if (y < 0) {
-                return 0;
+                d.slider_y = 0;
             } else if (y > d.cal_bar_height) {
-                return d.cal_bar_height;
+                d.slider_y = d.cal_bar_height;
             } else {
-                return y;
+                d.slider_y = y;
             }
+            return d.slider_y;
         });
         const new_y = d3.select(this_).attr('y');
         const y_delta = new_y - old_y;
