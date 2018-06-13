@@ -19,6 +19,7 @@ var MM_FUNK = (function() {
 	};
     
     const goal_meal_macro_percent_totaler = function(this_) {
+        console.log('totaler');
         let percent_id = '#' + $(this_).attr('id');
         if (percent_id[percent_id.length - 1] == 'g') {
             percent_id = percent_id.replace('-g','-percent');
