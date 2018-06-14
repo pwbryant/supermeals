@@ -19,7 +19,6 @@ var MM_FUNK = (function() {
 	};
     
     const goal_meal_macro_percent_totaler = function(this_) {
-        console.log('new totaler');
         let percent_id = '#' + $(this_).attr('id');
         if (percent_id[percent_id.length - 1] == 'g') {
             percent_id = percent_id.replace('-g','-percent');
@@ -537,7 +536,8 @@ var MM_FUNK = (function() {
 
     const create_food_macro_svg = function(svg_id, macro, food_macros_obj) {
 
-        const svg_html = `<svg id='${svg_id}' class='food-${food_macros_obj.id}-svg food-macro-svg' style='height:100%;width:20%'></svg>`;
+        let svg_html = "<div class='food-macro-svg-container'>";
+        svg_html += `<svg id='${svg_id}' class='food-${food_macros_obj.id}-svg food-macro-svg' style='height:100%;width:100%'></svg></div`;
 
         $(`#food-${food_macros_obj.id}-bars`).append(svg_html);
 

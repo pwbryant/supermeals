@@ -38,6 +38,11 @@
     font-size: 20px;
 }
 
+.food-macro-svg-container {
+    height: 100%;
+    width: 25%;
+}
+
 .food-macro-svg {
     margin-left: 5%;
 }
