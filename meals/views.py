@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.db.utils import IntegrityError
 from django.db import transaction
-from django.db.models import Q
+from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 from django.core.serializers.json import DjangoJSONEncoder
 import json
 from decimal import Decimal
@@ -363,13 +363,17 @@ def search_foods(request):
     search_terms = request.GET['search_terms'].split(' ')
     query_build_list = []
 
-    for term in search_terms:
-        query_build_list.append("Q(name__icontains = '%s')" % term)
-    query_str = ' | '.join(query_build_list)
-    query = eval(query_str)
-    search_result_dicts = list(Foods.objects.filter(query)[:10].values())
-    print('serach results',len(search_result_dicts))
-    print('table count',Foods.objects.all().count())
-    print(search_result_dicts[0])
-    return HttpResponse(json.dumps({'search-results':search_result_dicts},cls=DjangoJSONEncoder),content_type='application/json' )
+    vector = SearchVector('name')
+    query = SearchQuery(search_terms[0])
+    for term in search_terms[1:]:
+        query |= SearchQuery(term)
+
+    search_results = list(Foods.objects.annotate(
+        rank=SearchRank(vector, query)
+        ).order_by('-rank')[:50].values()
+    )
+
+    print('serach results',len(search_results))
+    print(search_results[0])
+    return HttpResponse(json.dumps({'search-results':search_results},cls=DjangoJSONEncoder),content_type='application/json' )
 
