@@ -17,52 +17,22 @@ var MM_FUNK = (function() {
 			$('#create-macro-bars-button').attr('disabled',true)
 		}
 	};
-    
-    const goal_meal_macro_percent_totaler = function(this_) {
-        let percent_id = '#' + $(this_).attr('id');
-        if (percent_id[percent_id.length - 1] == 'g') {
-            percent_id = percent_id.replace('-g','-percent');
-        }
-		let new_macro_percent = parseFloat($(percent_id).val());
-       
 
-		const old_macro_percent = parseFloat($(percent_id).attr('data-value'));
+    const get_goal_meal_grams= function(macros_obj) { // only let the correct cal input value through
 
-		if (isNaN(new_macro_percent)) {
-			new_macro_percent = 0;
-		} 
-
-		const percent_diff = new_macro_percent - old_macro_percent;
-		const old_percent_total = parseFloat($('#goal-meal-macro-percent-total').html());
-		const new_percent_total = old_percent_total - percent_diff;
-
-		$('#goal-meal-macro-percent-total').html(new_percent_total);
-		$(percent_id).attr('data-value',new_macro_percent);
-
-	};
-
-    const get_goal_meal_cals_and_set_grams= function(this_) {
-        // only let the correct cal input value through
-		if ($.trim(this_.value) != 'header' && $.trim(this_.value) != '' && isNaN(this_.value) == false) {
-			var cals = parseFloat(this_.value),
-			fat_percent = parseFloat($('#goal-meal-fat-percent').val()),
-			carbs_percent = parseFloat($('#goal-meal-carbs-percent').val()),
-			protein_percent = parseFloat($('#goal-meal-protein-percent').val()),
-            macro_g_obj = {}
-			macro_g_obj['fat'] = Math.round(fat_percent / 100 * cals / 9);
-			macro_g_obj['carbs'] = Math.round(carbs_percent / 100 * cals / 4);
-			macro_g_obj['protein'] = Math.round(protein_percent / 100 * cals / 4);
-			
-            MACRO_NAMES.slice(1,).forEach(function(macro) {
-                if (!isNaN(macro_g_obj[macro])) {
-                    $(`#goal-meal-${macro}-g`).val(macro_g_obj[macro]);
-                }
-            });
-		} else {
-			$('#goal-meal-fat-g').val('');
-			$('#goal-meal-carbs-g').val('');
-			$('#goal-meal-protein-g').val('');
-		}
+        const cals = macros_obj['cals'];
+        MACRO_NAMES.slice(1,).forEach(function(macro) {
+            const percent = macros_obj[macro];
+            const macro_factor = MACRO_FACTORS[macro];
+            let grams = Math.round(percent / 100 * cals / macro_factor);
+            
+            if (isNaN(grams) == false) {
+                macros_obj[`${macro}-g`] = grams;
+            } else {
+                macros_obj[`${macro}-g`] = '';
+            }
+        });
+        return macros_obj;
 	};
     
     const get_goal_cals = function() {
@@ -76,46 +46,19 @@ var MM_FUNK = (function() {
         return cals;
     };
 
-	const convert_macro_pct_grams = function(this_) {
-        
-        const cals = get_goal_cals();
-        if (!isNaN(cals)) {
-            
-            const input_array = this_.id.split('-');
-            const macro_value = parseFloat(this_.value);
-            const macro = input_array[2];
-            const type = input_array[3];
-            const macro_factor = MACRO_FACTORS[macro];
-            let return_id = '#goal-meal-' + macro;
-            let return_value;
+	const set_mm_funk_goal_cals = function(obj,cals) {
 
-            if (type == 'percent') {
-                return_value = (cals * macro_value / 100.0 / macro_factor).toFixed(0);
-                return_id += '-g';
-            } else {
-                return_value = (macro_value * macro_factor / cals * 100).toFixed(0);	
-                return_id += '-percent';
-            }
-
-            if (isNaN(macro_value)) {
-                $(return_id).val('');
-            } else {
-                $(return_id).val(return_value);
-            }
-        }
-
-	};
-
-	const set_mm_funk_goal_cals = function(obj,this_) {
-		if ($.trim(this_.value) != 'header' && $.trim(this_.value) != '' && isNaN(this_.value) == false) {
-			obj.CAL_GOAL = parseFloat(this_.value);
-		} else { obj.CAL_GOAL = 0;
+		if (cals != 'header' && cals != '' && isNaN(cals) == false) {
+			obj.CAL_GOAL = parseFloat(cals);
+		} else { 
+            obj.CAL_GOAL = 0;
 		}	
 	};
 
 	const create_macro_bars_obj = function() {
         let macros_bar_obj = {};
         macros_bar_obj.cal_bar_height = $('#goal-macros-bar-container').height() * .9;
+        console.log('cal bar height',macros_bar_obj.cal_bar_height)
 		MACRO_NAMES.forEach(function(macro) {
             macros_bar_obj[macro] = {'name':macro};
 			if (macro === 'cals') {
@@ -142,6 +85,7 @@ var MM_FUNK = (function() {
 
 	const create_macro_bar = function(macro, macro_bars_obj) {
 
+        console.log(macro_bars_obj.cal_bar_height);
         macro_bars_obj[macro].svg = d3.select('#' + macro + '-bar-svg');
         macro_bars_obj[macro].macro_bar_height = macro_bars_obj.cal_bar_height * macro_bars_obj[macro].ratio;
         macro_bars_obj[macro].macro_y = macro_bars_obj.cal_bar_height - macro_bars_obj[macro].macro_bar_height 
@@ -549,7 +493,8 @@ var MM_FUNK = (function() {
 		CAL_GOAL: 0,//initialize value
 		CAL_BAR_HEIGHT: 0,//initialize value
 		SEARCH_RESULT_ADD_BUTTON_LISTENER_EXISTS: 0,
-        FOOD_COUNT: 0, add_food : function() {
+        FOOD_COUNT: 0, 
+        add_food : function() {
 			mm_funk_obj = this;
 			$('.search-result>button').on('click',function() {
                 mm_funk_obj.FOOD_COUNT += 1;
@@ -595,22 +540,101 @@ var MM_FUNK = (function() {
 		goal_cal_inputs_trigger : function() {
 			mm_funk_obj = this;
 			$('.goal-cal-inputs').on('keyup change',function() {
-				set_mm_funk_goal_cals(mm_funk_obj,this);
-				get_goal_meal_cals_and_set_grams(this);
-				enable_disable_create_macro_bars_button(mm_funk_obj);
-				if ($(this).attr('id') == 'goal-meal-cals') {
-					$('#goal-meal-cals-select>option:eq(0)').prop('selected',true);
-				} else {
-					$('#goal-meal-cals').val('');
-				}
+                let macros_obj = {};
+                $('.choose-macros-pct').each(function(i,e) {
+                    const macro = e.id.split('-')[2];
+                    macros_obj[macro] = parseFloat(e.value);
+                });
+                macros_obj['cals'] = parseFloat($.trim(this.value));
+                
+                set_mm_funk_goal_cals(mm_funk_obj,macros_obj['cals']);
+
+                macros_obj = get_goal_meal_grams(macros_obj);
+                
+                MACRO_NAMES.forEach(function(macro) {
+                    const id = `#goal-meal-${macro}-g`;
+                    const grams = macros_obj[`${macro}-g`];
+                    $(id).val(grams);
+                });
+                    
+                enable_disable_create_macro_bars_button(mm_funk_obj);
+
+                if ($(this).attr('id') == 'goal-meal-cals') {
+                    $('#goal-meal-cals-select>option:eq(0)').prop('selected',true);
+                } else {
+                    $('#goal-meal-cals').val('');
+                }
 			});
 		},
+
+        convert_macro_pct_grams : function({cals, macro, macro_value, macro_factor, type}) {
+        
+            if (!isNaN(cals)) {
+                
+                let converted_val;
+                if (type == 'percent') {
+                    converted_val = (cals * (macro_value / 100.0) / macro_factor).toFixed(0);
+                } else {
+                    converted_val = (macro_value * macro_factor / cals * 100).toFixed(0);	
+                }
+                
+                return {'converted_val': converted_val}
+
+            }
+            return {'converted_val': null}
+        },
+        
+        goal_meal_macro_percent_totaler : function({percent_id}) {
+
+            let new_macro_percent = parseFloat($(percent_id).val());
+            if (isNaN(new_macro_percent)) {
+                new_macro_percent = 0;
+            } 
+
+            const old_macro_percent = parseFloat($(percent_id).attr('data-value'));
+
+            const percent_diff = new_macro_percent - old_macro_percent;
+            const old_percent_total = parseFloat($('#goal-meal-macro-percent-total').html());
+            const new_percent_total = old_percent_total - percent_diff;
+
+            return {
+                'new_percent_total': new_percent_total,
+                'new_macro_percent': new_macro_percent
+            };
+        },
+
 		goal_meal_choose_macro_handler : function() {
 			mm_funk_obj = this;
 			$('.choose-macros').on('keyup',function(e) {	
                 if (e.which != 9) {
-                    convert_macro_pct_grams(this);
-                    goal_meal_macro_percent_totaler(this);
+                    // initialize vars unsed in below funcs
+                    const input_array = this.id.split('-');
+                    const macro = input_array[2];
+                    const handler_obj = {
+                        'cals': get_goal_cals(),
+                        'macro_value': parseFloat(this.value),
+                        'macro': macro,
+                        'type': input_array[3],
+                        'macro_factor':MACRO_FACTORS[macro]
+                    };
+                    console.log('hobj',handler_obj);
+                    // convert between g and pct
+                    let return_id = '#goal-meal-' + macro;
+                    if (isNaN(handler_obj['macro_value'])) {
+                        $(return_id).val('');
+                    } else {
+                        converted_val = mm_funk_obj.convert_macro_pct_grams(handler_obj);
+                        $(return_id).val(converted_val);
+                    }
+
+                    // adjust total
+                    const percent_id = `#goal-meal-${macro}-percent`;
+                    totaler_obj = mm_funk_obj.goal_meal_macro_percent_totaler({
+                        'percent_id': percent_id
+                    });
+                    $('#goal-meal-macro-percent-total').html(totaler_obj['new_percent_total']);
+                    $(percent_id).attr('data-value',totaler_obj['new_macro_percent']);
+                    // change create macro button status
                     enable_disable_create_macro_bars_button(mm_funk_obj);
                 }
 			});

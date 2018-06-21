@@ -9,3 +9,4 @@ meals/static/d3/
 virtualenv
 meals/migrations/
 tmp/
+meals/static/meals/js/d3/

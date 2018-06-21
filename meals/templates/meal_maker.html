@@ -23,17 +23,19 @@
         {% if macro_breakdown %}
             {% for macro in macro_breakdown %}
                 <label for='goal-meal-{{ macro.name|lower }}-percent' class='item'>{{ macro.name }}</label>
-                <input id='goal-meal-{{ macro.name|lower }}-percent' class='choose-macros item' type='text' placeholder='%' data-value="{{ macro.percent }}" value="{{ macro.percent }}"/>
-                <input id='goal-meal-{{ macro.name|lower }}-g' class='choose-macros item' type='text' placeholder='-'/>
+                <input id='goal-meal-{{ macro.name|lower }}-percent' class='choose-macros choose-macros-pct item' type='text' placeholder='%' data-value="{{ macro.percent }}" value="{{ macro.percent }}"/>
+                <input id='goal-meal-{{ macro.name|lower }}-g' class='choose-macros choose-macros-g item' type='text' placeholder='-'/>
             {% endfor %}
         {% else %}
             <label for='goal-meal-fat-percent' class='item'>Fat</label>
-            <input id="goal-meal-fat-percent" class="choose-macros item" name="goal-meal-fat-percent" type="text" placeholder="%" data-value="0"/>
-            <input id='goal-meal-fat-g' class='choose-macros item' type='text' placeholder='g'/>
+            <input id="goal-meal-fat-percent" class="choose-macros choose-macros-pct item" name="goal-meal-fat-percent" type="text" placeholder="%" data-value="0"/>
+            <input id='goal-meal-fat-g' class='choose-macros choose-macros-g item' type='text' placeholder='g'/>
             <label for='goal-meal-carbs-percent' class='item'>Carbs</label>
-            <input id='goal-meal-carbs-percent' class='choose-macros item' type='text' placeholder='%' data-value="0"/>
-            <input id='goal-meal-carbs-g' class='choose-macros item' type='text' placeholder='g'/>
-            <label for='goal-meal-protein-percent' class='item'>Protein</label><input id='goal-meal-protein-percent' class='choose-macros item' type='text' placeholder='%' data-value="0"/><input id='goal-meal-protein-g' class='choose-macros item' type='text' placeholder='g'/>
+            <input id='goal-meal-carbs-percent' class='choose-macros choose-macros-pct item' type='text' placeholder='%' data-value="0"/>
+            <input id='goal-meal-carbs-g' class='choose-macros choose-macros-g item' type='text' placeholder='g'/>
+            <label for='goal-meal-protein-percent' class='item'>Protein</label>
+            <input id='goal-meal-protein-percent' class='choose-macros choose-macros-pct item' type='text' placeholder='%' data-value="0"/>
+            <input id='goal-meal-protein-g' class='choose-macros choose-macros-g item' type='text' placeholder='g'/>
         {% endif %}
     </div>
 
@@ -42,11 +44,15 @@
 </div>
 
 <div id='goal-macros-bar-container' class='macro-area'>
-    <!--<svg id='goal-macros-svg' style="height:100%;width:100%"></svg>-->
 </div>
 
 <div id='meal-maker-food-search-container' class='search-area'>
-    <span id='meal-maker-food-search-wrapper'><input id='meal-maker-food-search-input' type='text' placeholder='Search For Food'/><button id='food-search-icon-button' class="icon"><i class='fa fa-search'></i></button></span>
+    <span id='meal-maker-food-search-wrapper'>
+        <input id='meal-maker-food-search-input' type='text' placeholder='Search For Food'/>
+        <button id='food-search-icon-button' class="icon">
+            <i class='fa fa-search'></i>
+        </button>
+    </span>
     <div id='meal-maker-food-search-results-container'></div>
 </div>
 
