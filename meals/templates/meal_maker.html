@@ -24,7 +24,7 @@
             {% for macro in macro_breakdown %}
                 <label for='goal-meal-{{ macro.name|lower }}-percent' class='item'>{{ macro.name }}</label>
                 <input id='goal-meal-{{ macro.name|lower }}-percent' class='choose-macros choose-macros-pct item' type='text' placeholder='%' data-value="{{ macro.percent }}" value="{{ macro.percent }}"/>
-                <input id='goal-meal-{{ macro.name|lower }}-g' class='choose-macros choose-macros-g item' type='text' placeholder='-'/>
+                <input id='goal-meal-{{ macro.name|lower }}-g' class='choose-macros choose-macros-g item' type='text' placeholder='g'/>
             {% endfor %}
         {% else %}
             <label for='goal-meal-fat-percent' class='item'>Fat</label>
@@ -62,10 +62,10 @@
 </div>
 
 <script>
-	MM_FUNK.meal_maker_food_search_trigger();
-	MM_FUNK.goal_cal_inputs_trigger();
-	MM_FUNK.create_macro_button_trigger();
-	MM_FUNK.goal_meal_choose_macro_handler();
-	MM_FUNK.set_initial_macro_percent_tally();
+	//MM_FUNK.meal_maker_food_search_trigger();
+	MGOAL.goal_cal_inputs_trigger();
+	MGOAL.create_macro_button_trigger();
+	MGOAL.goal_meal_choose_macro_handler();
+	MGOAL.set_initial_macro_percent_tally();
 </script>
 

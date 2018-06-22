@@ -24,10 +24,16 @@ a {
     border: none;
     border-radius: 10px;
     color: #f9e34b;
+    cursor: pointer;
     font-family: "Philosopher"; 
     font-size: 20px;
     font-weight: bold;
     padding: 10px;
+}
+
+.btn:disabled {
+    background-color: gray;
+    cursor: default;
 }
 
 .headline {
