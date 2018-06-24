@@ -101,20 +101,7 @@ var MGOAL = (function() {
 			});
 		},
 
-		create_macro_button_trigger : function() {
-			mgoal_obj = this;
-			$('#create-macro-bars-button').on('click',function() {
-                $('#goal-macros-bar-container').html('');//clear bar area
-				let macro_bars_obj = create_macro_bars_obj();
-                MACRO_NAMES.forEach(function(macro) {
-                    create_macro_bar_container(macro);
-                    create_macro_bar(macro, macro_bars_obj);
-                    //create_macro_error_bars();
-                    create_macro_bar_labels(macro, macro_bars_obj);
-                });
-			});
-		},
-
+        //event - test in Function Tests
 		goal_cal_inputs_trigger : function() {
 			mgoal_obj = this;
 			$('.goal-cal-inputs').on('keyup change',function() {

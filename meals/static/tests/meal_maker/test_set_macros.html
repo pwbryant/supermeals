@@ -8,52 +8,10 @@
 	<script src="https://code.jquery.com/qunit/qunit-2.4.1.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="../../meals/js/d3/d3.min.js"></script>
-	<script src="../../meals/js/meal_maker_set_macro_goals.js"></script>
+	<script src="../../meals/js/meal_maker/set_macro_goals.js"></script>
 	<link href="../../meals/css/meals.css" type="stylesheet">
 	<script>
 		//helper functions
-		const insert_macro_val_trigger_keyup_return_output = function(cals,input_id,val,test_id) {
-			$('#goal-meal-cals').val('');
-			$('#goal-meal-cals').val(cals);
-			$('#' + input_id).val(val);
-			$('#' + input_id).trigger('keyup');
-			output = $('#' + test_id).val();
-			return output;
-		};
-				
-		const fill_macro_percents = function(fat_pct,carbs_pct,protein_pct) {
-			$('#goal-meal-fat-percent').val(fat_pct);
-			$('#goal-meal-carbs-percent').val(carbs_pct);
-			$('#goal-meal-protein-percent').val(protein_pct);
-		};
-		
-		const check_macro_grams = function(assert_,fat_exp,carbs_exp,protein_exp) {
-			fat_grams = $('#goal-meal-fat-g').val()
-			carbs_grams = $('#goal-meal-carbs-g').val()
-			protein_grams = $('#goal-meal-protein-g').val()
-			
-			assert_.equal(fat_grams,fat_exp);	
-			assert_.equal(carbs_grams,carbs_exp);	
-			assert_.equal(protein_grams,protein_exp);	
-		};
-		
-		const fill_macros_with_keyup = function(goal_cals,pct_ids,pct_amts) {
-		
-			$('#goal-meal-cals').val(goal_cals);
-			for (i=0; i<pct_ids.length; i++) {	
-				$('#' + pct_ids[i]).val(pct_amts[i]);
-				$('#' + pct_ids[i]).trigger('keyup');
-			}
-		};
-	
-		const fill_macros_add_cals_click_create_button = function(goal_cals,pct_ids,pct_amts) {
-
-			$('#goal-meal-cals').val(goal_cals);
-			for (i=0; i<pct_ids.length; i++) {	
-				$('#' + pct_ids[i]).val(pct_amts[i]);
-			}
-			$('#create-macro-bars-button').trigger('click');
-		};	
 		
 	</script>
 </head>
@@ -229,65 +187,6 @@
             assert.equal(is_disabled, false);
 		});
 
-/*
-		//macros breakdown table and goal cals selection
-		QUnit.test('meal cal selection fills in breakdown table grams',function (assert) {
-			MGOAL.goal_cal_inputs_trigger();
-			fill_macro_percents('34','33','33');
-			$('#goal-meal-cals-select').val('305').trigger('change');
-			$('#goal-meal-cals-select>option:eq(1)').prop('selected',true);
-			check_macro_grams.assert('12','25','25');
-		});		
-		QUnit.test('meal cal input fills in breakdown table grams',function (assert) {
-			MGOAL.goal_cal_inputs_trigger();
-			fill_macro_percents('34','33','33');
-			$('#goal-meal-cals').val('500');
-			$('#goal-meal-cals').trigger('keyup');
-			
-			check_macro_grams.assert('19','41','41');
-		});		
-		
-		QUnit.test('meal cal selection clears meal cal input',function (assert) {
-			MGOAL.goal_cal_inputs_trigger();
-			$('#goal-meal-cals').val('500');
-			$('#goal-meal-cals_select').val('305').trigger('change');
-			$('#goal-meal-cals_select>option:eq(1)').prop('selected',true);
-			cals_input = $('#goal-meal-cals').val();
-			assert.equal(cals_input,'');
-		});		
-
-		QUnit.test('meal cal selection fills in grams and subsequent change of percentage changes grams',function (assert) {
-			MGOAL.goal_cal_inputs_trigger();
-			MGOAL.goal_meal_choose_macro_handler();
-			fill_macro_percents('34','33','33');
-			$('#goal-meal-cals_select>option:eq(2)').prop('selected',true);
-			$('#goal-meal-fat-percent').val('30');
-			$('#goal-meal-fat-percent').trigger('keyup');
-			
-			new_fat =  $('#goal-meal-fat-g').val();
-			assert.equal(new_fat,'10');
-		});		
-			
-		QUnit.test('meal cal input sets dropdown to header',function (assert) {
-			MGOAL.goal_cal_inputs_trigger();
-			$('#goal-meal-cals').val('500');
-			select_val = $('#goal-meal-cals_select option:selected').val();
-			assert.equal(select_val,'header');
-		});
-		QUnit.test('meal cal input sets CAL_GOAL',function (assert) {
-			MGOAL.CAL_GOAL = 0;
-			MGOAL.goal_cal_inputs_trigger();
-			$('#goal-meal-cals').val('500');
-			$('#goal-meal-cals').trigger('keyup');
-			assert.equal(MGOAL.CAL_GOAL,500);
-		});
-		QUnit.test('meal cal dropdown sets CAL_GOAL',function (assert) {
-			MGOAL.CAL_GOAL = 0;
-			MGOAL.goal_cal_inputs_trigger();
-			$('#goal-meal-cals_select').val('305').trigger('change');
-			assert.equal(MGOAL.CAL_GOAL,305);
-		});
-*/
 	</script>
 </body>
 </html>
