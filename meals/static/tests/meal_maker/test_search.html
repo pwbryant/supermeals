@@ -7,43 +7,14 @@
 	<link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.4.1.css">
 	<script src="https://code.jquery.com/qunit/qunit-2.4.1.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-	<script src="../../meals/js/meal_maker.js"></script>
-    <script>
+	<script src="../../meals/js/meal_maker/set_macro_goals.js"></script>
+	<script src="../../meals/js/meal_maker/bars.js"></script>
+	<script src="../../meals/js/meal_maker/search.js"></script>
 
-		var test_macro_bars_creation = function(assert,svg_target_tag,bar_target_tag) {
-
-			var svg = $('#' + svg_target_tag + '-svg'),
-			bar_width = (svg.width() - (svg.width() * .1)) / 4.0,
-			cal_bar = d3.select('#' + bar_target_tag + '-cals-bar'),
-			fat_bar = d3.select('#' + bar_target_tag + '-fat-bar'),
-			carbs_bar = d3.select('#' + bar_target_tag + '-carbs-bar'),
-			protein_bar = d3.select('#' + bar_target_tag + '-protein-bar');
-
-			assert.equal(cal_bar.attr('width'),bar_width);
-			assert.equal(fat_bar.attr('width'),bar_width);
-			assert.equal(carbs_bar.attr('width'),bar_width);
-			assert.equal(protein_bar.attr('width'),bar_width);
-
-			assert.equal(cal_bar.attr('height')/svg.height(),.85);
-			assert.equal(fat_bar.attr('height')/cal_bar.attr('height'),.3);
-			assert.equal(carbs_bar.attr('height')/cal_bar.attr('height'),.4);
-			assert.equal(protein_bar.attr('height')/cal_bar.attr('height'),.3);
-
-		};
-    </script>
 </head>
 <body>
 	<div id="qunit"></div>
 	<div id="qunit-fixture">
-		<div id='meal-maker-food-search-container' class='search-area'>
-			<span id='meal-maker-food-search-wrapper'>
-                <input id='meal-maker-food-search-input' type='text' placeholder='Search For Food'/>
-                <button id='food-search-icon-button' class="icon">
-                    <i class='glyphicon glyphicon-search'></i>
-                </button>
-            </span>
-		</div>
-		
 	</div>
 	
 
@@ -54,9 +25,18 @@
 	<script>
 
 		//ingredient bars
-		QUnit.test("calling create ingredient bars with add icon button creates the ing bars", function (assert) {
-			MM_FUNK.add_search_result_ingredient_button_trigger();
-			test_macro_bars_creation(assert,'ingredient-1','ingredient-1');
+		QUnit.test("format_food_search_results", function (assert) {
+
+            const search_results = [{
+                'name': 'poop candy',
+            }];
+
+            const results_html = SEARCH.format_food_search_results(search_results);
+
+            assert.equal(results_html.includes('search-result'),true);
+            assert.equal(results_html.includes('search-result-food-0'),true);
+
+
 		});
 
 	</script>

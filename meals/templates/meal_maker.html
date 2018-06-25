@@ -37,8 +37,7 @@
             <input id='goal-meal-protein-percent' class='choose-macros choose-macros-pct item' type='text' placeholder='%' data-value="0"/>
             <input id='goal-meal-protein-g' class='choose-macros choose-macros-g item' type='text' placeholder='g'/>
         {% endif %}
-    </div>
-
+    </div> 
     <label for='goal-meal-macro-percent-total'>% Remaining:</label><span id='goal-meal-macro-percent-total'></span><br>
     <button id='create-macro-bars-button' class='btn' disabled>Create Macro Bars</button>
 </div>
@@ -62,11 +61,10 @@
 </div>
 
 <script>
-	//MM_FUNK.meal_maker_food_search_trigger();
+	SEARCH.meal_maker_food_search_trigger();
 	MGOAL.goal_cal_inputs_trigger();
 	MGOAL.goal_meal_choose_macro_handler();
 	MGOAL.set_initial_macro_percent_tally();
 	BARS.create_macro_button_trigger();
-
 </script>
 

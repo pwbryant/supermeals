@@ -156,7 +156,7 @@ var MM_FUNK = (function() {
 	const meal_maker_food_search = function(obj) { var search_terms = $.trim($('#meal-maker-food-search-input').val());
 		if(search_terms != '') {
 			$.get('/meals/search-foods/',{'search_terms':search_terms},function(data) {
-				var search_results = data['search-results'],
+				const search_results = data['search-results'],
 				search_results_html = '';
 				if(search_results.length > 0) {
 					obj.SEARCH_RESULTS = search_results; 
@@ -168,7 +168,6 @@ var MM_FUNK = (function() {
 					search_results_html = '<span>No Foods Found</span>';
 					$('#meal-maker-food-search-results-container').html(search_results_html);
 				}
-
 			});
 		} else {
 			$('#meal-maker-food-search-input').val('');

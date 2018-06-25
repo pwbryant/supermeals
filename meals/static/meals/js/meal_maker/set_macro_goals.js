@@ -12,7 +12,6 @@ var MGOAL = (function() {
 	//macro breakdown functions 
 	return {
 		CAL_GOAL: 0,//initialize value
-		CAL_BAR_HEIGHT: 0,//initialize value
 		SEARCH_RESULT_ADD_BUTTON_LISTENER_EXISTS: 0,
         FOOD_COUNT: 0, 
     
