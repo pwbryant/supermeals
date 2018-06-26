@@ -101,11 +101,11 @@ class MakeMacroMealTest(FunctionalTest):
         self.assertEqual(labels[4].text,"Protein")
         inputs = table.find_elements_by_css_selector("input")
         self.assertEqual(inputs[0].get_attribute("value"),"34")
-        self.assertEqual(inputs[1].get_attribute("placeholder"),"-")
+        self.assertEqual(inputs[1].get_attribute("placeholder"),"g")
         self.assertEqual(inputs[2].get_attribute("value"),"33")
-        self.assertEqual(inputs[3].get_attribute("placeholder"),"-")
+        self.assertEqual(inputs[3].get_attribute("placeholder"),"g")
         self.assertEqual(inputs[4].get_attribute("value"),"33")
-        self.assertEqual(inputs[5].get_attribute("placeholder"),"-")
+        self.assertEqual(inputs[5].get_attribute("placeholder"),"g")
         
         #Joe selects the second option "Meal 4 - 305" and notices that a grams column
         #in the table below fills in.
@@ -150,62 +150,46 @@ class MakeMacroMealTest(FunctionalTest):
         # To the right of the macro table are a series of four rectangles 
         # labeled "Calories", "Fat", "Carbs", "Protein".
         self.browser.find_element_by_id("create-macro-bars-button").click()
-        goal_svg = self.browser.find_element_by_id("goal-macros-svg")
-        cal_bar = goal_svg.find_element_by_id("goal-cals-bar")
-        fat_bar = goal_svg.find_element_by_id("goal-fat-bar")
-        carbs_bar = goal_svg.find_element_by_id("goal-carbs-bar")
-        protein_bar = goal_svg.find_element_by_id("goal-protein-bar")
+        #goal_svg = self.browser.find_element_by_id("goal-macros-svg")
+        cal_bar = self.browser.find_element_by_id("cals-goal-macro-bar")
+        fat_bar = self.browser.find_element_by_id("fat-goal-macro-bar")
+        carbs_bar = self.browser.find_element_by_id("carbs-goal-macro-bar")
+        protein_bar = self.browser.find_element_by_id("protein-goal-macro-bar")
         
-        svg_height = self.browser.find_element_by_id(
-                "goal-macros-container").size["height"]
-        svg_width = self.browser.find_element_by_id(
-                "goal-macros-container").size["width"]
-        bar_width = (svg_width - (svg_width * .1)) / 4.0	
+        bar_container_height = self.browser.find_element_by_id(
+                "goal-macros-bar-container").size["height"]
+        bar_container_width = self.browser.find_element_by_id(
+                "goal-macros-bar-container").size["width"]
+        bar_width = bar_container_width * .2
 
-        print(cal_bar.get_attribute("height"))
-        print(svg_height)
         #self.assertTrue(np.isclose(
         #    self.get_bar_ratio(cal_bar.get_attribute("height"),
         #    svg_height),85))
-        self.assertTrue(np.isclose(
-            float(cal_bar.get_attribute("width")),bar_width)
-            ) # all bars set to same width
         self.assertEqual(self.get_bar_ratio(
-            fat_bar.get_attribute("height"),
-            cal_bar.get_attribute("height")),.30)
+            fat_bar.size["height"],
+            cal_bar.size["height"]),.30)
         self.assertEqual(self.get_bar_ratio(
-            carbs_bar.get_attribute("height"),
-            cal_bar.get_attribute("height")),.37)
+            carbs_bar.size["height"],
+            cal_bar.size["height"]),.37)
         self.assertEqual(self.get_bar_ratio(
-            protein_bar.get_attribute("height"),
-            cal_bar.get_attribute("height")),.33)
+            protein_bar.size["height"],
+            cal_bar.size["height"]),.33)
         
         # Below which are a series of 0s like 0, 0g, 0g, 0g 
         # for macro amounts.
-        labels = self.browser.find_elements_by_tag_name("text")
-        self.assertEqual(labels[0].text,"Cals: 0")
-        self.assertEqual(labels[1].text,"Fat: 0g")
-        self.assertEqual(labels[2].text,"Carbs: 0g")
-        self.assertEqual(labels[3].text,"Protein: 0g")
+        labels = self.browser.find_elements_by_css_selector(".macro-label")
+        amts = self.browser.find_elements_by_css_selector(".macro-amt")
+        units = self.browser.find_elements_by_css_selector(".macro-unit")
 
-        # Each of the macro rectangles has a standard deviation bar 
-        fat_error = self.browser.find_element_by_id(
-                "goal-fat-error-bar")
-        carbs_error = self.browser.find_element_by_id(
-                "goal-carbs-error-bar")
-        protein_error = self.browser.find_element_by_id(
-                "goal-protein-error-bar")
         
-        self.assertEqual(self.get_bar_ratio(
-            fat_error.get_attribute("height"),
-            cal_bar.get_attribute("height")),.10)
-        self.assertEqual(self.get_bar_ratio(
-            carbs_error.get_attribute("height"),
-            cal_bar.get_attribute("height")),.10)
-        self.assertEqual(self.get_bar_ratio(
-            protein_error.get_attribute("height"),
-            cal_bar.get_attribute("height")),.10)
-        
+        self.assertEqual(labels[0].text,"Cals:")
+        self.assertEqual(labels[1].text,"Fat:")
+        self.assertEqual(labels[2].text,"Carbs:")
+        self.assertEqual(labels[3].text,"Protein:")
+
+        self.assertEqual(len(set([amt.text for amt in amts])) == 1 and amts[0].text == '0',True)
+        self.assertEqual(len(set([unit.text for unit in units])) == 1 and units[0].text == 'g',True)
+
         # To the right of that is a an input with the place holder 
         # "Search for ingredients" with a magnifying glass icon button
         self.check_element_content(
@@ -216,7 +200,7 @@ class MakeMacroMealTest(FunctionalTest):
         # half contains a page wide div with the large text 
         # "Add Ingredients using Search"
         self.check_element_content(
-                "meal-maker-ingredient-placeholder-text","id","text",
+                "meal-maker-food-header","id","text",
                 "Add Ingredients Using Search")
         # Joe is going to attempt to make a salad that will fit his macro 
         # percentages. He starts by entering "600" into the 
@@ -235,21 +219,18 @@ class MakeMacroMealTest(FunctionalTest):
                 "food-search-icon-button").click()
         search_results = self.browser.find_elements_by_class_name(
                 "search-result")
-        time.sleep(5)
-        self.assertEqual(len(search_results),10)
+        self.assertEqual(len(search_results),50)
 
         # Joe clicks on the first result ( on the add + icon )
         # and notices that in the lower left, a series of rectangles
         # appear with the 
         # result text as the header, and "0g" under the bars to the left.
         # The left-most rectangle has a small drag box at the bottom.
-        time.sleep(5)
         search_results[0].find_elements_by_class_name("icon")[0].click()
-        ing_1_svg = self.browser.find_element_by_id("ingredient-1-svg")
-        cal_bar = goal_svg.find_element_by_id("ingredient-1-cals-bar")
-        fat_bar = goal_svg.find_element_by_id("ingredient-1-fat-bar")
-        carbs_bar = goal_svg.find_element_by_id("ingredient-1-carbs_bar")
-        protein_bar = goal_svg.find_element_by_id("ingredient-1-protein-bar")
+        self.browser.find_element_by_id("food-3203-cals-svg")
+        self.browser.find_element_by_id("food-3203-fat-svg")
+        self.browser.find_element_by_id("food-3203-carbs-svg")
+        self.browser.find_element_by_id("food-3203-protein-svg")
         self.fail("Finish The Test!")
 
 
