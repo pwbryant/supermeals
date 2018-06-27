@@ -1,6 +1,7 @@
 from .base import FunctionalTest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.select import Select
 from django.contrib.auth.models import User
 from meals.models import Macros,Foods
@@ -13,6 +14,22 @@ class MakeMacroMealTest(FunctionalTest):
     
     def get_bar_ratio(self,num_height,denom_height):
         return round(float(num_height) / float(denom_height),2)
+
+    def search_and_results(self, term_list):
+        self.fill_input(["input[id='meal-maker-food-search-input']"],
+                term_list)	
+        self.browser.find_element_by_id(
+                "food-search-icon-button").click()
+        search_results = self.browser.find_elements_by_class_name(
+                "search-result")
+        return search_results 
+
+    def move_slider(self, slider_id,ypos):
+        slider = self.browser.find_element_by_id(slider_id)
+        self.browser.execute_script('arguments[0].scrollIntoView();', slider)
+        actions = ActionChains(self.browser)
+        actions.drag_and_drop_by_offset(slider,0,ypos)
+        actions.perform()
 
     def test_make_macro_meal(self):
         user = self.initialize_test(self.USERNAME,self.PASSWORD)
@@ -213,12 +230,7 @@ class MakeMacroMealTest(FunctionalTest):
         # He starts by typeing "garbonzo beans" in the search bar and 
         # clicks the search icon. And he sees the area below the search 
         # bar fill up with the top 10 results
-        self.fill_input(["input[id='meal-maker-food-search-input']"],
-                ["garbanzo beans"])	
-        self.browser.find_element_by_id(
-                "food-search-icon-button").click()
-        search_results = self.browser.find_elements_by_class_name(
-                "search-result")
+        search_results = self.search_and_results(['garbanzo beans'])
         self.assertEqual(len(search_results),50)
 
         # Joe clicks on the first result ( on the add + icon )
@@ -227,35 +239,78 @@ class MakeMacroMealTest(FunctionalTest):
         # result text as the header, and "0g" under the bars to the left.
         # The left-most rectangle has a small drag box at the bottom.
         search_results[0].find_elements_by_class_name("icon")[0].click()
-        self.browser.find_element_by_id("food-3203-cals-svg")
-        self.browser.find_element_by_id("food-3203-fat-svg")
-        self.browser.find_element_by_id("food-3203-carbs-svg")
-        self.browser.find_element_by_id("food-3203-protein-svg")
-        self.fail("Finish The Test!")
+        food_container = self.browser.find_element_by_id('food-3203-container') 
+        food_container.find_element_by_id('food-3203-cals-svg')
+        food_container.find_element_by_id('food-3203-fat-svg')
+        food_container.find_element_by_id('food-3203-carbs-svg')
+        food_container.find_element_by_id('food-3203-protein-svg')
+        header = food_container.find_element_by_css_selector('.food-container-header>span').text
+        footer_amt = food_container.find_element_by_id('food-amt-3203').text
+        footer_unit = food_container.find_element_by_id('food-amt-unit-3203').text
+        self.assertEqual(header,'Chickpeas (garbanzo ...') 
+        self.assertEqual(footer_amt + footer_unit,'0g') 
 
 
-        #He then searches for "carrots", clicks the "+" button on the first result
+        #He then searches for "carrots raw", clicks the "+" button on the first result
         #and notices again, that a series of rectanlges and labels (except title) 
         #like the previous result appear to the right of the previous search result
 
+        self.fill_input(["input[id='meal-maker-food-search-input']"],[],clear=True)	
+        search_results = self.search_and_results(['carrots raw'])
+        search_results[0].find_elements_by_class_name("icon")[0].click()
+        food_container = self.browser.find_element_by_id('food-2474-container') 
+        food_container.find_element_by_id('food-2474-cals-svg')
+        food_container.find_element_by_id('food-2474-fat-svg')
+        food_container.find_element_by_id('food-2474-carbs-svg')
+        food_container.find_element_by_id('food-2474-protein-svg')
+        header = food_container.find_element_by_css_selector('.food-container-header>span').text
+        footer_amt = food_container.find_element_by_id('food-amt-2474').text
+        footer_unit = food_container.find_element_by_id('food-amt-unit-2474').text
+        self.assertEqual(header,'Carrots, baby, raw') 
+        self.assertEqual(footer_amt + footer_unit,'0g') 
+
         #He then adds "bacon" and "lettuce" to the mix as well
+        self.fill_input(["input[id='meal-maker-food-search-input']"],[],clear=True)	
+        search_results = self.search_and_results(['bacon strips cooked'])
+        search_results[0].find_elements_by_class_name("icon")[0].click()
+
+        self.fill_input(["input[id='meal-maker-food-search-input']"],[],clear=True)	
+        search_results = self.search_and_results(['lettuce raw'])
+        search_results[0].find_elements_by_class_name("icon")[0].click()
 
         #He then adjusts the dragbar on the bacon cal bar.
+        self.move_slider('food-2316-slider',600)
 
         #He notices that as the slider goes up, the above meal bars fill up with
         #the same color as the bacon food bars.
+        bacon_cals_bar = self.browser.find_element_by_id('cals-2316-goal-macro-bar')
+        self.assertEqual(bacon_cals_bar.size['height'] > 0, True)
 
         #He adjusts the lettuce bar and notices that, like the bacon, bar the meal
         #bars fill up with the color of the lettuce bar.
+        self.move_slider('food-5309-slider',600)
+        lettuce_cals_bar = self.browser.find_element_by_id('cals-5309-goal-macro-bar')
+        self.assertEqual(lettuce_cals_bar.size['height'] > 0, True)
 
         #He also notices that the bacon bar color in the meal bars is stacked on top
         #of the bacon bars. 
+        self.assertEqual(bacon_cals_bar.location['y'] < lettuce_cals_bar.location['y'] , True)
 
         #He then adjusts the carrots and garbonzo beans, an notices, that the meal bars are stacked in the order that the foods were initially added.
 
-        #Joe is curious how many cals/fat/carbs/prot are in 100g of each food
-        #so one by one he drags the bars of each food unil the amount label reaches
-        #100g and reads what the cals/far/carbs/prot are on the meal bar.
+        self.move_slider('food-3203-slider',600)
+        self.move_slider('food-2474-slider',600)
+        chickpea_cals_bar = self.browser.find_element_by_id('cals-3203-goal-macro-bar')
+        carrot_cals_bar = self.browser.find_element_by_id('cals-2474-goal-macro-bar')
+
+        self.assertEqual(
+                chickpea_cals_bar.location['y'] < carrot_cals_bar.location['y'] < bacon_cals_bar.location['y'] < lettuce_cals_bar.location['y']
+                ,True
+        )
+        self.fail("Finish The Test!")
+        #Joe is curious how many cals/fat/carbs/prot and grams are at the max 
+        #capacity of each food so one by one he drags the bars of each food to the max 
+        #and reads what the cals/far/carbs/prot and grams are.
 
         #Joe now tries to adjust the foods so that they achieve is target meal goals
 
