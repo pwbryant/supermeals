@@ -2,11 +2,18 @@ from .base import FunctionalTest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.select import Select
 from django.contrib.auth.models import User
 from meals.models import Macros,Foods
 import time
 import numpy as np
+from builtins import Exception
+
+class ElementPresentException(Exception):
+
+    def __init__(self, message):
+        self.message = message
 
 class MakeMacroMealTest(FunctionalTest):
 
@@ -30,6 +37,26 @@ class MakeMacroMealTest(FunctionalTest):
         actions = ActionChains(self.browser)
         actions.drag_and_drop_by_offset(slider,0,ypos)
         actions.perform()
+
+    def check_food_amt(self, food_id, cals_per_gram, goal_cals):
+        self.move_slider('food-{}-slider'.format(food_id),650)
+        self.move_slider('food-{}-slider'.format(food_id),1)
+        food_amt = self.browser.find_element_by_id(
+                'food-amt-{}'.format(food_id)
+        ).text
+        self.assertEqual(food_amt, str(round(goal_cals / cals_per_gram))) #goal cals / cals_per_gram
+        self.move_slider('food-{}-slider'.format(food_id),650)
+        
+    def make_sure_absent(self, element_id):
+        try:
+            self.browser.find_element_by_id(element_id)
+            try:
+                raise ElementPresentException('\n\n{} element is present\n'.format(element_id))
+            except ElementPresentException as e:
+                raise
+
+        except NoSuchElementException:
+            return True
 
     def test_make_macro_meal(self):
         user = self.initialize_test(self.USERNAME,self.PASSWORD)
@@ -238,15 +265,22 @@ class MakeMacroMealTest(FunctionalTest):
         # appear with the 
         # result text as the header, and "0g" under the bars to the left.
         # The left-most rectangle has a small drag box at the bottom.
+        chickpea_id = '3203'
         search_results[0].find_elements_by_class_name("icon")[0].click()
-        food_container = self.browser.find_element_by_id('food-3203-container') 
-        food_container.find_element_by_id('food-3203-cals-svg')
-        food_container.find_element_by_id('food-3203-fat-svg')
-        food_container.find_element_by_id('food-3203-carbs-svg')
-        food_container.find_element_by_id('food-3203-protein-svg')
+        food_container = self.browser.find_element_by_id(
+                'food-{}-container'.format(chickpea_id)
+        ) 
+        food_container.find_element_by_id('food-{}-cals-svg'.format(chickpea_id))
+        food_container.find_element_by_id('food-{}-fat-svg'.format(chickpea_id))
+        food_container.find_element_by_id('food-{}-carbs-svg'.format(chickpea_id))
+        food_container.find_element_by_id('food-{}-protein-svg'.format(chickpea_id))
         header = food_container.find_element_by_css_selector('.food-container-header>span').text
-        footer_amt = food_container.find_element_by_id('food-amt-3203').text
-        footer_unit = food_container.find_element_by_id('food-amt-unit-3203').text
+        footer_amt = food_container.find_element_by_id(
+                'food-amt-{}'.format(chickpea_id)
+        ).text
+        footer_unit = food_container.find_element_by_id(
+                'food-amt-unit-{}'.format(chickpea_id)
+        ).text
         self.assertEqual(header,'Chickpeas (garbanzo ...') 
         self.assertEqual(footer_amt + footer_unit,'0g') 
 
@@ -258,14 +292,21 @@ class MakeMacroMealTest(FunctionalTest):
         self.fill_input(["input[id='meal-maker-food-search-input']"],[],clear=True)	
         search_results = self.search_and_results(['carrots raw'])
         search_results[0].find_elements_by_class_name("icon")[0].click()
-        food_container = self.browser.find_element_by_id('food-2474-container') 
-        food_container.find_element_by_id('food-2474-cals-svg')
-        food_container.find_element_by_id('food-2474-fat-svg')
-        food_container.find_element_by_id('food-2474-carbs-svg')
-        food_container.find_element_by_id('food-2474-protein-svg')
+        carrot_id = '2474'
+        food_container = self.browser.find_element_by_id(
+                'food-{}-container'.format(carrot_id)
+        ) 
+        food_container.find_element_by_id('food-{}-cals-svg'.format(carrot_id))
+        food_container.find_element_by_id('food-{}-fat-svg'.format(carrot_id))
+        food_container.find_element_by_id('food-{}-carbs-svg'.format(carrot_id))
+        food_container.find_element_by_id('food-{}-protein-svg'.format(carrot_id))
         header = food_container.find_element_by_css_selector('.food-container-header>span').text
-        footer_amt = food_container.find_element_by_id('food-amt-2474').text
-        footer_unit = food_container.find_element_by_id('food-amt-unit-2474').text
+        footer_amt = food_container.find_element_by_id(
+                'food-amt-{}'.format(carrot_id)
+        ).text
+        footer_unit = food_container.find_element_by_id(
+                'food-amt-unit-{}'.format(carrot_id)
+        ).text
         self.assertEqual(header,'Carrots, baby, raw') 
         self.assertEqual(footer_amt + footer_unit,'0g') 
 
@@ -273,23 +314,29 @@ class MakeMacroMealTest(FunctionalTest):
         self.fill_input(["input[id='meal-maker-food-search-input']"],[],clear=True)	
         search_results = self.search_and_results(['bacon strips cooked'])
         search_results[0].find_elements_by_class_name("icon")[0].click()
+        bacon_id = '2316'
 
         self.fill_input(["input[id='meal-maker-food-search-input']"],[],clear=True)	
         search_results = self.search_and_results(['lettuce raw'])
         search_results[0].find_elements_by_class_name("icon")[0].click()
 
         #He then adjusts the dragbar on the bacon cal bar.
-        self.move_slider('food-2316-slider',600)
+        self.move_slider('food-{}-slider'.format(bacon_id),600)
 
         #He notices that as the slider goes up, the above meal bars fill up with
         #the same color as the bacon food bars.
-        bacon_cals_bar = self.browser.find_element_by_id('cals-2316-goal-macro-bar')
+        bacon_cals_bar = self.browser.find_element_by_id(
+            'cals-{}-goal-macro-bar'.format(bacon_id)
+        )
         self.assertEqual(bacon_cals_bar.size['height'] > 0, True)
 
         #He adjusts the lettuce bar and notices that, like the bacon, bar the meal
         #bars fill up with the color of the lettuce bar.
-        self.move_slider('food-5309-slider',600)
-        lettuce_cals_bar = self.browser.find_element_by_id('cals-5309-goal-macro-bar')
+        lettuce_id = '5309'
+        self.move_slider('food-{}-slider'.format(lettuce_id),600)
+        lettuce_cals_bar = self.browser.find_element_by_id(
+            'cals-{}-goal-macro-bar'.format(lettuce_id)
+        )
         self.assertEqual(lettuce_cals_bar.size['height'] > 0, True)
 
         #He also notices that the bacon bar color in the meal bars is stacked on top
@@ -298,36 +345,46 @@ class MakeMacroMealTest(FunctionalTest):
 
         #He then adjusts the carrots and garbonzo beans, an notices, that the meal bars are stacked in the order that the foods were initially added.
 
-        self.move_slider('food-3203-slider',600)
-        self.move_slider('food-2474-slider',600)
-        chickpea_cals_bar = self.browser.find_element_by_id('cals-3203-goal-macro-bar')
-        carrot_cals_bar = self.browser.find_element_by_id('cals-2474-goal-macro-bar')
+        self.move_slider('food-{}-slider'.format(chickpea_id),600)
+        self.move_slider('food-{}-slider'.format(carrot_id),600)
+        chickpea_cals_bar = self.browser.find_element_by_id(
+            'cals-{}-goal-macro-bar'.format(chickpea_id)
+        )
+        carrot_cals_bar = self.browser.find_element_by_id(
+            'cals-2474-goal-macro-bar'.format(carrot_id)
+        )
 
         self.assertEqual(
                 chickpea_cals_bar.location['y'] < carrot_cals_bar.location['y'] < bacon_cals_bar.location['y'] < lettuce_cals_bar.location['y']
                 ,True
         )
-        self.fail("Finish The Test!")
         #Joe is curious how many cals/fat/carbs/prot and grams are at the max 
         #capacity of each food so one by one he drags the bars of each food to the max 
         #and reads what the cals/far/carbs/prot and grams are.
+        goal_cals = 600
+        self.check_food_amt(chickpea_id, .88, goal_cals)
+        self.check_food_amt(carrot_id, .35, goal_cals)
+        self.check_food_amt(bacon_id, 1.46, goal_cals)
+        self.check_food_amt(lettuce_id, .16, goal_cals)
 
         #Joe now tries to adjust the foods so that they achieve is target meal goals
 
-        #Joe adds 100cals worth of every food, but after thinking about how much he
+        #Joe adds some of every food, but after thinking about how much he
         #doesn"t really like garbonzo beans, he decides he"s going to replace it.
         #Joe notices an "x" in the upper left of each food, he clicks on it and
         #garbonzo beans disappears 
+        self.move_slider('food-{}-slider'.format(chickpea_id),600)
+        self.move_slider('food-{}-slider'.format(carrot_id),600)
+        self.move_slider('food-{}-slider'.format(bacon_id),600)
+        self.move_slider('food-{}-slider'.format(lettuce_id),600)
 
-        #He notices that all foods to the right of "garbonzo beans" slide to the left
+        self.browser.find_element_by_id('exit-' + chickpea_id).click()
+        self.assertTrue(self.make_sure_absent('exit-' + chickpea_id))
+        self.fail("Finish The Test!")
 
         #He also notices that all the meal bars above "garbonzo beans" have slid down.
 
         #He also notices that the macro amounts have decreased correct amount.
-
-        #He the adds kidney beans, adds 100 cals worth, and then removes bacon.
-        #He notices again that all the foods right/above slide over/down, and 
-        #and the macro amounts decrease the amount = to the food removed
 
         #Joe decides he wants a smaller salad, so he changes the cals from 600 to 300
         #and notices that all his macro amounts, and food amounts are cut in half.
