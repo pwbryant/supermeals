@@ -41,38 +41,44 @@ class Macros(models.Model):
     protein_percent = models.DecimalField(max_digits=4,decimal_places=2,blank=False)
 
     def calc_tdee(self):
-            activity_factor = {
-                    'none':Decimal('1.2'),
-                    'light':Decimal('1.375'),
-                    'medium':Decimal('1.55'),
-                    'high':Decimal('1.725'),
-                    'very high':Decimal('1.9')
-            }[self.activity]
+        activity_factor = {
+                'none':Decimal('1.2'),
+                'light':Decimal('1.375'),
+                'medium':Decimal('1.55'),
+                'high':Decimal('1.725'),
+                'very high':Decimal('1.9')
+        }[self.activity]
 
-            direction_factor = {
-                     'maintain': Decimal('0'),
-                     'lose': Decimal('-1'),
-                     'gain': Decimal('1'),
-             }[self.direction];
-            
-            weight_change = self.change_rate / Decimal('.45359237') * direction_factor * 500 #convert kg to lb by dividing by .45359237
-            
-            tdee = (Decimal('10') * self.weight) + (Decimal('6.25') * self.height) - (Decimal('5') * self.age)
-            if self.gender == 'm':
-                    tdee += 5 
-            else:
-                    tdee -= 161
+        direction_factor = {
+                 'maintain': Decimal('0'),
+                 'lose': Decimal('-1'),
+                 'gain': Decimal('1'),
+         }[self.direction];
+        
+        weight_change = self.change_rate / Decimal('.45359237') * direction_factor * 500 #convert kg to lb by dividing by .45359237
+        
+        tdee = (Decimal('10') * self.weight) + (Decimal('6.25') * self.height) - (Decimal('5') * self.age)
+        if self.gender == 'm':
+                tdee += 5 
+        else:
+                tdee -= 161
 
-            tdee = (tdee * activity_factor) + weight_change
+        tdee = (tdee * activity_factor) + weight_change
 
-            return tdee
-    
+        return tdee
+
 
 class MealTemplate(models.Model):
 
     user = models.ForeignKey('auth.User',on_delete=models.CASCADE)
     name = models.TextField(blank=False)	
     cals_percent = models.DecimalField(max_digits=4,decimal_places=2,blank=False)
+    
+
+class OwnedFoods(models.Model):
+
+    food = models.ForeignKey('Foods',on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User',on_delete=models.CASCADE)
     
 
 class Foods(models.Model):
@@ -109,6 +115,30 @@ class Servings(models.Model):
     def __str__(self):
         return '{0} - {1}'.format(self.food.name, self.description)
     
+
+class Ingredients(models.Model):
+
+    
+    main_food = models.ForeignKey(
+            'Foods',
+            on_delete=models.CASCADE,
+            related_name='main_food',
+            )
+
+    ingredient = models.ForeignKey(
+            'Foods',
+            on_delete=models.CASCADE,
+            related_name='ingredient',
+            )
+
+    serving = models.ForeignKey(
+            'Servings',
+            on_delete=models.CASCADE,
+            )
+
+    amount = models.DecimalField(max_digits=6,decimal_places=2)
+
+
 class Temp(models.Model):
 
     field1 = models.TextField(blank=False)

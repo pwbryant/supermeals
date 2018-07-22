@@ -1,15 +1,12 @@
-from .base import FunctionalTest
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+import time
+from builtins import Exception
+
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.select import Select
-from django.contrib.auth.models import User
-from meals.models import Macros,Foods
-import time
-import numpy as np
-from builtins import Exception
+from meals.models import Macros, Foods
 
+from .base import FunctionalTest
 class ElementPresentException(Exception):
 
     def __init__(self, message):
@@ -258,14 +255,14 @@ class MakeMacroMealTest(FunctionalTest):
         # clicks the search icon. And he sees the area below the search 
         # bar fill up with the top 10 results
         search_results = self.search_and_results(['garbanzo beans'])
-        self.assertEqual(len(search_results),50)
+        #cself.assertEqual(len(search_results),50)
 
         # Joe clicks on the first result ( on the add + icon )
         # and notices that in the lower left, a series of rectangles
         # appear with the 
         # result text as the header, and "0g" under the bars to the left.
         # The left-most rectangle has a small drag box at the bottom.
-        chickpea_id = '3203'
+        chickpea_id = '18649'
         search_results[0].find_elements_by_class_name("icon")[0].click()
         food_container = self.browser.find_element_by_id(
                 'food-{}-container'.format(chickpea_id)
@@ -280,7 +277,7 @@ class MakeMacroMealTest(FunctionalTest):
         ).text
         footer_unit = food_container.find_element_by_id(
                 'food-amt-unit-{}'.format(chickpea_id)
-        ).text
+        ).find_elements_by_css_selector('option[value="g"]')[0].text
         self.assertEqual(header,'Chickpeas (garbanzo ...') 
         self.assertEqual(footer_amt + footer_unit,'0g') 
 
@@ -292,7 +289,7 @@ class MakeMacroMealTest(FunctionalTest):
         self.fill_input(["input[id='meal-maker-food-search-input']"],[],clear=True)	
         search_results = self.search_and_results(['carrots raw'])
         search_results[0].find_elements_by_class_name("icon")[0].click()
-        carrot_id = '2474'
+        carrot_id = '17931'
         food_container = self.browser.find_element_by_id(
                 'food-{}-container'.format(carrot_id)
         ) 
@@ -306,7 +303,7 @@ class MakeMacroMealTest(FunctionalTest):
         ).text
         footer_unit = food_container.find_element_by_id(
                 'food-amt-unit-{}'.format(carrot_id)
-        ).text
+        ).find_elements_by_css_selector('option[value="g"]')[0].text
         self.assertEqual(header,'Carrots, baby, raw') 
         self.assertEqual(footer_amt + footer_unit,'0g') 
 
@@ -314,7 +311,7 @@ class MakeMacroMealTest(FunctionalTest):
         self.fill_input(["input[id='meal-maker-food-search-input']"],[],clear=True)	
         search_results = self.search_and_results(['bacon strips cooked'])
         search_results[0].find_elements_by_class_name("icon")[0].click()
-        bacon_id = '2316'
+        bacon_id = '21259'
 
         self.fill_input(["input[id='meal-maker-food-search-input']"],[],clear=True)	
         search_results = self.search_and_results(['lettuce raw'])
@@ -332,7 +329,7 @@ class MakeMacroMealTest(FunctionalTest):
 
         #He adjusts the lettuce bar and notices that, like the bacon, bar the meal
         #bars fill up with the color of the lettuce bar.
-        lettuce_id = '5309'
+        lettuce_id = '20217'
         self.move_slider('food-{}-slider'.format(lettuce_id),600)
         lettuce_cals_bar = self.browser.find_element_by_id(
             'cals-{}-goal-macro-bar'.format(lettuce_id)
@@ -351,7 +348,7 @@ class MakeMacroMealTest(FunctionalTest):
             'cals-{}-goal-macro-bar'.format(chickpea_id)
         )
         carrot_cals_bar = self.browser.find_element_by_id(
-            'cals-2474-goal-macro-bar'.format(carrot_id)
+            'cals-{}-goal-macro-bar'.format(carrot_id)
         )
 
         self.assertEqual(
@@ -362,10 +359,10 @@ class MakeMacroMealTest(FunctionalTest):
         #capacity of each food so one by one he drags the bars of each food to the max 
         #and reads what the cals/far/carbs/prot and grams are.
         goal_cals = 600
-        self.check_food_amt(chickpea_id, .88, goal_cals)
-        self.check_food_amt(carrot_id, .35, goal_cals)
-        self.check_food_amt(bacon_id, 1.46, goal_cals)
-        self.check_food_amt(lettuce_id, .16, goal_cals)
+        self.check_food_amt(chickpea_id, 1.3800, goal_cals)
+        self.check_food_amt(carrot_id, 0.3500, goal_cals)
+        self.check_food_amt(bacon_id, 4.68, goal_cals)
+        self.check_food_amt(lettuce_id, 0.16, goal_cals)
 
         #Joe now tries to adjust the foods so that they achieve is target meal goals
 
@@ -380,11 +377,21 @@ class MakeMacroMealTest(FunctionalTest):
 
         self.browser.find_element_by_id('exit-' + chickpea_id).click()
         self.assertTrue(self.make_sure_absent('exit-' + chickpea_id))
-        self.fail("Finish The Test!")
 
         #He also notices that all the meal bars above "garbonzo beans" have slid down.
 
         #He also notices that the macro amounts have decreased correct amount.
+
+        # He is confused by measuring the amts in grams so he switches the bacon
+        # unit to slice
+
+        bacon_slice = self.browser.find_element_by_id(
+                'food-amt-unit-{}'.format(bacon_id)
+        ).find_elements_by_css_selector('option[value="slice"]')[0]
+
+        bacon_slice.click()
+
+        self.fail("Finish The Test!")
 
         #Joe decides he wants a smaller salad, so he changes the cals from 600 to 300
         #and notices that all his macro amounts, and food amounts are cut in half.

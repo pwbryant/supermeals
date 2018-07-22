@@ -1,14 +1,16 @@
+import json
+from decimal import Decimal
+
 from django.test import TestCase
 from django.urls import resolve
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
-from decimal import Decimal
+
 from meals.forms import SignUpForm, MakeMacrosForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR,DEFAULT_INVALID_INT_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR
 from meals.models import Macros,MealTemplate,Foods
 from meals.views import save_my_macros,save_meal_templates,get_meal_maker_template,make_meal_template_unique_cal_dict_list,make_macro_breakdown_dict_list
-import json
 # Create your tests here.
 
 USERNAME,EMAIL,PASSWORD = 'JoeSchmoe','joe@joemail.com','321pass123!'

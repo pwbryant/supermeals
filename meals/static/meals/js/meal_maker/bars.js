@@ -253,7 +253,14 @@ if (macro != 'cals') {
 
 
             food_div += `<span id='food-amt-${food_id}' class='food-amt'></span>`;
-            food_div += `<span id='food-amt-unit-${food_id}' class='food-amt-unit'>g</span>`;
+            //food_div += `<span id='food-amt-unit-${food_id}' class='food-amt-unit'>g</span>`;
+            food_div += `<select id='food-amt-unit-${food_id}' >`;
+            food_div += '<option value="g">g</option>';
+            //food_div += '<option value="slice">slice</option>
+            food_macros_obj['servings'].forEach(function(obj) {
+                food_div += `<option value="${obj.description}">${obj.description}</option>`;
+            });
+            food_div += '</select>';
                 
             food_div += "</div>";
             food_div += '</div>'; 
