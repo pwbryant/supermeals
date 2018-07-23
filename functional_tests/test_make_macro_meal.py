@@ -4,9 +4,10 @@ from builtins import Exception
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.select import Select
-from meals.models import Macros, Foods
+from meals.models import Macros
 
 from .base import FunctionalTest
+
 class ElementPresentException(Exception):
 
     def __init__(self, message):
@@ -15,121 +16,130 @@ class ElementPresentException(Exception):
 class MakeMacroMealTest(FunctionalTest):
 
     fixtures = ["db.json"]
-    
-    def get_bar_ratio(self,num_height,denom_height):
-        return round(float(num_height) / float(denom_height),2)
+   
+    def get_bar_ratio(self, num_height, denom_height):
+        return round(float(num_height) / float(denom_height), 2)
 
     def search_and_results(self, term_list):
-        self.fill_input(["input[id='meal-maker-food-search-input']"],
-                term_list)	
+        self.fill_input(
+            ["input[id='meal-maker-food-search-input']"],
+            term_list
+        )
         self.browser.find_element_by_id(
-                "food-search-icon-button").click()
+            "food-search-icon-button").click()
         search_results = self.browser.find_elements_by_class_name(
-                "search-result")
-        return search_results 
+            "search-result")
+        return search_results
 
-    def move_slider(self, slider_id,ypos):
+    def move_slider(self, slider_id, ypos):
         slider = self.browser.find_element_by_id(slider_id)
         self.browser.execute_script('arguments[0].scrollIntoView();', slider)
         actions = ActionChains(self.browser)
-        actions.drag_and_drop_by_offset(slider,0,ypos)
+        actions.drag_and_drop_by_offset(slider, 0, ypos)
         actions.perform()
 
     def check_food_amt(self, food_id, cals_per_gram, goal_cals):
-        self.move_slider('food-{}-slider'.format(food_id),650)
-        self.move_slider('food-{}-slider'.format(food_id),1)
+        self.move_slider('food-{}-slider'.format(food_id), 650)
+        self.move_slider('food-{}-slider'.format(food_id), 1)
         food_amt = self.browser.find_element_by_id(
-                'food-amt-{}'.format(food_id)
+            'food-amt-{}'.format(food_id)
         ).text
-        self.assertEqual(food_amt, str(round(goal_cals / cals_per_gram))) #goal cals / cals_per_gram
-        self.move_slider('food-{}-slider'.format(food_id),650)
-        
+        if '.' not in food_amt:
+            food_amt += '.0' # so it matches with python rounding if no decimal present
+        self.assertEqual(food_amt, str(round(goal_cals / cals_per_gram, 1)))
+        self.move_slider('food-{}-slider'.format(food_id), 650)
+
     def make_sure_absent(self, element_id):
         try:
             self.browser.find_element_by_id(element_id)
             try:
                 raise ElementPresentException('\n\n{} element is present\n'.format(element_id))
-            except ElementPresentException as e:
+            except ElementPresentException as error:
                 raise
 
         except NoSuchElementException:
             return True
 
     def test_make_macro_meal(self):
-        user = self.initialize_test(self.USERNAME,self.PASSWORD)
-        # macro = self.create_default_macro(user)
+        user = self.initialize_test(self.USERNAME, self.PASSWORD)
         # self.create_default_meal_templates(user)
-        
+
         # Joe now wants to make a meal that helps him achieve his macros
         # so he clicks on the "Meal Maker" tab
         self.browser.find_element_by_id("meal-maker-tab").click()
 
-        # Joe however, did not set any macros in the my macros tab, but he can 
+        # Joe however, did not set any macros in the my macros tab, but he can
         # still make a meal.
         #He notices an input to enter the desired calories.
-        self.check_element_content("label[for='goal-meal-cals-container']",
-                "css","text","How Many Calories?")
         self.check_element_content(
-                "goal-meal-cals","id","placeholder","Cals")
-       
+            "label[for='goal-meal-cals-container']",
+            'css', 'text', 'How Many Calories?'
+        )
+        self.check_element_content(
+            'goal-meal-cals', 'id', 'placeholder', 'Cals'
+        )
 
-        #Below he sees a table like area for entering the percentages/grams for each macros	
+        #Below he sees a table like area for entering the percentages/grams for each macros
         macro_div = self.browser.find_element_by_id("goal-meal-macros-container")
         macro_spans = macro_div.find_elements_by_css_selector("label")
-        self.assertEqual(macro_spans[0].text,"Percent")
-        self.assertEqual(macro_spans[1].text,"Grams")
-        self.assertEqual(macro_spans[2].text,"Fat")
-        self.assertEqual(macro_spans[3].text,"Carbs")
+        self.assertEqual(macro_spans[0].text, 'Percent')
+        self.assertEqual(macro_spans[1].text, 'Grams')
+        self.assertEqual(macro_spans[2].text, 'Fat')
+        self.assertEqual(macro_spans[3].text, 'Carbs')
         self.check_element_content(
-                "goal-meal-fat-percent","id","placeholder","%")
+            'goal-meal-fat-percent', 'id', 'placeholder', '%'
+        )
         self.check_element_content(
-                "goal-meal-fat-g","id","placeholder","g")
+            'goal-meal-fat-g', 'id', 'placeholder', 'g'
+        )
         self.check_element_content(
-                "goal-meal-carbs-percent","id","placeholder","%")
+            'goal-meal-carbs-percent', 'id', 'placeholder', '%')
         self.check_element_content(
-                "goal-meal-carbs-g","id","placeholder","g")
+            'goal-meal-carbs-g', 'id', 'placeholder', 'g')
         self.check_element_content(
-                "goal-meal-protein-percent","id","placeholder","%")
+            'goal-meal-protein-percent', 'id', 'placeholder', '%')
         self.check_element_content(
-                "goal-meal-protein-g","id","placeholder","g")
+            'goal-meal-protein-g', 'id', 'placeholder', 'g')
 
-        # Joe enters 500 cals and 34,33,33 % for Fat, Carbs and Protein 
-        # respectively and notices that the gram inputs fill in 
+        # Joe enters 500 cals and 34,33,33 % for Fat, Carbs and Protein
+        # respectively and notices that the gram inputs fill in
         # with 19, 41, 41
-        self.fill_input([
-            "input[id='goal-meal-fat-percent']",
-            "input[id='goal-meal-carbs-percent']",
-            "input[id='goal-meal-protein-percent']",
-            "input[id='goal-meal-cals']"
+        self.fill_input(
+            [
+                "input[id='goal-meal-fat-percent']",
+                "input[id='goal-meal-carbs-percent']",
+                "input[id='goal-meal-protein-percent']",
+                "input[id='goal-meal-cals']"
             ],
-            [34,33,33,500]
-        )	
-        self.check_element_content("goal-meal-fat-g","id","value","19")
-        self.check_element_content("goal-meal-carbs-g","id","value","41")
-        self.check_element_content("goal-meal-protein-g","id","value","41")
+            [34, 33, 33, 500]
+        )
+        self.check_element_content('goal-meal-fat-g', 'id', 'value', '19')
+        self.check_element_content('goal-meal-carbs-g', 'id', 'value', '41')
+        self.check_element_content('goal-meal-protein-g', 'id', 'value', '41')
 
-        # Joe realizes he needs to know his TDEE so he does that and then 
-        # comes back where He Notices in the upper left of the tab a 
-        # healine showing his TDEE and text input with the label 
-        # "How Many Calories?", and the placeholder "cals" and under 
+        # Joe realizes he needs to know his TDEE so he does that and then
+        # comes back where He Notices in the upper left of the tab a
+        # healine showing his TDEE and text input with the label
+        # "How Many Calories?", and the placeholder "cals" and under
         # that a dropdown with choices of Meal 1,2,3 602 and Meal 4 305.
         macro = self.create_default_macro(user)
         self.create_default_meal_templates(user)
-        self.browser.find_element_by_id("meal-maker-tab").click()
-        self.check_element_content("tdee","id","text","TDEE: 2111")
-        self.check_element_content(
-                "label[for='goal-meal-cals-container']","css","text",
-                "How Many Calories?")
-        self.check_element_content(
-                "goal-meal-cals","id","placeholder","Cals")
-        set_cals_select = Select(self.browser.find_element_by_id(
-            "goal-meal-cals-select"))
-        options = set_cals_select.options
-        self.assertEqual(options[0].text,"Saved Cals")
-        self.assertEqual(options[1].text,"Meal 1,2,3 - 591 cals")
-        self.assertEqual(options[2].text,"Meal 4 - 338 cals")
 
-        # Below this input there is an  table like input area with 
+        self.browser.find_element_by_id('meal-maker-tab').click()
+        self.check_element_content('tdee', 'id', 'text', 'TDEE: 2111')
+        self.check_element_content(
+            "label[for='goal-meal-cals-container']", 'css', 'text',
+            'How Many Calories?')
+        self.check_element_content(
+            'goal-meal-cals', 'id', 'placeholder', 'Cals')
+        set_cals_select = Select(self.browser.find_element_by_id(
+            'goal-meal-cals-select'))
+        options = set_cals_select.options
+        self.assertEqual(options[0].text, 'Saved Cals')
+        self.assertEqual(options[1].text, 'Meal 1,2,3 - 591 cals')
+        self.assertEqual(options[2].text, 'Meal 4 - 338 cals')
+
+        # Below this input there is an  table like input area with
         # the macros "Fat"/"Carbs"/"Protein" and their
         # respective percent breakdown.
 
@@ -147,29 +157,29 @@ class MakeMacroMealTest(FunctionalTest):
         self.assertEqual(inputs[3].get_attribute("placeholder"),"g")
         self.assertEqual(inputs[4].get_attribute("value"),"33")
         self.assertEqual(inputs[5].get_attribute("placeholder"),"g")
-        
+
         #Joe selects the second option "Meal 4 - 305" and notices that a grams column
         #in the table below fills in.
         set_cals_select = Select(self.browser.find_element_by_id(
-            "goal-meal-cals-select"))
+            'goal-meal-cals-select'))
         set_cals_select.options[2].click()
-        self.assertEqual(inputs[1].get_attribute("value"),"13")
-        self.assertEqual(inputs[3].get_attribute("value"),"28")
-        self.assertEqual(inputs[5].get_attribute("value"),"28")
+        self.assertEqual(inputs[1].get_attribute('value'), '13')
+        self.assertEqual(inputs[3].get_attribute('value'), '28')
+        self.assertEqual(inputs[5].get_attribute('value'), '28')
 
-        # Joe realized he wants to enter a value not on his saved 
-        # tab so he enters 500 into the text input and when he does 
+        # Joe realized he wants to enter a value not on his saved
+        # tab so he enters 500 into the text input and when he does
         # so he sees that the dropdown resets to the default position
         cals_input_id = ["input[id='goal-meal-cals']"]
-        cals_input = ["500"]
-        self.fill_input(cals_input_id,cals_input)	
+        cals_input = ['500']
+        self.fill_input(cals_input_id, cals_input)
         self.assertEqual(
-                set_cals_select.first_selected_option.text,"Saved Cals")
+            set_cals_select.first_selected_option.text, 'Saved Cals')
         
         #He also notices that the grams values chanage as well
-        self.assertEqual(inputs[1].get_attribute("value"),"19")
-        self.assertEqual(inputs[3].get_attribute("value"),"41")
-        self.assertEqual(inputs[5].get_attribute("value"),"41")
+        self.assertEqual(inputs[1].get_attribute('value'), '19')
+        self.assertEqual(inputs[3].get_attribute('value'), '41')
+        self.assertEqual(inputs[5].get_attribute('value'), '41')
 
         #Joe realizes he actually does want to enter his saved amount
         # so he reslects the 338 cal option and noctices that the text 
@@ -177,7 +187,7 @@ class MakeMacroMealTest(FunctionalTest):
         # to 30 and 37 % respectively
 
         set_cals_select.options[2].click()
-        self.check_element_content("goal-meal-cals","id","text","")
+        self.check_element_content("goal-meal-cals",'id',"text","")
         macro_input_ids = [
                 "input[id='goal-meal-fat-percent']",
                 "input[id='goal-meal-carbs-percent']"]
@@ -234,14 +244,14 @@ class MakeMacroMealTest(FunctionalTest):
         # To the right of that is a an input with the place holder 
         # "Search for ingredients" with a magnifying glass icon button
         self.check_element_content(
-                "meal-maker-food-search-input","id","placeholder",
+                "meal-maker-food-search-input",'id',"placeholder",
                 "Search For Food")
         
         # All the above only takes up the top of the page, the bottom 
         # half contains a page wide div with the large text 
         # "Add Ingredients using Search"
         self.check_element_content(
-                "meal-maker-food-header","id","text",
+                "meal-maker-food-header",'id',"text",
                 "Add Ingredients Using Search")
         # Joe is going to attempt to make a salad that will fit his macro 
         # percentages. He starts by entering "600" into the 
@@ -276,8 +286,8 @@ class MakeMacroMealTest(FunctionalTest):
                 'food-amt-{}'.format(chickpea_id)
         ).text
         footer_unit = food_container.find_element_by_id(
-                'food-amt-unit-{}'.format(chickpea_id)
-        ).find_elements_by_css_selector('option[value="g"]')[0].text
+                'food-amt-units-{}'.format(chickpea_id)
+        ).find_elements_by_css_selector('option[value="0"]')[0].text
         self.assertEqual(header,'Chickpeas (garbanzo ...') 
         self.assertEqual(footer_amt + footer_unit,'0g') 
 
@@ -302,8 +312,8 @@ class MakeMacroMealTest(FunctionalTest):
                 'food-amt-{}'.format(carrot_id)
         ).text
         footer_unit = food_container.find_element_by_id(
-                'food-amt-unit-{}'.format(carrot_id)
-        ).find_elements_by_css_selector('option[value="g"]')[0].text
+                'food-amt-units-{}'.format(carrot_id)
+        ).find_elements_by_css_selector('option[value="0"]')[0].text
         self.assertEqual(header,'Carrots, baby, raw') 
         self.assertEqual(footer_amt + footer_unit,'0g') 
 
@@ -370,10 +380,10 @@ class MakeMacroMealTest(FunctionalTest):
         #doesn"t really like garbonzo beans, he decides he"s going to replace it.
         #Joe notices an "x" in the upper left of each food, he clicks on it and
         #garbonzo beans disappears 
-        self.move_slider('food-{}-slider'.format(chickpea_id),600)
-        self.move_slider('food-{}-slider'.format(carrot_id),600)
-        self.move_slider('food-{}-slider'.format(bacon_id),600)
-        self.move_slider('food-{}-slider'.format(lettuce_id),600)
+        self.move_slider('food-{}-slider'.format(chickpea_id), 600)
+        self.move_slider('food-{}-slider'.format(carrot_id), 600)
+        self.move_slider('food-{}-slider'.format(bacon_id), 500) # for below test
+        self.move_slider('food-{}-slider'.format(lettuce_id), 600)
 
         self.browser.find_element_by_id('exit-' + chickpea_id).click()
         self.assertTrue(self.make_sure_absent('exit-' + chickpea_id))
@@ -384,14 +394,18 @@ class MakeMacroMealTest(FunctionalTest):
 
         # He is confused by measuring the amts in grams so he switches the bacon
         # unit to slice
-
         bacon_slice = self.browser.find_element_by_id(
-                'food-amt-unit-{}'.format(bacon_id)
-        ).find_elements_by_css_selector('option[value="slice"]')[0]
+            'food-amt-units-{}'.format(bacon_id)
+        ).find_elements_by_css_selector('option[value="1"]')[0]
 
         bacon_slice.click()
+        self.check_element_content(
+            'food-amt-{}'.format(bacon_id),
+            'id', 'text', '7.5'
+        )
 
-        self.fail("Finish The Test!")
+        # "grams": "11.50",
+        self.fail('Finish The Test!')
 
         #Joe decides he wants a smaller salad, so he changes the cals from 600 to 300
         #and notices that all his macro amounts, and food amounts are cut in half.

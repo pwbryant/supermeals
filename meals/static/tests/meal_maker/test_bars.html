@@ -25,7 +25,14 @@
             'cals_per_gram': 1,
             'fat_per_gram': 2,
             'carbs_per_gram': 3,
-            'protein_per_gram': 4
+            'protein_per_gram': 4,
+            'servings': [
+                {
+                    'quantity': 1,
+                    'grams': 10,
+                    'description': 'bar'
+                }
+            ]
         }];
 
     </script>
@@ -104,11 +111,16 @@
 
             food_macros_obj.cal_bar_height = 100;
             food_macros_obj.goal_cal_bar_height = 500;
+            console.log(food_macros_obj);
+            console.log(BARS);
             BARS.add_scales_to_food_macros_obj(food_macros_obj);
 
             assert.equal(food_macros_obj.cal_to_goal_cal_height_scale(100),500);
-            assert.equal(food_macros_obj.cal_bar_height_to_unit_scale(100),200);
             assert.equal(food_macros_obj.food_cal_bar_height_to_goal_cal_scale(100),200);
+
+            assert.equal(food_macros_obj.cal_bar_height_to_unit_scale(100),200);
+
+            assert.equal(food_macros_obj['servings_scales'].cal_bar_height_to_unit_scale_1(100),20);
 
 		});
 
