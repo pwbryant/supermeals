@@ -105,7 +105,7 @@ def create_meal_template_dict(POST):
                 cals = float(cals)
             except:
                 cals = cals
-            if isinstance(cals) == float:
+            if isinstance(cals, float):
                 template = 'template %d' % i
                 meal_template_dict[template] = {}
                 meal_template_dict[template]['name'] = 'meal_%d' % i
@@ -130,7 +130,7 @@ def save_meal_templates(request):
     """
 
     meal_template_dict, validation_errors = create_meal_template_dict(request.POST)
-    if validation_errors > 0:
+    if validation_errors:
         return {'status':0, 'errors':'<ul>' + validation_errors + '</ul>'}
 
     for model_fields in meal_template_dict.values():

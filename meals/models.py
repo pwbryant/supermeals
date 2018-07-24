@@ -19,8 +19,8 @@ class Macros(models.Model):
     )
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES, blank=False)
     age = models.IntegerField(blank=False)
-    weight = models.DecimalField(max_digits=5,decimal_places=2,blank=False)	
-    height = models.DecimalField(max_digits=5,decimal_places=2,blank=False)
+    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=False)	
+    height = models.DecimalField(max_digits=5, decimal_places=2, blank=False)
     ACTIVITY_CHOICES = (
             ('none','',),
             ('light','',),
@@ -35,18 +35,18 @@ class Macros(models.Model):
             ('maintain','Maintain',),
             ('gain','Gain',),
     )
-    direction = models.CharField(max_length=8,choices=DIRECTIONS,default='lose',blank=False)	
-    change_rate = models.DecimalField(max_digits=9,decimal_places=8,blank=False)
-    fat_percent = models.DecimalField(max_digits=4,decimal_places=2,blank=False)
-    protein_percent = models.DecimalField(max_digits=4,decimal_places=2,blank=False)
+    direction = models.CharField(max_length=8, choices=DIRECTIONS, default='lose', blank=False)	
+    change_rate = models.DecimalField(max_digits=9, decimal_places=8, blank=False)
+    fat_percent = models.DecimalField(max_digits=4, decimal_places=2 ,blank=False)
+    protein_percent = models.DecimalField(max_digits=4, decimal_places=2, blank=False)
 
     def calc_tdee(self):
         activity_factor = {
-                'none':Decimal('1.2'),
-                'light':Decimal('1.375'),
-                'medium':Decimal('1.55'),
-                'high':Decimal('1.725'),
-                'very high':Decimal('1.9')
+            'none':Decimal('1.2'),
+            'light':Decimal('1.375'),
+            'medium':Decimal('1.55'),
+            'high':Decimal('1.725'),
+            'very high':Decimal('1.9')
         }[self.activity]
 
         direction_factor = {
@@ -104,13 +104,13 @@ class Foods(models.Model):
 
 class Servings(models.Model):
 
-    quantity = models.IntegerField()
+    quantity = models.DecimalField(max_digits=5, decimal_places=2)
     description = models.CharField(max_length=200)
-    grams = models.DecimalField(max_digits=6,decimal_places=2)
+    grams = models.DecimalField(max_digits=6, decimal_places=2)
     food = models.ForeignKey(
-            'Foods',
-            on_delete=models.CASCADE,
-            )
+        'Foods',
+        on_delete=models.CASCADE,
+        )
 
     def __str__(self):
         return '{0} - {1}'.format(self.food.name, self.description)
@@ -136,7 +136,7 @@ class Ingredients(models.Model):
             on_delete=models.CASCADE,
             )
 
-    amount = models.DecimalField(max_digits=6,decimal_places=2)
+    amount = models.DecimalField(max_digits=6, decimal_places=2)
 
 
 class Temp(models.Model):

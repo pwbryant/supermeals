@@ -191,11 +191,11 @@ if (macro != 'cals') {
             d3.select(`#${macro}-amt`)
                 .data([{'macro_amt': 0, 'name': macro}])
                 .text(function(d) { return d.macro_amt; });
-            
         },
         
         // tested
-        create_food_macros_obj : function({search_button_id,bars_obj}) { const search_result_index = parseFloat(search_button_id[search_button_id.length-1]);
+        create_food_macros_obj : function({search_button_id,bars_obj}) { 
+            const search_result_index = parseFloat(search_button_id.split('-')[3]);
             const food_macros_obj = bars_obj.SEARCH_RESULTS[search_result_index];
             food_macros_obj.food_order = bars_obj.FOOD_COUNT;
             food_macros_obj.cal_goal = bars_obj.MGOAL.CAL_GOAL;
@@ -236,7 +236,7 @@ if (macro != 'cals') {
             food_macros_obj['servings'].forEach(function(servings_obj, i) {
                 const servings_g = parseFloat(servings_obj['grams']);
                 const quantity = parseFloat(servings_obj['quantity']);
-                const servings_in_food_g = food_g_in_goal_cals / servings_g / quantity;
+                const servings_in_food_g = food_g_in_goal_cals / (servings_g / quantity);
                 food_macros_obj['servings_scales'][`cal_bar_height_to_unit_scale_${i+1}`] = d3
                     .scaleLinear()
                     .domain([0,food_macros_obj.cal_bar_height])
