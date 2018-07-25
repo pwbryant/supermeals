@@ -6,9 +6,11 @@
  * are found here.
 */
 /****************************************************/
+
 html, body {
     /* Display & Box Model */
-    height: 100%; 
+    display: border-box;
+    height: 100vh; 
     margin: 0;
     /* Style */
     background-color: #e9e1cf;
@@ -259,3 +261,18 @@ a {
     top: -9999px;
     left: -9999px;
 }
+/****************************************************/
+/* Box model classes
+ * 
+ * Rules for box-model classes
+ * are found here.
+ *
+/****************************************************/
+
+ .bm-margin--sm-top {
+     margin-top: 5px;
+ }
+
+ .bm-margin--md-top {
+     margin-top: 15px;
+ }

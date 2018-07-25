@@ -10,6 +10,11 @@
     stroke-width: 2px;
 }
 
+.food-amt-units {
+    font-size: 15px;
+    height: 80%;
+}
+
 .food-container {
     background-color: lightblue;
     display: flex;
@@ -127,8 +132,9 @@
 }
 
 #meal-maker-food-content {
-    flex: 1;
+    /*flex: 1; */
     display: flex;
+    height: 80%;
 }
 
 #tdee {

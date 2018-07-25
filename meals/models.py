@@ -110,10 +110,13 @@ class Servings(models.Model):
     food = models.ForeignKey(
         'Foods',
         on_delete=models.CASCADE,
+        null=True
         )
 
     def __str__(self):
-        return '{0} - {1}'.format(self.food.name, self.description)
+        if self.food:
+            return '{0} - {1}'.format(self.food.name, self.description)
+        return '{0}'.format(self.description)
     
 
 class Ingredients(models.Model):
@@ -137,6 +140,11 @@ class Ingredients(models.Model):
             )
 
     amount = models.DecimalField(max_digits=6, decimal_places=2)
+
+    def __str__(self):
+        return '{0} - {1}'.format(
+            self.main_food.name, self.ingredient.name
+        )
 
 
 class Temp(models.Model):
