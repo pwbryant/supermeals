@@ -143,26 +143,28 @@ var calc_tdee = function() {
 					tdee_data["height"] = tdee_data["height-m"];
 					tdee_data["change-rate"] = convert_between_metric_english(tdee_data["change-rate-m"],"kg-to-lb") * weight_change_direction * 500;
 				}
-				var formula_data = {
+				const formula_data = {
 					"female":-161,
 					"male":5,
 					"weight":10 * tdee_data["weight"],
 					"height":6.25 * tdee_data["height"],
 					"age":5 * tdee_data["age"]
-				},
-				activity_data = {
+				};
+				const activity_data = {
 					"none":1.2,
 					"light":1.375,
 					"medium":1.55,
 					"high":1.725,
 					"very high":1.9
-				},
-				tdee_return_value = (formula_data["weight"] + formula_data["height"] - formula_data["age"]  + formula_data[tdee_data["gender"]]) * activity_data[tdee_data["activity"]],
-				change_tdee_return_value = ((formula_data["weight"] + formula_data["height"] - formula_data["age"]  + formula_data[tdee_data["gender"]]) * activity_data[tdee_data["activity"]]) + tdee_data["change-rate"];
+				};
+				var tdee_return_value = (formula_data["weight"] + formula_data["height"] - formula_data["age"]  + formula_data[tdee_data["gender"]]) * activity_data[tdee_data["activity"]];
+			    var change_tdee_return_value = ((formula_data["weight"] + formula_data["height"] - formula_data["age"]  + formula_data[tdee_data["gender"]]) * activity_data[tdee_data["activity"]]) + tdee_data["change-rate"];
+
 
 			} else {
 				tdee_return_value = "Missing Value. Check Form.";
 			}
+
             tdee_return_value_str = "Maintenance: " + Math.round(tdee_return_value).toString() + " Cals";
             change_tdee_return_value_str = "Change: " + Math.round(change_tdee_return_value).toString() + " Cals";
 			$("#tdee-result").html(tdee_return_value_str);

@@ -78,10 +78,10 @@ class FunctionalTest(StaticLiveServerTestCase):
 		macro = Macros.objects.create(**{
 			"user":user,
 			"unit_type":"imperial",
-			"gender":"m",
-			"age":34,
+			"gender":"male",
+			"age":35,
 			"height":Decimal("177.8"),
-			"weight":Decimal("95.25"),
+			"weight":Decimal("99.79"),
 			"direction":"lose",
 			"activity":"light",
 			"change_rate":Decimal(".45359237"),

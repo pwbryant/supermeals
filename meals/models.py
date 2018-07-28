@@ -58,7 +58,7 @@ class Macros(models.Model):
         weight_change = self.change_rate / Decimal('.45359237') * direction_factor * 500 #convert kg to lb by dividing by .45359237
         
         tdee = (Decimal('10') * self.weight) + (Decimal('6.25') * self.height) - (Decimal('5') * self.age)
-        if self.gender == 'm':
+        if self.gender == 'male':
                 tdee += 5 
         else:
                 tdee -= 161

@@ -4,7 +4,6 @@ from builtins import Exception
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.select import Select
-from meals.models import Macros
 
 from .base import FunctionalTest
 
@@ -39,7 +38,7 @@ class MakeMacroMealTest(FunctionalTest):
         actions.perform()
 
     def check_food_amt(self, food_id, cals_per_gram, goal_cals):
-        self.move_slider('food-{}-slider'.format(food_id), 650)
+        self.move_slider('food-{}-slider'.format(food_id), 600)
         self.move_slider('food-{}-slider'.format(food_id), 1)
         food_amt = self.browser.find_element_by_id(
             'food-amt-{}'.format(food_id)
@@ -47,7 +46,7 @@ class MakeMacroMealTest(FunctionalTest):
         if '.' not in food_amt:
             food_amt += '.0' # so it matches with python rounding if no decimal present
         self.assertEqual(food_amt, str(round(goal_cals / cals_per_gram, 1)))
-        self.move_slider('food-{}-slider'.format(food_id), 650)
+        self.move_slider('food-{}-slider'.format(food_id), 600)
 
     def make_sure_absent(self, element_id):
         try:
@@ -126,7 +125,7 @@ class MakeMacroMealTest(FunctionalTest):
         self.create_default_meal_templates(user)
 
         self.browser.find_element_by_id('meal-maker-tab').click()
-        self.check_element_content('tdee', 'id', 'text', 'TDEE: 2111')
+        self.check_element_content('tdee', 'id', 'text', 'TDEE: 2166')
         self.check_element_content(
             "label[for='goal-meal-cals-container']", 'css', 'text',
             'How Many Calories?')
@@ -136,8 +135,8 @@ class MakeMacroMealTest(FunctionalTest):
             'goal-meal-cals-select'))
         options = set_cals_select.options
         self.assertEqual(options[0].text, 'Saved Cals')
-        self.assertEqual(options[1].text, 'Meal 1,2,3 - 591 cals')
-        self.assertEqual(options[2].text, 'Meal 4 - 338 cals')
+        self.assertEqual(options[1].text, 'Meal 1,2,3 - 607 cals')
+        self.assertEqual(options[2].text, 'Meal 4 - 347 cals')
 
         # Below this input there is an  table like input area with
         # the macros "Fat"/"Carbs"/"Protein" and their
@@ -164,8 +163,8 @@ class MakeMacroMealTest(FunctionalTest):
             'goal-meal-cals-select'))
         set_cals_select.options[2].click()
         self.assertEqual(inputs[1].get_attribute('value'), '13')
-        self.assertEqual(inputs[3].get_attribute('value'), '28')
-        self.assertEqual(inputs[5].get_attribute('value'), '28')
+        self.assertEqual(inputs[3].get_attribute('value'), '29')
+        self.assertEqual(inputs[5].get_attribute('value'), '29')
 
         # Joe realized he wants to enter a value not on his saved
         # tab so he enters 500 into the text input and when he does
@@ -194,9 +193,9 @@ class MakeMacroMealTest(FunctionalTest):
         self.fill_input(macro_input_ids,[],clear=True)	
         macro_inputs = ["30","37"]
         self.fill_input(macro_input_ids,macro_inputs)	
-        self.assertEqual(inputs[1].get_attribute("value"),"11")
-        self.assertEqual(inputs[3].get_attribute("value"),"31")
-        self.assertEqual(inputs[5].get_attribute("value"),"28")
+        self.assertEqual(inputs[1].get_attribute("value"),"12")
+        self.assertEqual(inputs[3].get_attribute("value"),"32")
+        self.assertEqual(inputs[5].get_attribute("value"),"29")
 
         # To the right of the macro table are a series of four rectangles 
         # labeled "Calories", "Fat", "Carbs", "Protein".
@@ -328,8 +327,7 @@ class MakeMacroMealTest(FunctionalTest):
         search_results[0].find_elements_by_class_name("icon")[0].click()
 
         #He then adjusts the dragbar on the bacon cal bar.
-        self.move_slider('food-{}-slider'.format(bacon_id),600)
-
+        self.move_slider('food-{}-slider'.format(bacon_id), 500)
         #He notices that as the slider goes up, the above meal bars fill up with
         #the same color as the bacon food bars.
         bacon_cals_bar = self.browser.find_element_by_id(
@@ -340,7 +338,7 @@ class MakeMacroMealTest(FunctionalTest):
         #He adjusts the lettuce bar and notices that, like the bacon, bar the meal
         #bars fill up with the color of the lettuce bar.
         lettuce_id = '20217'
-        self.move_slider('food-{}-slider'.format(lettuce_id),600)
+        self.move_slider('food-{}-slider'.format(lettuce_id),500)
         lettuce_cals_bar = self.browser.find_element_by_id(
             'cals-{}-goal-macro-bar'.format(lettuce_id)
         )
@@ -352,8 +350,8 @@ class MakeMacroMealTest(FunctionalTest):
 
         #He then adjusts the carrots and garbonzo beans, an notices, that the meal bars are stacked in the order that the foods were initially added.
 
-        self.move_slider('food-{}-slider'.format(chickpea_id),600)
-        self.move_slider('food-{}-slider'.format(carrot_id),600)
+        self.move_slider('food-{}-slider'.format(chickpea_id),500)
+        self.move_slider('food-{}-slider'.format(carrot_id),500)
         chickpea_cals_bar = self.browser.find_element_by_id(
             'cals-{}-goal-macro-bar'.format(chickpea_id)
         )
@@ -370,6 +368,7 @@ class MakeMacroMealTest(FunctionalTest):
         #and reads what the cals/far/carbs/prot and grams are.
         goal_cals = 600
         self.check_food_amt(chickpea_id, 1.3800, goal_cals)
+        '''
         self.check_food_amt(carrot_id, 0.3500, goal_cals)
         self.check_food_amt(bacon_id, 4.68, goal_cals)
         self.check_food_amt(lettuce_id, 0.16, goal_cals)
@@ -380,10 +379,12 @@ class MakeMacroMealTest(FunctionalTest):
         #doesn"t really like garbonzo beans, he decides he"s going to replace it.
         #Joe notices an "x" in the upper left of each food, he clicks on it and
         #garbonzo beans disappears 
+        time.sleep(10)
         self.move_slider('food-{}-slider'.format(chickpea_id), 600)
         self.move_slider('food-{}-slider'.format(carrot_id), 600)
         self.move_slider('food-{}-slider'.format(bacon_id), 500) # for below test
         self.move_slider('food-{}-slider'.format(lettuce_id), 600)
+        time.sleep(10)
 
         self.browser.find_element_by_id('exit-' + chickpea_id).click()
         self.assertTrue(self.make_sure_absent('exit-' + chickpea_id))
@@ -399,13 +400,18 @@ class MakeMacroMealTest(FunctionalTest):
         ).find_elements_by_css_selector('option[value="1"]')[0]
 
         bacon_slice.click()
+        time.sleep(30)
         self.check_element_content(
             'food-amt-{}'.format(bacon_id),
             'id', 'text', '7.5'
         )
 
-        # "grams": "11.50",
         self.fail('Finish The Test!')
+        '''
+        # Joe wants to save this meal so he clicks on the save button below the 
+        # goal macro bars, after which he sees a modal form pop up.
+
+        self.browser.find_element_by_id('save-macro-meal').click()
 
         #Joe decides he wants a smaller salad, so he changes the cals from 600 to 300
         #and notices that all his macro amounts, and food amounts are cut in half.

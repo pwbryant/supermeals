@@ -10,3 +10,4 @@ virtualenv
 meals/migrations/
 tmp/
 meals/static/meals/js/d3/
+add food to db.ipynb

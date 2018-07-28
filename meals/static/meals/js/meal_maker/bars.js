@@ -45,8 +45,11 @@ var BARS = (function() {
                         'macro': macro,
                         'food_macros_obj': food_macros_obj
                     });
+                    console.log('old height', $(`#food-${food_macros_obj.id}-bars`).height());
                     $(`#food-${food_macros_obj.id}-bars`).append(svg_html);
+                    console.log('new height', $(`#${svg_id}`).height());
 
+                    console.log('macro',macro);
                     bars_obj.assign_food_macros_obj_bar_attrs(svg_id, macro, food_macros_obj);
                     
                     let svg = d3.select(`#${svg_id}`);
@@ -232,6 +235,7 @@ if (macro != 'cals') {
                 .scaleLinear()
                 .domain([0,food_macros_obj.cal_bar_height])
                 .range([0,food_g_in_goal_cals]);
+            console.log('make scale',food_macros_obj.cal_bar_height, food_g_in_goal_cals); 
 
             food_macros_obj['servings'].forEach(function(servings_obj, i) {
                 const servings_g = parseFloat(servings_obj['grams']);
@@ -357,9 +361,11 @@ if (macro != 'cals') {
 
             const svg_element = $(`#${svg_id}`);
 
+            console.log('svg id', svg_id);
             food_macros_obj.svg_height = svg_element.height();
             food_macros_obj.svg_width = svg_element.width();
             food_macros_obj.cal_bar_height = food_macros_obj.svg_height * .9;
+            console.log('cal height',food_macros_obj.svg_height * .9)
             food_macros_obj.bar_width = food_macros_obj.svg_width * .5;
             food_macros_obj.bar_margin_left = (food_macros_obj.svg_width - food_macros_obj.bar_width) / 2;
             food_macros_obj.slider_height = food_macros_obj.svg_height - food_macros_obj.cal_bar_height;  
@@ -414,6 +420,11 @@ if (macro != 'cals') {
                 .call(d3.drag()
                     .on('start', bars_obj.dragstarted)
                     .on('drag', function(d) {
+                        console.log('drag d', d)
+                        console.log('bars obj', bars_obj)
+                        if (d.cal_bar_height != d.cal_bar_height_to_unit_scale.domain()[1]) {
+                            console.log('heights diff',d.cal_bar_height , d.cal_bar_height_to_unit_scale.domain()[1]);
+                        }
                         const y_delta = bars_obj.dragged(d,this);
                         bars_obj.update_food_amt_label(y_delta, d);
                         bars_obj.move_these_macro_bars(y_delta, d);
@@ -454,9 +465,12 @@ if (macro != 'cals') {
             // d3 y values
             const food_amt_delta = -1 * food_macros_obj['cal_bar_height_to_unit_scale'](y_delta);
 
+            //console.log('in food amt - ', y_delta,'food delta',food_macros_obj['cal_bar_height_to_unit_scale'](y_delta)); 
             d3.select(`#food-amt-${food_macros_obj.id}`)
                 .text(function(d) {
+                    //console.log('old food, new food',d.food_amt, food_amt_delta);
                     d.food_amt += food_amt_delta;
+                    //console.log('food amout',d.food_amt)
                     return Math.round(d.food_amt * 10) / 10;
                 });
 
@@ -526,6 +540,10 @@ if (macro != 'cals') {
                 if (y < 0) {
                     d.slider_y = 0;
                 } else if (y > d.cal_bar_height) {
+
+                    console.log('here2 over')
+                    console.log(y)
+                    
                     d.slider_y = d.cal_bar_height;
                 } else {
                     d.slider_y = y;
@@ -534,6 +552,7 @@ if (macro != 'cals') {
             });
             
             const new_y = d3.select(this_).attr('y');
+            console.log('b ddragged',old_y, new_y, new_y - old_y);
             const y_delta = new_y - old_y;
             return y_delta;
         },
