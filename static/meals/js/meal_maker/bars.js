@@ -12,6 +12,20 @@ var BARS = (function() {
 	return {
         MGOAL : MGOAL,// set_macro_goals.js needs to be loaded
         FOOD_COUNT: 0,
+        enable_save_meal_button: function() {
+            const target_node = document.getElementById('cals-amt');
+            const config = { attributes: true, childList: true, subtree: true };
+            const callback = function(mutations) {
+
+                if (mutations[0].target.__data__.macro_amt > 0) {
+                    document.getElementById('save-macro-meal').disabled = false;
+                } else {
+                    document.getElementById('save-macro-meal').disabled = true;
+                }
+            }
+            let observer = new MutationObserver(callback);
+            observer.observe(target_node, config);
+        },
         add_food : function() {
 			bars_obj = this;
 			$('.search-result>button').on('click',function() {
@@ -45,11 +59,7 @@ var BARS = (function() {
                         'macro': macro,
                         'food_macros_obj': food_macros_obj
                     });
-                    console.log('old height', $(`#food-${food_macros_obj.id}-bars`).height());
                     $(`#food-${food_macros_obj.id}-bars`).append(svg_html);
-                    console.log('new height', $(`#${svg_id}`).height());
-
-                    console.log('macro',macro);
                     bars_obj.assign_food_macros_obj_bar_attrs(svg_id, macro, food_macros_obj);
                     
                     let svg = d3.select(`#${svg_id}`);
@@ -77,7 +87,6 @@ var BARS = (function() {
 		create_macro_button_trigger : function() {
 			bars_obj = this;
 			$('#create-macro-bars-button').on('click',function() {
-
                 // set macro amts
                 let macro_amts_obj = {};
                 $('.choose-macros-pct').each(function(i,e) {
@@ -87,22 +96,30 @@ var BARS = (function() {
                 bars_obj.MACRO_AMTS = macro_amts_obj
 
                 //clear bar area
-                $('#goal-macros-bar-container').html('');
+                $('#goal-macros-bar-content').html('');
+                
+                // add save macro meal button
+                $('#goal-macros-bar-content').html('');//clear bar area
+                const save_meal_button = '<button id="save-macro-meal" class="btn" disabled>Save Meal</button>'
+                $('#goal-macros-bar-footer').append(save_meal_button);
 
                 // create macro goal bars
 				let macro_bars_obj = bars_obj.create_macro_bars_obj({
-                    'cal_bar_height': $('#goal-macros-bar-container').height() * .9,
+                    'cal_bar_height': $('#goal-macros-bar-content').height() * .9,
                     'macro_amts_obj': macro_amts_obj 
                 });
                 MACRO_NAMES.forEach(function(macro) {
                     
                     let container_html = bars_obj.create_macro_bar_container(macro);
-                    $('#goal-macros-bar-container').append(container_html);
+                    $('#goal-macros-bar-content').append(container_html);
 
                     bars_obj.create_macro_bar(macro, macro_bars_obj);
                     //create_macro_error_bars();
                     bars_obj.create_macro_bar_labels(macro, macro_bars_obj);
                 });
+
+                // change in cals enables meal save button
+                bars_obj.enable_save_meal_button();
 			});
 		},
 
@@ -235,7 +252,6 @@ if (macro != 'cals') {
                 .scaleLinear()
                 .domain([0,food_macros_obj.cal_bar_height])
                 .range([0,food_g_in_goal_cals]);
-            console.log('make scale',food_macros_obj.cal_bar_height, food_g_in_goal_cals); 
 
             food_macros_obj['servings'].forEach(function(servings_obj, i) {
                 const servings_g = parseFloat(servings_obj['grams']);
@@ -361,11 +377,9 @@ if (macro != 'cals') {
 
             const svg_element = $(`#${svg_id}`);
 
-            console.log('svg id', svg_id);
             food_macros_obj.svg_height = svg_element.height();
             food_macros_obj.svg_width = svg_element.width();
             food_macros_obj.cal_bar_height = food_macros_obj.svg_height * .9;
-            console.log('cal height',food_macros_obj.svg_height * .9)
             food_macros_obj.bar_width = food_macros_obj.svg_width * .5;
             food_macros_obj.bar_margin_left = (food_macros_obj.svg_width - food_macros_obj.bar_width) / 2;
             food_macros_obj.slider_height = food_macros_obj.svg_height - food_macros_obj.cal_bar_height;  

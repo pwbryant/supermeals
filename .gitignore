@@ -11,3 +11,7 @@ meals/migrations/
 tmp/
 meals/static/meals/js/d3/
 add food to db.ipynb
+static/meals/bootstrap/
+static/meals/js/d3/
+static/meals/tests/qunit.js
+static/meals/tests/qunit.css

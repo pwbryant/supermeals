@@ -11,20 +11,23 @@ from django.core.serializers.json import DjangoJSONEncoder
 from meals.forms import SignUpForm, MakeMacrosForm
 from meals.models import Macros, MealTemplate, Foods, Servings
 
+# Constants
 KG_TO_LB = .45359237
 IN_TO_CM = .3937
+TEMPLATES_DIR = 'meals/'
 
 # Create your views here.
 def home_or_login(request):
 
     if request.user.is_authenticated():
-        return render(request, 'base.html')
+        return render(request, TEMPLATES_DIR + 'base.html')
+        #return render(request, 'meals/base.html')
 
     return redirect('login')
 
 
 def sign_up(request):
-    return render(request, 'sign_up.html', {"form":SignUpForm()})
+    return render(request, TEMPLATES_DIR + 'sign_up.html', {"form":SignUpForm()})
 
 
 def create_account(request):
@@ -47,7 +50,7 @@ def create_account(request):
 
 def get_my_macros(request):
     form = MakeMacrosForm(unit_type='imperial')
-    return render(request, 'my_macros.html', {
+    return render(request, TEMPLATES_DIR + 'my_macros.html', {
         'form':form
     })
 
@@ -353,7 +356,7 @@ def get_meal_maker_template(request):
     else:
         template_data = {}
 
-    return render(request, 'meal_maker.html', template_data)
+    return render(request, TEMPLATES_DIR + 'meal_maker.html', template_data)
 
 
 def search_foods(request):

@@ -80,7 +80,7 @@ var MM_FUNK = (function() {
 
         macro_div += '</div>';
             
-        $('#goal-macros-bar-container').append(macro_div);
+        $('#goal-macros-bar-content').append(macro_div);
     };
 
 	const create_macro_bar = function(macro, macro_bars_obj) {
@@ -561,8 +561,12 @@ var MM_FUNK = (function() {
 		},
 		create_macro_button_trigger : function() {
 			mm_funk_obj = this;
+            console.log('trigger set');
 			$('#create-macro-bars-button').on('click',function() {
-                $('#goal-macros-bar-container').html('');//clear bar area
+                $('#goal-macros-bar-content').html('');//clear bar area
+                const save_meal_button = '<button class="btn">PoopKing</button>'
+                console.log('hello');
+                $('#goal-macros-bar-footer').append(save_meal_button);
 				let macro_bars_obj = create_macro_bars_obj();
                 MACRO_NAMES.forEach(function(macro) {
                     create_macro_bar_container(macro);

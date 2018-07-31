@@ -231,29 +231,35 @@ class MakeMacroMealTest(FunctionalTest):
         amts = self.browser.find_elements_by_css_selector(".macro-amt")
         units = self.browser.find_elements_by_css_selector(".macro-unit")
 
-        
-        self.assertEqual(labels[0].text,"Cals:")
-        self.assertEqual(labels[1].text,"Fat:")
-        self.assertEqual(labels[2].text,"Carbs:")
-        self.assertEqual(labels[3].text,"Protein:")
+        self.assertEqual(labels[0].text, 'Cals:')
+        self.assertEqual(labels[1].text, 'Fat:')
+        self.assertEqual(labels[2].text, 'Carbs:')
+        self.assertEqual(labels[3].text, 'Protein:')
 
-        self.assertEqual(len(set([amt.text for amt in amts])) == 1 and amts[0].text == '0',True)
-        self.assertEqual(len(set([unit.text for unit in units])) == 1 and units[0].text == 'g',True)
+        self.assertEqual(len(set([amt.text for amt in amts])) == 1 and amts[0].text == '0', True)
+        self.assertEqual(len(set([
+            unit.text for unit in units
+        ])) == 1 and units[0].text == 'g', True)
 
-        # To the right of that is a an input with the place holder 
+        # Below the macors bars is a button reading Save Meal
+        save_meal_button = self.browser.find_element_by_id('save-macro-meal')
+        self.assertEqual(save_meal_button.text, 'Save Meal')
+        self.assertFalse(save_meal_button.is_enabled())
+
+        # To the right of that is a an input with the place holder
         # "Search for ingredients" with a magnifying glass icon button
         self.check_element_content(
-                "meal-maker-food-search-input",'id',"placeholder",
-                "Search For Food")
-        
-        # All the above only takes up the top of the page, the bottom 
-        # half contains a page wide div with the large text 
+            'meal-maker-food-search-input', 'id', 'placeholder',
+            'Search For Food')
+
+        # All the above only takes up the top of the page, the bottom
+        # half contains a page wide div with the large text
         # "Add Ingredients using Search"
         self.check_element_content(
-                "meal-maker-food-header",'id',"text",
-                "Add Ingredients Using Search")
-        # Joe is going to attempt to make a salad that will fit his macro 
-        # percentages. He starts by entering "600" into the 
+            'meal-maker-food-header', 'id', 'text',
+            'Add Ingredients Using Search')
+        # Joe is going to attempt to make a salad that will fit his macro
+        # percentages. He starts by entering "600" into the
         # "How Many Calories?" input box
         cals_input = ["input[id='goal-meal-cals']"]
         cals_input_value = ["600"]
@@ -368,7 +374,6 @@ class MakeMacroMealTest(FunctionalTest):
         #and reads what the cals/far/carbs/prot and grams are.
         goal_cals = 600
         self.check_food_amt(chickpea_id, 1.3800, goal_cals)
-        '''
         self.check_food_amt(carrot_id, 0.3500, goal_cals)
         self.check_food_amt(bacon_id, 4.68, goal_cals)
         self.check_food_amt(lettuce_id, 0.16, goal_cals)
@@ -379,12 +384,10 @@ class MakeMacroMealTest(FunctionalTest):
         #doesn"t really like garbonzo beans, he decides he"s going to replace it.
         #Joe notices an "x" in the upper left of each food, he clicks on it and
         #garbonzo beans disappears 
-        time.sleep(10)
         self.move_slider('food-{}-slider'.format(chickpea_id), 600)
         self.move_slider('food-{}-slider'.format(carrot_id), 600)
         self.move_slider('food-{}-slider'.format(bacon_id), 500) # for below test
         self.move_slider('food-{}-slider'.format(lettuce_id), 600)
-        time.sleep(10)
 
         self.browser.find_element_by_id('exit-' + chickpea_id).click()
         self.assertTrue(self.make_sure_absent('exit-' + chickpea_id))
@@ -400,18 +403,17 @@ class MakeMacroMealTest(FunctionalTest):
         ).find_elements_by_css_selector('option[value="1"]')[0]
 
         bacon_slice.click()
-        time.sleep(30)
         self.check_element_content(
             'food-amt-{}'.format(bacon_id),
-            'id', 'text', '7.5'
+            'id', 'text', '6.3'
         )
 
-        self.fail('Finish The Test!')
-        '''
         # Joe wants to save this meal so he clicks on the save button below the 
         # goal macro bars, after which he sees a modal form pop up.
 
-        self.browser.find_element_by_id('save-macro-meal').click()
+        save_meal_button.click()
+        self.assertTrue(save_meal_button.is_enabled())
+        self.fail('Finish The Test!')
 
         #Joe decides he wants a smaller salad, so he changes the cals from 600 to 300
         #and notices that all his macro amounts, and food amounts are cut in half.

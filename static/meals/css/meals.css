@@ -78,8 +78,6 @@
 }
 .macro-area {
     background-color: yellow;
-    display: flex;
-    justify-content: space-around;
     grid-area: m;
 }
 .search-area {
@@ -104,9 +102,12 @@
     grid-template-rows: auto;
 }
 
-#goal-macros-bar-contatiner {
+#goal-macros-bar-content { 
+    height: 85%;
+}
 
-    display: flex;
+#goal-macros-bar-footer {
+    height: auto;
 }
 
 #meal-maker-container {

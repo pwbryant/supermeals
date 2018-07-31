@@ -39,6 +39,7 @@ var get_my_macros_page_content = function() {
 //not tested
 var get_meal_maker_page_content = function() {
 	$("#meal-maker-tab").on("click",function() {
+        console.log('get meal maker');
 		$.get("/meals/meal-maker/",function(data) {
 			$("#meal-maker-container").removeClass("hide");
 			$("#meal-maker-container").html(data);

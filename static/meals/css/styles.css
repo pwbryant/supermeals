@@ -231,6 +231,14 @@ a {
     padding: 5px;
 }
 
+.l-flex--col-end {
+    /* Display & Box Model */
+    display: flex;
+    justify-content: end;
+    flex-direction: column;
+    padding: 5px;
+}
+
 .l-flex--row-btw {
     /* Display & Box Model */
     display: flex;
