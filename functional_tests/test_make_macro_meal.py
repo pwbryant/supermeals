@@ -242,7 +242,7 @@ class MakeMacroMealTest(FunctionalTest):
         ])) == 1 and units[0].text == 'g', True)
 
         # Below the macors bars is a button reading Save Meal
-        save_meal_button = self.browser.find_element_by_id('save-macro-meal')
+        save_meal_button = self.browser.find_element_by_id('show-modal-button')
         self.assertEqual(save_meal_button.text, 'Save Meal')
         self.assertFalse(save_meal_button.is_enabled())
 
@@ -408,11 +408,38 @@ class MakeMacroMealTest(FunctionalTest):
             'id', 'text', '6.3'
         )
 
-        # Joe wants to save this meal so he clicks on the save button below the 
+        # Joe wants to save this meal so he moves up all the foods
+        # clicks on the save button below the 
         # goal macro bars, after which he sees a modal form pop up.
+        
+        self.move_slider('food-{}-slider'.format(carrot_id), 500)
+        self.move_slider('food-{}-slider'.format(lettuce_id), 500)
+        
+        save_modal = self.browser.find_element_by_id('save-macro-meal-modal')
+        
+        self.assertFalse(save_modal.is_displayed())
 
-        save_meal_button.click()
         self.assertTrue(save_meal_button.is_enabled())
+        save_meal_button.click()
+        
+        self.assertTrue(save_modal.is_displayed())
+
+        # Joe sees each ingredient listed, the amount, and the unit 
+        # Joe saves the meal as 'bacon lettuce carrot mix' by filling in 
+        # an input, and clicking the save button, after which a success message
+        # shows up in the modal
+        self.fill_input(
+            [
+                "input[id='macro-meal-name']",
+            ],
+            ['bacon lettuce carrot mix']
+        )
+
+        self.browser.find_element_by_id('save-macro-meal-button').click()
+
+        self.check_element_content(
+            'macro-meal-save-status', 'id', 'text',
+            'Successfully Saved!')
         self.fail('Finish The Test!')
 
         #Joe decides he wants a smaller salad, so he changes the cals from 600 to 300

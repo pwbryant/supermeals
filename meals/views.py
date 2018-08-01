@@ -370,13 +370,14 @@ def search_foods(request):
     search_terms = request.GET['search_terms'].split(' ')
 
     vector = SearchVector('name')
-    query = SearchQuery(search_terms[0])
-    for term in search_terms[1:]:
-        query |= SearchQuery(term)
+    terms_query = SearchQuery(search_terms[0])
 
+    for term in search_terms[1:]:
+        terms_query |= SearchQuery(term)
+    
     search_results = list(
         Foods.objects.annotate(
-            rank=SearchRank(vector, query)
+            rank=SearchRank(vector, terms_query)
         ).order_by('-rank')[:50].values()
     )
 

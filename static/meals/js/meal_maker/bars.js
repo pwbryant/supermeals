@@ -17,15 +17,29 @@ var BARS = (function() {
             const config = { attributes: true, childList: true, subtree: true };
             const callback = function(mutations) {
 
-                if (mutations[0].target.__data__.macro_amt > 0) {
-                    document.getElementById('save-macro-meal').disabled = false;
+                if (Math.round(mutations[0].target.__data__.macro_amt) > 0) {
+                    document.getElementById('show-modal-button').disabled = false;
                 } else {
-                    document.getElementById('save-macro-meal').disabled = true;
+                    document.getElementById('show-modal-button').disabled = true;
                 }
             }
             let observer = new MutationObserver(callback);
             observer.observe(target_node, config);
         },
+
+        create_save_macro_meal_modal: function() {
+
+            let modal = document.getElementById('save-macro-meal-modal');
+            
+            $('#show-modal-button').on('click', function() {
+                modal.style.display = 'block';
+            });
+
+            $('.close-modal').on('click', function() {
+                modal.style.display = 'none';
+            });
+        },
+
         add_food : function() {
 			bars_obj = this;
 			$('.search-result>button').on('click',function() {
@@ -100,8 +114,9 @@ var BARS = (function() {
                 
                 // add save macro meal button
                 $('#goal-macros-bar-content').html('');//clear bar area
-                const save_meal_button = '<button id="save-macro-meal" class="btn" disabled>Save Meal</button>'
-                $('#goal-macros-bar-footer').append(save_meal_button);
+                $('#goal-macros-bar-footer').html('');//clear save button
+                const show_modal_button = '<button id="show-modal-button" class="btn" disabled>Save Meal</button>'
+                $('#goal-macros-bar-footer').append(show_modal_button);
 
                 // create macro goal bars
 				let macro_bars_obj = bars_obj.create_macro_bars_obj({
@@ -120,6 +135,7 @@ var BARS = (function() {
 
                 // change in cals enables meal save button
                 bars_obj.enable_save_meal_button();
+                bars_obj.create_save_macro_meal_modal();
 			});
 		},
 
