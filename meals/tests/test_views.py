@@ -2,21 +2,87 @@ import json
 from decimal import Decimal
 
 from django.test import TestCase
-from django.urls import resolve
+from django.urls import resolve, reverse
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login 
 
-from meals.forms import SignUpForm, MakeMacrosForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,INVALID_USERNAME_ERROR,DEFAULT_INVALID_INT_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR
-from meals.models import Macros,MealTemplate,Foods
-from meals.views import save_my_macros,save_meal_templates,get_meal_maker_template,make_meal_template_unique_cal_dict_list,make_macro_breakdown_dict_list
+from meals.forms import SignUpForm, MakeMacrosForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR, INVALID_USERNAME_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_WEIGHT_ERROR, EMPTY_HEIGHT_ERROR
+from meals.models import Macros, MealTemplate, Foods, Servings, Ingredients
+from meals.views import save_my_macros, save_meal_templates, get_meal_maker_template, make_meal_template_unique_cal_dict_list, make_macro_breakdown_dict_list, save_macro_meal
 # Create your tests here.
 
-USERNAME,EMAIL,PASSWORD = 'JoeSchmoe','joe@joemail.com','321pass123!'
-GUEST_USERNAME,GUEST_PASSWORD = 'guest','321!beware'
-BAD_USERNAME,BAD_PASSWORD = 'bad','badpass'
+USERNAME, EMAIL, PASSWORD = 'JoeSchmoe', 'joe@joemail.com', '321pass123!'
+GUEST_USERNAME, GUEST_PASSWORD = 'guest', '321!beware'
+BAD_USERNAME, BAD_PASSWORD = 'bad', 'badpass'
 
+class MacroMealMakerTest(TestCase):
+
+    def create_food_and_ingreds(self):
+        
+        ing1 = Foods.objects.create(
+            name='test food1',
+            cals_per_gram=Decimal(1),
+            fat_per_gram=Decimal(.3),
+            carbs_per_gram=Decimal(.3),
+            protein_per_gram=Decimal(.4)
+        )
+
+        ing2 = Foods.objects.create(
+            name='test food2',
+            cals_per_gram=Decimal(1),
+            fat_per_gram=Decimal(.4),
+            carbs_per_gram=Decimal(.3),
+            protein_per_gram=Decimal(.3)
+        )
+
+        servings1 = Servings.objects.create(
+            description='cup',
+            grams=Decimal(100),
+            quantity=Decimal(1),
+            food=ing1
+        )
+
+        servings2 = Servings.objects.create(
+            description='g',
+            grams=Decimal(1),
+            quantity=Decimal(1),
+        )
+
+
+    def create_food_amt_dict(self):
+        
+        food_amts = [
+            {'food-id': 1, 'food-unit': 'cup', 'food-amt': 1},
+            {'food-id': 2, 'food-unit': 'cup', 'food-amt': 2}
+        ]
+        food_amt_dict = {'food_amts': food_amts, 'meal_name': 'test meal'}
+        return food_amt_dict
+
+
+    def test_save_macro_meal_url(self):
+
+        url = reverse('save_macro_meal')
+
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_save_macro_meal_saves_meal(self):
+
+        self.create_food_and_ingreds()
+        food_amt_dict = self.create_food_amt_dict()
+        meal_name = food_amt_dict['meal_name']
+        resp = json.loads(
+            self.client.post('/meals/save-macro-meal', data=food_amt_dict).content
+        )
+        
+        main_food = Foods.objects.filter(name=meal_name)
+        self.assertEqual(len(main_food), 1)
+        self.assertEqual(resp['status'], 1)
+
+
+"""
 class MealMakerTest(TestCase):
     
     fixtures = ['db.json']
@@ -146,6 +212,7 @@ class MealMakerTest(TestCase):
         self.assertNotIn("value='34'",response.content.decode())
         self.assertIn('goal-meal-cals-select',response.content.decode())
 
+
 class LoginLogoffTest(TestCase):
     
     def test_anonymous_user_home_redirects_to_login_template(self):
@@ -261,6 +328,7 @@ class CreateAccountTest(TestCase):
 
 
 class MyMacrosTabTest(TestCase):
+
     SHARED_MACRO_DATA = {'gender':'male','age':'34','activity':'none','direction':'lose','fat-g':'10','fat-pct':'30',
                     'protein-g':'10','protein-pct':'30','carbs-g':'10','carbs-pct':'40','meal-0':'287',
                             'meal-1':'287','meal-2':'287','meal-3':'285','meal-4':'289','meal-number':'5','tdee':'1435'}
@@ -434,4 +502,4 @@ class MyMacrosTabTest(TestCase):
         
         self.assertIsInstance(response.context['form'], MakeMacrosForm)
 
-
+"""

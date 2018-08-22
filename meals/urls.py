@@ -24,5 +24,6 @@ urlpatterns = [
 	url(r'^save-my-macros$', views.save_my_macros_and_meal_templates, name='save-my-macros-and-meal-templates'),
 	url(r'^meal-maker/$', views.get_meal_maker_template, name='get-meal-maker-template'),
 	url(r'^search-foods/$', views.search_foods, name='search-foods'),
+	url(r'^save-macro-meal$', views.save_macro_meal, name='save_macro_meal'),
 ]
 	

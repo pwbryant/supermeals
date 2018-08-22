@@ -52,11 +52,15 @@
           <!-- Modal content -->
         <div class='modal-content'>
             <span class='close-modal'>&times;</span>
-            <div class='input'>
-                <label for='macro-meal-name' class='input__label-black'>Meal Name</label><br>
-                <input id='macro-meal-name' class='input__input' name='macro-meal-name' placeholder='Meal Name'/>
-            </div>
-            <button id='save-macro-meal-button' class='btn'>Save Meal</button>
+            <form id='save-meal-form'>
+                {% csrf_token %}
+
+                <div class='input'>
+                    <label for='macro-meal-name' class='input__label-black'>Meal Name</label><br>
+                    <input id='macro-meal-name' class='input__input--lg' name='macro-meal-name' placeholder='Meal Name'/>
+                </div>
+                <button id='save-macro-meal-button' type='button' class='btn'>Save Meal</button>
+            </form>
         </div>
 
     </div>
@@ -84,5 +88,6 @@
 	MGOAL.goal_meal_choose_macro_handler();
 	MGOAL.set_initial_macro_percent_tally();
 	BARS.create_macro_button_trigger();
+    SAVE.save_meal_button_listener();
 </script>
 

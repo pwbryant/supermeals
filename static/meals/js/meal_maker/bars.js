@@ -29,6 +29,8 @@ var BARS = (function() {
 
         create_save_macro_meal_modal: function() {
 
+			let bars_obj = this;
+
             let modal = document.getElementById('save-macro-meal-modal');
             
             $('#show-modal-button').on('click', function() {
@@ -38,6 +40,7 @@ var BARS = (function() {
             $('.close-modal').on('click', function() {
                 modal.style.display = 'none';
             });
+
         },
 
         add_food : function() {
@@ -55,7 +58,7 @@ var BARS = (function() {
                 const food_div = bars_obj.create_food_macro_containers(food_macros_obj);
                 $('#meal-maker-food-content').append(food_div);
                 d3.select(`#food-amt-${food_macros_obj.id}`)
-                    .data([{'food_amt':food_macros_obj.food_amt}])
+                    .data([{'food-id':food_macros_obj.id, 'food_amt':food_macros_obj.food_amt}])
                     .text(function(d) { return d.food_amt; });
                 
                 //set up remove food listener

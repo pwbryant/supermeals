@@ -120,7 +120,6 @@ class Servings(models.Model):
     
 
 class Ingredients(models.Model):
-
     
     main_food = models.ForeignKey(
             'Foods',

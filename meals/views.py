@@ -1,7 +1,7 @@
 from decimal import Decimal
 import json
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.db.utils import IntegrityError
@@ -387,10 +387,12 @@ def search_foods(request):
             food__pk=result['id']
         ).values('quantity', 'grams', 'description'))
 
-    print('serach results', len(search_results))
-    print(search_results[0])
     return HttpResponse(
         json.dumps(
             {'search-results':search_results}, cls=DjangoJSONEncoder
         ), content_type='application/json'
     )
+
+
+def save_macro_meal(request):
+    return JsonResponse({'status': 1})
