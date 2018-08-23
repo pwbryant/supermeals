@@ -1,7 +1,6 @@
 from django import forms
-from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
-from meals.models import Macros,MealTemplate
+from meals.models import Macros, MealTemplate
 
 
 #LoginForm/SignUpForm errors
@@ -9,7 +8,8 @@ EMPTY_USERNAME_ERROR = "Username Missing"
 EMPTY_EMAIL_ERROR = "Email Missing"
 EMPTY_PASSWORD_ERROR = "Password Missing"
 DUPLICATE_USERNAME_ERROR = "Username taken"
-INVALID_USERNAME_ERROR = "Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters."
+INVALID_USERNAME_ERROR = "Enter a valid username. This value may contain only \
+letters, numbers, and @/./+/-/_ characters."
 #MyMacrosForm erros
 INVALID_POST_ERROR = "Invalid POST"
 EMPTY_AGE_ERROR = "Age Missing"
@@ -24,32 +24,38 @@ MACROS_DONT_ADD_UP_ERROR = "Macro Percentages Do Not Add Up Too 100"
 EMPTY_CALS_ERROR = "Meal/Snack Calories Missing"
 
 
+class MacroMealForm(forms.Form):
+
+    meal_name = forms.CharField(widget=forms.fields.TextInput())
+
+
 class SignUpForm(forms.models.ModelForm):
-	required=False
-	class Meta:
 
-		model = User
-		fields = ("username","email","password",)
-		widgets = {
-			"username": forms.fields.TextInput(attrs = {
-				"placeholder": "Username",
-				"class": "input__input input__input--lg",
-			}),
-			"email": forms.fields.TextInput(attrs = {
-				"placeholder": "Email",
-				"class": "input__input input__input--lg",
-			}),
-			"password": forms.fields.TextInput(attrs = {
-				"placeholder": "Password",
-				"class": "input__input input__input--lg",
-			}),
-		}
+    required=False
+    class Meta:
 
-		#error constants
-		error_messages = {
-			"username": {"required": EMPTY_USERNAME_ERROR,"unique":DUPLICATE_USERNAME_ERROR},
-			"password": {"required": EMPTY_PASSWORD_ERROR}
-		}
+        model = User
+        fields = ("username", "email", "password",)
+        widgets = {
+            "username": forms.fields.TextInput(attrs = {
+                "placeholder": "Username",
+                "class": "input__input input__input--lg",
+            }),
+            "email": forms.fields.TextInput(attrs = {
+                "placeholder": "Email",
+                "class": "input__input input__input--lg",
+            }),
+            "password": forms.fields.TextInput(attrs = {
+                "placeholder": "Password",
+                "class": "input__input input__input--lg",
+            }),
+        }
+
+        #error constants
+        error_messages = {
+                "username": {"required": EMPTY_USERNAME_ERROR,"unique":DUPLICATE_USERNAME_ERROR},
+                "password": {"required": EMPTY_PASSWORD_ERROR}
+        }
 
 
 class MakeMacrosForm(forms.models.ModelForm):

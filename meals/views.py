@@ -8,7 +8,7 @@ from django.db.utils import IntegrityError
 from django.db import transaction
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 from django.core.serializers.json import DjangoJSONEncoder
-from meals.forms import SignUpForm, MakeMacrosForm
+from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm
 from meals.models import Macros, MealTemplate, Foods, Servings
 
 # Constants
@@ -27,7 +27,7 @@ def home_or_login(request):
 
 
 def sign_up(request):
-    return render(request, TEMPLATES_DIR + 'sign_up.html', {"form":SignUpForm()})
+    return render(request, TEMPLATES_DIR + 'sign_up.html', {'form': SignUpForm()})
 
 
 def create_account(request):
@@ -342,6 +342,7 @@ def get_meal_maker_template(request):
     """
 
     macro_set = Macros.objects.filter(user = request.user)
+    form = MacroMealForm()
     if macro_set:
         macro = macro_set[0]
         tdee = macro.calc_tdee()
@@ -351,10 +352,11 @@ def get_meal_maker_template(request):
         template_data = {
             'tdee':round(tdee),
             'meal_templates':meal_templates_dict_list,
-            'macro_breakdown':macro_breakdown_dict_list
+            'macro_breakdown':macro_breakdown_dict_list,
+            'macro_meal_form': form
         }
     else:
-        template_data = {}
+        template_data = {'macro_meal_form': form}
 
     return render(request, TEMPLATES_DIR + 'meal_maker.html', template_data)
 
@@ -395,4 +397,18 @@ def search_foods(request):
 
 
 def save_macro_meal(request):
-    return JsonResponse({'status': 1})
+
+    context = {'status': 0}
+    form = MacroMealForm(request.POST or None)
+    if form.is_valid():
+        context['status'] = 1
+        with transaction.atomic():
+            Foods.objects.create(
+                name=request.POST['meal_name'],
+                cals_per_gram=Decimal(1),
+                fat_per_gram=Decimal(1),
+                carbs_per_gram=Decimal(1),
+                protein_per_gram=Decimal(1),
+            )
+
+    return JsonResponse(context)

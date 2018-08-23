@@ -2,13 +2,11 @@ import json
 from decimal import Decimal
 
 from django.test import TestCase
-from django.urls import resolve, reverse
+from django.urls import reverse
 from django.http import HttpRequest
-from django.template.loader import render_to_string
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login 
 
-from meals.forms import SignUpForm, MakeMacrosForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR, INVALID_USERNAME_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_WEIGHT_ERROR, EMPTY_HEIGHT_ERROR
+from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR, INVALID_USERNAME_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_WEIGHT_ERROR, EMPTY_HEIGHT_ERROR
 from meals.models import Macros, MealTemplate, Foods, Servings, Ingredients
 from meals.views import save_my_macros, save_meal_templates, get_meal_maker_template, make_meal_template_unique_cal_dict_list, make_macro_breakdown_dict_list, save_macro_meal
 # Create your tests here.
@@ -19,7 +17,7 @@ BAD_USERNAME, BAD_PASSWORD = 'bad', 'badpass'
 
 class MacroMealMakerTest(TestCase):
 
-    def create_food_and_ingreds(self):
+    def create_ingreds_and_food_amt_dict(self):
         
         ing1 = Foods.objects.create(
             name='test food1',
@@ -50,37 +48,35 @@ class MacroMealMakerTest(TestCase):
             quantity=Decimal(1),
         )
 
-
-    def create_food_amt_dict(self):
-        
         food_amts = [
-            {'food-id': 1, 'food-unit': 'cup', 'food-amt': 1},
-            {'food-id': 2, 'food-unit': 'cup', 'food-amt': 2}
+            {'food-id': ing1.id, 'food-unit': 'cup', 'food-amt': 1},
+            {'food-id': ing2.id, 'food-unit': 'g', 'food-amt': 100}
         ]
         food_amt_dict = {'food_amts': food_amts, 'meal_name': 'test meal'}
+
         return food_amt_dict
 
 
     def test_save_macro_meal_url(self):
 
         url = reverse('save_macro_meal')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
 
     def test_save_macro_meal_saves_meal(self):
 
-        self.create_food_and_ingreds()
-        food_amt_dict = self.create_food_amt_dict()
+        food_amt_dict = self.create_ingreds_and_food_amt_dict()
         meal_name = food_amt_dict['meal_name']
-        resp = json.loads(
-            self.client.post('/meals/save-macro-meal', data=food_amt_dict).content
+
+        url = reverse('save_macro_meal')
+        response = json.loads(
+            self.client.post(url, data=food_amt_dict).content
         )
-        
+
         main_food = Foods.objects.filter(name=meal_name)
         self.assertEqual(len(main_food), 1)
-        self.assertEqual(resp['status'], 1)
-
+        self.assertEqual(response['status'], 1)
 
 """
 class MealMakerTest(TestCase):
@@ -181,6 +177,13 @@ class MealMakerTest(TestCase):
         
         expected_result = self.MACRO_BREAKDOWN 
         self.assertEqual(make_macro_breakdown_dict_list(macro),expected_result)
+
+    def test_get_meal_maker_template_uses_correct_form(self):
+
+        user = self.log_in_user(USERNAME, PASSWORD)
+        response = self.client.get('/meals/meal-maker/')
+        print('response',response.context)
+        self.assertIsInstance(response.context['macro_meal_form'], MacroMealForm)
 
     def test_get_meal_maker_template_no_macro_returns_correct_html(self):
             
