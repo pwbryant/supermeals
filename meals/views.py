@@ -8,8 +8,11 @@ from django.db.utils import IntegrityError
 from django.db import transaction
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 from django.core.serializers.json import DjangoJSONEncoder
+
 from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm
 from meals.models import Macros, MealTemplate, Foods, Servings
+from meals.helpers import get_ingredient_count
+
 
 # Constants
 KG_TO_LB = .45359237
@@ -342,7 +345,7 @@ def get_meal_maker_template(request):
     """
 
     macro_set = Macros.objects.filter(user = request.user)
-    form = MacroMealForm()
+    form = MacroMealForm(ingredients=0)
     if macro_set:
         macro = macro_set[0]
         tdee = macro.calc_tdee()
@@ -398,17 +401,23 @@ def search_foods(request):
 
 def save_macro_meal(request):
 
+    # print('request.POST', request.POST)
     context = {'status': 0}
-    form = MacroMealForm(request.POST or None)
+
+    ingredient_count = get_ingredient_count(request)
+    form = MacroMealForm(request.POST or None, ingredient_count=ingredient_count)
     if form.is_valid():
-        context['status'] = 1
+        data = form.cleaned_data
         with transaction.atomic():
             Foods.objects.create(
-                name=request.POST['meal_name'],
-                cals_per_gram=Decimal(1),
-                fat_per_gram=Decimal(1),
-                carbs_per_gram=Decimal(1),
-                protein_per_gram=Decimal(1),
+                name=data['name'],
+                cals_per_gram=data['cals_per_gram'],
+                fat_per_gram=data['fat_per_gram'],
+                carbs_per_gram=data['carbs_per_gram'],
+                protein_per_gram=data['protein_per_gram'],
             )
 
+        context['status'] = 1
+    else:
+        print(form.errors)
     return JsonResponse(context)

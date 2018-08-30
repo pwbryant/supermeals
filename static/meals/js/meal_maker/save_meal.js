@@ -6,15 +6,22 @@ let SAVE = (function() {
         * amts/units from page and returns food_amts_obj
         */
 
+        // tested in FT
         get_meal_info: function() {
-            const food_amts = d3.selectAll('.food-amt').data();
             const meal_name = $('#macro-meal-name').val();
-            food_amts.forEach(function(obj) {
-                const food_id = obj['food-id'];
-                const unit = $(`#food-amt-units-${food_id} option:selected`).text()
-                obj['unit'] = unit;
+            let food_amts_obj = {'meal_name': meal_name};
+            d3.selectAll('.slider').data().forEach(function(obj, idx) {
+                const food_amt = d3.select(
+                    `#food-amt-${obj.id}`
+                ).data()[0]['food_amt'];
+                const unit = $(
+                    `#food-amt-units-${obj.id} option:selected`
+                ).text();
+                food_amts_obj[`ingredients_id_${idx}`] = obj.id;
+                food_amts_obj[`ingredients_amt_${idx}`] = food_amt;
+                food_amts_obj[`ingredients_unit_${idx}`] = unit;
             });
-            const food_amts_obj = {'food_amts': food_amts, 'meal_name': meal_name};
+            console.log('food_amts_obj', food_amts_obj)
             return food_amts_obj;
         },
 
@@ -23,20 +30,15 @@ let SAVE = (function() {
         * meal
         */
         // tested in FT
-        save_meal: function({food_amts, meal_name}) {
+        save_meal: function(meal_info_obj) {
             
             const csrf_token = $(
-                '#meal-save-form input[name="csrfmiddlewaretoken"]'
+                '#save-meal-form input[name="csrfmiddlewaretoken"]'
             ).val();
-            const post_data = {
-                'food_amts': food_amts,
-                'meal_name': meal_name,
-                'csrfmiddlewaretoken': csrf_token
-            };
+            meal_info_obj['csrfmiddlewaretoken'] = csrf_token;
 
-            $.post('/meals/save-macro-meal', post_data, function(data) {
-            // $.post('/meals/save-my-macros', post_data, function(data) {
-                console.log(data);
+            $.post('/meals/save-macro-meal', meal_info_obj, function(data) {
+                console.log('data', data);
             });
         },
 

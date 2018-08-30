@@ -1,8 +1,60 @@
 from django.test import TestCase
 
-from meals.forms import SignUpForm,MakeMacrosForm,EMPTY_USERNAME_ERROR,EMPTY_PASSWORD_ERROR,EMPTY_AGE_ERROR,EMPTY_WEIGHT_ERROR,EMPTY_HEIGHT_ERROR,EMPTY_MACRO_ERROR,INVALID_POST_ERROR,DEFAULT_INVALID_INT_ERROR,EMPTY_RATE_ERROR,INVALID_MACRO_ERROR,OUT_OF_RANGE_MACRO_ERROR,MACROS_DONT_ADD_UP_ERROR
+# from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
+#         EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR, EMPTY_AGE_ERROR, \
+#         EMPTY_WEIGHT_ERROR, EMPTY_HEIGHT_ERROR, EMPTY_MACRO_ERROR, \
+#         INVALID_POST_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_RATE_ERROR, \
+#         INVALID_MACRO_ERROR, OUT_OF_RANGE_MACRO_ERROR, MACROS_DONT_ADD_UP_ERROR
+
+from meals.forms import  MacroMealForm
+
+class SignUpFormTest(TestCase):
 
 
+    def setUp(self):
+        self.post = {
+            'name': 'veggie_pulled_pork_with_bbq_sauce',
+            'cals_per_gram': '1.6622',
+            'fat_per_gram': '0.2782',
+            'carbs_per_gram': '0.4816',
+            'protein_per_gram': '0.9123',
+            'ingredient_id_0': '7133',
+            'ingredient_amt_0': '1',
+            'ingredient_unit_0': 'bag',
+            'ingredient_id_1': '6014',
+            'ingredient_amt_1': '4',
+            'ingredient_unit_1': 'tbsp'
+        }
+
+        self.bad_post = {
+            'name': '',
+            'cals_per_gram': 'str',
+            'fat_per_gram': 'str',
+            'carbs_per_gram': 'str',
+            'protein_per_gram': 'str',
+            'ingredient_id_0': 'str',
+            'ingredient_amt_0': 'str',
+            'ingredient_unit_0': '0',
+            'ingredient_id_1': 'str',
+            'ingredient_amt_1': 'str',
+            'ingredient_unit_1': '0'
+        }
+        # k[-1] is the ingredient number
+        self.ingredient_count = len(set(
+            [k[-1] for k in self.post if 'ingredient' in k]
+        ))
+
+    def test_MacroMealFome_valid(self):
+
+        form = MacroMealForm(self.post, ingredient_count=self.ingredient_count)
+        self.assertTrue(form.is_valid())
+
+
+    def test_MacroMealFome_invalid(self):
+        form = MacroMealForm(self.bad_post, ingredient_count=self.ingredient_count)
+        self.assertFalse(form.is_valid())
+
+c = """
 class SignUpFormTest(TestCase):
 
 	def test_form_sign_up_has_placeholder_and_css_classes(self):
@@ -196,4 +248,4 @@ class MakeMacrosFormTest(TestCase):
 			form.errors['total_macro_percent'],
 			[MACROS_DONT_ADD_UP_ERROR]
 		)
-
+"""

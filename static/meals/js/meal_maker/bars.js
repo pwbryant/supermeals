@@ -307,7 +307,8 @@ if (macro != 'cals') {
                 d3.select(food_amt_id)
                     .text(function(d) {
                         d.food_amt = new_scale(slider_height);
-                        return Math.round(d.food_amt * 10) / 10;
+                        // round to 2 decimal places
+                        return Math.round(d.food_amt * 100) / 100;
                     });
                 
             });
@@ -498,13 +499,10 @@ if (macro != 'cals') {
             // d3 y values
             const food_amt_delta = -1 * food_macros_obj['cal_bar_height_to_unit_scale'](y_delta);
 
-            //console.log('in food amt - ', y_delta,'food delta',food_macros_obj['cal_bar_height_to_unit_scale'](y_delta)); 
             d3.select(`#food-amt-${food_macros_obj.id}`)
                 .text(function(d) {
-                    //console.log('old food, new food',d.food_amt, food_amt_delta);
                     d.food_amt += food_amt_delta;
-                    //console.log('food amout',d.food_amt)
-                    return Math.round(d.food_amt * 10) / 10;
+                    return Math.round(d.food_amt * 100) / 100;
                 });
 
         },

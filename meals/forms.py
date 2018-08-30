@@ -26,8 +26,39 @@ EMPTY_CALS_ERROR = "Meal/Snack Calories Missing"
 
 class MacroMealForm(forms.Form):
 
-    meal_name = forms.CharField(widget=forms.fields.TextInput())
+    name = forms.CharField(widget=forms.fields.TextInput())
 
+    cals_per_gram = forms.DecimalField(
+        max_digits=6, decimal_places=4,
+        widget=forms.HiddenInput()
+    )
+    fat_per_gram = forms.DecimalField(
+        max_digits=6, decimal_places=4,
+        widget=forms.HiddenInput()
+    )
+    carbs_per_gram = forms.DecimalField(
+        max_digits=6, decimal_places=4,
+        widget=forms.HiddenInput()
+    )
+    protein_per_gram = forms.DecimalField(
+        max_digits=6, decimal_places=4,
+        widget=forms.HiddenInput()
+    )
+
+    def __init__(self, *args, **kwargs):
+        ingredient_count = kwargs.pop('ingredient_count')
+        super(MacroMealForm, self).__init__(*args, **kwargs)
+
+        for i in range(ingredient_count):
+            self.fields['ingredient_id_{}'.format(i)] = forms.IntegerField()
+            self.fields['ingredient_amt_{}'.format(i)] = forms.IntegerField()
+            self.fields['ingredient_unit_{}'.format(i)] = forms.CharField()
+
+#     def get_ingredient_info(self):
+
+#         for name, value in self.cleaned_data.items():
+#             if name.startswith('ingredient'):
+#                 yield (self.fields[name]
 
 class SignUpForm(forms.models.ModelForm):
 
@@ -175,6 +206,7 @@ class MakeMacrosForm(forms.models.ModelForm):
 		kwargs["initial"] = initial
 		super(MakeMacrosForm,self).__init__(*args,**kwargs)
 
+
 class MealTemplateForm(forms.models.ModelForm):
 
 	class Meta:
@@ -187,3 +219,6 @@ class MealTemplateForm(forms.models.ModelForm):
 				"invalid":DEFAULT_INVALID_INT_ERROR,
 			},
 		}
+
+
+

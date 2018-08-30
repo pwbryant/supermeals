@@ -24,6 +24,7 @@ MACRO_INIT_FIELD_DICT = {
 }
 MEAL_TEMPLATE_ARGS = {'user':USER,'name':'breakfast','cals_percent':Decimal('50')}
 
+c = """
 class BaseTest(TestCase):
 
 	def check_model_validation_error(self,obj,delete_obj=True):
@@ -260,3 +261,4 @@ class IngredientsTest(TestCase):
 
         saved_ingredients = Ingredients.objects.all()
         self.assertEqual(saved_ingredients.count(),0)
+"""

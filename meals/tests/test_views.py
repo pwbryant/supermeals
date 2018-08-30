@@ -6,9 +6,15 @@ from django.urls import reverse
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 
-from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR, INVALID_USERNAME_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_WEIGHT_ERROR, EMPTY_HEIGHT_ERROR
+from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
+    DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR, \
+    INVALID_USERNAME_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_WEIGHT_ERROR, \
+    EMPTY_HEIGHT_ERROR
 from meals.models import Macros, MealTemplate, Foods, Servings, Ingredients
-from meals.views import save_my_macros, save_meal_templates, get_meal_maker_template, make_meal_template_unique_cal_dict_list, make_macro_breakdown_dict_list, save_macro_meal
+from meals.views import save_my_macros, save_meal_templates, \
+    get_meal_maker_template, make_meal_template_unique_cal_dict_list, \
+    make_macro_breakdown_dict_list, save_macro_meal
+
 # Create your tests here.
 
 USERNAME, EMAIL, PASSWORD = 'JoeSchmoe', 'joe@joemail.com', '321pass123!'
@@ -17,44 +23,52 @@ BAD_USERNAME, BAD_PASSWORD = 'bad', 'badpass'
 
 class MacroMealMakerTest(TestCase):
 
-    def create_ingreds_and_food_amt_dict(self):
+    def setUp(self):
         
         ing1 = Foods.objects.create(
-            name='test food1',
-            cals_per_gram=Decimal(1),
-            fat_per_gram=Decimal(.3),
-            carbs_per_gram=Decimal(.3),
-            protein_per_gram=Decimal(.4)
+            name='veggie pork',
+            cals_per_gram=Decimal(1.6456),
+            fat_per_gram=Decimal(.3418),
+            carbs_per_gram=Decimal(.1519),
+            protein_per_gram=Decimal(1.1646)
         )
 
         ing2 = Foods.objects.create(
-            name='test food2',
-            cals_per_gram=Decimal(1),
-            fat_per_gram=Decimal(.4),
-            carbs_per_gram=Decimal(.3),
-            protein_per_gram=Decimal(.3)
+            name='bbq',
+            cals_per_gram=Decimal(1.72),
+            fat_per_gram=Decimal(.0567),
+            carbs_per_gram=Decimal(1.6308),
+            protein_per_gram=Decimal(.0328)
         )
 
+
         servings1 = Servings.objects.create(
-            description='cup',
-            grams=Decimal(100),
+            description='bag',
+            grams=Decimal(237),
             quantity=Decimal(1),
             food=ing1
         )
 
-        servings2 = Servings.objects.create(
-            description='g',
-            grams=Decimal(1),
-            quantity=Decimal(1),
+        servings1 = Servings.objects.create(
+            description='tbsp',
+            grams=Decimal(67),
+            quantity=Decimal(4),
+            food=ing2
         )
 
-        food_amts = [
-            {'food-id': ing1.id, 'food-unit': 'cup', 'food-amt': 1},
-            {'food-id': ing2.id, 'food-unit': 'g', 'food-amt': 100}
-        ]
-        food_amt_dict = {'food_amts': food_amts, 'meal_name': 'test meal'}
-
-        return food_amt_dict
+        self.food_amt_dict = {
+            'name': 'veggie_pulled_pork_with_bbq_sauce',
+            'cals_per_gram': '1.6622',
+            'fat_per_gram': '0.2782',
+            'carbs_per_gram': '0.4816',
+            'protein_per_gram': '0.9123',
+            'ingredient_id_0': '7133',
+            'ingredient_amt_0': '1',
+            'ingredient_unit_0': 'bag',
+            'ingredient_id_1': '6014',
+            'ingredient_amt_1': '4',
+            'ingredient_unit_1': 'tbsp'
+        }
 
 
     def test_save_macro_meal_url(self):
@@ -66,8 +80,8 @@ class MacroMealMakerTest(TestCase):
 
     def test_save_macro_meal_saves_meal(self):
 
-        food_amt_dict = self.create_ingreds_and_food_amt_dict()
-        meal_name = food_amt_dict['meal_name']
+        food_amt_dict = self.food_amt_dict
+        meal_name = food_amt_dict['name']
 
         url = reverse('save_macro_meal')
         response = json.loads(
@@ -75,10 +89,14 @@ class MacroMealMakerTest(TestCase):
         )
 
         main_food = Foods.objects.filter(name=meal_name)
-        self.assertEqual(len(main_food), 1)
+        self.assertEqual(main_food.count(), 1)
+
+        ingredients = Ingredients.objects.filter(main_food=main_food)
+        self.assertEqual(ingredients.count(), 2)
+
         self.assertEqual(response['status'], 1)
 
-"""
+c = """
 class MealMakerTest(TestCase):
     
     fixtures = ['db.json']
@@ -182,7 +200,6 @@ class MealMakerTest(TestCase):
 
         user = self.log_in_user(USERNAME, PASSWORD)
         response = self.client.get('/meals/meal-maker/')
-        print('response',response.context)
         self.assertIsInstance(response.context['macro_meal_form'], MacroMealForm)
 
     def test_get_meal_maker_template_no_macro_returns_correct_html(self):
