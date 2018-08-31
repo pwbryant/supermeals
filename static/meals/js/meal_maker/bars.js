@@ -454,10 +454,7 @@ if (macro != 'cals') {
                 .call(d3.drag()
                     .on('start', bars_obj.dragstarted)
                     .on('drag', function(d) {
-                        console.log('drag d', d)
-                        console.log('bars obj', bars_obj)
                         if (d.cal_bar_height != d.cal_bar_height_to_unit_scale.domain()[1]) {
-                            console.log('heights diff',d.cal_bar_height , d.cal_bar_height_to_unit_scale.domain()[1]);
                         }
                         const y_delta = bars_obj.dragged(d,this);
                         bars_obj.update_food_amt_label(y_delta, d);
@@ -571,10 +568,6 @@ if (macro != 'cals') {
                 if (y < 0) {
                     d.slider_y = 0;
                 } else if (y > d.cal_bar_height) {
-
-                    console.log('here2 over')
-                    console.log(y)
-                    
                     d.slider_y = d.cal_bar_height;
                 } else {
                     d.slider_y = y;
@@ -583,7 +576,6 @@ if (macro != 'cals') {
             });
             
             const new_y = d3.select(this_).attr('y');
-            console.log('b ddragged',old_y, new_y, new_y - old_y);
             const y_delta = new_y - old_y;
             return y_delta;
         },

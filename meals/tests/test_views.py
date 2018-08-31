@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from django.test import TestCase
 from django.urls import reverse
-from django.http import HttpRequest
+from django.http import HttpRequest, QueryDict
 from django.contrib.auth.models import User
 
 from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
@@ -14,7 +14,7 @@ from meals.models import Macros, MealTemplate, Foods, Servings, Ingredients
 from meals.views import save_my_macros, save_meal_templates, \
     get_meal_maker_template, make_meal_template_unique_cal_dict_list, \
     make_macro_breakdown_dict_list, save_macro_meal
-
+from meals.helpers import get_ingredient_count, save_meal
 # Create your tests here.
 
 USERNAME, EMAIL, PASSWORD = 'JoeSchmoe', 'joe@joemail.com', '321pass123!'
@@ -62,13 +62,18 @@ class MacroMealMakerTest(TestCase):
             'fat_per_gram': '0.2782',
             'carbs_per_gram': '0.4816',
             'protein_per_gram': '0.9123',
-            'ingredient_id_0': '7133',
+            'ingredient_id_0': f'{ing1.id}',
             'ingredient_amt_0': '1',
             'ingredient_unit_0': 'bag',
-            'ingredient_id_1': '6014',
+            'ingredient_id_1': f'{ing2.id}',
             'ingredient_amt_1': '4',
             'ingredient_unit_1': 'tbsp'
         }
+       
+        query_dict = QueryDict('', mutable=True)
+        query_dict.update(self.food_amt_dict)
+        self.request = HttpRequest()
+        self.request.POST = query_dict
 
 
     def test_save_macro_meal_url(self):
@@ -80,21 +85,34 @@ class MacroMealMakerTest(TestCase):
 
     def test_save_macro_meal_saves_meal(self):
 
-        food_amt_dict = self.food_amt_dict
-        meal_name = food_amt_dict['name']
+        meal_name = self.food_amt_dict['name']
 
         url = reverse('save_macro_meal')
         response = json.loads(
-            self.client.post(url, data=food_amt_dict).content
+            self.client.post(url, data=self.food_amt_dict).content
         )
 
-        main_food = Foods.objects.filter(name=meal_name)
-        self.assertEqual(main_food.count(), 1)
+        self.assertEqual(response['status'], 1)
 
-        ingredients = Ingredients.objects.filter(main_food=main_food)
+
+    def test_get_ingredient_count(self):
+
+        ingredient_count = get_ingredient_count(self.request.POST)
+        self.assertEqual(ingredient_count, 2)
+
+
+    def test_save_meal(self):
+
+        meal_name = self.food_amt_dict['name']
+
+        save_meal(self.food_amt_dict)
+
+        foods = Foods.objects.filter(name=meal_name)
+        self.assertEqual(foods.count(), 1)
+
+        ingredients = Ingredients.objects.filter(main_food=foods[0])
         self.assertEqual(ingredients.count(), 2)
 
-        self.assertEqual(response['status'], 1)
 
 c = """
 class MealMakerTest(TestCase):

@@ -11,7 +11,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm
 from meals.models import Macros, MealTemplate, Foods, Servings
-from meals.helpers import get_ingredient_count
+from meals.helpers import get_ingredient_count, save_meal
 
 
 # Constants
@@ -24,7 +24,6 @@ def home_or_login(request):
 
     if request.user.is_authenticated():
         return render(request, TEMPLATES_DIR + 'base.html')
-        #return render(request, 'meals/base.html')
 
     return redirect('login')
 
@@ -345,7 +344,7 @@ def get_meal_maker_template(request):
     """
 
     macro_set = Macros.objects.filter(user = request.user)
-    form = MacroMealForm(ingredients=0)
+    form = MacroMealForm(ingredient_count=0)
     if macro_set:
         macro = macro_set[0]
         tdee = macro.calc_tdee()
@@ -404,20 +403,17 @@ def save_macro_meal(request):
     # print('request.POST', request.POST)
     context = {'status': 0}
 
-    ingredient_count = get_ingredient_count(request)
+    ingredient_count = get_ingredient_count(request.POST)
     form = MacroMealForm(request.POST or None, ingredient_count=ingredient_count)
     if form.is_valid():
-        data = form.cleaned_data
         with transaction.atomic():
-            Foods.objects.create(
-                name=data['name'],
-                cals_per_gram=data['cals_per_gram'],
-                fat_per_gram=data['fat_per_gram'],
-                carbs_per_gram=data['carbs_per_gram'],
-                protein_per_gram=data['protein_per_gram'],
-            )
+            status, errors = save_meal(form.cleaned_data)
+        
+        context['status'] = status
+        context['errors'] = errors
 
-        context['status'] = 1
     else:
-        print(form.errors)
+        context['status'] = 0
+        context['errors'] = form.errors
+
     return JsonResponse(context)

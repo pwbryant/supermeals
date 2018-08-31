@@ -3,13 +3,19 @@ let SAVE = (function() {
     return {
         /**
         * get_meal_info gets meal name from modal, and food
-        * amts/units from page and returns food_amts_obj
+        * amts/units from page and calcs macros per gram
+        * and returns food_amts_obj
         */
 
         // tested in FT
         get_meal_info: function() {
             const meal_name = $('#macro-meal-name').val();
-            let food_amts_obj = {'meal_name': meal_name};
+            let food_amts_obj = {'name': meal_name};
+            let total_grams = 0;
+            let total_cals = 0;
+            let total_fat = 0;
+            let total_carbs = 0;
+            let total_protein = 0;
             d3.selectAll('.slider').data().forEach(function(obj, idx) {
                 const food_amt = d3.select(
                     `#food-amt-${obj.id}`
@@ -17,11 +23,29 @@ let SAVE = (function() {
                 const unit = $(
                     `#food-amt-units-${obj.id} option:selected`
                 ).text();
+                
                 food_amts_obj[`ingredients_id_${idx}`] = obj.id;
                 food_amts_obj[`ingredients_amt_${idx}`] = food_amt;
                 food_amts_obj[`ingredients_unit_${idx}`] = unit;
+
+                // _0 scale is always associated with grams
+                grams = obj.servings_scales.cal_bar_height_to_unit_scale_0(
+                    obj.cal_bar_height - obj.slider_y
+                );
+
+                total_grams += grams
+
+                total_cals += grams * obj.cals_per_gram;
+                total_fat += grams * obj.fat_per_gram;
+                total_carbs += grams * obj.carbs_per_gram;
+                total_protein += grams * obj.protein_per_gram;
             });
-            console.log('food_amts_obj', food_amts_obj)
+
+            food_amts_obj['cals_per_gram'] = total_cals / total_grams;
+            food_amts_obj['fat_per_gram'] = total_fat / total_grams;
+            food_amts_obj['carbs_per_gram'] = total_carbs / total_grams;
+            food_amts_obj['protein_per_gram'] = total_protein / total_grams;
+
             return food_amts_obj;
         },
 
