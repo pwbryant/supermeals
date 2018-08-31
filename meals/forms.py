@@ -24,23 +24,34 @@ MACROS_DONT_ADD_UP_ERROR = "Macro Percentages Do Not Add Up Too 100"
 EMPTY_CALS_ERROR = "Meal/Snack Calories Missing"
 
 
+def round_decimal(value, places):
+    if value is not None:
+        return round(value, places)
+
+
+class RoundedDecimalField(forms.DecimalField):
+    def to_python(self, value):
+        value = super(RoundedDecimalField, self).to_python(value)
+        return round_decimal(value, self.decimal_places)
+
+
 class MacroMealForm(forms.Form):
 
     name = forms.CharField(widget=forms.fields.TextInput())
 
-    cals_per_gram = forms.DecimalField(
+    cals_per_gram = RoundedDecimalField(
         max_digits=6, decimal_places=4,
         widget=forms.HiddenInput()
     )
-    fat_per_gram = forms.DecimalField(
+    fat_per_gram = RoundedDecimalField(
         max_digits=6, decimal_places=4,
         widget=forms.HiddenInput()
     )
-    carbs_per_gram = forms.DecimalField(
+    carbs_per_gram = RoundedDecimalField(
         max_digits=6, decimal_places=4,
         widget=forms.HiddenInput()
     )
-    protein_per_gram = forms.DecimalField(
+    protein_per_gram = RoundedDecimalField(
         max_digits=6, decimal_places=4,
         widget=forms.HiddenInput()
     )
@@ -51,14 +62,11 @@ class MacroMealForm(forms.Form):
 
         for i in range(ingredient_count):
             self.fields['ingredient_id_{}'.format(i)] = forms.IntegerField()
-            self.fields['ingredient_amt_{}'.format(i)] = forms.IntegerField()
+            self.fields['ingredient_amt_{}'.format(i)] = RoundedDecimalField(
+                max_digits=6, decimal_places=4
+            )
             self.fields['ingredient_unit_{}'.format(i)] = forms.CharField()
 
-#     def get_ingredient_info(self):
-
-#         for name, value in self.cleaned_data.items():
-#             if name.startswith('ingredient'):
-#                 yield (self.fields[name]
 
 class SignUpForm(forms.models.ModelForm):
 

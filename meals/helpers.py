@@ -56,10 +56,18 @@ def save_meal(post_data):
 
             fs = Foods.objects.all()
             ingredient = Foods.objects.get(pk=ingredient_id)
-            serving = Servings.objects.get(
-                food=ingredient,
-                description=ingredient_unit
-            )
+            print('ingredient',ingredient)
+            print(ingredient_unit)
+            if ingredient_unit == 'g':
+                # Serving object for grams has not associated food ob
+                serving = Servings.objects.get(
+                    food=None
+                )
+            else:
+                serving = Servings.objects.get(
+                    food=ingredient,
+                    description=ingredient_unit
+                )
 
             Ingredients.objects.create(
                 main_food=main_food,

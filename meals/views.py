@@ -400,7 +400,7 @@ def search_foods(request):
 
 def save_macro_meal(request):
 
-    # print('request.POST', request.POST)
+    print('request.POST', request.POST)
     context = {'status': 0}
 
     ingredient_count = get_ingredient_count(request.POST)

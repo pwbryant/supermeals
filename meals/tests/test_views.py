@@ -110,9 +110,12 @@ class MacroMealMakerTest(TestCase):
         foods = Foods.objects.filter(name=meal_name)
         self.assertEqual(foods.count(), 1)
 
-        ingredients = Ingredients.objects.filter(main_food=foods[0])
+        main_food = foods[0]
+        ingredients = Ingredients.objects.filter(main_food=main_food)
         self.assertEqual(ingredients.count(), 2)
 
+        servings = Servings.objects.filter(food=main_food)
+        self.assertEqual(servings.count(), 1)
 
 c = """
 class MealMakerTest(TestCase):

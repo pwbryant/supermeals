@@ -13,11 +13,12 @@ class SignUpFormTest(TestCase):
 
     def setUp(self):
         self.post = {
+            # added long decimals to test that they get rounded
             'name': 'veggie_pulled_pork_with_bbq_sauce',
-            'cals_per_gram': '1.6622',
-            'fat_per_gram': '0.2782',
-            'carbs_per_gram': '0.4816',
-            'protein_per_gram': '0.9123',
+            'cals_per_gram': '1.6622001',
+            'fat_per_gram': '0.2782001',
+            'carbs_per_gram': '0.4816001',
+            'protein_per_gram': '0.9123001',
             'ingredient_id_0': '7133',
             'ingredient_amt_0': '1',
             'ingredient_unit_0': 'bag',

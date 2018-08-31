@@ -24,9 +24,9 @@ let SAVE = (function() {
                     `#food-amt-units-${obj.id} option:selected`
                 ).text();
                 
-                food_amts_obj[`ingredients_id_${idx}`] = obj.id;
-                food_amts_obj[`ingredients_amt_${idx}`] = food_amt;
-                food_amts_obj[`ingredients_unit_${idx}`] = unit;
+                food_amts_obj[`ingredient_id_${idx}`] = obj.id;
+                food_amts_obj[`ingredient_amt_${idx}`] = food_amt;
+                food_amts_obj[`ingredient_unit_${idx}`] = unit;
 
                 // _0 scale is always associated with grams
                 grams = obj.servings_scales.cal_bar_height_to_unit_scale_0(
