@@ -1,7 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
-from meals.models import Foods, Ingredients, Servings
+from meals.models import Foods, Ingredients, Servings, FoodNotes
+
+from decimal import Decimal
 
 
 def get_ingredient_count(post_data):
@@ -49,6 +51,14 @@ def save_meal(post_data):
            protein_per_gram=post_data['protein_per_gram']
         )
 
+        if post_data.get('notes', False):
+            FoodNotes.objects.create(food=main_food, notes=post_data['notes'])
+        
+        Servings.objects.create(
+            food=main_food, grams=Decimal(post_data['total_grams']),
+            quantity=Decimal(1), description='entire recipe'
+        )
+
         for i in range(get_ingredient_count(post_data)):
             ingredient_id = post_data[f'ingredient_id_{i}']
             ingredient_amt = post_data[f'ingredient_amt_{i}']
@@ -56,8 +66,6 @@ def save_meal(post_data):
 
             fs = Foods.objects.all()
             ingredient = Foods.objects.get(pk=ingredient_id)
-            print('ingredient',ingredient)
-            print(ingredient_unit)
             if ingredient_unit == 'g':
                 # Serving object for grams has not associated food ob
                 serving = Servings.objects.get(

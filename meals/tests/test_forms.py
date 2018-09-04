@@ -15,6 +15,8 @@ class SignUpFormTest(TestCase):
         self.post = {
             # added long decimals to test that they get rounded
             'name': 'veggie_pulled_pork_with_bbq_sauce',
+            'notes': 'broil in the oven',
+            'total_grams': '5',
             'cals_per_gram': '1.6622001',
             'fat_per_gram': '0.2782001',
             'carbs_per_gram': '0.4816001',
@@ -29,6 +31,8 @@ class SignUpFormTest(TestCase):
 
         self.bad_post = {
             'name': '',
+            'notes': '',
+            'total_grams': 'str',
             'cals_per_gram': 'str',
             'fat_per_gram': 'str',
             'carbs_per_gram': 'str',

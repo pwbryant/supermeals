@@ -220,7 +220,9 @@ def save_my_macros(request):
         }
 
     macro_dict = macro_form_dict
-    [macro_dict.pop(key) for key in  ['fat_g', 'carbs_g', 'protein_g', 'carbs_percent', 'total_macro_percent']]
+    for key in ['fat_g', 'carbs_g', 'protein_g', 'carbs_percent', 'total_macro_percent']:
+        macro_dict.pop(key)
+
     macro_dict['height'] = Decimal(macro_dict['height'])
     macro_dict['weight'] = Decimal(macro_dict['weight'])
     macro_dict['change_rate'] = Decimal(macro_dict['change_rate'])
@@ -287,6 +289,7 @@ def make_meal_template_unique_cal_dict_list(user, tdee):
         if mt.cals_percent not in unique_cals_dict:
             unique_cals_dict[mt.cals_percent] = []
         unique_cals_dict[mt.cals_percent].append(str(int(mt.name.split('_')[-1]) + 1))
+
     for cp in unique_cals_dict:
         unique_cals_dict[cp].sort()
         cals = round(tdee * cp / Decimal('100'))
@@ -378,7 +381,7 @@ def search_foods(request):
 
     for term in search_terms[1:]:
         terms_query |= SearchQuery(term)
-    
+
     search_results = list(
         Foods.objects.annotate(
             rank=SearchRank(vector, terms_query)
@@ -406,14 +409,19 @@ def save_macro_meal(request):
     ingredient_count = get_ingredient_count(request.POST)
     form = MacroMealForm(request.POST or None, ingredient_count=ingredient_count)
     if form.is_valid():
+        print('form is valid')
         with transaction.atomic():
             status, errors = save_meal(form.cleaned_data)
-        
+
+        print('form is valid')
         context['status'] = status
         context['errors'] = errors
 
     else:
+        print('form is invalid')
+        print(form.errors)
         context['status'] = 0
         context['errors'] = form.errors
 
+    print(context)
     return JsonResponse(context)

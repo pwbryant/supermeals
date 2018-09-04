@@ -10,7 +10,7 @@ from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
     DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR, \
     INVALID_USERNAME_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_WEIGHT_ERROR, \
     EMPTY_HEIGHT_ERROR
-from meals.models import Macros, MealTemplate, Foods, Servings, Ingredients
+from meals.models import Macros, MealTemplate, Foods, Servings, Ingredients, FoodNotes
 from meals.views import save_my_macros, save_meal_templates, \
     get_meal_maker_template, make_meal_template_unique_cal_dict_list, \
     make_macro_breakdown_dict_list, save_macro_meal
@@ -58,6 +58,8 @@ class MacroMealMakerTest(TestCase):
 
         self.food_amt_dict = {
             'name': 'veggie_pulled_pork_with_bbq_sauce',
+            'notes': 'broil cheese in oven',
+            'total_grams': '5',
             'cals_per_gram': '1.6622',
             'fat_per_gram': '0.2782',
             'carbs_per_gram': '0.4816',
@@ -116,6 +118,10 @@ class MacroMealMakerTest(TestCase):
 
         servings = Servings.objects.filter(food=main_food)
         self.assertEqual(servings.count(), 1)
+
+        notes = FoodNotes.objects.filter(food=main_food)
+        self.assertEqual(notes.count(), 1)
+
 
 c = """
 class MealMakerTest(TestCase):

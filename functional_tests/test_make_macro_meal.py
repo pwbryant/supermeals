@@ -1,11 +1,13 @@
 import time
 from builtins import Exception
+from decimal import Decimal
 
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.select import Select
 
 from .base import FunctionalTest
+from meals.models import Foods, Servings, Ingredients
 
 class ElementPresentException(Exception):
 
@@ -14,8 +16,56 @@ class ElementPresentException(Exception):
 
 class MakeMacroMealTest(FunctionalTest):
 
-    fixtures = ["db.json"]
-   
+    # fixtures = ["db.json"]
+
+    def this_setup(self):
+
+        names = ['Chickpeas', 'Carrots', 'Bacon', 'Lettuce']
+        cals = [1.3800, 0.3500, 4.6800, 0.1600]
+        fat = [0.2223, 0.0117, 3.1581, 0.0198]
+        carbs = [0.9148, 0.3296, 0.0680, 0.0904]
+        protein = [0.2816, 0.0256, 1.3568, 0.0532]
+        
+        foods = []
+        for i in range(len(names)):
+            food = Foods.objects.create(
+               name=names[i],
+               cals_per_gram=cals[i],
+               fat_per_gram=fat[i],
+               carbs_per_gram=carbs[i],
+               protein_per_gram=protein[i],
+            )
+            foods.append(food)
+
+        # Servings.objects.create(
+        #     food=foods[0], grams=Decimal(254), quantity=Decimal(1), description='can'
+        # )
+        # Servings.objects.create(
+        #     food=foods[0], grams=Decimal(152), quantity=Decimal(1), description='cup'
+        # )
+        # Servings.objects.create(
+        #     food=foods[1], grams=Decimal(15), quantity=Decimal(1), description='large'
+        # )
+        # Servings.objects.create(
+        #     food=foods[1], grams=Decimal(10), quantity=Decimal(1), description='medium'
+        # )
+        # Servings.objects.create(
+        #     food=foods[1], grams=Decimal(85), quantity=Decimal(1), description='serving'
+        # )
+        Servings.objects.create(
+            food=foods[2], grams=Decimal(11.5), quantity=Decimal(1), description='slice'
+        )
+        # Servings.objects.create(
+        #     food=foods[3], grams=Decimal(), quantity=Decimal(1), description=''
+        # )
+        # Servings.objects.create(
+        #     food=foods[3], grams=Decimal(), quantity=Decimal(1), description=''
+        # )
+        # Servings.objects.create(
+        #     food=foods[3], grams=Decimal(), quantity=Decimal(1), description=''
+        # )
+
+
     def get_bar_ratio(self, num_height, denom_height):
         return round(float(num_height) / float(denom_height), 2)
 
@@ -45,7 +95,7 @@ class MakeMacroMealTest(FunctionalTest):
         ).text
         if '.' not in food_amt:
             food_amt += '.0' # so it matches with python rounding if no decimal present
-        self.assertEqual(food_amt, str(round(goal_cals / cals_per_gram, 1)))
+        self.assertEqual(food_amt, str(round(goal_cals / cals_per_gram, 2)))
         self.move_slider('food-{}-slider'.format(food_id), 600)
 
     def make_sure_absent(self, element_id):
@@ -60,6 +110,9 @@ class MakeMacroMealTest(FunctionalTest):
             return True
 
     def test_make_macro_meal(self):
+
+        self.this_setup()
+
         user = self.initialize_test(self.USERNAME, self.PASSWORD)
         # self.create_default_meal_templates(user)
 
@@ -269,7 +322,7 @@ class MakeMacroMealTest(FunctionalTest):
         # He starts by typeing "garbonzo beans" in the search bar and 
         # clicks the search icon. And he sees the area below the search 
         # bar fill up with the top 10 results
-        search_results = self.search_and_results(['garbanzo beans'])
+        search_results = self.search_and_results(['chickpeas'])
         #cself.assertEqual(len(search_results),50)
 
         # Joe clicks on the first result ( on the add + icon )
@@ -277,7 +330,7 @@ class MakeMacroMealTest(FunctionalTest):
         # appear with the 
         # result text as the header, and "0g" under the bars to the left.
         # The left-most rectangle has a small drag box at the bottom.
-        chickpea_id = '18649'
+        chickpea_id = '1'
         search_results[0].find_elements_by_class_name("icon")[0].click()
         food_container = self.browser.find_element_by_id(
                 'food-{}-container'.format(chickpea_id)
@@ -293,7 +346,7 @@ class MakeMacroMealTest(FunctionalTest):
         footer_unit = food_container.find_element_by_id(
                 'food-amt-units-{}'.format(chickpea_id)
         ).find_elements_by_css_selector('option[value="0"]')[0].text
-        self.assertEqual(header,'Chickpeas (garbanzo ...') 
+        self.assertEqual(header,'Chickpeas') 
         self.assertEqual(footer_amt + footer_unit,'0g') 
 
 
@@ -302,9 +355,9 @@ class MakeMacroMealTest(FunctionalTest):
         #like the previous result appear to the right of the previous search result
 
         self.fill_input(["input[id='meal-maker-food-search-input']"],[],clear=True)	
-        search_results = self.search_and_results(['carrots raw'])
+        search_results = self.search_and_results(['carrots'])
         search_results[0].find_elements_by_class_name("icon")[0].click()
-        carrot_id = '17931'
+        carrot_id = '2'
         food_container = self.browser.find_element_by_id(
                 'food-{}-container'.format(carrot_id)
         ) 
@@ -319,17 +372,17 @@ class MakeMacroMealTest(FunctionalTest):
         footer_unit = food_container.find_element_by_id(
                 'food-amt-units-{}'.format(carrot_id)
         ).find_elements_by_css_selector('option[value="0"]')[0].text
-        self.assertEqual(header,'Carrots, baby, raw') 
+        self.assertEqual(header,'Carrots') 
         self.assertEqual(footer_amt + footer_unit,'0g') 
 
         #He then adds "bacon" and "lettuce" to the mix as well
         self.fill_input(["input[id='meal-maker-food-search-input']"],[],clear=True)	
-        search_results = self.search_and_results(['bacon strips cooked'])
+        search_results = self.search_and_results(['bacon'])
         search_results[0].find_elements_by_class_name("icon")[0].click()
-        bacon_id = '21259'
+        bacon_id = '3'
 
         self.fill_input(["input[id='meal-maker-food-search-input']"],[],clear=True)	
-        search_results = self.search_and_results(['lettuce raw'])
+        search_results = self.search_and_results(['lettuce'])
         search_results[0].find_elements_by_class_name("icon")[0].click()
 
         #He then adjusts the dragbar on the bacon cal bar.
@@ -343,7 +396,7 @@ class MakeMacroMealTest(FunctionalTest):
 
         #He adjusts the lettuce bar and notices that, like the bacon, bar the meal
         #bars fill up with the color of the lettuce bar.
-        lettuce_id = '20217'
+        lettuce_id = '4'
         self.move_slider('food-{}-slider'.format(lettuce_id),500)
         lettuce_cals_bar = self.browser.find_element_by_id(
             'cals-{}-goal-macro-bar'.format(lettuce_id)
@@ -405,7 +458,7 @@ class MakeMacroMealTest(FunctionalTest):
         bacon_slice.click()
         self.check_element_content(
             'food-amt-{}'.format(bacon_id),
-            'id', 'text', '6.3'
+            'id', 'text', '6.29'
         )
 
         # Joe wants to save this meal so he moves up all the foods
@@ -428,11 +481,29 @@ class MakeMacroMealTest(FunctionalTest):
         # Joe saves the meal as 'bacon lettuce carrot mix' by filling in 
         # an input, and clicking the save button, after which a success message
         # shows up in the modal
+        self.check_element_content(
+            'label[for="macro-meal-name"]',
+            'css', 'text', 'Meal Name'
+        )
+        self.check_element_content(
+            'label[for="macro-meal-notes"]',
+            'css', 'text', 'Notes (Optional)'
+        )
+        self.check_element_content(
+            'macro-meal-name',
+            'id', 'placeholder', 'Meal Name'
+        )
+        self.check_element_content(
+            'macro-meal-notes',
+            'id', 'placeholder', 'Notes (Optional)'
+        )
+
         self.fill_input(
             [
                 "input[id='macro-meal-name']",
+                "textarea[id='macro-meal-notes']",
             ],
-            ['bacon lettuce carrot mix']
+            ['bacon lettuce carrot mix', 'best as a salad']
         )
 
         self.browser.find_element_by_id('save-macro-meal-button').click()

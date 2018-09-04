@@ -102,9 +102,15 @@ class Foods(models.Model):
         return '{}'.format(self.name)
 
 
+class FoodNotes(models.Model):
+
+    notes = models.TextField(blank=False, null=False) 
+    food = models.ForeignKey('Foods',on_delete=models.CASCADE)
+
+
 class Servings(models.Model):
 
-    quantity = models.DecimalField(max_digits=5, decimal_places=2)
+    quantity = models.DecimalField(max_digits=6, decimal_places=2)
     description = models.CharField(max_length=200)
     grams = models.DecimalField(max_digits=6, decimal_places=2)
     food = models.ForeignKey(

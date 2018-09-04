@@ -10,6 +10,7 @@ EMPTY_PASSWORD_ERROR = "Password Missing"
 DUPLICATE_USERNAME_ERROR = "Username taken"
 INVALID_USERNAME_ERROR = "Enter a valid username. This value may contain only \
 letters, numbers, and @/./+/-/_ characters."
+
 #MyMacrosForm erros
 INVALID_POST_ERROR = "Invalid POST"
 EMPTY_AGE_ERROR = "Age Missing"
@@ -38,6 +39,7 @@ class RoundedDecimalField(forms.DecimalField):
 class MacroMealForm(forms.Form):
 
     name = forms.CharField(widget=forms.fields.TextInput())
+    notes = forms.CharField(widget=forms.Textarea, required=False)
 
     cals_per_gram = RoundedDecimalField(
         max_digits=6, decimal_places=4,
@@ -55,6 +57,10 @@ class MacroMealForm(forms.Form):
         max_digits=6, decimal_places=4,
         widget=forms.HiddenInput()
     )
+    total_grams = RoundedDecimalField(
+        max_digits=8, decimal_places=4,
+        widget=forms.HiddenInput()
+    )
 
     def __init__(self, *args, **kwargs):
         ingredient_count = kwargs.pop('ingredient_count')
@@ -63,7 +69,7 @@ class MacroMealForm(forms.Form):
         for i in range(ingredient_count):
             self.fields['ingredient_id_{}'.format(i)] = forms.IntegerField()
             self.fields['ingredient_amt_{}'.format(i)] = RoundedDecimalField(
-                max_digits=6, decimal_places=4
+                max_digits=6, decimal_places=2
             )
             self.fields['ingredient_unit_{}'.format(i)] = forms.CharField()
 
