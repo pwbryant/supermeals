@@ -69,8 +69,13 @@ let SAVE = (function() {
                     console.log('success');
                     $('#macro-meal-save-status').text("Successfully Saved!");
 
+                    setTimeout(function() {
+                        let modal = document.getElementById('save-macro-meal-modal');
+                        modal.style.display = 'none';
+                    }, 3000);
                 } else {
-                    console.log('failed',data.error);
+                    console.log('failed',data.errors);
+                    $('#macro-meal-save-status').text(data.errors);
                 }
             });
         },

@@ -72,30 +72,40 @@ class MealTemplate(models.Model):
 
     user = models.ForeignKey('auth.User',on_delete=models.CASCADE)
     name = models.TextField(blank=False)	
-    cals_percent = models.DecimalField(max_digits=4,decimal_places=2,blank=False)
+    cals_percent = models.DecimalField(
+        max_digits=4, decimal_places=2, blank=False
+    )
     
 
 class OwnedFoods(models.Model):
 
-    food = models.ForeignKey('Foods',on_delete=models.CASCADE)
-    user = models.ForeignKey('auth.User',on_delete=models.CASCADE)
+    food = models.ForeignKey('Foods', on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     
 
 class Foods(models.Model):
 
     name = models.TextField(blank=False, unique=True)
-    cals_per_gram = models.DecimalField(max_digits=6,decimal_places=4,blank=False)
-    fat_per_gram = models.DecimalField(max_digits=6,decimal_places=4,blank=False)
-    carbs_per_gram = models.DecimalField(max_digits=6,decimal_places=4,blank=False)
-    protein_per_gram = models.DecimalField(max_digits=6,decimal_places=4,blank=False)
+    cals_per_gram = models.DecimalField(
+        max_digits=6, decimal_places=4, blank=False
+    )
+    fat_per_gram = models.DecimalField(
+        max_digits=6, decimal_places=4, blank=False
+    )
+    carbs_per_gram = models.DecimalField(
+        max_digits=6, decimal_places=4, blank=False
+    )
+    protein_per_gram = models.DecimalField(
+        max_digits=6, decimal_places=4, blank=False
+    )
 
     def as_dict(self):
         return {
-            "name":self.name,
-            "cals_per_gram":self.cals_per_gram,
-            "fat_per_gram":self.fat_per_gram,
-            "carbs_per_gram":self.carbs_per_gram,
-            "protein_per_gram":self.protein_per_gram
+            "name": self.name,
+            "cals_per_gram": self.cals_per_gram,
+            "fat_per_gram": self.fat_per_gram,
+            "carbs_per_gram": self.carbs_per_gram,
+            "protein_per_gram": self.protein_per_gram
         }
 
     def __str__(self):
@@ -105,7 +115,7 @@ class Foods(models.Model):
 class FoodNotes(models.Model):
 
     notes = models.TextField(blank=False, null=False) 
-    food = models.ForeignKey('Foods',on_delete=models.CASCADE)
+    food = models.ForeignKey('Foods', on_delete=models.CASCADE)
 
 
 class Servings(models.Model):

@@ -511,10 +511,26 @@ class MakeMacroMealTest(FunctionalTest):
         self.check_element_content(
             'macro-meal-save-status', 'id', 'text',
             'Successfully Saved!')
-        self.fail('Finish The Test!')
 
-        #Joe decides he wants a smaller salad, so he changes the cals from 600 to 300
-        #and notices that all his macro amounts, and food amounts are cut in half.
+        time.sleep(3)
+        self.assertFalse(save_modal.is_displayed())
+
+
+        # Joe spaces and hits the saves meal button and tries to save the same meal
+        # with the same name 'bacon lettuce carrot mix', but gets an error message
+
+        save_meal_button.click()
+        self.fill_input(["input[id='macro-meal-name']"],[], clear=True)
+        self.fill_input(
+            ["input[id='macro-meal-name']"], ['bacon lettuce carrot mix']
+        )
+        self.browser.find_element_by_id('save-macro-meal-button').click()
+
+        self.check_element_content(
+            'macro-meal-save-status', 'id', 'text',
+            'duplicate key value violates unique constraint "meals_foods_name_key"')
+
+        self.fail('Finish The Test!')
 
         #He then adujst the remaining foods so that all the bars fall within the stdev
         #style bars and then hits the "Save Meal" button below.

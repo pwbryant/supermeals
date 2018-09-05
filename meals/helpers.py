@@ -64,7 +64,6 @@ def save_meal(post_data):
             ingredient_amt = post_data[f'ingredient_amt_{i}']
             ingredient_unit = post_data[f'ingredient_unit_{i}']
 
-            fs = Foods.objects.all()
             ingredient = Foods.objects.get(pk=ingredient_id)
             if ingredient_unit == 'g':
                 # Serving object for grams has not associated food ob
@@ -87,7 +86,7 @@ def save_meal(post_data):
             status = 1
 
     except IntegrityError as e:
-        error = e.__cause__
+        error = str(e.__cause__).split('DETAIL:')[0]
         status = 0
         
     except ValidationError as e:
