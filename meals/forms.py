@@ -1,6 +1,7 @@
 from django import forms
+from django.forms import ModelForm
 from django.contrib.auth.models import User
-from meals.models import Macros, MealTemplate
+from meals.models import Macros, MealTemplate, Foods, Ingredients, Servings
 
 
 #LoginForm/SignUpForm errors
@@ -36,7 +37,44 @@ class RoundedDecimalField(forms.DecimalField):
         return round_decimal(value, self.decimal_places)
 
 
-class MacroMealForm(forms.Form):
+class MacroMealForm(forms.ModelForm):
+
+    notes = forms.CharField(widget=forms.Textarea, required=False)
+
+    class Meta:
+        model = Foods
+        fields = ['name']
+
+        
+class MacroIngredientForm(forms.ModelForm):
+
+    ingredient_id = forms.IntegerField()
+    ingredient_unit = forms.CharField()
+
+    class Meta:
+        model = Ingredients
+        fields = ['amount', 'ingredient', 'serving']
+
+    def __init__(self, *args, **kwargs):
+        args = (kwargs.pop('data'),)
+        post_data = args[0]
+
+        prefix = kwargs['prefix']
+        ingredient = Foods.objects.get(
+            pk=post_data[f'{prefix}-ingredient_id']
+        )
+        serving = Servings.objects.get(
+            food=ingredient, description=post_data[f'{prefix}-ingredient_unit']
+        )
+
+        args[0][f'{prefix}-serving'] = serving.pk
+        args[0][f'{prefix}-ingredient'] = ingredient.pk
+
+        super(MacroIngredientForm, self).__init__(*args, **kwargs)
+
+
+
+class oldMacroMealForm(forms.Form):
 
     name = forms.CharField(widget=forms.fields.TextInput())
     notes = forms.CharField(widget=forms.Textarea, required=False)

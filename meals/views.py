@@ -347,7 +347,7 @@ def get_meal_maker_template(request):
     """
 
     macro_set = Macros.objects.filter(user = request.user)
-    form = MacroMealForm(ingredient_count=0)
+    form = MacroMealForm()
     if macro_set:
         macro = macro_set[0]
         tdee = macro.calc_tdee()
