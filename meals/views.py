@@ -8,8 +8,9 @@ from django.db.utils import IntegrityError
 from django.db import transaction
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 from django.core.serializers.json import DjangoJSONEncoder
+from django import forms
 
-from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm
+from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, MacroIngredientForm
 from meals.models import Macros, MealTemplate, Foods, Servings
 from meals.helpers import get_ingredient_count, save_meal
 
@@ -403,25 +404,33 @@ def search_foods(request):
 
 def save_macro_meal(request):
 
-    print('request.POST', request.POST)
-    context = {'status': 0}
+    request.POST._mutable = True
+     
+    meal_form = MacroMealForm(request.POST)
 
     ingredient_count = get_ingredient_count(request.POST)
-    form = MacroMealForm(request.POST or None, ingredient_count=ingredient_count)
-    if form.is_valid():
-        print('form is valid')
-        with transaction.atomic():
-            status, errors = save_meal(form.cleaned_data)
+    ingredient_form_factory = forms.formset_factory(
+        MacroIngredientForm, extra=ingredient_count
+    )
+    ingredient_formset = ingredient_form_factory(request.POST)
 
-        print('form is valid')
-        context['status'] = status
-        context['errors'] = errors
+    context = {'status': 0, 'errors': []}
+    if meal_form.is_valid() and ingredient_formset.is_valid():
+        new_food = meal_form.save()
+
+        for ing_form in ingredient_formset:
+            new_ing = ing_form.save(commit=False)
+            new_ing.main_food = new_food
+            new_ing.save()
+
+        new_food.set_macros_per_gram()
+        new_food.save()
+
+        context['status'] = 1
 
     else:
-        print('form is invalid')
-        print(form.errors)
         context['status'] = 0
-        context['errors'] = form.errors
+        context['errors'].append(meal_form.errors)
+        context['errors'].append(ingredient_formset.errors)
 
-    print(context)
     return JsonResponse(context)

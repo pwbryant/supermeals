@@ -23,7 +23,7 @@ def get_ingredient_count(post_data):
     """
 
     ingredients = len(set([
-        key[-1] for key in post_data if key.startswith('ingredient')
+        key[-1] for key in post_data if 'ingredient' in key
     ]))
 
     return ingredients
