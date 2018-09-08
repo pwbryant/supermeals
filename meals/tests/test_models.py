@@ -24,11 +24,9 @@ MACRO_INIT_FIELD_DICT = {
 }
 MEAL_TEMPLATE_ARGS = {'user':USER,'name':'breakfast','cals_percent':Decimal('50')}
 
-c = """
 class BaseTest(TestCase):
 
 	def check_model_validation_error(self,obj,delete_obj=True):
-            print('obj',obj)
             with self.assertRaises(ValidationError):
                 obj.save()
                 obj.full_clean()
@@ -55,6 +53,81 @@ class BaseTest(TestCase):
             return broke_dict
 
 
+class FoodsTest(TestCase):
+
+    def setUp(self):
+
+        self.food1 = Foods.objects.create(
+            name='veggie pulled pork',
+            cals_per_gram='1.6456',
+            fat_per_gram='0.3418',
+            carbs_per_gram='0.1519',
+            protein_per_gram='1.1646'
+        )
+
+        self.srv1 = Servings.objects.create(
+            food=self.food1,
+            grams=237,
+            quantity=1,
+            description='bag'
+        )
+
+        self.food2 = Foods.objects.create(
+            name='bbq sauce',
+            cals_per_gram='1.7200',
+            fat_per_gram='0.0567', 
+            carbs_per_gram='1.6308', 
+            protein_per_gram='0.0328' 
+        )
+
+        self.srv2 = Servings.objects.create(
+            food=self.food2,
+            grams=17,
+            quantity=1,
+            description='tbsp'
+        )
+
+        self.empty_food = Foods.objects.create(name='veggie pork with bbq')
+
+        self.ingredient1 = Ingredients.objects.create(
+            main_food=self.empty_food,
+            ingredient=self.food1,
+            serving=self.srv1,
+            amount=1
+        )
+
+        self.ingredient2 = Ingredients.objects.create(
+            main_food=self.empty_food,
+            ingredient=self.food2,
+            serving=self.srv2,
+            amount=4
+        )
+
+
+    def test_saving_and_retrieving_foods(self):
+        Foods.objects.create(name='food name',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,protein_per_gram=1)
+        saved_foods = Foods.objects.filter(name='food name')
+        self.assertEqual(saved_foods.count(),1)
+
+
+    def test_set_macro_per_gram_method(self):
+        
+        food = self.empty_food
+        
+        self.assertTrue(food.cals_per_gram is None)
+
+        food.set_macros_per_gram()
+        food.save()
+
+        food = Foods.objects.get(name=food.name)
+        self.assertEqual(food.cals_per_gram, Decimal('1.6622'))
+        self.assertEqual(food.fat_per_gram, Decimal('0.2782'))
+        self.assertEqual(food.carbs_per_gram, Decimal('0.4816'))
+        self.assertEqual(food.protein_per_gram, Decimal('0.9123'))
+
+
+
+c = """
 class MacrosTest(BaseTest):
 		
     def test_validation_errors_illegal_field_values(self):
@@ -166,12 +239,6 @@ class MealTemplateTest(BaseTest):
         self.assertEqual(Macros.objects.all().count(),0)
 
 
-class FoodsTest(TestCase):
-	
-    def test_saving_and_retrieving_foods(self):
-        Foods.objects.create(name='food name',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,protein_per_gram=1)
-        saved_foods = Foods.objects.all()
-        self.assertEqual(saved_foods.count(),1)
 
 
 class OwnedFoodsTest(TestCase):

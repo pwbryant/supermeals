@@ -28,7 +28,7 @@ class MacroMealMakerTest(TestCase):
         
         self.ingredient1 = Foods.objects.create(
             name='veggie pulled pork',
-            cals_per_gram='1.6622001',
+            cals_per_gram='1.6456',
             fat_per_gram='0.3418',
             carbs_per_gram='0.1519',
             protein_per_gram='1.1646'
@@ -51,8 +51,8 @@ class MacroMealMakerTest(TestCase):
 
         self.srv2 = Servings.objects.create(
             food=self.ingredient2,
-            grams=79,
-            quantity=4,
+            grams=17,
+            quantity=1,
             description='tbsp'
         )
 

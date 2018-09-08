@@ -10,14 +10,14 @@ from django import forms
 from meals.forms import  MacroMealForm, MacroIngredientForm
 from meals.models import Foods, Ingredients, Servings
 
-class SignUpFormTest(TestCase):
+class MacroMealAndIngredientFormTest(TestCase):
 
 
     def setUp(self):
 
         self.ingredient1 = Foods.objects.create(
             name='veggie pulled pork',
-            cals_per_gram='1.6622001',
+            cals_per_gram='1.6456',
             fat_per_gram='0.3418',
             carbs_per_gram='0.1519',
             protein_per_gram='1.1646'
@@ -40,7 +40,7 @@ class SignUpFormTest(TestCase):
 
         self.srv2 = Servings.objects.create(
             food=self.ingredient2,
-            grams=79,
+            grams=17,
             quantity=1,
             description='tbsp'
         )

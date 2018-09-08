@@ -115,11 +115,8 @@ class Foods(models.Model):
 
     def set_macros_per_gram(self):
                 
-        print('self', self)
-        print(Ingredients.objects.all())
         ings = Ingredients.objects.filter(main_food=self)
-        print('ings', ings)
-        total_grams = sum([ing.serving.grams for ing in ings])
+        total_grams = sum([ing.serving.grams * ing.amount for ing in ings])
 
         self.cals_per_gram = self.calc_macro_per_gram(ings, 'cals', total_grams)
         self.fat_per_gram = self.calc_macro_per_gram(ings, 'fat', total_grams)
@@ -128,7 +125,6 @@ class Foods(models.Model):
 
 
     def calc_macro_per_gram(self, ingredients, macro, total_grams):
-
         macro_per_gram = sum([
             ing.ingredient.__getattribute__(f'{macro}_per_gram')
             * ing.serving.grams * ing.amount for ing in ingredients
