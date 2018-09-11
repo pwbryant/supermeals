@@ -49,7 +49,10 @@ class MacroMealForm(forms.ModelForm):
 class MacroIngredientForm(forms.ModelForm):
 
     ingredient_id = forms.IntegerField()
-    ingredient_unit = forms.CharField()
+    unit = forms.CharField()
+    amount = RoundedDecimalField(
+        max_digits=6, decimal_places=2
+    )
 
     class Meta:
         model = Ingredients
@@ -63,16 +66,20 @@ class MacroIngredientForm(forms.ModelForm):
         ingredient = Foods.objects.get(
             pk=post_data[f'{prefix}-ingredient_id']
         )
-        serving = Servings.objects.get(
-            food=ingredient, description=post_data[f'{prefix}-ingredient_unit']
-        )
+
+        if post_data[f'{prefix}-unit'] == 'g':
+            serving = Servings.objects.get(food=None)
+        else:
+            serving = Servings.objects.get(
+                food=ingredient, description=post_data[f'{prefix}-unit']
+            )
 
         args[0][f'{prefix}-serving'] = serving.pk
         args[0][f'{prefix}-ingredient'] = ingredient.pk
 
         super(MacroIngredientForm, self).__init__(*args, **kwargs)
 
-
+    
 
 class oldMacroMealForm(forms.Form):
 

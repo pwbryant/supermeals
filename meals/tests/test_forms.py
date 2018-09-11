@@ -54,14 +54,14 @@ class MacroMealAndIngredientFormTest(TestCase):
             'form-TOTAL_FORMS': u'2',
             'form-INITIAL_FORMS': u'0',
             'form-MAX_NUM_FORMS': u'',
-            'name': 'veggie_pulled_pork_with_bbq_sauce',
+            'name': 'veggie pulled pork with bbq sauce',
             'notes': 'broil in the oven',
             'form-0-ingredient_id': self.ingredient1.pk,
             'form-0-amount': '1',
-            'form-0-ingredient_unit': 'bag',
+            'form-0-unit': 'bag',
             'form-1-ingredient_id': self.ingredient2.pk,
             'form-1-amount': '4',
-            'form-1-ingredient_unit': 'tbsp'
+            'form-1-unit': 'tbsp'
         }
 
         self.bad_post = {
@@ -72,10 +72,10 @@ class MacroMealAndIngredientFormTest(TestCase):
             'notes': 'broil in the oven',
             'form-0-ingredient_id': self.ingredient1.pk,
             'form-0-amount': 'str',
-            'form-0-ingredient_unit': 'bag',
+            'form-0-unit': 'bag',
             'form-1-ingredient_id': self.ingredient2.pk,
             'form-1-amount': 'str',
-            'form-1-ingredient_unit': 'tbsp'
+            'form-1-unit': 'tbsp'
         }
 
         # k[-1] is the ingredient number

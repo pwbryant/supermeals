@@ -156,6 +156,16 @@ class Servings(models.Model):
         return '{0}'.format(self.description)
     
 
+def round_decimal(value, places):
+    if value is not None:
+        return round(value, places)
+
+class RoundedDecimalField(models.DecimalField):
+    def to_python(self, value):
+        value = super(RoundedDecimalField, self).to_python(value)
+        return round_decimal(value, self.decimal_places)
+
+
 class Ingredients(models.Model):
     
     main_food = models.ForeignKey(

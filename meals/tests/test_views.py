@@ -15,7 +15,7 @@ from meals.models import Macros, MealTemplate, Foods, Servings, Ingredients, Foo
 from meals.views import save_my_macros, save_meal_templates, \
     get_meal_maker_template, make_meal_template_unique_cal_dict_list, \
     make_macro_breakdown_dict_list, save_macro_meal
-from meals.helpers import get_ingredient_count, save_meal
+from meals.helpers import get_ingredient_count
 # Create your tests here.
 
 USERNAME, EMAIL, PASSWORD = 'JoeSchmoe', 'joe@joemail.com', '321pass123!'
@@ -67,14 +67,14 @@ class MacroMealMakerTest(TestCase):
             'form-TOTAL_FORMS': u'2',
             'form-INITIAL_FORMS': u'0',
             'form-MAX_NUM_FORMS': u'',
-            'name': 'veggie_pulled_pork_with_bbq_sauce',
+            'name': 'veggie pulled pork with bbq sauce',
             'notes': 'broil in the oven',
             'form-0-ingredient_id': self.ingredient1.pk,
             'form-0-amount': '1',
-            'form-0-ingredient_unit': 'bag',
+            'form-0-unit': 'bag',
             'form-1-ingredient_id': self.ingredient2.pk,
             'form-1-amount': '4',
-            'form-1-ingredient_unit': 'tbsp'
+            'form-1-unit': 'tbsp'
         }
        
         query_dict = QueryDict('', mutable=True)

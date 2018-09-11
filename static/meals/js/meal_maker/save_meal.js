@@ -25,9 +25,9 @@ let SAVE = (function() {
                     `#food-amt-units-${obj.id} option:selected`
                 ).text();
                 
-                food_amts_obj[`ingredient_id_${idx}`] = obj.id;
-                food_amts_obj[`ingredient_amt_${idx}`] = food_amt;
-                food_amts_obj[`ingredient_unit_${idx}`] = unit;
+                food_amts_obj[`form-${idx}-ingredient_id`] = obj.id;
+                food_amts_obj[`form-${idx}-amount`] = food_amt;
+                food_amts_obj[`form-${idx}-unit`] = unit;
 
                 // _0 scale is always associated with grams
                 grams = obj.servings_scales.cal_bar_height_to_unit_scale_0(
@@ -48,6 +48,7 @@ let SAVE = (function() {
             food_amts_obj['protein_per_gram'] = total_protein / total_grams;
             food_amts_obj['total_grams'] = total_grams;
 
+            console.log('food amts obj', food_amts_obj);
             return food_amts_obj;
         },
 
@@ -75,7 +76,12 @@ let SAVE = (function() {
                     }, 3000);
                 } else {
                     console.log('failed',data.errors);
-                    $('#macro-meal-save-status').text(data.errors);
+                    let errors = JSON.parse(data.errors);
+                    for (let key in errors) {
+                        errors[key].forEach(function(error) {
+                            $('#macro-meal-save-status').text(error);
+                        });
+                    };
                 }
             });
         },

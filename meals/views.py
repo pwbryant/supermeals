@@ -1,5 +1,6 @@
 from decimal import Decimal
 import json
+import simplejson
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
@@ -11,8 +12,9 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django import forms
 
 from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, MacroIngredientForm
-from meals.models import Macros, MealTemplate, Foods, Servings
-from meals.helpers import get_ingredient_count, save_meal
+from meals.models import Macros, MealTemplate, Foods, Servings, FoodNotes
+from meals.helpers import get_ingredient_count, make_ingredient_formset, \
+save_meal_notes_ingredients
 
 
 # Constants
@@ -153,10 +155,12 @@ def create_macro_form_dict(POST):
     """
     Creates dict containing fields needed for MakeMacroForm model.
 
-    Args:
-        POST: request object's POST dict
+    Parameters
+    ----------
+        POST: QueryDict
 
-    Returns:
+    Returns
+    ----------
         dict with fields for MakeMacroForm model
     """
     macro_form_dict = {}
@@ -200,25 +204,37 @@ def create_macro_form_dict(POST):
 
 
 def save_my_macros(request):
-    """
+    """saves new Macro
+
     Attempts to save new Macro model object, but passes still
     with Integrity Error.
 
-    Args:
-        request: HTTP request object
+    Parameters
+    ----------
+    request: HttpRequest instance
 
-    Returns:
+    Returns
+    ----------
+    context: dict
         dict with status, form, and unit-type upon
         success or failure
+
+    Raises
+    ----------
+    IngegrityError
     """
+
     macro_form_dict = create_macro_form_dict(request.POST)
     macro_form = MakeMacrosForm(macro_form_dict, unit_type=macro_form_dict['unit_type'])
+
+    context = {
+        'form':macro_form,
+        'unit_type':macro_form_dict['unit_type']
+    }
+
     if not macro_form.is_valid():
-        return {
-            'status':0,
-            'form':macro_form,
-            'unit_type':macro_form_dict['unit_type']
-        }
+        context['status'] = 0
+        return context
 
     macro_dict = macro_form_dict
     for key in ['fat_g', 'carbs_g', 'protein_g', 'carbs_percent', 'total_macro_percent']:
@@ -236,23 +252,22 @@ def save_my_macros(request):
     except IntegrityError:
         pass
 
-    return {
-        'status':1,
-        'form':macro_form,
-        'unit-type':macro_form_dict['unit_type']
-    }
+    context['status'] = 1
+    return context
 
 
 def save_my_macros_and_meal_templates(request):
-    """
-    Controls the processing and saving of Macros and MealTemplate models
+    """processes saves Macros and MealTemplate
 
-    Args:
-        request: HTTP request object
+    Parameters
+    ----------
+    request: HttpRequest instance
 
-    Returns:
-        If success HttpResponse(1), else, renders my_macros, dict of errors
+    Returns
+    ----------
+    If success HttpResponse(1), else, renders my_macros, dict of errors
     """
+
 
     my_macro_response = save_my_macros(request)
     meal_template_response = save_meal_templates(request)
@@ -269,15 +284,20 @@ def save_my_macros_and_meal_templates(request):
 
 
 def make_meal_template_unique_cal_dict_list(user, tdee):
-    """
+    """creates info for meal cals dropdown
+
     Creates dictionaries to be used for the MealTemplate dropdown in the
     meal maker tab.
 
-    Args:
-        user: User object for session
-        tdee: Total Daily Energy Expenditure
+    Parameters
+    ----------
+    user: User instance
+    tdee: Decimal instance 
+        Total Daily Energy Expenditure
 
-    Returns:
+    Returns
+    ----------
+    meal_templates_list: list
         list of dictionaries corresponding to each unique calorie amount
     """
 
@@ -307,16 +327,21 @@ def make_macro_breakdown_dict_list(macro):
     Creates dictionaries to be used for the Macro inputs on the
     meal maker tab.
 
-    Args:
-        macro: Saved Macro object
+    Parameters
+    ----------
+        macro: Macros instance
 
-    Returns:
+    Returns
+    ----------
+    macros_dict_list: list
         list of dictionaries corresponding to each macro
     """
 
     fat_pct = macro.fat_percent
     protein_pct = macro.protein_percent
-    return [
+
+
+    macros_dict_list = [
         {
             'name':'Fat',
             'percent':round(fat_pct),
@@ -334,17 +359,23 @@ def make_macro_breakdown_dict_list(macro):
         }
     ]
 
+    return macros_dict_list 
+
 
 def get_meal_maker_template(request):
-    """
+    """passes saved info to meal_maker tab
+
     Get saved Macros and MealTemplates to pass to meal_maker.html.
 
-    Args:
-        request: HttpRequest object
+    Parameters
+    ----------
+    request: HttpRequest instance
 
-    Returns:
-        renders meal_maker.html with dict of saved info from MyMacros tab
-        such as tdee, MealTemplate info, and the Macros breakdow
+    Returns
+    ----------
+    render: render instance
+        renders meal_maker.html with info from MyMacros tab
+        such as tdee, MealTemplate info, and the Macros breakdown
     """
 
     macro_set = Macros.objects.filter(user = request.user)
@@ -368,13 +399,20 @@ def get_meal_maker_template(request):
 
 
 def search_foods(request):
-    """
+    """search db
+
     Seach usda foods db based on 'search_terms' key, submitted by user.
-    Args:
-        request: HttpRequest object
-    Returns:
-        HttpResponse of search results as json
+
+    Parameters
+    ----------
+    request: HttpRequest object
+
+    Returns
+    ----------
+    HttpResponse: HttpResponse instance
+        search results as json
     """
+
     search_terms = request.GET['search_terms'].split(' ')
 
     vector = SearchVector('name')
@@ -403,34 +441,44 @@ def search_foods(request):
 
 
 def save_macro_meal(request):
+    """saves the models associated with a 'macro meal'
+    
+    Takes two forms and saves the info to make a 'macro meal'
+    which is compromised of Foods, Ingredients, and FoodNotes
+    models
+    
+    Parameters
+    ----------
+    request: HttpRequest instance
 
+    Returns
+    ----------
+    context: dict
+        holds success/failure status, and any errors
+    """
     request.POST._mutable = True
      
     meal_form = MacroMealForm(request.POST)
 
-    ingredient_count = get_ingredient_count(request.POST)
-    ingredient_form_factory = forms.formset_factory(
-        MacroIngredientForm, extra=ingredient_count
-    )
-    ingredient_formset = ingredient_form_factory(request.POST)
+    ingredient_formset = make_ingredient_formset(request)
 
-    context = {'status': 0, 'errors': []}
+    context = {'status': 0, 'errors': ''}
     if meal_form.is_valid() and ingredient_formset.is_valid():
-        new_food = meal_form.save()
-
-        for ing_form in ingredient_formset:
-            new_ing = ing_form.save(commit=False)
-            new_ing.main_food = new_food
-            new_ing.save()
-
-        new_food.set_macros_per_gram()
-        new_food.save()
-
+        print('form is valid')
+        save_meal_notes_ingredients(meal_form, ingredient_formset)
         context['status'] = 1
 
     else:
+        print('form is invalid')
+        print(meal_form.errors)
+        print(ingredient_formset.errors)
         context['status'] = 0
-        context['errors'].append(meal_form.errors)
-        context['errors'].append(ingredient_formset.errors)
+        meal_error_dict = dict([(k, [e for e in v]) for k,v in meal_form.errors.items()])
+        context['errors'] = simplejson.dumps(meal_error_dict)
+        # ingredient_error_dict = [
+        #     [k for k in ingredient_formset.errors]
+        # ]
+        # print('ingredient_error_dict', ingredient_error_dict)
+        # context['errors'] += ingredient_formset.errors
 
     return JsonResponse(context)

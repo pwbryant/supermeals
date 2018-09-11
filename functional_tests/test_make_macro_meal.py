@@ -528,7 +528,8 @@ class MakeMacroMealTest(FunctionalTest):
 
         self.check_element_content(
             'macro-meal-save-status', 'id', 'text',
-            'duplicate key value violates unique constraint "meals_foods_name_key"')
+            'Foods with this Name already exists.'
+        )
 
         self.fail('Finish The Test!')
 

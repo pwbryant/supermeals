@@ -1,8 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django import forms
 
 from meals.models import Foods, Ingredients, Servings, FoodNotes
-
+from meals.forms import MacroIngredientForm
 from decimal import Decimal
 
 
@@ -22,76 +23,70 @@ def get_ingredient_count(post_data):
         count of ingredients in request.POST
     """
 
-    ingredients = len(set([
+    ingredients = len([
         key[-1] for key in post_data if 'ingredient' in key
-    ]))
+    ])
 
     return ingredients
 
 
-def save_meal(post_data):
-    """save new food and ingredients
+def make_ingredient_formset(request):
+    """makes a formset to save multiple ingredients
+    
+    A variable number of Ingredients are submitted and a
+    formset is used to handled the validation of all them.
 
     Parameters
     ----------
-    post_data: dict
-        contains validated form data
-
+    request: HttpRequest object
+        Hold the POST data
+    
     Returns
-    -------
-    ingredients: None
+    ----------
+    ingredient_formset: form.formset instance
+        formset for the MacroIngredientForm
     """
 
-    try:
-        main_food = Foods.objects.create(
-           name=post_data['name'],
-           cals_per_gram=post_data['cals_per_gram'],
-           fat_per_gram=post_data['fat_per_gram'],
-           carbs_per_gram=post_data['carbs_per_gram'],
-           protein_per_gram=post_data['protein_per_gram']
-        )
+    ingredient_count = get_ingredient_count(request.POST)
+    # these keys are needed for all formsets
+    request.POST['form-TOTAL_FORMS'] = str(ingredient_count)
+    request.POST['form-INITIAL_FORMS'] = '0'
+    request.POST['form-MAX_NUM_FORMS'] = ''
 
-        if post_data.get('notes', False):
-            FoodNotes.objects.create(food=main_food, notes=post_data['notes'])
-        
-        Servings.objects.create(
-            food=main_food, grams=Decimal(post_data['total_grams']),
-            quantity=Decimal(1), description='entire recipe'
-        )
+    ingredient_form_factory = forms.formset_factory(
+        MacroIngredientForm, extra=ingredient_count
+    )
+    ingredient_formset = ingredient_form_factory(request.POST)
 
-        for i in range(get_ingredient_count(post_data)):
-            ingredient_id = post_data[f'ingredient_id_{i}']
-            ingredient_amt = post_data[f'ingredient_amt_{i}']
-            ingredient_unit = post_data[f'ingredient_unit_{i}']
+    return ingredient_formset
 
-            ingredient = Foods.objects.get(pk=ingredient_id)
-            if ingredient_unit == 'g':
-                # Serving object for grams has not associated food ob
-                serving = Servings.objects.get(
-                    food=None
-                )
-            else:
-                serving = Servings.objects.get(
-                    food=ingredient,
-                    description=ingredient_unit
-                )
 
-            Ingredients.objects.create(
-                main_food=main_food,
-                ingredient=ingredient, 
-                serving=serving,
-                amount=ingredient_amt
-            )
-            error = ''
-            status = 1
+def save_meal_notes_ingredients(meal_form, ingredient_formset):
+    """saves the validated forms
+    
+    Saves the validated forms for Foods, Ingredients, and FoodNotes.
 
-    except IntegrityError as e:
-        error = str(e.__cause__).split('DETAIL:')[0]
-        status = 0
-        
-    except ValidationError as e:
-        error = '\n'.join(e.messages) 
-        status = 0
+    Parameters
+    ----------
+    meal_form: MacroMealForm instance
+    ingredient_formset: forms.formset
+        formset for the MacroIngredientForm
 
-    return (status, error,)
+    Returns
+    ----------
+    None
+    """
+    new_food = meal_form.save()
+
+    if meal_form.cleaned_data.get('notes'):
+        notes = meal_form.cleaned_data.get('notes')
+        FoodNotes.objects.create(food=new_food, notes=notes)
+
+    for ing_form in ingredient_formset:
+        new_ing = ing_form.save(commit=False)
+        new_ing.main_food = new_food
+        new_ing.save()
+
+    new_food.set_macros_per_gram()
+    new_food.save()
 
