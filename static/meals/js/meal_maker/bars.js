@@ -37,7 +37,11 @@ var BARS = (function() {
                 modal.style.display = 'block';
             });
 
+            let modal_inputs = 'input[id="macro-meal-name"]';
+            modal_inputs += ',textarea';
+            modal_inputs += ',div[id="macro-meal-save-status"]';
             $('.close-modal').on('click', function() {
+                $(modal).find(modal_inputs).val('').text('').end();
                 modal.style.display = 'none';
             });
 

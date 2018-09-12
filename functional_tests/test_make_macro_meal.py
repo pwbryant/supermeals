@@ -477,10 +477,6 @@ class MakeMacroMealTest(FunctionalTest):
         
         self.assertTrue(save_modal.is_displayed())
 
-        # Joe sees each ingredient listed, the amount, and the unit 
-        # Joe saves the meal as 'bacon lettuce carrot mix' by filling in 
-        # an input, and clicking the save button, after which a success message
-        # shows up in the modal
         self.check_element_content(
             'label[for="macro-meal-name"]',
             'css', 'text', 'Meal Name'
@@ -496,6 +492,31 @@ class MakeMacroMealTest(FunctionalTest):
         self.check_element_content(
             'macro-meal-notes',
             'id', 'placeholder', 'Notes (Optional)'
+        )
+
+        # Joe enters 'bacon lettuce carrot mix' as the meal and
+        # 'best as a salad'in the notes. He changes his mind though
+        # and exits out of the modal by clicking the x in the upper right.
+
+        self.fill_input(
+            [
+                "input[id='macro-meal-name']",
+                "textarea[id='macro-meal-notes']",
+            ],
+            ['bacon lettuce carrot mix', 'best as a salad']
+        )
+
+        self.browser.find_elements_by_css_selector('.close-modal')[0].click()
+        self.assertFalse(save_modal.is_displayed())
+        # Joe things again, and decides to save the meal again.
+        # Joe enters 'bacon lettuce carrot mix' as the meal name again
+        # and clicks the save button, after which a success message
+        # shows up in the modal
+
+        save_meal_button.click()
+        self.check_element_content(
+            'macro-meal-name',
+            'id', 'value', ''
         )
 
         self.fill_input(
@@ -515,7 +536,6 @@ class MakeMacroMealTest(FunctionalTest):
         time.sleep(3)
         self.assertFalse(save_modal.is_displayed())
 
-
         # Joe spaces and hits the saves meal button and tries to save the same meal
         # with the same name 'bacon lettuce carrot mix', but gets an error message
 
@@ -533,54 +553,6 @@ class MakeMacroMealTest(FunctionalTest):
 
         self.fail('Finish The Test!')
 
-        #He then adujst the remaining foods so that all the bars fall within the stdev
-        #style bars and then hits the "Save Meal" button below.
-
-        #A modal form pops up, with input box at the top with place holder "Meal Name"
-        #Below that is a table summarizing the macros, their amounts, and precentages
-        #Below that is bulleted list of the foods and their amounts.
-
-        #Joe enters "Joe Salad" into the meal name input box
-
-        #Below that is a comments box with the place holder "Recipie Notes", where 
-        #Joe enters "this salad is best when the kidney beans are smashed a bit, 
-        #and with pleny of pepper.
-
         #Below this is a "Submit" and "Cancel" button, Joe hits "Submit".
 
-        #After he hits "Submit" and a confirmation dialog box replaces the submit and 
-        #cancel buttons saying "Meal Saved! View and/or adjust on the My Recipes Tab. 
-        #Joe hits the "OK" button and the modal box dissapears
-
-        #He notices that the confirmation box dissapears, and that the Meal Maker tab
-        #has returned to its initial state with no added foods.
-
-        #Joe decides he want to make another salad, but one with different macro goals.
-        #He hits the "Customize Macros".
-
-        #A modal form pops up with all the macros listed and next to each, an input box
-        #with a place holder of their current macros. 
-
-        #He changes the percentages to fat/carbs/protein 50/25/25 and hits the "Apply" 
-        #button and the modal disappears.
-
-        #He notices the macros in the summary table have changed to reflect his changes
-        #and the meal bars have also changed to reflect the changes.
-
-        #He decides he want to change them again so he clicks the "Customize Macros"
-        #button and then once the form comes up, he decides against it, and clicks the
-        #"Cancel" button and the modal disappears and nothing has changed.
-
-        #He then searches for and adds kale, cucumbers, ham, and peas. He then adusts
-        #their drag bars to fit the target meal and he hits the "Save Meal" button.
-
-        #When the modal comes up, he enters, once again "Joe Salad", enters no
-        #Recipe Notes and hits "Submit".  After this, an alert message shows up,
-        #above the Submit and Cancel buttons,
-        #informing Joe that this Meal Name is already taken, and to enter a new one.
-
-        #Joe enters "Green Salad", and saves the meal,
-        #and closes the out after the confirmation message.
-
-        #A week later Joe wants to make the Green salad so he goes to the "My Meals" tab
 
