@@ -64,6 +64,8 @@ class MakeMacroMealTest(FunctionalTest):
         # Servings.objects.create(
         #     food=foods[3], grams=Decimal(), quantity=Decimal(1), description=''
         # )
+        
+        duplicate_food = Foods.objects.create(name='duplicate food')
 
 
     def get_bar_ratio(self, num_height, denom_height):
@@ -503,14 +505,15 @@ class MakeMacroMealTest(FunctionalTest):
                 "input[id='macro-meal-name']",
                 "textarea[id='macro-meal-notes']",
             ],
-            ['bacon lettuce carrot mix', 'best as a salad']
+            ['dummy value', 'dummy value']
         )
 
         self.browser.find_elements_by_css_selector('.close-modal')[0].click()
         self.assertFalse(save_modal.is_displayed())
-        # Joe things again, and decides to save the meal again.
-        # Joe enters 'bacon lettuce carrot mix' as the meal name again
-        # and clicks the save button, after which a success message
+
+        # Joe thinks again, and decides to save the meal again.
+        # Joe enters 'duplicate name' as the meal name
+        # and clicks the save button, after which a duplicate name message
         # shows up in the modal
 
         save_meal_button.click()
@@ -522,28 +525,10 @@ class MakeMacroMealTest(FunctionalTest):
         self.fill_input(
             [
                 "input[id='macro-meal-name']",
-                "textarea[id='macro-meal-notes']",
             ],
-            ['bacon lettuce carrot mix', 'best as a salad']
+            ['duplicate food']
         )
 
-        self.browser.find_element_by_id('save-macro-meal-button').click()
-
-        self.check_element_content(
-            'macro-meal-save-status', 'id', 'text',
-            'Successfully Saved!')
-
-        time.sleep(3)
-        self.assertFalse(save_modal.is_displayed())
-
-        # Joe spaces and hits the saves meal button and tries to save the same meal
-        # with the same name 'bacon lettuce carrot mix', but gets an error message
-
-        save_meal_button.click()
-        self.fill_input(["input[id='macro-meal-name']"],[], clear=True)
-        self.fill_input(
-            ["input[id='macro-meal-name']"], ['bacon lettuce carrot mix']
-        )
         self.browser.find_element_by_id('save-macro-meal-button').click()
 
         self.check_element_content(
@@ -551,8 +536,64 @@ class MakeMacroMealTest(FunctionalTest):
             'Foods with this Name already exists.'
         )
 
-        self.fail('Finish The Test!')
+        # Joe switches names and enters 'bacon lettuce carrot mix'
+        # as the meal name and he gets a success message. After 3 secs
+        # the modal disappears
 
-        #Below this is a "Submit" and "Cancel" button, Joe hits "Submit".
+        self.fill_input(["input[id='macro-meal-name']"],[], clear=True)
+
+        self.fill_input(
+            [
+                "input[id='macro-meal-name']",
+                "textarea[id='macro-meal-notes']",
+            ],
+            ['bacon lettuce carrot mix', 'best as a salad']
+        )
+
+        self.browser.find_element_by_id('save-macro-meal-button').click()
+        self.check_element_content(
+            'macro-meal-save-status', 'id', 'text',
+            'Successfully Saved!'
+        )
+
+        time.sleep(3)
+        self.assertFalse(save_modal.is_displayed())
+
+        # Joe notices that most of the meal tab info except for the macro
+        # percent, has been cleared
+        time.sleep(13)
+        self.check_element_content(
+            'goal-meal-cals', 'id', 'value',
+            ''
+        )
+        self.check_element_content(
+            'goal-meal-fat-g', 'id', 'value',
+            ''
+        )
+        self.check_element_content(
+            'goal-meal-carbs-g', 'id', 'value',
+            ''
+        )
+        self.check_element_content(
+            'goal-meal-protein-g', 'id', 'value',
+            ''
+        )
+        self.check_element_content(
+            'meal-maker-food-search-input', 'id', 'value',
+            ''
+        )
+        self.check_element_content(
+            'meal-maker-food-search-results-container', 'id', 'innerHTML',
+            ''
+        )
+        self.check_element_content(
+            'goal-macros-bar-content', 'id', 'innerHTML',
+            ''
+        )
+        self.check_element_content(
+            'goal-macros-bar-footer', 'id', 'innerHTML',
+            ''
+        )
+        self.fail('Finish The Test!')
 
 

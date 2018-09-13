@@ -52,13 +52,24 @@ let SAVE = (function() {
             return food_amts_obj;
         },
 
+        clear_meal_maker_tab: function() {
+            console.log('clear meal maker tab funk');
+            $('#goal-meal-cals').val('');
+            $('#goal-meal-fat-g').val('');
+            $('#goal-meal-carbs-g').val('');
+            $('#goal-meal-protein-g').val('');
+            $('#meal-maker-food-search-input').val('');
+            $('#meal-maker-food-search-results-container').html('');
+            $('#goal-macros-bar-content').html('');
+            $('#goal-macros-bar-footer').html('');
+        },
         /**
         * save_meal posts meal data to server to save as
         * meal
         */
         // tested in FT
         save_meal: function(meal_info_obj) {
-            
+            save_obj = this;
             const csrf_token = $(
                 '#save-meal-form input[name="csrfmiddlewaretoken"]'
             ).val();
@@ -74,6 +85,8 @@ let SAVE = (function() {
                         let modal = document.getElementById('save-macro-meal-modal');
                         modal.style.display = 'none';
                     }, 3000);
+
+                    save_obj.clear_meal_maker_tab();
                 } else {
                     console.log('failed',data.errors);
                     let errors = JSON.parse(data.errors);

@@ -71,10 +71,8 @@ class FunctionalTest(StaticLiveServerTestCase):
 
             if comparison_type == "text":
                     content = element.text
-            if comparison_type == "placeholder":
-                    content = element.get_attribute("placeholder")
-            if comparison_type == "value":
-                    content = element.get_attribute("value")
+            if comparison_type in ['placeholder', 'value', 'innerHTML']:
+                    content = element.get_attribute(comparison_type)
 
             self.assertEqual(content,comparison_text)
 
