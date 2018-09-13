@@ -149,20 +149,10 @@
                     <span id="choose-macros-total" class="text--label">100</span><span class="text--label">%</span>
                 </span>
             </div>
-            <button id="choose-macros-continue-button" class="btn" disabled>Continue</button>
+            <button id="save-my-macros-button" class="btn" disabled>Save</button>
         </div>
     </div>
-    <div id="meal-template-meals-number-form-container" class="content-box l-flex--col-btw hide">
-        <div class="content-box__header">Break Up Your Daily Calories Into Meals/Snacks</div>
-        <div id="meal-number-input" class="input l-flex--col-start">
-            <label class="input__label">Number of meals/snacks per day?</label>
-            <input class="input__input input__input--md" type="text" name="meal-number" placeholder="# meals/snacks" data-type="number"/>
-        </div>
-        <div class="l-flex--row-start">
-            <button id="meal-template-set-cals-continue-button" class="btn" disabled>Continue</button>
-        </div>
-    </div>
-    <div id="meal-template-set-meal-cals-form-container"></div>
+
     {% csrf_token %}
     {% if form.errors %}
         <div class="form-group has-error">
@@ -184,9 +174,6 @@
 	calc_tdee();
 	change_change_rate_display();
 	choose_macro_handler();
-	continue_button_displays_meal_snack_num_div();
-	set_cals_continue_button_is_enabled_upon_input_keyup();
-	display_set_cals_form();
-	meal_template_set_cals_totaler();
+    save_my_macros_button_posts_form();
 </script>
 

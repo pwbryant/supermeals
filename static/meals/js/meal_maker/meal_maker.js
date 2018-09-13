@@ -107,23 +107,6 @@ var MM_FUNK = (function() {
             .attr('stroke','black')
 	};
 
-	const create_macro_error_bars = function(obj) {
-		
-		var macros_copy = Object.assign({},obj.MACROS);
-		delete macros_copy['cals']; 
-		macro_data = Object.values(macros_copy);
-		obj.MACROS_SVG.selectAll(".goal-error-bars").data(macro_data)
-			.enter()
-			.append('rect')
-            .attr('height', function(d) { return d.error; })
-            .attr('width',  function(d) { return d.width * .1; })
-            .attr('x', function(d) { return d.x + (d.width / 2) - (5/2); })
-			.attr('y', function(d) { return d.y - (d.error / 2); })
-			.attr('class', '.goal-error-bars')
-			.attr('fill','green')
-			.attr('id', function(d) { return 'goal-' + d.macro + '-error-bar'; }
-			);
-	};
 
 	const create_macro_bar_labels = function(macro, macro_bars_obj) {
 
@@ -571,11 +554,11 @@ var MM_FUNK = (function() {
                 MACRO_NAMES.forEach(function(macro) {
                     create_macro_bar_container(macro);
                     create_macro_bar(macro, macro_bars_obj);
-                    //create_macro_error_bars();
                     create_macro_bar_labels(macro, macro_bars_obj);
                 });
 			});
 		},
+
 		goal_cal_inputs_trigger : function() {
 			mm_funk_obj = this;
 			$('.goal-cal-inputs').on('keyup change',function() {

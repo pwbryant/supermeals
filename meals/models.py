@@ -68,15 +68,6 @@ class Macros(models.Model):
         return tdee
 
 
-class MealTemplate(models.Model):
-
-    user = models.ForeignKey('auth.User',on_delete=models.CASCADE)
-    name = models.TextField(blank=False)	
-    cals_percent = models.DecimalField(
-        max_digits=4, decimal_places=2, blank=False
-    )
-    
-
 class OwnedFoods(models.Model):
 
     food = models.ForeignKey('Foods', on_delete=models.CASCADE)
@@ -191,9 +182,3 @@ class Ingredients(models.Model):
         return '{0} - {1}'.format(
             self.main_food.name, self.ingredient.name
         )
-
-
-class Temp(models.Model):
-
-    field1 = models.TextField(blank=False)
-    field2 = models.TextField(blank=False)

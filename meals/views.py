@@ -12,7 +12,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django import forms
 
 from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, MacroIngredientForm
-from meals.models import Macros, MealTemplate, Foods, Servings, FoodNotes
+from meals.models import Macros, Foods, Servings, FoodNotes
 from meals.helpers import get_ingredient_count, make_ingredient_formset, \
 save_meal_notes_ingredients
 
@@ -58,97 +58,6 @@ def get_my_macros(request):
     return render(request, TEMPLATES_DIR + 'my_macros.html', {
         'form':form
     })
-
-
-def validate_POST(POST):
-    """
-    Validates mean_num and tdee from POST since these aren't
-    part of a form
-
-    Args:
-        POST: request object's POST dict
-
-    Returns:
-        tuple of tdee, meal_num, and the validation error list
-    """
-
-    validation_errors = []
-
-    meal_num = POST.get('meal-number', -1)
-    tdee = POST.get('tdee', -1)
-
-    if meal_num in ['', -1] or not meal_num.isdigit():
-        validation_errors.append('Enter Valid Number of Meals')
-        meal_num = -1
-    else:
-        meal_num = int(meal_num)
-
-    if tdee in ['', -1]:
-        validation_errors.append('TDEE Missing')
-        tdee = -1
-    else:
-        tdee = int(tdee)
-
-    return (tdee, meal_num, validation_errors,)
-
-
-def create_meal_template_dict(POST):
-    """
-    Creates dict containing fields needed for MealTemplate model.
-
-    Args:
-        POST: request object's POST dict
-
-    Returns:
-        tuple containing dict used for creating a MealTemplate
-        and a list that collects validation errors.
-    """
-
-    tdee, meal_num, validation_errors = validate_POST(POST)
-    meal_template_dict = {}
-    if meal_num > 0:
-        for i in range(int(meal_num)):
-            cals = POST.get('meal-%d' % i, '')
-            try:
-                cals = float(cals)
-            except:
-                cals = cals
-            if isinstance(cals, float):
-                template = 'template %d' % i
-                meal_template_dict[template] = {}
-                meal_template_dict[template]['name'] = 'meal_%d' % i
-                meal_template_dict[template]['cals_percent'] = cals / tdee * 100
-            else:
-                validation_errors.append('All Meal Calorie Fields Must Contain a Number')
-
-    validation_errors = ''.join(['<li>' + error + '</li>' for error in validation_errors])
-    return (meal_template_dict, validation_errors, )
-
-
-def save_meal_templates(request):
-    """
-    If validation errors present return a failed status key and errors,
-    else return status of 1 (success).
-
-    Args:
-        request: HttpRequest object
-
-    Returns:
-        dict with a status key, and possibly validation errors
-    """
-
-    meal_template_dict, validation_errors = create_meal_template_dict(request.POST)
-    if validation_errors:
-        return {'status':0, 'errors':'<ul>' + validation_errors + '</ul>'}
-
-    for model_fields in meal_template_dict.values():
-        model_fields['user'] = request.user
-        try:
-            with transaction.atomic():
-                MealTemplate.objects.create(**model_fields)
-        except IntegrityError:
-            pass
-    return {'status':1}
 
 
 def create_macro_form_dict(POST):
@@ -252,74 +161,7 @@ def save_my_macros(request):
     except IntegrityError:
         pass
 
-    context['status'] = 1
-    return context
-
-
-def save_my_macros_and_meal_templates(request):
-    """processes saves Macros and MealTemplate
-
-    Parameters
-    ----------
-    request: HttpRequest instance
-
-    Returns
-    ----------
-    If success HttpResponse(1), else, renders my_macros, dict of errors
-    """
-
-
-    my_macro_response = save_my_macros(request)
-    meal_template_response = save_meal_templates(request)
-
-    if [my_macro_response['status'], meal_template_response['status']] == [1, 1]:
-        return HttpResponse('1')
-
-    error_dict = {**my_macro_response}
-
-    if meal_template_response != 1:
-        error_dict = {**meal_template_response, **error_dict}
-
-    return render(request, 'my_macros.html', error_dict) 
-
-
-def make_meal_template_unique_cal_dict_list(user, tdee):
-    """creates info for meal cals dropdown
-
-    Creates dictionaries to be used for the MealTemplate dropdown in the
-    meal maker tab.
-
-    Parameters
-    ----------
-    user: User instance
-    tdee: Decimal instance 
-        Total Daily Energy Expenditure
-
-    Returns
-    ----------
-    meal_templates_list: list
-        list of dictionaries corresponding to each unique calorie amount
-    """
-
-    meal_templates = MealTemplate.objects.filter(user=user)
-    meal_templates_list = []
-    unique_cals_dict = {}
-    #for the meal cals dropdown.
-    #the next two for loops take each uniqe cal to make label of all meals with that cal value
-    for mt in meal_templates:
-        if mt.cals_percent not in unique_cals_dict:
-            unique_cals_dict[mt.cals_percent] = []
-        unique_cals_dict[mt.cals_percent].append(str(int(mt.name.split('_')[-1]) + 1))
-
-    for cp in unique_cals_dict:
-        unique_cals_dict[cp].sort()
-        cals = round(tdee * cp / Decimal('100'))
-        meal_templates_list.append({
-            'value':cals,
-            'text': 'Meal ' + ','.join(unique_cals_dict[cp]) + ' - ' + str(cals) + ' cals'
-        })
-    meal_templates_list.sort(key=lambda x: x['text'])
-    return meal_templates_list
+    return HttpResponse('1')
 
 
 def make_macro_breakdown_dict_list(macro):
@@ -384,11 +226,9 @@ def get_meal_maker_template(request):
         macro = macro_set[0]
         tdee = macro.calc_tdee()
 
-        meal_templates_dict_list = make_meal_template_unique_cal_dict_list(request.user, tdee)
         macro_breakdown_dict_list = make_macro_breakdown_dict_list(macro)
         template_data = {
             'tdee':round(tdee),
-            'meal_templates':meal_templates_dict_list,
             'macro_breakdown':macro_breakdown_dict_list,
             'macro_meal_form': form
         }

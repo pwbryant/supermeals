@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from django.contrib.auth.models import User
-from meals.models import Macros, MealTemplate, Foods, Ingredients, Servings
+from meals.models import Macros, Foods, Ingredients, Servings
 
 
 #LoginForm/SignUpForm errors
@@ -264,20 +264,3 @@ class MakeMacrosForm(forms.models.ModelForm):
 		initial = {"unit_type":kwargs.pop("unit_type")}
 		kwargs["initial"] = initial
 		super(MakeMacrosForm,self).__init__(*args,**kwargs)
-
-
-class MealTemplateForm(forms.models.ModelForm):
-
-	class Meta:
-		model = MealTemplate
-		fields = ("cals_percent",)
-	
-		error_messages = {
-			"cals_percent": {
-				"required": EMPTY_CALS_ERROR,
-				"invalid":DEFAULT_INVALID_INT_ERROR,
-			},
-		}
-
-
-

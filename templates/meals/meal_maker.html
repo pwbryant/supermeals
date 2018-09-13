@@ -3,18 +3,6 @@
     <label for='goal-meal-cals-container'>How Many Calories?</label>
     <input id="goal-meal-cals" name="goal-meal-cals" class="goal-cal-inputs" type="text" placeholder="Cals"/>
 
-    <div id='goal-meal-cals-container'>
-        {% if meal_templates %}
-            <p>-OR-</p>
-            <select id='goal-meal-cals-select' class='goal-cal-inputs''>
-                <option value='header'>Saved Cals</option>
-            {% for option in meal_templates %}
-                <option value='{{ option.value }}'>{{ option.text }}</option>
-            {% endfor %}
-            </select>
-        {% endif %}
-    </div>
-
     <div id='goal-meal-macros-container'>
         <span class='item'></span>
         <label for='goal-meal-fat-percent' class='item'>Percent</label>

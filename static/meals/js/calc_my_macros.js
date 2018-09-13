@@ -1,51 +1,4 @@
 
-MACRO_FACTORS = {
-	"fat": 9,
-	"protein":4,
-	"carbs":4
-};
-//tested
-var key_press_hides_error = function () {
-	$("input[type='text']").on("keypress",function() {
-		$(".has-error").hide();
-	});
-};
-
-//not tested
-var set_navs_to_active = function() {
-	$(".header__nav-tab").on("click",function() {
-        $(".header__nav-tab").removeClass('active');
-        $(this).addClass('active');
-    });
-}
-
-//tested
-var hide_home_header_on_tab_select = function() {
-	$(".header__nav-tab").on("click",function() {
-		$("#id_home_headline").hide();
-	});
-};
-
-//not tested
-var get_my_macros_page_content = function() {
-	$("#my-macros-tab").on("click",function() {
-		$.get("/meals/get-my-macros/",function(data) {
-			$("#my-macros-container").removeClass("hide");
-			$("#my-macros-container").html(data);
-		});
-	});
-};
-
-//not tested
-var get_meal_maker_page_content = function() {
-	$("#meal-maker-tab").on("click",function() {
-        console.log('get meal maker');
-		$.get("/meals/meal-maker/",function(data) {
-			$("#meal-maker-container").removeClass("hide");
-			$("#meal-maker-container").html(data);
-		});
-	});
-};
 
 //not tested
 var save_my_macros_button_posts_form = function() {
@@ -59,6 +12,7 @@ var save_my_macros_button_posts_form = function() {
             //post_data["csrfmiddlewaretoken"] = $("input[name='csrfmiddlewaretoken']").val();
 			$.post("/meals/save-my-macros",post_data,function(data) {
 				if (data == "1") {
+                    console.log('success!!!!');
 					$("#my-macros-successful-save").html("Macros Successfully Saved! Now Go Make a Meal!");
 				} else {
 					$("#my-macros-form-container").html(data);
@@ -174,7 +128,7 @@ var calc_tdee = function() {
 			$("#hidden-tdee").val(Math.round(change_tdee_return_value));
 			
 			$("#choose-macros-form-container").removeClass("hide");
-            document.getElementById("choose-macros-continue-button").scrollIntoView();
+            document.getElementById("save-my-macros-button").scrollIntoView();
 		}
 	});
 }
@@ -239,97 +193,12 @@ var macro_percent_totaler = function(percent_selector) {
 	$("#choose-macros-total").html(new_percent_total);
 	$(percent_selector).attr("data-value",new_macro_percent);
 	if (new_percent_total == 0) {
-		$("#choose-macros-continue-button").prop("disabled",false);
+		$("#save-my-macros-button").prop("disabled",false);
 	} else {
-		$("#choose-macros-continue-button").prop("disabled",true);
+		$("#save-my-macros-button").prop("disabled",true);
 	}
 }
 
-//tested
-var continue_button_displays_meal_snack_num_div = function() {
-	$("#choose-macros-continue-button").on("click", function() {
-		var form_validated = form_validation("choose-macros-form-container");
-		if (form_validated) {
-			$("#meal-template-meals-number-form-container").removeClass("hide");
-            document.getElementById("meal-template-set-cals-continue-button").scrollIntoView();
-		}
-	});
-
-}
-
-//tested
-var set_cals_continue_button_is_enabled_upon_input_keyup = function() {
-
-	$("input[name='meal-number']").on("keyup",function() {
-		var input_value = $(this).val();
-		if (!(isNaN(input_value) | input_value == 0)) {
-			$("#meal-template-set-cals-continue-button").prop("disabled",false);
-		} else {
-
-			$("#meal-template-set-cals-continue-button").prop("disabled",true);
-		}
-	});
-}
-
-//tested
-var display_set_cals_form = function() {
-
-	$("#meal-template-set-cals-continue-button").on("click",function() {
-		var tdee = parseFloat($("#change-tdee-result").html().split(" ")[1]),
-		meal_num = $("input[name='meal-number']").val();
-		if (tdee == "") {
-			tdee = $("#tdee-result").html();
-		}
-		var equal_cals = tdee / meal_num,
-		set_cals_form = "<div class='content-box l-flex-col--start'>";
-		set_cals_form += "<div class='content-box__header'>Set Your Meal Cals</div>";
-        set_cals_form += "<div id='set-cals-form-container' class='l-flex--col-start'>";
-		for (i=0;i<meal_num;i++) {
-			set_cals_form += "<div id='meal-" + i + "-input' class='input l-flex--row-btw'>";
-			set_cals_form += "<label class='input__label'>Meal " + (i + 1) + "</label>";
-            set_cals_form += "<input class='input__input--sm' name='meal-" + i + "' type='text' value='" + equal_cals + "' data-value='" + equal_cals + "' data-type='number'/></div>";
-		}
-		set_cals_form += "<div class='l-flex--row-btw'><label class='input__label'>Cals Left</label><span id='meal-template-set-cals-total' class='text--label' name='remaining-cals'>0</span></div>";
-		set_cals_form += "<button id='save-my-macros-button' class='btn'>Save Macro Info</button>";
-        set_cals_form += "</div></div>"
-		$("#meal-template-set-meal-cals-form-container").html(set_cals_form)
-		save_my_macros_button_posts_form();//listener for save button
-		meal_template_set_cals_totaler();//start lister on new inputs 
-        document.getElementById("save-my-macros-button").scrollIntoView();
-
-	});
-}
-
-//tested
-var meal_template_set_cals_totaler = function() {
-
-	$("#meal-template-set-meal-cals-form-container input").on("keyup",function() {
-		current_cal_total = $("#meal-template-set-cals-total").html();
-		var new_cal = parseFloat($(this).val());
-		if (isNaN(new_cal)) {
-			new_cal = 0;
-
-		} 
-		var old_cal = parseFloat($(this).attr("data-value")),
-		cal_diff = new_cal - old_cal,
-		old_cal_total = parseFloat($("#meal-template-set-cals-total").html()),
-		new_cal_total = old_cal_total - cal_diff,
-		tdee = $("#change-tdee-result").html();
-		if (tdee === "") {
-			tdee = $("#tdee-result").html();
-		}
-		
-		$("#meal-template-set-cals-total").html(new_cal_total);
-		$(this).attr("data-value",new_cal);
-		if (new_cal_total == 0) {
-			$("#save-my-macros-button").prop("disabled",false);
-			$("#meal-template-set-cals-total").removeClass("text--color-alert");
-		} else {
-			$("#save-my-macros-button").prop("disabled",true);
-			$("#meal-template-set-cals-total").addClass("text--color-alert");
-		}
-	});
-}
 
 var form_validation = function(form_id) {
 	var errors = [],
