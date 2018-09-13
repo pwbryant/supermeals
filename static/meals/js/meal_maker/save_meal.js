@@ -62,6 +62,7 @@ let SAVE = (function() {
             $('#meal-maker-food-search-results-container').html('');
             $('#goal-macros-bar-content').html('');
             $('#goal-macros-bar-footer').html('');
+            $('#meal-maker-food-content').html('');
         },
         /**
         * save_meal posts meal data to server to save as

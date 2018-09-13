@@ -561,7 +561,6 @@ class MakeMacroMealTest(FunctionalTest):
 
         # Joe notices that most of the meal tab info except for the macro
         # percent, has been cleared
-        time.sleep(13)
         self.check_element_content(
             'goal-meal-cals', 'id', 'value',
             ''
@@ -594,6 +593,9 @@ class MakeMacroMealTest(FunctionalTest):
             'goal-macros-bar-footer', 'id', 'innerHTML',
             ''
         )
-        self.fail('Finish The Test!')
+        self.check_element_content(
+            'meal-maker-food-content', 'id', 'innerHTML',
+            ''
+        )
 
 
