@@ -44,24 +44,16 @@ var hide_home_header_on_tab_select = function() {
 	});
 };
 
-//not tested
-var get_my_macros_page_content = function() {
-	$("#my-macros-tab").on("click",function() {
-		$.get("/meals/get-my-macros/",function(data) {
-			$("#my-macros-container").removeClass("hide");
-			$("#my-macros-container").html(data);
+
+//tested in FT
+var get_tab_page_content = function() {
+	$(".content-tab").on("click",function() {
+        const tab_type = $(this).attr('id').slice(0,-4);
+        const url = `meals/${tab_type}/`;
+        const tab_container = `#${tab_type}-container`;
+		$.get(url, function(data) {
+			$(tab_container).removeClass("hide");
+			$(tab_container).html(data);
 		});
 	});
 };
-
-//not tested
-var get_meal_maker_page_content = function() {
-	$("#meal-maker-tab").on("click",function() {
-        console.log('get meal maker');
-		$.get("/meals/meal-maker/",function(data) {
-			$("#meal-maker-container").removeClass("hide");
-			$("#meal-maker-container").html(data);
-		});
-	});
-};
-

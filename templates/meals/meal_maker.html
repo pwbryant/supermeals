@@ -1,5 +1,8 @@
 <div id='meal-maker-side-bar' class='sidebar'>
-    <h4 id="tdee">TDEE: {{ tdee }}</h4>
+    {% if tdee %}
+        <h4 id="tdee">TDEE: {{ tdee }}</h4>
+    {% endif %}
+
     <label for='goal-meal-cals-container'>How Many Calories?</label>
     <input id="goal-meal-cals" name="goal-meal-cals" class="goal-cal-inputs" type="text" placeholder="Cals"/>
 

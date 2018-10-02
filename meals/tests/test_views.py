@@ -11,9 +11,9 @@ from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, MacroIngredie
     DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR, \
     INVALID_USERNAME_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_WEIGHT_ERROR, \
     EMPTY_HEIGHT_ERROR
-from meals.models import Macros, MealTemplate, Foods, Servings, Ingredients, FoodNotes
-from meals.views import save_my_macros, save_meal_templates, \
-    get_meal_maker_template, make_meal_template_unique_cal_dict_list, \
+from meals.models import Macros, Foods, Servings, Ingredients, FoodNotes
+from meals.views import save_my_macros, get_my_meals, \
+    get_meal_maker_template, \
     make_macro_breakdown_dict_list, save_macro_meal
 from meals.helpers import get_ingredient_count
 # Create your tests here.
@@ -21,6 +21,17 @@ from meals.helpers import get_ingredient_count
 USERNAME, EMAIL, PASSWORD = 'JoeSchmoe', 'joe@joemail.com', '321pass123!'
 GUEST_USERNAME, GUEST_PASSWORD = 'guest', '321!beware'
 BAD_USERNAME, BAD_PASSWORD = 'bad', 'badpass'
+
+
+class MyMealsTest(TestCase):
+
+    def test_my_meals_url(self):
+
+        url = reverse('my_meals')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,'meals/my_meals.html')
+
 
 class MacroMealMakerTest(TestCase):
 
@@ -83,7 +94,7 @@ class MacroMealMakerTest(TestCase):
         self.request.POST = query_dict
 
 
-    def xtest_save_macro_meal_url(self):
+    def test_save_macro_meal_url(self):
 
         url = reverse('save_macro_meal')
         response = self.client.get(url)
@@ -103,36 +114,17 @@ class MacroMealMakerTest(TestCase):
         main_food = saved_foods[0]
         saved_ingredients = Ingredients.objects.filter(main_food=main_food)
         self.assertEqual(saved_ingredients.count(), 2)
-        print('saved foods', saved_foods[0].cals_per_gram)
-        print('saved foods', saved_foods[0].fat_per_gram)
-        print('saved foods', saved_foods[0].carbs_per_gram)
-        print('saved foods', saved_foods[0].protein_per_gram)
+
+        notes = FoodNotes.objects.filter(food=main_food)
+        self.assertEqual(notes.count(), 1)
 
 
-    def xtest_get_ingredient_count(self):
+    def test_get_ingredient_count(self):
 
         ingredient_count = get_ingredient_count(self.request.POST)
         self.assertEqual(ingredient_count, 2)
 
 
-    def xtest_save_meal(self):
-
-        meal_name = self.food_amt_dict['name']
-
-        save_meal(self.food_amt_dict)
-
-        foods = Foods.objects.filter(name=meal_name)
-        self.assertEqual(foods.count(), 1)
-
-        main_food = foods[0]
-        ingredients = Ingredients.objects.filter(main_food=main_food)
-        self.assertEqual(ingredients.count(), 2)
-
-        servings = Servings.objects.filter(food=main_food)
-        self.assertEqual(servings.count(), 1)
-
-        notes = FoodNotes.objects.filter(food=main_food)
-        self.assertEqual(notes.count(), 1)
 
 
 c = """
@@ -187,12 +179,6 @@ class MealMakerTest(TestCase):
             })
             return macro
             
-    def create_default_meal_templates(self,user):
-        meal_template1 = MealTemplate.objects.create(user=user,name='meal_0',cals_percent=Decimal('28'))
-        meal_template2 = MealTemplate.objects.create(user=user,name='meal_1',cals_percent=Decimal('28'))
-        meal_template3 = MealTemplate.objects.create(user=user,name='meal_2',cals_percent=Decimal('28'))
-        meal_template4 = MealTemplate.objects.create(user=user,name='meal_3',cals_percent=Decimal('16'))
-        return(meal_template1,meal_template2,meal_template3,meal_template4)
 
     def log_in_user(self,USERNAME,PASSWORD):
         user = User.objects.create_user(username=USERNAME,password=PASSWORD)
@@ -219,13 +205,6 @@ class MealMakerTest(TestCase):
         self.assertEqual(response.status_code,200)
         self.assertTemplateUsed(response,'meal_maker.html')
 
-    def test_make_meal_template_unique_cal_dict_list_returns_list_of_dicts(self):
-        user = self.log_in_user(USERNAME,PASSWORD)
-        macro = self.create_default_macro(user)
-        self.create_default_meal_templates(user)
-
-        expected_result = self.MEAL_TEMPLATES
-        self.assertEqual(make_meal_template_unique_cal_dict_list(user,macro.calc_tdee()),expected_result)
 
     def test_make_meal_template_macro_breakdown_dict_returns_list_of_dicts(self):
         user = self.log_in_user(USERNAME,PASSWORD)
@@ -414,11 +393,6 @@ class MyMacrosTabTest(TestCase):
         saved_macro = Macros.objects.all()
         self.assertEqual(saved_macro.count(),1)		
 
-    def test_save_meal_templates_imperial_macros(self):
-        request = self.setup_user_request_for_post_to_view(self.IMPERIAL_MACRO_DATA)
-        response = save_meal_templates(request)
-        saved_macro = MealTemplate.objects.all()
-        self.assertEqual(saved_macro.count(),5)		
 
     def test_save_my_macros_metric_macros(self):
         request = self.setup_user_request_for_post_to_view(self.METRIC_MACRO_DATA)
@@ -426,12 +400,6 @@ class MyMacrosTabTest(TestCase):
         saved_macro = Macros.objects.all()
         self.assertEqual(saved_macro.count(),1)		
 
-    def test_save_meal_templates_metric_macros(self):
-        request = self.setup_user_request_for_post_to_view(self.METRIC_MACRO_DATA)
-        response = save_meal_templates(request)
-        saved_macro = MealTemplate.objects.all()
-        self.assertEqual(saved_macro.count(),5)		
-    
     def test_save_my_macro_returns_status_dict_with_status_of_1_if_success(self):
         request = self.setup_user_request_for_post_to_view(self.METRIC_MACRO_DATA)
         response = save_my_macros(request)
@@ -439,18 +407,12 @@ class MyMacrosTabTest(TestCase):
         self.assertIsInstance(response['form'],MakeMacrosForm)
         self.assertEqual(response['unit-type'],'metric')
 
-    def test_save_meal_templates_returns_status_dict_with_status_of_1_if_success(self):
-            request = self.setup_user_request_for_post_to_view(self.METRIC_MACRO_DATA)
-            response = save_meal_templates(request)
-            self.assertEqual(response['status'],1)
 
     def test_save_my_macros_and_meal_templates_saves_imperial_macros(self):
         self.client.post('/meals/create-account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
         response=self.client.post('/meals/save-my-macros', data=self.IMPERIAL_MACRO_DATA)
         saved_macro = Macros.objects.all()
         self.assertEqual(saved_macro.count(),1)		
-        saved_meal_template = MealTemplate.objects.all()
-        self.assertEqual(saved_meal_template.count(),5)		
 
     def test_save_my_macros_and_meal_templates_saves_imperial_macros(self):
         self.client.post('/meals/create-account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})

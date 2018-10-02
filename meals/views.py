@@ -322,3 +322,8 @@ def save_macro_meal(request):
         # context['errors'] += ingredient_formset.errors
 
     return JsonResponse(context)
+
+def get_my_meals(request):
+    
+    return render(request, TEMPLATES_DIR + 'my_meals.html')
+

@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError,transaction
 
-from meals.models import Macros,MealTemplate,Foods, OwnedFoods, Servings, Ingredients
+from meals.models import Macros,Foods, OwnedFoods, Servings, Ingredients
 
 GUEST_USER = User.objects.get(username='guest')
 USER = User.objects.get(username='paul')
@@ -209,34 +209,6 @@ class MacrosTest(BaseTest):
         self.assertEqual(second_saved_macros.protein_percent,MACRO_INIT_FIELD_DICT['protein_percent'])
         self.assertEqual(second_saved_macros.user,second_user)
 
-
-class MealTemplateTest(BaseTest):
-
-    def test_saving_and_retrieving_meal_templates(self):
-        user = User.objects.create_user(username = USERNAME1,password = PASSWORD1)
-        MEAL_TEMPLATE_ARGS['user'] = user
-        MealTemplate.objects.create(**MEAL_TEMPLATE_ARGS)
-        saved_meal_templates = MealTemplate.objects.all()
-        self.assertEqual(saved_meal_templates.count(),1)
-
-    def test_delete_user_deletes_meal_template(self):
-        user = User.objects.create_user(username = USERNAME1,password = PASSWORD1)
-        meal_template_args = MEAL_TEMPLATE_ARGS.copy()
-        meal_template_args['user'] = user
-        MealTemplate.objects.create(**meal_template_args)
-        user.delete()
-        self.assertEqual(MealTemplate.objects.all().count(),0)
-
-    def test_integrity_errors_missing_field_values(self):
-        #no name is a validateion error so not testsed here
-        self.check_model_integrity_error(MealTemplate(**self.create_broken_field_dict('cals_percent','remove',MEAL_TEMPLATE_ARGS)))#no cals
-        self.check_model_integrity_error(MealTemplate(**self.create_broken_field_dict('user','remove',MEAL_TEMPLATE_ARGS)))#no user
-        self.assertEqual(MealTemplate.objects.all().count(),0)
-
-    def test_validation_errors_illegal_field_values(self):
-        #cals not here because no validation restraints are present
-        self.check_model_validation_error(MealTemplate(**self.create_broken_field_dict('name','',MEAL_TEMPLATE_ARGS)))#illegal name
-        self.assertEqual(Macros.objects.all().count(),0)
 
 
 

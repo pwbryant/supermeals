@@ -37,33 +37,9 @@ class MakeMacroMealTest(FunctionalTest):
             )
             foods.append(food)
 
-        # Servings.objects.create(
-        #     food=foods[0], grams=Decimal(254), quantity=Decimal(1), description='can'
-        # )
-        # Servings.objects.create(
-        #     food=foods[0], grams=Decimal(152), quantity=Decimal(1), description='cup'
-        # )
-        # Servings.objects.create(
-        #     food=foods[1], grams=Decimal(15), quantity=Decimal(1), description='large'
-        # )
-        # Servings.objects.create(
-        #     food=foods[1], grams=Decimal(10), quantity=Decimal(1), description='medium'
-        # )
-        # Servings.objects.create(
-        #     food=foods[1], grams=Decimal(85), quantity=Decimal(1), description='serving'
-        # )
         Servings.objects.create(
             food=foods[2], grams=Decimal(11.5), quantity=Decimal(1), description='slice'
         )
-        # Servings.objects.create(
-        #     food=foods[3], grams=Decimal(), quantity=Decimal(1), description=''
-        # )
-        # Servings.objects.create(
-        #     food=foods[3], grams=Decimal(), quantity=Decimal(1), description=''
-        # )
-        # Servings.objects.create(
-        #     food=foods[3], grams=Decimal(), quantity=Decimal(1), description=''
-        # )
         
         duplicate_food = Foods.objects.create(name='duplicate food')
 

@@ -16,11 +16,11 @@
         <div class="container">
             <div class="header">
                 <div class="header__nav">
-                    <div id="my-macros-tab" class="header__nav-tab">My Macros</div>
-                    <div id="meal-maker-tab" class="header__nav-tab">Meal Maker</div>
-                    <div id="my-meals-tab" class="header__nav-tab">My Meals</div>
-                    <div id="add-recipes-tab" class="header__nav-tab">Add Recipes</div>
-                    <div id="add-food-tab" class="header__nav-tab">Add Food to Database</div>
+                    <div id="my-macros-tab" class="header__nav-tab content-tab">My Macros</div>
+                    <div id="meal-maker-tab" class="header__nav-tab content-tab">Meal Maker</div>
+                    <div id="my-meals-tab" class="header__nav-tab content-tab">My Meals</div>
+                    <div id="add-recipes-tab" class="header__nav-tab content-tab">Add Recipes</div>
+                    <div id="add-food-tab" class="header__nav-tab content-tab">Add Food to Database</div>
                 </div>
                 <div class="header__nav">
                     {% if user.is_authenticated and user.get_username != 'guest' %}
@@ -63,11 +63,7 @@
 			hide_home_header_on_tab_select();
 			key_press_hides_error();
             hide_non_active_content();
-
-			get_my_macros_page_content();
-
-			get_meal_maker_page_content();
-
+            get_tab_page_content();
 		</script>
 	</body>
 </html>
