@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from selenium import webdriver
 import time
 from decimal import Decimal
-from meals.models import Macros, MealTemplate, Servings
+from meals.models import Macros, Servings
 
 class FunctionalTest(StaticLiveServerTestCase):
 
@@ -102,16 +102,16 @@ class FunctionalTest(StaticLiveServerTestCase):
             return macro
 
 		
-	def create_default_meal_templates(self,user):
-            MealTemplate.objects.create(
-                user=user,name="meal_0",cals_percent=Decimal("28")
-            )
-            MealTemplate.objects.create(
-                user=user,name="meal_1",cals_percent=Decimal("28")
-            )
-            MealTemplate.objects.create(
-                user=user,name="meal_2",cals_percent=Decimal("28")
-            )
-            MealTemplate.objects.create(
-                user=user,name="meal_3",cals_percent=Decimal("16")
-            )
+	# def xcreate_default_meal_templates(self,user):
+            # MealTemplate.objects.create(
+                # user=user,name="meal_0",cals_percent=Decimal("28")
+            # )
+            # MealTemplate.objects.create(
+                # user=user,name="meal_1",cals_percent=Decimal("28")
+            # )
+            # MealTemplate.objects.create(
+                # user=user,name="meal_2",cals_percent=Decimal("28")
+            # )
+            # MealTemplate.objects.create(
+                # user=user,name="meal_3",cals_percent=Decimal("16")
+            # )
