@@ -323,7 +323,12 @@ def save_macro_meal(request):
 
     return JsonResponse(context)
 
+
 def get_my_meals(request):
-    
     return render(request, TEMPLATES_DIR + 'my_meals.html')
+
+
+def easy_pick(request, pick_type):
+    context = {'status': 'success'}
+    return JsonResponse(context)
 

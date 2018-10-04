@@ -15,7 +15,34 @@ class MyMealTests(FunctionalTest):
         # clicks on the 'My Meals' tab
         self.browser.find_element_by_id('my-meals-tab').click()
 
-        # The first thing he sees is a search bar
+        # The first thing he sees is a side bar with two radio buttons
+        # 'Recent' and 'Popular', with the 'Recent' option checked
+        self.check_element_content(
+            'label[for="recent"]', 'css', 'text', 'Recent'
+        )
+        recent_radio = self.browser.find_element_by_id('recent')
+        self.assertTrue(recent_radio.is_selected())
+
+        self.check_element_content(
+            'label[for="popular"]', 'css', 'text', 'Popular'
+        )
+        popular_radio = self.browser.find_element_by_id('popular')
+        self.assertFalse(popular_radio.is_selected())
+
+        # Below these radio buttons he sees a list of his three meals
+        # ordered by most to least recent
+        recent_meals = self.browser.find_elements_by_class_name('my-meals-easy-pick-meal')
+        most_recent_meal = recent_meals[0]
+        self.assertEqual(most_recent_meal.text, 'Pretzels and Cheese')
+
+
+        # He checks the 'Popular' button and notices that the meals
+        # are ordered my popularity (how often he selects them)
+        popular_meals = self.browser.find_elements_by_class_name('my-meals-easy-pick-meal')
+        most_popular_meal = popular_meals[0]
+        self.assertEqual(most_popular_meal.text, 'Ham sandwich')
+
+        # The second thing he sees is a search bar
         self.check_element_content(
             'my-meals-search', 'id', 'placeholder', 'Search My Meals'
         )

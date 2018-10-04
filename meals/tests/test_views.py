@@ -14,7 +14,7 @@ from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, MacroIngredie
 from meals.models import Macros, Foods, Servings, Ingredients, FoodNotes
 from meals.views import save_my_macros, get_my_meals, \
     get_meal_maker_template, \
-    make_macro_breakdown_dict_list, save_macro_meal
+    make_macro_breakdown_dict_list, save_macro_meal, easy_pick
 from meals.helpers import get_ingredient_count
 # Create your tests here.
 
@@ -25,13 +25,28 @@ BAD_USERNAME, BAD_PASSWORD = 'bad', 'badpass'
 
 class MyMealsTest(TestCase):
 
-    def test_my_meals_url(self):
+    def test_my_meals_url_uses_correct_template(self):
 
         url = reverse('my_meals')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,'meals/my_meals.html')
 
+    def test_easy_pick_url_recent(self):
+        url = reverse('easy_pick', kwargs={'pick_type': 'recent'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_easy_pick_recent_gets_meals_ordered_by_date(self):
+        url = reverse('easy_pick', kwargs={'pick_type': 'recent'})
+        context = json.loads(self.client.get(url).content)
+        print('context', context, context['status'])
+        self.assertEqual(context['status'], 'success')
+
+    def test_easy_pick_url_popular(self):
+        url = reverse('easy_pick', kwargs={'pick_type': 'popular'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
 class MacroMealMakerTest(TestCase):
 
