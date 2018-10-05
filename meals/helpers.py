@@ -61,7 +61,7 @@ def make_ingredient_formset(request):
     return ingredient_formset
 
 
-def save_meal_notes_ingredients(meal_form, ingredient_formset):
+def save_meal_notes_ingredients(user, meal_form, ingredient_formset):
     """saves the validated forms
     
     Saves the validated forms for Foods, Ingredients, and FoodNotes.
@@ -76,8 +76,9 @@ def save_meal_notes_ingredients(meal_form, ingredient_formset):
     ----------
     None
     """
-    new_food = meal_form.save()
 
+    new_food = meal_form.save()
+    new_food.user = user
     if meal_form.cleaned_data.get('notes'):
         notes = meal_form.cleaned_data.get('notes')
         FoodNotes.objects.create(food=new_food, notes=notes)

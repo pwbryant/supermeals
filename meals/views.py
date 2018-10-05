@@ -305,7 +305,7 @@ def save_macro_meal(request):
     context = {'status': 0, 'errors': ''}
     if meal_form.is_valid() and ingredient_formset.is_valid():
         print('form is valid')
-        save_meal_notes_ingredients(meal_form, ingredient_formset)
+        save_meal_notes_ingredients(request.user, meal_form, ingredient_formset)
         context['status'] = 1
 
     else:

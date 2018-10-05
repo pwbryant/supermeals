@@ -23,7 +23,18 @@ GUEST_USERNAME, GUEST_PASSWORD = 'guest', '321!beware'
 BAD_USERNAME, BAD_PASSWORD = 'bad', 'badpass'
 
 
-class MyMealsTest(TestCase):
+class BaseTestCase(TestCase):
+    
+    def log_in_user(self,USERNAME,PASSWORD):
+        user = User.objects.create_user(username=USERNAME,password=PASSWORD)
+        self.client.post('/accounts/login/', data={'username':USERNAME, 'password':PASSWORD})
+        return user
+
+
+class MyMealsTest(BaseTestCase):
+
+    def setUp(self):
+        self.log_in_user(USERNAME, PASSWORD)
 
     def test_my_meals_url_uses_correct_template(self):
 
@@ -37,21 +48,25 @@ class MyMealsTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    def test_easy_pick_recent_gets_meals_ordered_by_date(self):
-        url = reverse('easy_pick', kwargs={'pick_type': 'recent'})
-        context = json.loads(self.client.get(url).content)
-        print('context', context, context['status'])
-        self.assertEqual(context['status'], 'success')
-
     def test_easy_pick_url_popular(self):
         url = reverse('easy_pick', kwargs={'pick_type': 'popular'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-class MacroMealMakerTest(TestCase):
+    def test_easy_pick_recent_gets_meals_ordered_by_date(self):
+        url = reverse('easy_pick', kwargs={'pick_type': 'recent'})
+        context = json.loads(self.client.get(url).content)
+        
+        print('context', context, context['status'])
+        self.assertEqual(context['status'], 'success')
+
+
+class MacroMealMakerTest(BaseTestCase):
 
     def setUp(self):
-        
+
+        self.log_in_user(USERNAME, PASSWORD)
+
         self.ingredient1 = Foods.objects.create(
             name='veggie pulled pork',
             cals_per_gram='1.6456',
@@ -143,7 +158,7 @@ class MacroMealMakerTest(TestCase):
 
 
 c = """
-class MealMakerTest(TestCase):
+class MealMakerTest(BaseTestCase):
     
     fixtures = ['db.json']
 
@@ -195,10 +210,6 @@ class MealMakerTest(TestCase):
             return macro
             
 
-    def log_in_user(self,USERNAME,PASSWORD):
-        user = User.objects.create_user(username=USERNAME,password=PASSWORD)
-        self.client.post('/accounts/login/', data={'username':USERNAME, 'password':PASSWORD})
-        return user
 
     #################################
     ##search

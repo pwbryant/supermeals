@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError,transaction
 
-from meals.models import Macros,Foods, OwnedFoods, Servings, Ingredients
+from meals.models import Macros,Foods, Servings, Ingredients
 
 GUEST_USER = User.objects.get(username='guest')
 USER = User.objects.get(username='paul')
@@ -208,29 +208,6 @@ class MacrosTest(BaseTest):
         self.assertEqual(second_saved_macros.fat_percent,MACRO_INIT_FIELD_DICT['fat_percent'])
         self.assertEqual(second_saved_macros.protein_percent,MACRO_INIT_FIELD_DICT['protein_percent'])
         self.assertEqual(second_saved_macros.user,second_user)
-
-
-
-
-
-class OwnedFoodsTest(TestCase):
-    
-    def test_saving_and_retrieving_owned_foods(self):
-        food = Foods.objects.create(name='food name',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,protein_per_gram=1)
-
-        user = User.objects.create_user(username = USERNAME1,password = PASSWORD1)
-        OwnedFoods.objects.create(food=food, user=user)
-
-        saved_owned_foods = OwnedFoods.objects.all()
-        self.assertEqual(saved_owned_foods.count(),1)
-
-
-    def test_delete_user_deletes_owned_foods(self):
-        food = Foods.objects.create(name='food name',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,protein_per_gram=1)
-        user = User.objects.create_user(username = USERNAME1,password = PASSWORD1)
-        OwnedFoods.objects.create(food=food, user=user)
-        user.delete()
-        self.assertEqual(OwnedFoods.objects.all().count(),0)
 
 
 class ServingsTest(TestCase):

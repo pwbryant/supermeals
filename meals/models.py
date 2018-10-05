@@ -68,11 +68,14 @@ class Macros(models.Model):
         return tdee
 
 
-class OwnedFoods(models.Model):
 
-    food = models.ForeignKey('Foods', on_delete=models.CASCADE)
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
-    
+class FoodType(models.Model):
+
+    name = models.TextField(blank=False, unique=True)
+
+    def __str__(self):
+        return '{}'.format(self.name)
+
 
 class Foods(models.Model):
 
@@ -89,6 +92,12 @@ class Foods(models.Model):
     protein_per_gram = models.DecimalField(
         max_digits=6, decimal_places=4, blank=False, null=True
     )
+
+    date = models.DateTimeField(auto_now_add=True, null=True)
+
+    food_type = models.ForeignKey('FoodType', null=True)
+
+    user = models.ForeignKey(User, null=True)
 
     def as_dict(self):
         return {
