@@ -9,7 +9,7 @@
                 <input type='radio' id='popular' class='radio-input__input' name='easy-pick' value='popular' />
             </div>
         </div>
-    <div id='my-meals-easy-pick-meals-container'></div>
+    <div id='my-meals-easy-picks-meals-container'></div>
 </div>
 
 <div id='my-meals'>
@@ -22,11 +22,9 @@
 
 $(document).ready(function() {
 
-    const easy_pick_type = $('input[type="radio"]:checked')[0].value;
-    $.get(`/meals/easy-picks/${easy_pick_type}/`, function(data) {
-        console.log('data', data);   
-    })
+    EASY_PICK.easy_pick();
+    $('input[value="recent"]').trigger('change');
 });
-
+   
 </script>
 

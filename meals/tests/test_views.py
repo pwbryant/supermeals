@@ -1,5 +1,6 @@
 import json
 from decimal import Decimal
+from datetime import datetime, timedelta
 
 from django.test import TestCase
 from django.urls import reverse
@@ -14,7 +15,7 @@ from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, MacroIngredie
 from meals.models import Macros, Foods, Servings, Ingredients, FoodNotes
 from meals.views import save_my_macros, get_my_meals, \
     get_meal_maker_template, \
-    make_macro_breakdown_dict_list, save_macro_meal, easy_pick
+    make_macro_breakdown_dict_list, save_macro_meal, easy_picks
 from meals.helpers import get_ingredient_count
 # Create your tests here.
 
@@ -34,7 +35,17 @@ class BaseTestCase(TestCase):
 class MyMealsTest(BaseTestCase):
 
     def setUp(self):
-        self.log_in_user(USERNAME, PASSWORD)
+        self.user = self.log_in_user(USERNAME, PASSWORD)
+
+    def create_meals(self):
+        first_date = datetime.now() - timedelta(days=1)
+        second_date = datetime.now()
+        Foods.objects.create(
+            name='Most Recent Meal', date=second_date, user=self.user
+        )
+        Foods.objects.create(
+            name='Most Popular Meal', date=first_date, user=self.user
+        )
 
     def test_my_meals_url_uses_correct_template(self):
 
@@ -43,22 +54,22 @@ class MyMealsTest(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,'meals/my_meals.html')
 
-    def test_easy_pick_url_recent(self):
-        url = reverse('easy_pick', kwargs={'pick_type': 'recent'})
+    def test_easy_picks_url_recent(self):
+        url = reverse('easy_picks', kwargs={'pick_type': 'recent'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    def test_easy_pick_url_popular(self):
-        url = reverse('easy_pick', kwargs={'pick_type': 'popular'})
+    def test_easy_picks_url_popular(self):
+        url = reverse('easy_picks', kwargs={'pick_type': 'popular'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    def test_easy_pick_recent_gets_meals_ordered_by_date(self):
-        url = reverse('easy_pick', kwargs={'pick_type': 'recent'})
+    def test_easy_picks_recent_gets_meals_ordered_by_date(self):
+        self.create_meals()
+        url = reverse('easy_picks', kwargs={'pick_type': 'recent'})
         context = json.loads(self.client.get(url).content)
-        
-        print('context', context, context['status'])
-        self.assertEqual(context['status'], 'success')
+        most_recent_meal = Foods.objects.all().order_by('-date')[0]
+        self.assertEqual(context['my_meals'][0]['id'], most_recent_meal.id)
 
 
 class MacroMealMakerTest(BaseTestCase):

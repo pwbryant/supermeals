@@ -328,7 +328,11 @@ def get_my_meals(request):
     return render(request, TEMPLATES_DIR + 'my_meals.html')
 
 
-def easy_pick(request, pick_type):
+def easy_picks(request, pick_type):
+
     context = {'status': 'success'}
+    context['my_meals'] = list(
+        Foods.objects.filter(user=request.user).order_by('-date').values()
+    )
     return JsonResponse(context)
 

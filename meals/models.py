@@ -11,7 +11,9 @@ class Macros(models.Model):
             ('imperial','Imperial',),
             ('metric','Metric',),
     )
-    unit_type = models.CharField(max_length=8, choices=UNIT_CHOICES,default='imperial', blank=False)
+    unit_type = models.CharField(
+        max_length=8, choices=UNIT_CHOICES,default='imperial', blank=False
+    )
 
     GENDER_CHOICES = (
             ('male','Male',),
@@ -29,7 +31,9 @@ class Macros(models.Model):
             ('very high','',),
     )
 
-    activity = models.CharField(max_length=9,choices=ACTIVITY_CHOICES,default='none',blank=False)
+    activity = models.CharField(
+        max_length=9,choices=ACTIVITY_CHOICES,default='none',blank=False
+    )
     DIRECTIONS = (
             ('lose','Lose',),
             ('maintain','Maintain',),
@@ -54,10 +58,14 @@ class Macros(models.Model):
                  'lose': Decimal('-1'),
                  'gain': Decimal('1'),
          }[self.direction];
+
+        # convert kg to lb by dividing by .45359237
+        weight_change = self.change_rate / Decimal('.45359237') * direction_factor * 500 
         
-        weight_change = self.change_rate / Decimal('.45359237') * direction_factor * 500 #convert kg to lb by dividing by .45359237
-        
-        tdee = (Decimal('10') * self.weight) + (Decimal('6.25') * self.height) - (Decimal('5') * self.age)
+        tdee = (
+            (Decimal('10') * self.weight) + (Decimal('6.25') * self.height)
+            - (Decimal('5') * self.age)
+        )
         if self.gender == 'male':
                 tdee += 5 
         else:
