@@ -47,16 +47,6 @@ class MakeMacroMealTest(FunctionalTest):
     def get_bar_ratio(self, num_height, denom_height):
         return round(float(num_height) / float(denom_height), 2)
 
-    def search_and_results(self, term_list):
-        self.fill_input(
-            ["input[id='meal-maker-food-search-input']"],
-            term_list
-        )
-        self.browser.find_element_by_id(
-            "food-search-icon-button").click()
-        search_results = self.browser.find_elements_by_class_name(
-            "search-result")
-        return search_results
 
     def move_slider(self, slider_id, ypos):
         slider = self.browser.find_element_by_id(slider_id)
@@ -299,7 +289,12 @@ class MakeMacroMealTest(FunctionalTest):
         # He starts by typeing "garbonzo beans" in the search bar and 
         # clicks the search icon. And he sees the area below the search 
         # bar fill up with the top 10 results
-        search_results = self.search_and_results(['chickpeas'])
+        search_results = self.search_and_results(
+            "input[id='meal-maker-food-search-input']",
+            'food-search-icon-button',
+            'search-result',
+            ['chickpeas']
+        )
         #cself.assertEqual(len(search_results),50)
 
         # Joe clicks on the first result ( on the add + icon )
@@ -332,7 +327,12 @@ class MakeMacroMealTest(FunctionalTest):
         #like the previous result appear to the right of the previous search result
 
         self.fill_input(["input[id='meal-maker-food-search-input']"],[],clear=True)	
-        search_results = self.search_and_results(['carrots'])
+        search_results = self.search_and_results(
+            "input[id='meal-maker-food-search-input']",
+            'food-search-icon-button',
+            'search-result',
+            ['carrots']
+        )
         search_results[0].find_elements_by_class_name("icon")[0].click()
         carrot_id = '2'
         food_container = self.browser.find_element_by_id(
@@ -354,12 +354,22 @@ class MakeMacroMealTest(FunctionalTest):
 
         #He then adds "bacon" and "lettuce" to the mix as well
         self.fill_input(["input[id='meal-maker-food-search-input']"],[],clear=True)	
-        search_results = self.search_and_results(['bacon'])
+        search_results = self.search_and_results(
+            "input[id='meal-maker-food-search-input']",
+            'food-search-icon-button',
+            'search-result',
+            ['bacon']
+        )
         search_results[0].find_elements_by_class_name("icon")[0].click()
         bacon_id = '3'
 
         self.fill_input(["input[id='meal-maker-food-search-input']"],[],clear=True)	
-        search_results = self.search_and_results(['lettuce'])
+        search_results = self.search_and_results(
+            "input[id='meal-maker-food-search-input']",
+            'food-search-icon-button',
+            'search-result',
+            ['lettuce']
+        )
         search_results[0].find_elements_by_class_name("icon")[0].click()
 
         #He then adjusts the dragbar on the bacon cal bar.

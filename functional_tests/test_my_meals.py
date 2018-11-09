@@ -51,17 +51,19 @@ class MyMealTests(FunctionalTest):
         self.assertEqual(most_recent_meal.text, 'Pretzels and Cheese')
 
 
-        # He checks the 'Popular' button and notices that the meals
-        # are ordered my popularity (how often he selects them)
-        popular_meals = self.browser.find_elements_by_class_name('my-meals-easy-pick-meal')
-        most_popular_meal = popular_meals[0]
-        self.assertEqual(most_popular_meal.text, 'Ham Sandwich')
-
         # The second thing he sees is a search bar
         self.check_element_content(
-            'my-meals-search', 'id', 'placeholder', 'Search My Meals'
+            'my-meals-search-input', 'id', 'placeholder', 'Search My Meals'
         )
 
+        search_results = self.search_and_results(
+            "input[id='my-meals-search-input']",
+            'my-meals-search-button',
+            'search-result',
+            ['pretzels cheese']
+        )
+
+        self.assertEqual(search_results[0].text, 'Pretzels and Cheese')
         # Under the search bar he sees a list of his meals, which appear to
         # be ordered by the date he created them
         self.fail('Finish Test!')

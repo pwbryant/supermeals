@@ -331,8 +331,14 @@ def get_my_meals(request):
 def easy_picks(request, pick_type):
 
     context = {'status': 'success'}
-    context['my_meals'] = list(
-        Foods.objects.filter(user=request.user).order_by('-date').values()
-    )
+    if pick_type == 'recent':
+        context['my_meals'] = list(
+            Foods.objects.filter(user=request.user).order_by('-date').values()
+        )
+    else:
+        context['my_meals'] = list(
+            Foods.objects.filter(user=request.user).order_by('name').values()
+        )
+
     return JsonResponse(context)
 
