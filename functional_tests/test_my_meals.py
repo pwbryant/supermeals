@@ -18,6 +18,9 @@ class MyMealTests(FunctionalTest):
         Foods.objects.create(
             name='Pretzels and Cheese', date=second_date, user=user
         )
+        Foods.objects.create(
+            name='Pretzels and Cheese no user', date=second_date
+        )
 
 
     def test_my_meals(self):
@@ -51,7 +54,8 @@ class MyMealTests(FunctionalTest):
         self.assertEqual(most_recent_meal.text, 'Pretzels and Cheese')
 
 
-        # The second thing he sees is a search bar
+        # The second thing he sees is a search bar and he searches
+        # for a meal he made.
         self.check_element_content(
             'my-meals-search-input', 'id', 'placeholder', 'Search My Meals'
         )
@@ -64,7 +68,16 @@ class MyMealTests(FunctionalTest):
         )
 
         self.assertEqual(search_results[0].text, 'Pretzels and Cheese')
-        # Under the search bar he sees a list of his meals, which appear to
-        # be ordered by the date he created them
+        self.assertEqual(len([
+            r for r in search_results
+            if 'pretzel' in r.text.lower()
+            or 'cheese' in r.text.lower()
+        ]), 1) # should be one because one 'Pretzel and Cheese' has no user
+            
+        # He sees that only his saved meals/recipies show up
+        # and that all search results contain at least one
+        # of his search terms.
+        
+
         self.fail('Finish Test!')
 

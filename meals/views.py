@@ -238,7 +238,7 @@ def get_meal_maker_template(request):
     return render(request, TEMPLATES_DIR + 'meal_maker.html', template_data)
 
 
-def search_foods(request):
+def search_foods(request, food_owner):
     """search db
 
     Seach usda foods db based on 'search_terms' key, submitted by user.
@@ -246,6 +246,9 @@ def search_foods(request):
     Parameters
     ----------
     request: HttpRequest object
+    food_owner: str
+        Can be 'all' | 'user'. 'user' constrains the query set
+        to the current user.
 
     Returns
     ----------
@@ -261,11 +264,22 @@ def search_foods(request):
     for term in search_terms[1:]:
         terms_query |= SearchQuery(term)
 
-    search_results = list(
-        Foods.objects.annotate(
-            rank=SearchRank(vector, terms_query)
-        ).order_by('-rank')[:50].values()
-    )
+    if food_owner == 'user':
+        search_results = list(
+            Foods.objects.filter(user=request.user).annotate(
+                rank=SearchRank(vector, terms_query)
+            ).filter(rank__gte=0.001).order_by('-rank')[:50].values()
+        )
+
+    elif food_owner == 'all':
+        search_results = list(
+            Foods.objects.annotate(
+                rank=SearchRank(vector, terms_query)
+            ).filter(rank__gte=0.001).order_by('-rank')[:50].values()
+        )
+
+    else:
+        assert 1 == 0
 
     # add servings
     for result in search_results:

@@ -168,10 +168,9 @@ class MacroMealMakerTest(BaseTestCase):
 
 
 
-c = """
 class MealMakerTest(BaseTestCase):
     
-    fixtures = ['db.json']
+    # fixtures = ['db.json']
 
     #################################
     ##constants
@@ -204,7 +203,15 @@ class MealMakerTest(BaseTestCase):
     #################################
     ##helper functions
     #################################
-    def create_default_macro(self,user):
+    def create_foods_for_search(self, user):
+
+        Foods.objects.create(name='garbanzo beans', user=user)
+        Foods.objects.create(name='salted cod snacks', user=user)
+        Foods.objects.create(name='salted cod snacks and brisket', user=user)
+        Foods.objects.create(name='garbanzo beans no user')
+
+
+    def create_default_macro(self, user):
             macro = Macros.objects.create(**{
                     'user':user,
                     'unit_type':'imperial',
@@ -227,10 +234,38 @@ class MealMakerTest(BaseTestCase):
     #################################
     def test_search_food_url_returns_food_dict_with_array_greater_than_0(self):
         user = self.log_in_user(USERNAME,PASSWORD)
-        response = self.client.get('/meals/search-foods/',data={'search_terms':'garbonzo beans'})
+        self.create_foods_for_search(user)
+        response = self.client.get('/meals/search-foods/all/',data={'search_terms':'garbanzo beans'})
         response_dict = json.loads(response.content.decode())
-        self.assertTrue(len(response_dict['search_results']) > 0)
-    
+        self.assertTrue(len(response_dict['search-results']) > 0)
+
+    def test_search_food_all_results_contain_at_least_1_search_term(self):
+        user = self.log_in_user(USERNAME,PASSWORD)
+        self.create_foods_for_search(user)
+        search_terms = 'garbanzo beans'
+        response = self.client.get('/meals/search-foods/all/',data={
+            'search_terms': search_terms
+        })
+        response_dict = json.loads(response.content.decode())
+        results = response_dict['search-results']
+        results_containing_search_terms = len([
+            r for r in results
+            if sum([t in r['name'] for t in search_terms.split()])
+        ])
+        self.assertTrue(results_containing_search_terms == len(results))
+
+    def test_search_food_user_restrict_only_returns_user_foods(self):
+        user = self.log_in_user(USERNAME,PASSWORD)
+        self.create_foods_for_search(user)
+        search_terms = 'garbanzo beans'
+        response = self.client.get('/meals/search-foods/user/',data={
+            'search_terms': search_terms
+        })
+        response_dict = json.loads(response.content.decode())
+        results = response_dict['search-results']
+        self.assertTrue(len(results) == 1)
+
+c = """
     #################################
     ##open tab
     #################################

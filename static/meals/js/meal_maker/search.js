@@ -16,7 +16,7 @@ let SEARCH = (function() {
         meal_maker_food_search : function(search_obj) { 
             const search_terms = $.trim($('#meal-maker-food-search-input').val());
             if(search_terms != '') {
-                $.get('/meals/search-foods/',{'search_terms':search_terms},function(data) {
+                $.get('/meals/search-foods/all/',{'search_terms':search_terms},function(data) {
                     const search_results = data['search-results'];
                     let search_results_html = '';
                     if(search_results.length > 0) {

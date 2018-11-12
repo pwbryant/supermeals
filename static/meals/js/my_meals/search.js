@@ -8,7 +8,7 @@ const MY_MEAL_SEARCH = (function() {
                 const search_terms = $.trim($('#my-meals-search-input').val());
                 if(search_terms != '') {
 
-                    $.get('/meals/search-foods/',{'search_terms':search_terms},function(data) {
+                    $.get('/meals/search-foods/user/' ,{'search_terms':search_terms},function(data) {
                         const search_results = data['search-results'];
                         search_results_html = search_obj.format_food_search_results(search_results);
                         $('#my-meals-search-results-container').html(search_results_html);
