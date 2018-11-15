@@ -11,13 +11,52 @@ class MyMealTests(FunctionalTest):
 
     def create_meals(self, user):
         first_date = datetime.now()
-        second_date = first_date + timedelta(days=1)
         self.ham_sandwich = Foods.objects.create(
             name='Ham Sandwich', date=first_date, user=user
         )
+
+        second_date = first_date + timedelta(days=1)
         self.pretzels_cheese = Foods.objects.create(
             name='Pretzels and Cheese', date=second_date, user=user
         )
+
+        self.pretzels = Foods.objects.create(
+            name='pretzels'
+        )
+
+        self.pretzel_srv = Servings.objects.create(
+            food=self.pretzels,
+            grams=100,
+            quantity=1,
+            description='bag'
+        )
+
+        self.cheese = Foods.objects.create(
+            name='cheese'
+        )
+
+        self.cheese_srv = Servings.objects.create(
+            food=self.cheese,
+            grams=10,
+            quantity=2,
+            description='slice'
+        )
+
+
+        Ingredients.objects.create(
+                main_food=self.pretzels_cheese,
+                ingredient=self.pretzels,
+                serving=self.pretzel_srv,
+                amount=1
+        )
+
+        Ingredients.objects.create(
+                main_food=self.pretzels_cheese,
+                ingredient=self.cheese,
+                serving=self.cheese_srv,
+                amount=1
+        )
+
         self.pretzels_cheese_no_user = Foods.objects.create(
             name='Pretzels and Cheese no user', date=second_date
         )
@@ -89,5 +128,10 @@ class MyMealTests(FunctionalTest):
             'my-meals-modal-header', 'id', 'text', self.pretzels_cheese.name
         )
 
+
+        ingredients = self.browser.find_elements_by_css_selector(
+                'div[class="my-meal-ingredients"]'
+        )
+        self.assertEqual(len(ingredients), 2)
         self.fail('Finish Test!')
 
