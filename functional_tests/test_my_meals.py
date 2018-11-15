@@ -12,13 +12,13 @@ class MyMealTests(FunctionalTest):
     def create_meals(self, user):
         first_date = datetime.now()
         second_date = first_date + timedelta(days=1)
-        Foods.objects.create(
+        self.ham_sandwich = Foods.objects.create(
             name='Ham Sandwich', date=first_date, user=user
         )
-        Foods.objects.create(
+        self.pretzels_cheese = Foods.objects.create(
             name='Pretzels and Cheese', date=second_date, user=user
         )
-        Foods.objects.create(
+        self.pretzels_cheese_no_user = Foods.objects.create(
             name='Pretzels and Cheese no user', date=second_date
         )
 
@@ -51,7 +51,7 @@ class MyMealTests(FunctionalTest):
         # ordered by most to least recent
         recent_meals = self.browser.find_elements_by_class_name('my-meals-easy-picks-meal')
         most_recent_meal = recent_meals[0]
-        self.assertEqual(most_recent_meal.text, 'Pretzels and Cheese')
+        self.assertEqual(most_recent_meal.text, self.pretzels_cheese.name)
 
 
         # The second thing he sees is a search bar and he searches
@@ -67,17 +67,27 @@ class MyMealTests(FunctionalTest):
             ['pretzels cheese']
         )
 
-        self.assertEqual(search_results[0].text, 'Pretzels and Cheese')
+        # He sees that only his saved meals/recipies show up
+        # and that all search results contain at least one
+        # of his search terms.
+        # time.sleep(10)
+        self.assertEqual(search_results[0].text, self.pretzels_cheese.name)
         self.assertEqual(len([
             r for r in search_results
             if 'pretzel' in r.text.lower()
             or 'cheese' in r.text.lower()
         ]), 1) # should be one because one 'Pretzel and Cheese' has no user
             
-        # He sees that only his saved meals/recipies show up
-        # and that all search results contain at least one
-        # of his search terms.
         
+        # He wants to remember the amounts in his saved meal, so he
+        # clicks on the plus icon, and a modal appears listing the meal info
+
+        self.browser.find_element_by_id(
+                f'my-meal-result-{self.pretzels_cheese.id}'
+        ).click()
+        self.check_element_content(
+            'my-meals-modal-header', 'id', 'text', self.pretzels_cheese.name
+        )
 
         self.fail('Finish Test!')
 

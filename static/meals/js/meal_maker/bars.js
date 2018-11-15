@@ -29,10 +29,10 @@ var BARS = (function() {
 
         create_save_macro_meal_modal: function() {
 
-			let bars_obj = this;
+			// let bars_obj = this;
 
             let modal = document.getElementById('save-macro-meal-modal');
-            
+
             $('#show-modal-button').on('click', function() {
                 modal.style.display = 'block';
             });
@@ -50,6 +50,7 @@ var BARS = (function() {
         add_food : function() {
 			bars_obj = this;
 			$('.search-result>button').on('click',function() {
+                console.log('result clicked');
                 bars_obj.FOOD_COUNT += 1;
 
                 // create food macros obj
