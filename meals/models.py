@@ -155,6 +155,7 @@ class Servings(models.Model):
     food = models.ForeignKey(
         'Foods',
         on_delete=models.CASCADE,
+        related_name='servings',
         null=True
         )
 

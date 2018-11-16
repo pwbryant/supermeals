@@ -12,7 +12,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django import forms
 
 from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, MacroIngredientForm
-from meals.models import Macros, Foods, Servings, FoodNotes
+from meals.models import Macros, Foods, Ingredients, Servings, FoodNotes
 from meals.helpers import get_ingredient_count, make_ingredient_formset, \
 save_meal_notes_ingredients
 
@@ -339,6 +339,7 @@ def save_macro_meal(request):
 
 
 def get_my_meals(request):
+
     return render(request, TEMPLATES_DIR + 'my_meals.html')
 
 
@@ -356,3 +357,40 @@ def easy_picks(request, pick_type):
 
     return JsonResponse(context)
 
+
+def search_my_meals(request):
+    
+    search_terms = request.GET['search_terms'].split(' ')
+
+    vector = SearchVector('main_food__name')
+    terms_query = SearchQuery(search_terms[0])
+
+    for term in search_terms[1:]:
+        terms_query |= SearchQuery(term)
+
+    info_of_interest = [
+        'id', 'main_food__id', 'main_food__name', 'ingredient__name',
+        'amount', 'serving__description'
+    ]
+    search_results = Ingredients.objects.filter(main_food__user=request.user).annotate(
+        rank=SearchRank(vector, terms_query)
+    ).filter(rank__gte=0.001).order_by('-rank')[:50].values(*info_of_interest)
+
+
+    # make dict instead of dict list to allow easier access to ingredients
+    # via main_food__id
+    search_results_dict = {'meals':[], 'meal_info':{}}
+    for result in search_results:
+        meal_id = result['main_food__id']
+        if meal_id not in search_results_dict['meal_info']:
+            meal_name = result['main_food__name']
+            meal_id = result['main_food__id']
+            search_results_dict['meal_info'][meal_id] = []
+            search_results_dict['meals'].append({'name':meal_name, 'id':meal_id})
+        search_results_dict['meal_info'][meal_id].append(result)
+
+    return HttpResponse(
+        json.dumps({'search-results': search_results_dict}, cls=DjangoJSONEncoder),
+        content_type='application/json'
+    )
+        

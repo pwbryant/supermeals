@@ -6,10 +6,12 @@ from .base import FunctionalTest
 from meals.models import Foods, Servings, Ingredients
 
 
+
 class MyMealTests(FunctionalTest):
 
 
     def create_meals(self, user):
+
         first_date = datetime.now()
         self.ham_sandwich = Foods.objects.create(
             name='Ham Sandwich', date=first_date, user=user
@@ -24,7 +26,7 @@ class MyMealTests(FunctionalTest):
             name='pretzels'
         )
 
-        self.pretzel_srv = Servings.objects.create(
+        self.pretzels_srv = Servings.objects.create(
             food=self.pretzels,
             grams=100,
             quantity=1,
@@ -43,18 +45,18 @@ class MyMealTests(FunctionalTest):
         )
 
 
-        Ingredients.objects.create(
+        self.pretzels_ing = Ingredients.objects.create(
                 main_food=self.pretzels_cheese,
                 ingredient=self.pretzels,
-                serving=self.pretzel_srv,
-                amount=1
+                serving=self.pretzels_srv,
+                amount=3.5
         )
 
-        Ingredients.objects.create(
+        self.cheese_ing = Ingredients.objects.create(
                 main_food=self.pretzels_cheese,
                 ingredient=self.cheese,
                 serving=self.cheese_srv,
-                amount=1
+                amount=2
         )
 
         self.pretzels_cheese_no_user = Foods.objects.create(
@@ -128,10 +130,20 @@ class MyMealTests(FunctionalTest):
             'my-meals-modal-header', 'id', 'text', self.pretzels_cheese.name
         )
 
-
         ingredients = self.browser.find_elements_by_css_selector(
-                'div[class="my-meal-ingredients"]'
+                'div[class="my-meals-ingredient"]'
         )
         self.assertEqual(len(ingredients), 2)
+        pretzels_str = (
+                f'{self.pretzels.name}: {self.pretzels_ing.amount}'
+                f' {self.pretzels_srv.description}'
+        )
+        cheese_str = (
+                f'{self.cheese.name}: {self.cheese_ing.amount}'
+                f' {self.cheese_srv.description}'
+        )
+        self.assertEqual(ingredients[0].text, pretzels_str)
+        self.assertEqual(ingredients[1].text, cheese_str)
+
         self.fail('Finish Test!')
 

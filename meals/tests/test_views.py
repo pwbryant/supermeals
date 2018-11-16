@@ -15,7 +15,7 @@ from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, MacroIngredie
 from meals.models import Macros, Foods, Servings, Ingredients, FoodNotes
 from meals.views import save_my_macros, get_my_meals, \
     get_meal_maker_template, \
-    make_macro_breakdown_dict_list, save_macro_meal, easy_picks
+    make_macro_breakdown_dict_list, save_macro_meal, easy_picks, search_my_meals
 from meals.helpers import get_ingredient_count
 # Create your tests here.
 
@@ -37,14 +37,58 @@ class MyMealsTest(BaseTestCase):
     def setUp(self):
         self.user = self.log_in_user(USERNAME, PASSWORD)
 
-    def create_meals(self):
-        first_date = datetime.now() - timedelta(days=1)
-        second_date = datetime.now()
-        Foods.objects.create(
-            name='Most Recent Meal', date=second_date, user=self.user
+
+    def create_meals(self, user):
+
+        first_date = datetime.now()
+        second_date = first_date - timedelta(days=1)
+        third_date = first_date - timedelta(days=2)
+        fourth_date = first_date - timedelta(days=3)
+
+        self.ham_sandwich = Foods.objects.create(
+            name='Ham Sandwich', user=user
         )
-        Foods.objects.create(
-            name='Most Popular Meal', date=first_date, user=self.user
+
+        self.pretzels_cheese = Foods.objects.create(
+            name='Pretzels and Cheese', user=user
+        )
+        self.pretzels_cheese.date = second_date
+        self.pretzels_cheese.save()
+
+        self.pretzels = Foods.objects.create(name='Pretzels', user=user)
+        self.pretzels.date = third_date
+        self.pretzels.save()
+
+        self.pretzels_srv = Servings.objects.create(
+            food=self.pretzels,
+            grams=100,
+            quantity=1,
+            description='bag'
+        )
+
+        self.cheese = Foods.objects.create(name='Cheese', user=user)
+        self.cheese.date = fourth_date
+        self.cheese.save()
+
+        self.cheese_srv = Servings.objects.create(
+            food=self.cheese,
+            grams=10,
+            quantity=2,
+            description='slice'
+        )
+
+        self.pretzels_ing = Ingredients.objects.create(
+                main_food=self.pretzels_cheese,
+                ingredient=self.pretzels,
+                serving=self.pretzels_srv,
+                amount=1
+        )
+
+        self.cheese_ing = Ingredients.objects.create(
+                main_food=self.pretzels_cheese,
+                ingredient=self.cheese,
+                serving=self.cheese_srv,
+                amount=2
         )
 
     def test_my_meals_url_uses_correct_template(self):
@@ -65,11 +109,44 @@ class MyMealsTest(BaseTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_easy_picks_recent_gets_meals_ordered_by_date(self):
-        self.create_meals()
+        self.create_meals(self.user)
         url = reverse('easy_picks', kwargs={'pick_type': 'recent'})
         context = json.loads(self.client.get(url).content)
         most_recent_meal = Foods.objects.all().order_by('-date')[0]
         self.assertEqual(context['my_meals'][0]['id'], most_recent_meal.id)
+
+    def test_search_my_meals_url(self):
+        url = reverse('search_my_meals')
+        data={'search_terms':'Pretzels and Cheese'}
+        response = self.client.get(url, data=data)
+        self.assertEqual(response.status_code, 200)
+
+    def test_search_my_meals_returns_food_ingredients_and_servings(self):
+        self.create_meals(self.user)
+        url = reverse('search_my_meals')
+        data={'search_terms':'Pretzels and Cheese'}
+        response = json.loads(self.client.get(url, data=data).content)
+
+        meal_id = list(response['search-results']['meal_info'].keys())[0]
+        results = response['search-results']['meal_info'][meal_id]
+
+        main_food_name = results[0]['main_food__name']
+        ingredient1_name = results[0]['ingredient__name']
+        serving1_amount = Decimal(results[0]['amount'])
+        serving1_desc =  results[0]['serving__description']
+
+        ingredient2_name = results[1]['ingredient__name']
+        serving2_amount = Decimal(results[1]['amount'])
+        serving2_desc = results[1]['serving__description']
+
+        self.assertEqual(main_food_name, self.pretzels_cheese.name)
+        self.assertEqual(ingredient1_name, self.pretzels.name)
+        self.assertEqual(serving1_amount, self.pretzels_ing.amount)
+        self.assertEqual(serving1_desc, self.pretzels_srv.description)
+
+        self.assertEqual(ingredient2_name, self.cheese.name)
+        self.assertEqual(serving2_amount, self.cheese_ing.amount)
+        self.assertEqual(serving2_desc, self.cheese_srv.description)
 
 
 class MacroMealMakerTest(BaseTestCase):
