@@ -380,13 +380,13 @@ def search_my_meals(request):
         terms_query |= SearchQuery(term)
 
     info_of_interest = [
-        'id', 'ingredient__id', 'main_food__id', 'main_food__name', 'ingredient__name',
+        'id', 'ingredient__id', 'main_food', 'main_food__id', 'main_food__name', 'ingredient__name',
         'amount', 'serving__description'
     ]
+
     search_results = Ingredients.objects.filter(main_food__user=request.user).annotate(
         rank=SearchRank(vector, terms_query)
     ).filter(rank__gte=0.001).order_by('-rank')[:50].values(*info_of_interest)
-
 
     # make dict instead of dict list to allow easier access to ingredients
     # via main_food__id
@@ -396,8 +396,11 @@ def search_my_meals(request):
         if meal_id not in search_results_dict['meal_info']:
             meal_name = result['main_food__name']
             meal_id = result['main_food__id']
+            macros_profile = Foods.objects.get(pk=meal_id).get_macros_profile()
             search_results_dict['meal_info'][meal_id] = []
-            search_results_dict['meals'].append({'name':meal_name, 'id':meal_id})
+            search_results_dict['meals'].append(
+                {'name':meal_name, 'id':meal_id, 'macros_profile': macros_profile}
+            )
         search_results_dict['meal_info'][meal_id].append(result)
     
     # get nested ingredients if meals contains multi Food ingredients

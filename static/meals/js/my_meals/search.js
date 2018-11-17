@@ -11,18 +11,20 @@ const MY_MEAL_SEARCH = (function() {
 
                     $.get('/meals/search-my-meals/', {'search_terms': search_terms}, function(data) {
                         const search_results = data['search-results'];
-
                         search_results_html = search_obj.format_food_search_results(
                                 search_results['meals']
                         );
+
                         // $('#my-meals-modal-header').text(my_meal_name);
                         $('#my-meals-search-results-container').html(search_results_html);
                         search_obj.add_result_button_lister();
                         search_results['meals'].map(function(r, i) {
                             const meal_info = search_results['meal_info'][r.id];
-                            search_obj['my-meals'][r.id] = meal_info;
+                            search_obj['my-meals'][r.id] = {
+                                'ingredients': meal_info,
+                                'macros_profile': r.macros_profile
+                            }
                         });
-
                     });
                 }
             });
@@ -79,12 +81,26 @@ const MY_MEAL_SEARCH = (function() {
             
             // populate modal content
             // modal header
-            const meal_name = my_meal_info[0]['main_food__name'];
+            const meal_name = my_meal_info['ingredients'][0]['main_food__name'];
+            const macros_profile = my_meal_info['macros_profile'];
+            let macros_profile_summary = (
+                '<div>Percentages may not add up to 100 due to rounding<br>' +
+                `Cals: ~${Math.round(macros_profile['cals'])}`
+            );
+            ['fat', 'carbs', 'protein'].map(function(macro) {
+                macros_profile_summary += (
+                    ` ${macro}: ~${Math.round(macros_profile[macro])}g` +
+                    ` (%${Math.round(macros_profile[macro + '_pct'])})`
+                )
+            });
+            macros_profile_summary += '</div>';
+            
             $('#my-meals-modal-header').text(meal_name);
+            $('#my-meals-modal-sub-header').html(macros_profile_summary);
 
             // modal body
             let ingredients_html = '';
-            my_meal_info.map(function(info) {
+            my_meal_info['ingredients'].map(function(info) {
                 indent = '';
                 ingredients_html = search_obj.handle_nested_ingredients(
                     search_obj, info, ingredients_html, indent

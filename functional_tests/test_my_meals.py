@@ -14,12 +14,20 @@ class MyMealTests(FunctionalTest):
 
         first_date = datetime.now()
         self.ham_sandwich = Foods.objects.create(
-            name='Ham Sandwich', date=first_date, user=user
+            name='Ham Sandwich', date=first_date, user=user,
+            cals_per_gram = Decimal(1.04),
+            fat_per_gram = Decimal(0.31),
+            carbs_per_gram = Decimal(0.54),
+            protein_per_gram = Decimal(0.16)
         )
 
         second_date = first_date + timedelta(days=1)
         self.pretzels_cheese = Foods.objects.create(
-            name='Pretzels and Cheese', date=second_date, user=user
+            name='Pretzels and Cheese', date=second_date, user=user,
+            cals_per_gram = Decimal(1.04),
+            fat_per_gram = Decimal(0.31),
+            carbs_per_gram = Decimal(0.54),
+            protein_per_gram = Decimal(0.16)
         )
 
         self.pretzels = Foods.objects.create(
@@ -62,6 +70,22 @@ class MyMealTests(FunctionalTest):
             name='Pretzels and Cheese no user', date=second_date
         )
 
+    def make_macro_profile_str(self, food):
+
+        macro_profile = food.get_macros_profile()
+
+        summary_str = (
+            'Percentages may not add up to 100 due to rounding\n'
+            f'Cals: ~{round(macro_profile["cals"])}'
+        )
+
+        for macro in ['fat', 'carbs', 'protein']:
+            summary_str += (
+                f' {macro}: ~{round(macro_profile[macro])}g'
+                f' (%{round(macro_profile[macro + "_pct"])})'
+            )
+
+        return summary_str
 
     def test_my_meals(self):
 
@@ -110,7 +134,6 @@ class MyMealTests(FunctionalTest):
         # He sees that only his saved meals/recipies show up
         # and that all search results contain at least one
         # of his search terms.
-        # time.sleep(10)
         self.assertEqual(search_results[0].text, self.pretzels_cheese.name)
         self.assertEqual(len([
             r for r in search_results
@@ -128,6 +151,11 @@ class MyMealTests(FunctionalTest):
         self.check_element_content(
             'my-meals-modal-header', 'id', 'text', self.pretzels_cheese.name
         )
+        
+        self.check_element_content(
+            'my-meals-modal-sub-header', 'id', 'text',
+            self.make_macro_profile_str(self.pretzels_cheese)
+        )
 
         ingredients = self.browser.find_elements_by_css_selector(
                 'div[class="my-meals-ingredient"]'
@@ -144,5 +172,7 @@ class MyMealTests(FunctionalTest):
         self.assertEqual(ingredients[0].text, pretzels_str)
         self.assertEqual(ingredients[1].text, cheese_str)
 
+
+        
         self.fail('Finish Test!')
 
