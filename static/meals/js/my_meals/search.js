@@ -28,6 +28,7 @@ const MY_MEAL_SEARCH = (function() {
             });
         },
 
+        // need to test
         format_food_search_results : function(search_results) {
 
             let search_results_html = '';	
@@ -46,29 +47,55 @@ const MY_MEAL_SEARCH = (function() {
             });
         },
 
+        // need to test
+        handle_nested_ingredients: function(search_obj, ingredient_info, ingredients_html, indent) {
+
+            const ing_name = ingredient_info['ingredient__name'];
+            const ing_id = ingredient_info['ingredient__id'];
+            const srv_amount = parseFloat(ingredient_info['amount']);
+            const srv_desc = ingredient_info['serving__description'];
+            
+            ingredients_html += '<div class="my-meals-ingredient">';
+            ingredients_html += `${indent}${ing_name}: ${srv_amount} ${srv_desc}</div>`;
+
+            if (ingredient_info.hasOwnProperty('meal_info')) {
+                ingredients_html += 'Ingredients:'
+                indent += '....';
+                ingredient_info['meal_info'][ing_id].map(function(sub_ingredient_info) {
+                    ingredients_html = search_obj.handle_nested_ingredients(
+                        search_obj, sub_ingredient_info, ingredients_html, indent
+                    );
+                });
+            }
+
+            return ingredients_html;
+        },
+
         add_result_button_shows_modal: function(my_meal_info) {
 
+            const search_obj = this;
             let modal = document.getElementById('my-meal-modal');
             modal.style.display = 'block';
             
             // populate modal content
+            // modal header
             const meal_name = my_meal_info[0]['main_food__name'];
             $('#my-meals-modal-header').text(meal_name);
+
+            // modal body
             let ingredients_html = '';
             my_meal_info.map(function(info) {
-                const ing_name = info['ingredient__name'];
-                const srv_amount = parseFloat(info['amount']);
-                const srv_desc = info['serving__description'];
-                
-                ingredients_html += '<div class="my-meals-ingredient">';
-                ingredients_html += `${ing_name}: ${srv_amount} ${srv_desc}</div>`;
+                indent = '';
+                ingredients_html = search_obj.handle_nested_ingredients(
+                    search_obj, info, ingredients_html, indent
+                )
             });
             $('.modal-body').html(ingredients_html);
 
-
             // acivate modal close when x icon clicked
             $('.close-modal').on('click', function() {
-                // $(modal).find(modal_inputs).val('').text('').end();
+                $('.modal-body').html('');
+                $('#my-meals-modal-header').html('');
                 modal.style.display = 'none';
             });
         }

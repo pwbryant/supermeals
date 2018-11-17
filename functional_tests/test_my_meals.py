@@ -44,7 +44,6 @@ class MyMealTests(FunctionalTest):
             description='slice'
         )
 
-
         self.pretzels_ing = Ingredients.objects.create(
                 main_food=self.pretzels_cheese,
                 ingredient=self.pretzels,

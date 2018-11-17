@@ -358,6 +358,17 @@ def easy_picks(request, pick_type):
     return JsonResponse(context)
 
 
+def get_nested_ingredients(ing_dict, info_of_interest):
+    ing_food_id = ing_dict['ingredient__id']
+    ings = Ingredients.objects.filter(main_food = ing_food_id).values(*info_of_interest)
+    if ings.count():
+        ing_dict['meal_info'] = {ing_food_id:[]}
+        for sub_ing_dict in ings:
+            ing_dict['meal_info'][ing_food_id].append(sub_ing_dict)
+            get_nested_ingredients(sub_ing_dict, info_of_interest)
+    return ing_dict
+
+
 def search_my_meals(request):
     
     search_terms = request.GET['search_terms'].split(' ')
@@ -369,7 +380,7 @@ def search_my_meals(request):
         terms_query |= SearchQuery(term)
 
     info_of_interest = [
-        'id', 'main_food__id', 'main_food__name', 'ingredient__name',
+        'id', 'ingredient__id', 'main_food__id', 'main_food__name', 'ingredient__name',
         'amount', 'serving__description'
     ]
     search_results = Ingredients.objects.filter(main_food__user=request.user).annotate(
@@ -388,6 +399,11 @@ def search_my_meals(request):
             search_results_dict['meal_info'][meal_id] = []
             search_results_dict['meals'].append({'name':meal_name, 'id':meal_id})
         search_results_dict['meal_info'][meal_id].append(result)
+    
+    # get nested ingredients if meals contains multi Food ingredients
+    for id_ in search_results_dict['meal_info']:
+        for ing_dict in search_results_dict['meal_info'][id_]:
+            get_nested_ingredients(ing_dict, info_of_interest)
 
     return HttpResponse(
         json.dumps({'search-results': search_results_dict}, cls=DjangoJSONEncoder),
