@@ -78,10 +78,20 @@ class Macros(models.Model):
 
 
 class FoodType(models.Model):
+    """ Designates Food as Meal, Recipe, or Food"""
 
     name = models.TextField(blank=False, unique=True)
 
-    def __str__(self):
+    def __repr__(self):
+        return '{}'.format(self.name)
+
+
+class FoodGroup(models.Model):
+    """ USDA DB Food Group"""
+
+    name = models.TextField(blank=False, unique=True)
+
+    def __repr__(self):
         return '{}'.format(self.name)
 
 
@@ -117,7 +127,7 @@ class Foods(models.Model):
         }
 
 
-    def __str__(self):
+    def __repr__(self):
         return '{}'.format(self.name)
 
 
@@ -177,7 +187,7 @@ class Servings(models.Model):
         null=True
         )
 
-    def __str__(self):
+    def __repr__(self):
         if self.food:
             return '{0} - {1}'.format(self.food.name, self.description)
         return '{0}'.format(self.description)
@@ -214,7 +224,7 @@ class Ingredients(models.Model):
 
     amount = models.DecimalField(max_digits=6, decimal_places=2)
 
-    def __str__(self):
+    def __repr__(self):
         return '{0} - {1}'.format(
             self.main_food.name, self.ingredient.name
         )
