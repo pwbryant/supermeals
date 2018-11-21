@@ -1,19 +1,8 @@
-
 import time
-from builtins import Exception
 from decimal import Decimal
-
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.support.select import Select
-
 from .base import FunctionalTest
 from meals.models import Foods, FoodGroup, Servings, Ingredients
 
-class ElementPresentException(Exception):
-
-    def __init__(self, message):
-        self.message = message
 
 class MakeMacroMealTest(FunctionalTest):
 
@@ -42,35 +31,35 @@ class MakeMacroMealTest(FunctionalTest):
         fat = [0.2223, 0.0117, 3.1581, 0.0198]
         carbs = [0.9148, 0.3296, 0.0680, 0.0904]
         protein = [0.2816, 0.0256, 1.3568, 0.0532]
-        
+
         foods = []
-        for i in range(len(names)):
-            if names[i] == 'Chickpeas':
-                fg = legume_food_group
-            elif names[i] == 'Bacon':
-                fg = pork_food_group
+        for i, name in enumerate(names):
+            if name == 'Chickpeas':
+                fd_group = legume_food_group
+            elif name == 'Bacon':
+                fd_group = pork_food_group
             else:
-                fg = veg_food_group
+                fd_group = veg_food_group
 
             food = Foods.objects.create(
-               name=names[i],
-               cals_per_gram=cals[i],
-               fat_per_gram=fat[i],
-               carbs_per_gram=carbs[i],
-               protein_per_gram=protein[i],
-               food_group = fg
+                name=name,
+                cals_per_gram=cals[i],
+                fat_per_gram=fat[i],
+                carbs_per_gram=carbs[i],
+                protein_per_gram=protein[i],
+                food_group=fd_group
             )
             foods.append(food)
 
         Servings.objects.create(
-            food=foods[2], grams=Decimal(11.5), quantity=Decimal(1), description='slice'
+            food=foods[2], grams=Decimal(11.5),
+            quantity=Decimal(1), description='slice'
         )
-        
 
     def test_make_macro_meal(self):
 
         self.this_setup()
-        user = self.initialize_test(self.USERNAME, self.PASSWORD)
+        self.initialize_test(self.USERNAME, self.PASSWORD)
         # self.create_default_meal_templates(user)
 
         # Joe now wants to make a meal that helps him achieve his macros
@@ -85,13 +74,13 @@ class MakeMacroMealTest(FunctionalTest):
 
         # He sees that the search filter is pre-selected on 'No Filter'
         # But he knows he wants veggies so he select the Veggie option.
-        no_filter =  self.browser.find_element_by_id(
+        no_filter = self.browser.find_element_by_id(
             'meal-maker-filter-none'
         )
-        veg_filter =  self.browser.find_element_by_id(
+        veg_filter = self.browser.find_element_by_id(
             'meal-maker-filter-veggies'
         )
-        meat_filter =  self.browser.find_element_by_id(
+        meat_filter = self.browser.find_element_by_id(
             'meal-maker-filter-meat'
         )
         # No filter initally checked
@@ -103,20 +92,20 @@ class MakeMacroMealTest(FunctionalTest):
         self.assertTrue(veg_filter.get_attribute('checked'))
         self.assertTrue(meat_filter.get_attribute('checked'))
         self.assertFalse(no_filter.get_attribute('checked'))
-        
+
         # No filter click clears the others
         no_filter.click()
         self.assertFalse(veg_filter.get_attribute('checked'))
         self.assertFalse(meat_filter.get_attribute('checked'))
-        
+
         # No check boxes at all selects no filter box
         meat_filter.click()
         meat_filter.click()
         self.assertTrue(no_filter.get_attribute('checked'))
 
         # He starts by typeing "chickpeas carrots lettuce bacon" in
-        # the search bar and 
-        # clicks the search icon. And he sees the area below the search 
+        # the search bar and clicks the search icon.
+        # And he sees the area below the search 
         # bar fill up with those food results
         search_results = self.search_and_results(
             "input[id='meal-maker-food-search-input']",
@@ -124,7 +113,6 @@ class MakeMacroMealTest(FunctionalTest):
             'search-result',
             ['chickpeas carrots lettuce bacon']
         )
-
         self.assertEqual(len(search_results), 4)
 
 
@@ -141,4 +129,15 @@ class MakeMacroMealTest(FunctionalTest):
         self.assertEqual(search_results[0].text, 'Bacon')
         self.assertEqual(len(search_results), 1)
 
-        self.fail('Finish Test!')
+        self.fill_input(
+            ["input[id='meal-maker-food-search-input']"], [], clear=True
+        )
+        veg_filter.click()
+        search_results = self.search_and_results(
+            "input[id='meal-maker-food-search-input']",
+            'food-search-icon-button',
+            'search-result',
+            ['chickpeas carrots lettuce bacon']
+        )
+        self.assertEqual(len(search_results), 4)
+

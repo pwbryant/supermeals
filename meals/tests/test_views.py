@@ -291,58 +291,67 @@ class MealMakerTest(BaseTestCase):
     ##helper functions
     #################################
     def create_foods_for_search(self, user):
-
-        Foods.objects.create(name='garbanzo beans', user=user)
-        Foods.objects.create(name='salted cod snacks', user=user)
-        Foods.objects.create(name='salted cod snacks and brisket', user=user)
-        Foods.objects.create(name='garbanzo beans no user')
-
-    def create_food_groups(self):
-        FoodGroup.objects.create(
+        veg_food_group = FoodGroup.objects.create(
             name='Vegatables',
             informal_name='Veggies',
             informal_rank=1
         )
-        FoodGroup.objects.create(
+        meat_food_group = FoodGroup.objects.create(
             name='Beef',
             informal_name='Meat',
             informal_rank=2
         )
 
+        Foods.objects.create(
+            name='garbanzo beans', user=user, food_group=veg_food_group
+        )
+        Foods.objects.create(
+            name='lettuce', user=user, food_group=veg_food_group
+        )
+        Foods.objects.create(
+            name='garbanzo beans no user', food_group=veg_food_group
+        )
+        Foods.objects.create(
+            name='brisket', user=user, food_group=meat_food_group
+        )
+
+
     def create_default_macro(self, user):
-            macro = Macros.objects.create(**{
-                    'user':user,
-                    'unit_type':'imperial',
-                    'gender':'male',
-                    'age':34,
-                    'direction':'lose',
-                    'activity':'light',
-                    'height':Decimal('177.8'),
-                    'weight':Decimal('95.25'),
-                    'change_rate':Decimal('.45359237'),
-                    'protein_percent':Decimal('33'),
-                    'fat_percent':Decimal('34')
-            })
-            return macro
-            
+        macro = Macros.objects.create(**{
+            'user':user,
+            'unit_type':'imperial',
+            'gender':'male',
+            'age':34,
+            'direction':'lose',
+            'activity':'light',
+            'height':Decimal('177.8'),
+            'weight':Decimal('95.25'),
+            'change_rate':Decimal('.45359237'),
+            'protein_percent':Decimal('33'),
+            'fat_percent':Decimal('34')
+        })
+        return macro
+
 
 
     #################################
     ##search
     #################################
-    def test_search_food_url_returns_food_dict_with_array_greater_than_0(self):
-        user = self.log_in_user(USERNAME,PASSWORD)
-        self.create_foods_for_search(user)
-        response = self.client.get('/meals/search-foods/all/',data={'search_terms':'garbanzo beans'})
-        response_dict = json.loads(response.content.decode())
-        self.assertTrue(len(response_dict['search-results']) > 0)
+    # def test_search_food_url_returns_food_dict_with_array_greater_than_0(self):
+    #     user = self.log_in_user(USERNAME, PASSWORD)
+    #     self.create_foods_for_search(user)
+    #     response = self.client.get(
+    #         '/meals/search-foods/all/', data={'search_terms':'garbanzo beans'}
+    #     )
+    #     response_dict = json.loads(response.content.decode())
+    #     self.assertTrue(len(response_dict['search-results']) > 0)
 
     def test_search_food_all_results_contain_at_least_1_search_term(self):
-        user = self.log_in_user(USERNAME,PASSWORD)
+        user = self.log_in_user(USERNAME, PASSWORD)
         self.create_foods_for_search(user)
         search_terms = 'garbanzo beans'
-        response = self.client.get('/meals/search-foods/all/',data={
-            'search_terms': search_terms
+        response = self.client.get('/meals/search-foods/all/', data={
+            'search_terms': search_terms, 'filters[]': ['Veggies']
         })
         response_dict = json.loads(response.content.decode())
         results = response_dict['search-results']
@@ -353,30 +362,56 @@ class MealMakerTest(BaseTestCase):
         self.assertTrue(results_containing_search_terms == len(results))
 
     def test_search_food_user_restrict_only_returns_user_foods(self):
-        user = self.log_in_user(USERNAME,PASSWORD)
+        user = self.log_in_user(USERNAME, PASSWORD)
         self.create_foods_for_search(user)
         search_terms = 'garbanzo beans'
-        response = self.client.get('/meals/search-foods/user/',data={
-            'search_terms': search_terms
+        response = self.client.get('/meals/search-foods/user/', data={
+            'search_terms': search_terms, 'filters[]': ['Veggies']
         })
         response_dict = json.loads(response.content.decode())
         results = response_dict['search-results']
         self.assertTrue(len(results) == 1)
 
+    def test_search_food_filters_based_food_group(self):
+        user = self.log_in_user(USERNAME, PASSWORD)
+        self.create_foods_for_search(user)
+        search_terms = 'garbanzo beans brisket'
+        response = self.client.get('/meals/search-foods/user/', data={
+            'search_terms': search_terms, 'filters[]': ['Veggies']
+        })
+        response_dict = json.loads(response.content.decode())
+        foods_returned = [d['name'] for d in response_dict['search-results']]
+        self.assertTrue('garbanzo beans' in foods_returned)
+        self.assertTrue('brisket' not in foods_returned)
+        self.assertTrue(len(foods_returned) == 1)
+
+    def test_search_food_no_filters_returns_all_results(self):
+        user = self.log_in_user(USERNAME, PASSWORD)
+        self.create_foods_for_search(user)
+        search_terms = 'garbanzo beans brisket'
+        response = self.client.get('/meals/search-foods/user/', data={
+            'search_terms': search_terms, 'filters[]': ['none']
+        })
+        response_dict = json.loads(response.content.decode())
+        foods_returned = [d['name'] for d in response_dict['search-results']]
+        self.assertTrue('garbanzo beans' in foods_returned)
+        self.assertTrue('brisket' in foods_returned)
+        self.assertTrue(len(foods_returned) == 2)
+
     #################################
     ##open tab
     #################################
     def test_meal_maker_url_renders_correct_template(self):
-        user = self.log_in_user(USERNAME,PASSWORD)
+        user = self.log_in_user(USERNAME, PASSWORD)
         self.create_default_macro(user)
 
         response = self.client.get('/meals/meal-maker/')
-        self.assertEqual(response.status_code,200)
-        self.assertTemplateUsed(response,'meals/meal_maker.html')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'meals/meal_maker.html')
 
     def test_get_meal_maker_context_contains_food_group_informal_names(self):
-        user = self.log_in_user(USERNAME,PASSWORD)
-        self.create_food_groups()
+        user = self.log_in_user(USERNAME, PASSWORD)
+        self.create_foods_for_search(user)
         response = self.client.get('/meals/meal-maker/')
         self.assertContains(response, 'Veggies')
         self.assertContains(response, 'Meat')

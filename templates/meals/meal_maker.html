@@ -78,12 +78,12 @@
     </div>
     <div id='meal-maker-food-search-sub-container' class='l-flex--row-start'>
         <div id='meal-maker-food-search-filter-container'>
-            <div class='radio-input l-flex--row-start'>
+            <div class='l-flex--row-start'>
                 <input id='meal-maker-filter-none' class='non-filter' type='checkbox' name='filter' value='none' checked />
                 <label for='meal-maker-filter-none'>No Filter</label>
             </div>
             {% for id, name in food_groups %}
-                <div class='radio-input l-flex--row-start'>
+                <div class='l-flex--row-start'>
                     <input id='meal-maker-filter-{{ id }}' class='filter' type='checkbox' name='filter' value='{{ name }}' />
                     <label for='meal-maker-filter-{{ id }}'>{{ name }}</label>
                 </div>

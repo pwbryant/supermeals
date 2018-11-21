@@ -267,6 +267,13 @@ def search_foods(request, food_owner):
     """
 
     search_terms = request.GET['search_terms'].split(' ')
+    filter_names = request.GET.getlist('filters[]')
+
+    if filter_names[0] == 'none':
+        filter_names = [
+            fg['informal_name'] for fg in
+            FoodGroup.objects.all().values('informal_name').distinct()
+        ]
 
     vector = SearchVector('name')
     terms_query = SearchQuery(search_terms[0])
@@ -278,6 +285,8 @@ def search_foods(request, food_owner):
         search_results = list(
             Foods.objects.filter(user=request.user).annotate(
                 rank=SearchRank(vector, terms_query)
+            ).filter(
+                food_group__informal_name__in=filter_names
             ).filter(rank__gte=0.001).order_by('-rank')[:50].values()
         )
 
@@ -285,6 +294,8 @@ def search_foods(request, food_owner):
         search_results = list(
             Foods.objects.annotate(
                 rank=SearchRank(vector, terms_query)
+            ).filter(
+                food_group__informal_name__in=filter_names
             ).filter(rank__gte=0.001).order_by('-rank')[:50].values()
         )
 
