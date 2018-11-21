@@ -16,7 +16,6 @@ class ElementPresentException(Exception):
 
 class MakeMacroMealTest(FunctionalTest):
 
-    # fixtures = ["db.json"]
 
     def this_setup(self):
 
@@ -174,11 +173,6 @@ class MakeMacroMealTest(FunctionalTest):
         self.assertEqual(save_meal_button.text, 'Save Meal')
         self.assertFalse(save_meal_button.is_enabled())
 
-        # To the right of that is a an input with the place holder
-        # "Search for ingredients" with a magnifying glass icon button
-        self.check_element_content(
-            'meal-maker-food-search-input', 'id', 'placeholder',
-            'Search For Food')
 
         # All the above only takes up the top of the page, the bottom
         # half contains a page wide div with the large text
@@ -194,36 +188,6 @@ class MakeMacroMealTest(FunctionalTest):
         self.fill_input(cals_input,[],clear=True)	
         self.fill_input(cals_input,cals_input_value)
         
-        # He sees that the search filter is pre-selected on 'No Filter'
-        # But he knows he wants veggies so he select the Veggie option.
-        no_filter =  self.browser.find_element_by_id(
-            'meal-maker-filter-none'
-        )
-        veg_filter =  self.browser.find_element_by_id(
-            'meal-maker-filter-veggies'
-        )
-        meat_filter =  self.browser.find_element_by_id(
-            'meal-maker-filter-meat'
-        )
-        # No filter initally checked
-        self.assertTrue(no_filter.get_attribute('checked'))
-
-        # Food filters check unselect non filter
-        veg_filter.click()
-        meat_filter.click()
-        self.assertTrue(veg_filter.get_attribute('checked'))
-        self.assertTrue(meat_filter.get_attribute('checked'))
-        self.assertFalse(no_filter.get_attribute('checked'))
-        
-        # No filter click clears the others
-        no_filter.click()
-        self.assertFalse(veg_filter.get_attribute('checked'))
-        self.assertFalse(meat_filter.get_attribute('checked'))
-        
-        # No check boxes at all selects no filter box
-        meat_filter.click()
-        meat_filter.click()
-        self.assertTrue(no_filter.get_attribute('checked'))
         # He starts by typeing "garbonzo beans" in the search bar and 
         # clicks the search icon. And he sees the area below the search 
         # bar fill up with the top 10 results
@@ -233,7 +197,6 @@ class MakeMacroMealTest(FunctionalTest):
             'search-result',
             ['chickpeas']
         )
-        #cself.assertEqual(len(search_results),50)
 
         # Joe clicks on the first result ( on the add + icon )
         # and notices that in the lower left, a series of rectangles

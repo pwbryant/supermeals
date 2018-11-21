@@ -172,7 +172,5 @@ class MyMealTests(FunctionalTest):
         self.assertEqual(ingredients[0].text, pretzels_str)
         self.assertEqual(ingredients[1].text, cheese_str)
 
-
-        
         self.fail('Finish Test!')
 
