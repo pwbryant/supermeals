@@ -6,13 +6,15 @@ from django.test import TestCase
 from django.urls import reverse
 from django.http import HttpRequest, QueryDict
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
 from django import forms
 
 from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, MacroIngredientForm, \
     DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR, \
     INVALID_USERNAME_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_WEIGHT_ERROR, \
     EMPTY_HEIGHT_ERROR
-from meals.models import Macros, Foods, Servings, Ingredients, FoodNotes
+from meals.models import Macros, Foods, FoodGroup ,Servings, Ingredients, \
+        FoodNotes
 from meals.views import save_my_macros, get_my_meals, \
     get_meal_maker_template, \
     make_macro_breakdown_dict_list, save_macro_meal, easy_picks, search_my_meals
@@ -46,11 +48,19 @@ class MyMealsTest(BaseTestCase):
         fourth_date = first_date - timedelta(days=3)
 
         self.ham_sandwich = Foods.objects.create(
-            name='Ham Sandwich', user=user
+            name='Ham Sandwich', user=user,
+            cals_per_gram=Decimal(1),
+            fat_per_gram=Decimal(1),
+            carbs_per_gram=Decimal(1),
+            protein_per_gram=Decimal(1)
         )
 
         self.pretzels_cheese = Foods.objects.create(
-            name='Pretzels and Cheese', user=user
+            name='Pretzels and Cheese', user=user,
+            cals_per_gram=Decimal(1),
+            fat_per_gram=Decimal(1),
+            carbs_per_gram=Decimal(1),
+            protein_per_gram=Decimal(1)
         )
         self.pretzels_cheese.date = second_date
         self.pretzels_cheese.save()
@@ -287,6 +297,17 @@ class MealMakerTest(BaseTestCase):
         Foods.objects.create(name='salted cod snacks and brisket', user=user)
         Foods.objects.create(name='garbanzo beans no user')
 
+    def create_food_groups(self):
+        FoodGroup.objects.create(
+            name='Vegatables',
+            informal_name='Veggies',
+            informal_rank=1
+        )
+        FoodGroup.objects.create(
+            name='Beef',
+            informal_name='Meat',
+            informal_rank=2
+        )
 
     def create_default_macro(self, user):
             macro = Macros.objects.create(**{
@@ -342,7 +363,6 @@ class MealMakerTest(BaseTestCase):
         results = response_dict['search-results']
         self.assertTrue(len(results) == 1)
 
-c = """
     #################################
     ##open tab
     #################################
@@ -352,10 +372,16 @@ c = """
 
         response = self.client.get('/meals/meal-maker/')
         self.assertEqual(response.status_code,200)
-        self.assertTemplateUsed(response,'meal_maker.html')
+        self.assertTemplateUsed(response,'meals/meal_maker.html')
 
+    def test_get_meal_maker_context_contains_food_group_informal_names(self):
+        user = self.log_in_user(USERNAME,PASSWORD)
+        self.create_food_groups()
+        response = self.client.get('/meals/meal-maker/')
+        self.assertContains(response, 'Veggies')
+        self.assertContains(response, 'Meat')
 
-    def test_make_meal_template_macro_breakdown_dict_returns_list_of_dicts(self):
+    def xtest_make_meal_template_macro_breakdown_dict_returns_list_of_dicts(self):
         user = self.log_in_user(USERNAME,PASSWORD)
         macro = self.create_default_macro(user)
         self.create_default_meal_templates(user)
@@ -369,7 +395,7 @@ c = """
         response = self.client.get('/meals/meal-maker/')
         self.assertIsInstance(response.context['macro_meal_form'], MacroMealForm)
 
-    def test_get_meal_maker_template_no_macro_returns_correct_html(self):
+    def xtest_get_meal_maker_template_no_macro_returns_correct_html(self):
             
         user = self.log_in_user(USERNAME,PASSWORD)
 
@@ -381,7 +407,7 @@ c = """
         self.assertIn('%',response.content.decode())
         self.assertNotIn('id_goal_meal_cals_select',response.content.decode())
             
-    def test_get_meal_maker_template_has_macro_returns_correct_html(self):
+    def xtest_get_meal_maker_template_has_macro_returns_correct_html(self):
             
         user = self.log_in_user(USERNAME,PASSWORD)
         default_macro = self.create_default_macro(user)
@@ -400,6 +426,7 @@ c = """
         self.assertIn('goal-meal-cals-select',response.content.decode())
 
 
+c = """
 class LoginLogoffTest(TestCase):
     
     def test_anonymous_user_home_redirects_to_login_template(self):

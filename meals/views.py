@@ -11,10 +11,12 @@ from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 from django.core.serializers.json import DjangoJSONEncoder
 from django import forms
 
-from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, MacroIngredientForm
-from meals.models import Macros, Foods, Ingredients, Servings, FoodNotes
+from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
+        MacroIngredientForm
+from meals.models import Macros, Foods, FoodGroup, Ingredients, Servings, \
+        FoodNotes
 from meals.helpers import get_ingredient_count, make_ingredient_formset, \
-save_meal_notes_ingredients
+        save_meal_notes_ingredients
 
 
 # Constants
@@ -227,15 +229,23 @@ def get_meal_maker_template(request):
         tdee = macro.calc_tdee()
 
         macro_breakdown_dict_list = make_macro_breakdown_dict_list(macro)
-        template_data = {
+        context = {
             'tdee':round(tdee),
             'macro_breakdown':macro_breakdown_dict_list,
             'macro_meal_form': form
         }
     else:
-        template_data = {'macro_meal_form': form}
+        context = {'macro_meal_form': form}
 
-    return render(request, TEMPLATES_DIR + 'meal_maker.html', template_data)
+    # informal name to use in input id, and to use in label
+    context['food_groups'] = [
+        (
+            fg['informal_name'].lower().replace(' ','-'),
+            fg['informal_name'],
+        ) for fg in
+        FoodGroup.objects.all().values('informal_name').distinct()
+    ]
+    return render(request, TEMPLATES_DIR + 'meal_maker.html', context)
 
 
 def search_foods(request, food_owner):

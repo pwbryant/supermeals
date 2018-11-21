@@ -36,13 +36,28 @@ let SEARCH = (function() {
             }
         },
 
-        format_food_search_results : function(search_results) {
+        format_food_search_results: function(search_results) {
 
             var search_results_html = '';	
             search_results.forEach(function(e,i) {
-                search_results_html += "<div class='search-result'><span>" + e.name + "</span><button id='search-result-food-" + i + "' class='icon'><i class='fa fa-plus'></i></button></div>"; 
+                search_results_html += "<div class='search-result l-flex--row-start'><button id='search-result-food-" + i + "' class='icon search-result__button bm-margin--sm-right'><i class='fa fa-plus'></i></button><div class='search-result__name'>" + e.name + "</div></div>"; 
             });
             return search_results_html;
+        },
+
+        // tested in FT
+        filter_checkbox_behavior: function() {
+            $('.filter, .non-filter').on('click', function() {
+                if (this.checked == true && this.id != 'meal-maker-filter-none') {
+                    $('#meal-maker-filter-none').prop('checked', false);
+                } 
+                if (this.checked == true && this.id == 'meal-maker-filter-none') {
+                    $('.filter').prop('checked', false);
+                }
+                if ($('input[type="checkbox"]:checked').length == 0) {
+                    $('#meal-maker-filter-none').prop('checked', true);
+                }   
+            });
         }
     }
 })();

@@ -90,7 +90,7 @@ DATABASES = {
     #}
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'meal_maker',
+        'NAME': 'meal_maker_new_db',
         'USER': 'paul',
         'PASSWORD': 'password',
         'HOST': 'localhost',

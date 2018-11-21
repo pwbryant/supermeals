@@ -7,7 +7,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.select import Select
 
 from .base import FunctionalTest
-from meals.models import Foods, Servings, Ingredients
+from meals.models import Foods, FoodGroup, Servings, Ingredients
 
 class ElementPresentException(Exception):
 
@@ -20,6 +20,22 @@ class MakeMacroMealTest(FunctionalTest):
 
     def this_setup(self):
 
+        veg_food_group = FoodGroup.objects.create(
+            name='Vegatables',
+            informal_name='Veggies',
+            informal_rank=1
+        )
+        legume_food_group = FoodGroup.objects.create(
+            name='Legumes',
+            informal_name='Veggies',
+            informal_rank=1
+        )
+        pork_food_group = FoodGroup.objects.create(
+            name='Pork',
+            informal_name='Meat',
+            informal_rank=2
+        )
+
         names = ['Chickpeas', 'Carrots', 'Bacon', 'Lettuce']
         cals = [1.3800, 0.3500, 4.6800, 0.1600]
         fat = [0.2223, 0.0117, 3.1581, 0.0198]
@@ -28,12 +44,19 @@ class MakeMacroMealTest(FunctionalTest):
         
         foods = []
         for i in range(len(names)):
+            if names[i] == 'Chickpeas':
+                fg = legume_food_group
+            elif names[i] == 'Bacon':
+                fg = pork_food_group
+            else:
+                fg = veg_food_group
             food = Foods.objects.create(
                name=names[i],
                cals_per_gram=cals[i],
                fat_per_gram=fat[i],
                carbs_per_gram=carbs[i],
                protein_per_gram=protein[i],
+               food_group = fg
             )
             foods.append(food)
 
@@ -284,8 +307,38 @@ class MakeMacroMealTest(FunctionalTest):
         cals_input = ["input[id='goal-meal-cals']"]
         cals_input_value = ["600"]
         self.fill_input(cals_input,[],clear=True)	
-        self.fill_input(cals_input,cals_input_value)	
+        self.fill_input(cals_input,cals_input_value)
+        
+        # He sees that the search filter is pre-selected on 'No Filter'
+        # But he knows he wants veggies so he select the Veggie option.
+        no_filter =  self.browser.find_element_by_id(
+            'meal-maker-filter-none'
+        )
+        veg_filter =  self.browser.find_element_by_id(
+            'meal-maker-filter-veggies'
+        )
+        meat_filter =  self.browser.find_element_by_id(
+            'meal-maker-filter-meat'
+        )
+        # No filter initally checked
+        self.assertTrue(no_filter.get_attribute('checked'))
 
+        # Food filters check unselect non filter
+        veg_filter.click()
+        meat_filter.click()
+        self.assertTrue(veg_filter.get_attribute('checked'))
+        self.assertTrue(meat_filter.get_attribute('checked'))
+        self.assertFalse(no_filter.get_attribute('checked'))
+        
+        # No filter click clears the others
+        no_filter.click()
+        self.assertFalse(veg_filter.get_attribute('checked'))
+        self.assertFalse(meat_filter.get_attribute('checked'))
+        
+        # No check boxes at all selects no filter box
+        meat_filter.click()
+        meat_filter.click()
+        self.assertTrue(no_filter.get_attribute('checked'))
         # He starts by typeing "garbonzo beans" in the search bar and 
         # clicks the search icon. And he sees the area below the search 
         # bar fill up with the top 10 results

@@ -90,6 +90,12 @@ class FoodGroup(models.Model):
     """ USDA DB Food Group"""
 
     name = models.TextField(blank=False, unique=True)
+    informal_name = models.TextField(blank=False)
+    informal_rank = models.IntegerField(blank=True, null=True)
+
+
+    class Meta:
+        ordering = ('informal_rank',)
 
     def __repr__(self):
         return '{}'.format(self.name)
@@ -110,10 +116,12 @@ class Foods(models.Model):
     protein_per_gram = models.DecimalField(
         max_digits=6, decimal_places=4, blank=False, null=True
     )
-
+    sugar_per_gram = models.DecimalField(
+        max_digits=6, decimal_places=4, blank=False, null=True
+    )
     date = models.DateTimeField(auto_now_add=True, null=True)
-
     food_type = models.ForeignKey('FoodType', null=True)
+    food_group = models.ForeignKey('FoodGroup', null=True)
 
     user = models.ForeignKey(User, null=True)
 
