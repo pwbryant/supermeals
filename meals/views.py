@@ -16,7 +16,7 @@ from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
 from meals.models import Macros, Foods, FoodGroup, Ingredients, Servings, \
         FoodNotes
 from meals.helpers import get_ingredient_count, make_ingredient_formset, \
-        save_meal_notes_ingredients
+        save_meal_notes_ingredients, get_search_results
 
 
 # Constants
@@ -240,7 +240,7 @@ def get_meal_maker_template(request):
     # informal name to use in input id, and to use in label
     context['food_groups'] = [
         (
-            fg['informal_name'].lower().replace(' ','-'),
+            fg['informal_name'].lower().replace(' ', '-'),
             fg['informal_name'],
         ) for fg in
         FoodGroup.objects.all().values('informal_name').distinct()
@@ -266,47 +266,7 @@ def search_foods(request, food_owner):
         search results as json
     """
 
-    search_terms = request.GET['search_terms'].split(' ')
-    filter_names = request.GET.getlist('filters[]')
-
-    if filter_names[0] == 'none':
-        filter_names = [
-            fg['informal_name'] for fg in
-            FoodGroup.objects.all().values('informal_name').distinct()
-        ]
-
-    vector = SearchVector('name')
-    terms_query = SearchQuery(search_terms[0])
-
-    for term in search_terms[1:]:
-        terms_query |= SearchQuery(term)
-
-    if food_owner == 'user':
-        search_results = list(
-            Foods.objects.filter(user=request.user).annotate(
-                rank=SearchRank(vector, terms_query)
-            ).filter(
-                food_group__informal_name__in=filter_names
-            ).filter(rank__gte=0.001).order_by('-rank')[:50].values()
-        )
-
-    elif food_owner == 'all':
-        search_results = list(
-            Foods.objects.annotate(
-                rank=SearchRank(vector, terms_query)
-            ).filter(
-                food_group__informal_name__in=filter_names
-            ).filter(rank__gte=0.001).order_by('-rank')[:50].values()
-        )
-
-    else:
-        assert 1 == 0
-
-    # add servings
-    for result in search_results:
-        result['servings'] = list(Servings.objects.filter(
-            food__pk=result['id']
-        ).values('quantity', 'grams', 'description'))
+    search_results = get_search_results(request, food_owner)
 
     return HttpResponse(
         json.dumps(
@@ -317,11 +277,11 @@ def search_foods(request, food_owner):
 
 def save_macro_meal(request):
     """saves the models associated with a 'macro meal'
-    
+
     Takes two forms and saves the info to make a 'macro meal'
     which is compromised of Foods, Ingredients, and FoodNotes
     models
-    
+
     Parameters
     ----------
     request: HttpRequest instance
@@ -339,14 +299,10 @@ def save_macro_meal(request):
 
     context = {'status': 0, 'errors': ''}
     if meal_form.is_valid() and ingredient_formset.is_valid():
-        print('form is valid')
         save_meal_notes_ingredients(request.user, meal_form, ingredient_formset)
         context['status'] = 1
 
     else:
-        print('form is invalid')
-        print(meal_form.errors)
-        print(ingredient_formset.errors)
         context['status'] = 0
         meal_error_dict = dict([(k, [e for e in v]) for k,v in meal_form.errors.items()])
         context['errors'] = simplejson.dumps(meal_error_dict)

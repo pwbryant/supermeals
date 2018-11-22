@@ -1,10 +1,8 @@
-from django.core.exceptions import ValidationError
-from django.db import IntegrityError
 from django import forms
+from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 
-from meals.models import Foods, Ingredients, Servings, FoodNotes
+from meals.models import Foods, FoodGroup, Ingredients, Servings, FoodNotes
 from meals.forms import MacroIngredientForm
-from decimal import Decimal
 
 
 def get_ingredient_count(post_data):
@@ -32,7 +30,7 @@ def get_ingredient_count(post_data):
 
 def make_ingredient_formset(request):
     """makes a formset to save multiple ingredients
-    
+
     A variable number of Ingredients are submitted and a
     formset is used to handled the validation of all them.
 
@@ -40,7 +38,7 @@ def make_ingredient_formset(request):
     ----------
     request: HttpRequest object
         Hold the POST data
-    
+
     Returns
     ----------
     ingredient_formset: form.formset instance
@@ -63,7 +61,7 @@ def make_ingredient_formset(request):
 
 def save_meal_notes_ingredients(user, meal_form, ingredient_formset):
     """saves the validated forms
-    
+
     Saves the validated forms for Foods, Ingredients, and FoodNotes.
 
     Parameters
@@ -91,3 +89,49 @@ def save_meal_notes_ingredients(user, meal_form, ingredient_formset):
     new_food.set_macros_per_gram()
     new_food.save()
 
+def get_search_results(request, food_owner):
+
+    search_terms = request.GET['search_terms'].split(' ')
+    filter_names = request.GET.getlist('filters[]')
+
+    # 'none' indicates that no-filter was select, therefore all food groups
+    # should be searched
+    if filter_names[0] == 'none':
+        filter_names = [
+            fg['informal_name'] for fg in
+            FoodGroup.objects.all().values('informal_name').distinct()
+        ]
+
+    # build query
+    vector = SearchVector('name')
+    terms_query = SearchQuery(search_terms[0])
+
+    for term in search_terms[1:]:
+        terms_query |= SearchQuery(term)
+
+    # below if statements handle wether to restrict to only user created foods
+    if food_owner == 'user':
+        search_results = list(
+            Foods.objects.filter(user=request.user).annotate(
+                rank=SearchRank(vector, terms_query)
+            ).filter(
+                food_group__informal_name__in=filter_names
+            ).filter(rank__gte=0.001).order_by('-rank')[:50].values()
+        )
+
+    if food_owner == 'all':
+        search_results = list(
+            Foods.objects.annotate(
+                rank=SearchRank(vector, terms_query)
+            ).filter(
+                food_group__informal_name__in=filter_names
+            ).filter(rank__gte=0.001).order_by('-rank')[:50].values()
+        )
+
+    # add servings
+    for result in search_results:
+        result['servings'] = list(Servings.objects.filter(
+            food__pk=result['id']
+        ).values('quantity', 'grams', 'description'))
+
+    return search_results
