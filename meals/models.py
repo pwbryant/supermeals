@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator,MinValueValidator
+from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
+
 from decimal import Decimal
 # Create your models here.
 
@@ -76,7 +78,6 @@ class Macros(models.Model):
         return tdee
 
 
-
 class FoodType(models.Model):
     """ Designates Food as Meal, Recipe, or Food"""
 
@@ -99,6 +100,110 @@ class FoodGroup(models.Model):
 
     def __repr__(self):
         return '{}'.format(self.name)
+
+
+class SearchFoods(models.Manager):
+
+    def filter_on_user(self, user):
+
+        return self.get_queryset().filter(user=user)
+
+
+    def rank_with_terms_and_filters(self,
+            rank_on_field,
+            rank_by_values, 
+            filters,
+            rank_threshold,
+            limit,
+            result_fields,
+            query_set=None):
+
+        rank_on_field = SearchVector(rank_on_field)
+        rank_by_values = self.make_query(rank_by_values)
+
+        if query_set is None:
+            query_set = self.get_queryset()
+
+        query_set = query_set.annotate(
+            rank=SearchRank(rank_on_field, rank_by_values)
+            ).filter(
+                food_group__informal_name__in=filters
+           ).filter(
+                rank__gte=rank_threshold
+            ).order_by('-rank').prefetch_related('servings')
+            
+        return query_set.values(*result_fields)[:limit]
+
+    
+    def make_query(self, search_terms):
+
+        query = SearchQuery(search_terms[0])
+        for term in search_terms[1:]:
+            query |= SearchQuery(term)
+
+        return query
+
+
+    def restructure_food_and_servings_queryset(self, search_results):
+
+        search_results_dict = {}
+        for result in search_results:
+            food_name = result['name']
+            if food_name not in search_results_dict:
+                result.update({'servings': []})
+                search_results_dict[food_name] = result
+
+            servings = dict(
+                (key, item,) for key, item in result.items()
+                if key.startswith('servings__')
+            )
+            search_results_dict[food_name]['servings'].append(servings)
+            search_results_dict[food_name] = dict(
+                (key, item,) for key, item in search_results_dict[food_name].items()
+                if not key.startswith('servings__')
+                )
+
+        search_results = list( search_results_dict.values() )
+
+        return search_results
+        
+
+    def restructure_ingredients_queryset_to_dict(self, query_set):
+        search_results_dict = {'meals':[], 'meal_info':{}}
+        for result in query_set:
+            meal_id = result['id']
+            if meal_id not in search_results_dict['meal_info']:
+                meal_name = result['name']
+                macros_profile = Foods.objects.get(pk=meal_id).get_macros_profile()
+                search_results_dict['meal_info'][meal_id] = []
+                search_results_dict['meals'].append(
+                    {'name':meal_name, 'id':meal_id, 'macros_profile': macros_profile}
+                )
+            search_results_dict['meal_info'][meal_id].append(result)
+
+        return search_results_dict
+
+
+    def add_nested_ingredients_to_ingredient_dict(self, ingredient_dict,
+            fields_of_interest):
+
+        for id_ in ingredient_dict['meal_info']:
+            for ing_dict in ingredient_dict['meal_info'][id_]:
+                get_nested_ingredients(ing_dict, fields_of_interest)
+
+
+    def get_nested_ingredients(self, ing_dict, fields_of_interest):
+        ing_food_id = ing_dict['ingredient__id']
+        ings = Ingredients.objects.filter(
+            main_food=ing_food_id
+        ).values(*fields_of_interest)
+        if ings.count():
+            ing_dict['meal_info'] = {ing_food_id:[]}
+            for sub_ing_dict in ings:
+                ing_dict['meal_info'][ing_food_id].append(sub_ing_dict)
+                get_nested_ingredients(sub_ing_dict, fields_of_interest)
+
+        return ing_dict
 
 
 class Foods(models.Model):
@@ -125,19 +230,20 @@ class Foods(models.Model):
 
     user = models.ForeignKey(User, null=True)
 
+    objects = models.Manager()
+    searcher = SearchFoods()
+
     def as_dict(self):
         return {
-            "name": self.name,
-            "cals_per_gram": self.cals_per_gram,
-            "fat_per_gram": self.fat_per_gram,
-            "carbs_per_gram": self.carbs_per_gram,
-            "protein_per_gram": self.protein_per_gram
+            'name': self.name,
+            'cals_per_gram': self.cals_per_gram,
+            'fat_per_gram': self.fat_per_gram,
+            'carbs_per_gram': self.carbs_per_gram,
+            'protein_per_gram': self.protein_per_gram
         }
-
 
     def __repr__(self):
         return '{}'.format(self.name)
-
 
     def set_macros_per_gram(self):
                 

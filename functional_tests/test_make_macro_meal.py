@@ -205,6 +205,8 @@ class MakeMacroMealTest(FunctionalTest):
         # The left-most rectangle has a small drag box at the bottom.
         chickpea_id = '1'
         search_results[0].find_elements_by_class_name("icon")[0].click()
+        time.sleep(10)
+
         food_container = self.browser.find_element_by_id(
                 'food-{}-container'.format(chickpea_id)
         ) 

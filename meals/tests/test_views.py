@@ -315,6 +315,11 @@ class MealMakerTest(BaseTestCase):
             name='brisket', user=user, food_group=meat_food_group
         )
 
+        self.all_filters = [
+            v['informal_name'] for v in
+            FoodGroup.objects.all().values('informal_name').distinct()
+        ]
+
 
     def create_default_macro(self, user):
         macro = Macros.objects.create(**{
@@ -385,12 +390,12 @@ class MealMakerTest(BaseTestCase):
         self.assertTrue('brisket' not in foods_returned)
         self.assertTrue(len(foods_returned) == 1)
 
-    def test_search_food_no_filters_returns_all_results(self):
+    def test_search_food_all_filters_returns_all_results(self):
         user = self.log_in_user(USERNAME, PASSWORD)
         self.create_foods_for_search(user)
         search_terms = 'garbanzo beans brisket'
         response = self.client.get('/meals/search-foods/user/', data={
-            'search_terms': search_terms, 'filters[]': ['none']
+            'search_terms': search_terms, 'filters[]': self.all_filters
         })
         response_dict = json.loads(response.content.decode())
         foods_returned = [d['name'] for d in response_dict['search-results']]

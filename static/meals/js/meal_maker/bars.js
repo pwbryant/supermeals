@@ -241,6 +241,8 @@ if (macro != 'cals') {
         create_food_macros_obj : function({search_button_id,bars_obj}) { 
             const search_result_index = parseFloat(search_button_id.split('-')[3]);
             const food_macros_obj = bars_obj.SEARCH_RESULTS[search_result_index];
+            console.log('index', search_result_index);
+            console.log('food_macros_obj', food_macros_obj);
             food_macros_obj.food_order = bars_obj.FOOD_COUNT;
             food_macros_obj.cal_goal = bars_obj.MGOAL.CAL_GOAL;
             food_macros_obj.food_amt = 0;
@@ -322,6 +324,7 @@ if (macro != 'cals') {
         
         // tested
         create_food_macro_containers : function(food_macros_obj) {
+            console.log('food_macros_obj', food_macros_obj)
             const food_id = food_macros_obj.id;
             let food_div = `<div id='food-${food_id}-container' class='food-container'>`;
             let food_name = food_macros_obj.name;

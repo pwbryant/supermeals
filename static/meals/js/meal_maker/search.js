@@ -15,9 +15,19 @@ let SEARCH = (function() {
         // tested in Functional Tests
         meal_maker_food_search : function(search_obj) { 
             const search_terms = $.trim($('#meal-maker-food-search-input').val());
-            const filters = $('input[name="filter"]:checked').map(function(i, filter) {
-                return filter.value
-            }).toArray();
+
+            let filters = [];
+            if ($('#meal-maker-filter-none').prop('checked')) {
+                filters = $('.filter:not(checked)').map(function(i, filter) {
+                    return filter.value
+                }).toArray();
+                
+            } else {
+                filters = $('input[name="filter"]:checked').map(function(i, filter) {
+                    return filter.value
+                }).toArray();
+            }
+
             if(search_terms != '') {
                 const get_data = {"search_terms": search_terms, "filters": filters}
                 $.get('/meals/search-foods/all/', get_data, function(data) {
