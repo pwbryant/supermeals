@@ -178,6 +178,9 @@ class MacroMealMakerTest(BaseTestCase):
 
         self.food_type_food = FoodType.objects.create(name='food')
         self.food_type_meal = FoodType.objects.create(name='meal')
+        self.food_group_meal = FoodGroup.objects.create(
+            name='meal', informal_name='My Meals'
+        )
 
         self.ingredient1 = Foods.objects.create(
             name='veggie pulled pork',
@@ -261,6 +264,7 @@ class MacroMealMakerTest(BaseTestCase):
         self.assertEqual(notes.count(), 1)
 
         self.assertEqual(self.food_type_meal, main_food.food_type)
+        self.assertEqual(self.food_group_meal, main_food.food_group)
 
     def test_get_ingredient_count(self):
 

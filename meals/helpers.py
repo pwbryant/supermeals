@@ -85,6 +85,10 @@ def save_meal_notes_ingredients(user, meal_form, ingredient_formset):
     food_type_meal = FoodType.objects.get(name='meal')
     new_food.food_type = food_type_meal
 
+    # Add meal food group
+    food_group_meal = FoodGroup.objects.get(name='meal')
+    new_food.food_group = food_group_meal
+
     for ing_form in ingredient_formset:
         new_ing = ing_form.save(commit=False)
         new_ing.main_food = new_food

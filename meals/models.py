@@ -99,7 +99,7 @@ class FoodGroup(models.Model):
         ordering = ('informal_rank',)
 
     def __repr__(self):
-        return '{}'.format(self.name)
+        return f'{self.name}, {self.informal_name}, {self.informal_rank}'
 
 
 class SearchFoods(models.Manager):
