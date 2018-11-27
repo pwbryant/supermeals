@@ -56,6 +56,22 @@ class MakeMacroMealTest(FunctionalTest):
             quantity=Decimal(1), description='slice'
         )
 
+    def search_terms(self, terms, filters):
+
+        self.fill_input(
+            ["input[id='meal-maker-food-search-input']"], [], clear=True
+        )
+
+        for filter_ in filters:
+            filter_.click()
+
+        return self.search_and_results(
+            "input[id='meal-maker-food-search-input']",
+            'food-search-icon-button',
+            'search-result',
+            terms
+        )
+
     def test_make_macro_meal(self):
 
         self.this_setup()
@@ -105,39 +121,20 @@ class MakeMacroMealTest(FunctionalTest):
 
         # He starts by typeing "chickpeas carrots lettuce bacon" in
         # the search bar and clicks the search icon.
-        # And he sees the area below the search 
+        # And he sees the area below the search
         # bar fill up with those food results
-        search_results = self.search_and_results(
-            "input[id='meal-maker-food-search-input']",
-            'food-search-icon-button',
-            'search-result',
-            ['chickpeas carrots lettuce bacon']
-        )
+        search_terms = ['chickpeas carrots lettuce bacon']
+
+        search_results = self.search_terms(search_terms, [no_filter])
         self.assertEqual(len(search_results), 4)
 
-
-        self.fill_input(
-            ["input[id='meal-maker-food-search-input']"], [], clear=True
-        )
-        meat_filter.click()
-        search_results = self.search_and_results(
-            "input[id='meal-maker-food-search-input']",
-            'food-search-icon-button',
-            'search-result',
-            ['chickpeas carrots lettuce bacon']
-        )
+        search_results = self.search_terms(search_terms, [meat_filter])
         self.assertEqual(search_results[0].text, 'Bacon')
         self.assertEqual(len(search_results), 1)
 
-        self.fill_input(
-            ["input[id='meal-maker-food-search-input']"], [], clear=True
-        )
-        veg_filter.click()
-        search_results = self.search_and_results(
-            "input[id='meal-maker-food-search-input']",
-            'food-search-icon-button',
-            'search-result',
-            ['chickpeas carrots lettuce bacon']
-        )
+        search_results = self.search_terms(search_terms, [veg_filter])
+        self.assertEqual(len(search_results), 4)
+
+        search_results = self.search_terms(search_terms, [meat_filter, veg_filter])
         self.assertEqual(len(search_results), 4)
 

@@ -14,7 +14,7 @@ from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, MacroIngredie
     INVALID_USERNAME_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_WEIGHT_ERROR, \
     EMPTY_HEIGHT_ERROR
 from meals.models import Macros, Foods, FoodGroup ,Servings, Ingredients, \
-        FoodNotes
+        FoodNotes, FoodType
 from meals.views import save_my_macros, get_my_meals, \
     get_meal_maker_template, \
     make_macro_breakdown_dict_list, save_macro_meal, easy_picks, search_my_meals
@@ -38,7 +38,6 @@ class MyMealsTest(BaseTestCase):
 
     def setUp(self):
         self.user = self.log_in_user(USERNAME, PASSWORD)
-
 
     def create_meals(self, user):
 
@@ -177,12 +176,16 @@ class MacroMealMakerTest(BaseTestCase):
 
         self.log_in_user(USERNAME, PASSWORD)
 
+        self.food_type_food = FoodType.objects.create(name='food')
+        self.food_type_meal = FoodType.objects.create(name='meal')
+
         self.ingredient1 = Foods.objects.create(
             name='veggie pulled pork',
             cals_per_gram='1.6456',
             fat_per_gram='0.3418',
             carbs_per_gram='0.1519',
-            protein_per_gram='1.1646'
+            protein_per_gram='1.1646',
+            food_type=self.food_type_food
         )
 
         self.srv1 = Servings.objects.create(
@@ -197,7 +200,8 @@ class MacroMealMakerTest(BaseTestCase):
             cals_per_gram='1.7200',
             fat_per_gram='0.0567', 
             carbs_per_gram='1.6308', 
-            protein_per_gram='0.0328' 
+            protein_per_gram='0.0328',
+            food_type=self.food_type_food
         )
 
         self.srv2 = Servings.objects.create(
@@ -210,8 +214,6 @@ class MacroMealMakerTest(BaseTestCase):
         self.ingredient_form_factory = forms.formset_factory(
             MacroIngredientForm, extra=2
         )
-
-
 
         self.food_amt_dict = {
             # added long decimals to test that they get rounded
@@ -258,6 +260,7 @@ class MacroMealMakerTest(BaseTestCase):
         notes = FoodNotes.objects.filter(food=main_food)
         self.assertEqual(notes.count(), 1)
 
+        self.assertEqual(self.food_type_meal, main_food.food_type)
 
     def test_get_ingredient_count(self):
 

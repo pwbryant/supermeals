@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 
-from meals.models import Foods, FoodGroup, Ingredients, Servings, FoodNotes
+from meals.models import Foods, FoodGroup, Ingredients, Servings, FoodNotes, FoodType
 from meals.forms import MacroIngredientForm
 
 
@@ -80,6 +80,10 @@ def save_meal_notes_ingredients(user, meal_form, ingredient_formset):
     if meal_form.cleaned_data.get('notes'):
         notes = meal_form.cleaned_data.get('notes')
         FoodNotes.objects.create(food=new_food, notes=notes)
+
+    # Add meal food type
+    food_type_meal = FoodType.objects.get(name='meal')
+    new_food.food_type = food_type_meal
 
     for ing_form in ingredient_formset:
         new_ing = ing_form.save(commit=False)
