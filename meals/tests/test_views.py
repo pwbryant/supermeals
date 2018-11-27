@@ -65,24 +65,36 @@ class MyMealsTest(BaseTestCase):
         self.pretzels_cheese.date = second_date
         self.pretzels_cheese.save()
 
-        self.pretzels = Foods.objects.create(name='Pretzels', user=user)
+        self.pretzels = Foods.objects.create(
+            name='Pretzels',
+            cals_per_gram=Decimal(1),
+            fat_per_gram=Decimal(1),
+            carbs_per_gram=Decimal(1),
+            protein_per_gram=Decimal(1)
+        )
         self.pretzels.date = third_date
         self.pretzels.save()
 
         self.pretzels_srv = Servings.objects.create(
             food=self.pretzels,
-            grams=100,
+            grams=Decimal(100),
             quantity=1,
             description='bag'
         )
 
-        self.cheese = Foods.objects.create(name='Cheese', user=user)
+        self.cheese = Foods.objects.create(
+            name='Cheese',
+            cals_per_gram=Decimal(1),
+            fat_per_gram=Decimal(1),
+            carbs_per_gram=Decimal(1),
+            protein_per_gram=Decimal(1)
+        )
         self.cheese.date = fourth_date
         self.cheese.save()
 
         self.cheese_srv = Servings.objects.create(
             food=self.cheese,
-            grams=10,
+            grams=Decimal(10),
             quantity=2,
             description='slice'
         )
@@ -140,14 +152,14 @@ class MyMealsTest(BaseTestCase):
         meal_id = list(response['search-results']['meal_info'].keys())[0]
         results = response['search-results']['meal_info'][meal_id]
 
-        main_food_name = results[0]['main_food__name']
-        ingredient1_name = results[0]['ingredient__name']
-        serving1_amount = Decimal(results[0]['amount'])
-        serving1_desc =  results[0]['serving__description']
+        main_food_name = results[0]['name']
+        ingredient1_name = results[0]['main_food__ingredient__name']
+        serving1_amount = Decimal(results[0]['main_food__amount'])
+        serving1_desc =  results[0]['main_food__serving__description']
 
-        ingredient2_name = results[1]['ingredient__name']
-        serving2_amount = Decimal(results[1]['amount'])
-        serving2_desc = results[1]['serving__description']
+        ingredient2_name = results[1]['main_food__ingredient__name']
+        serving2_amount = Decimal(results[1]['main_food__amount'])
+        serving2_desc = results[1]['main_food__serving__description']
 
         self.assertEqual(main_food_name, self.pretzels_cheese.name)
         self.assertEqual(ingredient1_name, self.pretzels.name)

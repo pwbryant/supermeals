@@ -50,7 +50,6 @@ var BARS = (function() {
         add_food : function() {
 			bars_obj = this;
 			$('.search-result>button').on('click',function() {
-                console.log('result clicked');
                 bars_obj.FOOD_COUNT += 1;
 
                 // create food macros obj
@@ -241,8 +240,6 @@ if (macro != 'cals') {
         create_food_macros_obj : function({search_button_id,bars_obj}) { 
             const search_result_index = parseFloat(search_button_id.split('-')[3]);
             const food_macros_obj = bars_obj.SEARCH_RESULTS[search_result_index];
-            console.log('index', search_result_index);
-            console.log('food_macros_obj', food_macros_obj);
             food_macros_obj.food_order = bars_obj.FOOD_COUNT;
             food_macros_obj.cal_goal = bars_obj.MGOAL.CAL_GOAL;
             food_macros_obj.food_amt = 0;
@@ -280,13 +277,15 @@ if (macro != 'cals') {
                 .range([0,food_g_in_goal_cals]);
 
             food_macros_obj['servings'].forEach(function(servings_obj, i) {
-                const servings_g = parseFloat(servings_obj['grams']);
-                const quantity = parseFloat(servings_obj['quantity']);
+                const servings_g = parseFloat(servings_obj['servings__grams']);
+                const quantity = parseFloat(servings_obj['servings__quantity']);
                 const servings_in_food_g = food_g_in_goal_cals / (servings_g / quantity);
                 food_macros_obj['servings_scales'][`cal_bar_height_to_unit_scale_${i+1}`] = d3
                     .scaleLinear()
                     .domain([0,food_macros_obj.cal_bar_height])
                     .range([0,servings_in_food_g]);
+                 
+
             });
 
             food_macros_obj['cal_bar_height_to_unit_scale']= food_macros_obj['servings_scales']['cal_bar_height_to_unit_scale_0'];
@@ -324,7 +323,6 @@ if (macro != 'cals') {
         
         // tested
         create_food_macro_containers : function(food_macros_obj) {
-            console.log('food_macros_obj', food_macros_obj)
             const food_id = food_macros_obj.id;
             let food_div = `<div id='food-${food_id}-container' class='food-container'>`;
             let food_name = food_macros_obj.name;
@@ -342,7 +340,7 @@ if (macro != 'cals') {
             food_div += `<select id='food-amt-units-${food_id}' class='food-amt-units'>`;
             food_div += `<option value='0'>g</option>`;
             food_macros_obj['servings'].forEach(function(obj, i) {
-                food_div += `<option value='${i+1}'>${obj.description}</option>`;
+                food_div += `<option value='${i+1}'>${obj.servings__description}</option>`;
             });
             food_div += '</select>';
                 

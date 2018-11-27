@@ -1,21 +1,18 @@
 from decimal import Decimal
 import json
-import simplejson
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.db.utils import IntegrityError
 from django.db import transaction
-from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 from django.core.serializers.json import DjangoJSONEncoder
-from django import forms
 
 from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
         MacroIngredientForm
 from meals.models import Macros, Foods, FoodGroup, Ingredients, Servings, \
         FoodNotes
-from meals.helpers import get_ingredient_count, make_ingredient_formset, \
+from meals.helpers import make_ingredient_formset, \
         save_meal_notes_ingredients
 
 
@@ -248,8 +245,6 @@ def get_meal_maker_template(request):
     return render(request, TEMPLATES_DIR + 'meal_maker.html', context)
 
 
-
-
 def save_macro_meal(request):
     """saves the models associated with a 'macro meal'
 
@@ -280,11 +275,10 @@ def save_macro_meal(request):
     else:
         context['status'] = 0
         meal_error_dict = dict([(k, [e for e in v]) for k,v in meal_form.errors.items()])
-        context['errors'] = simplejson.dumps(meal_error_dict)
+        context['errors'] = json.dumps(meal_error_dict)
         # ingredient_error_dict = [
         #     [k for k in ingredient_formset.errors]
         # ]
-        # print('ingredient_error_dict', ingredient_error_dict)
         # context['errors'] += ingredient_formset.errors
 
     return JsonResponse(context)
@@ -308,19 +302,6 @@ def easy_picks(request, pick_type):
         )
 
     return JsonResponse(context)
-
-
-# def get_nested_ingredients(ing_dict, info_of_interest):
-#     ing_food_id = ing_dict['ingredient__id']
-#     ings = Ingredients.objects.filter(
-#         main_food=ing_food_id
-#     ).values(*info_of_interest)
-#     if ings.count():
-#         ing_dict['meal_info'] = {ing_food_id:[]}
-#         for sub_ing_dict in ings:
-#             ing_dict['meal_info'][ing_food_id].append(sub_ing_dict)
-#             get_nested_ingredients(sub_ing_dict, info_of_interest)
-#     return ing_dict
 
 
 def search_foods(request, food_owner):
@@ -348,7 +329,11 @@ def search_foods(request, food_owner):
         'protein_per_gram', 'servings__description', 'servings__grams',
         'servings__quantity']
 
-    args = ['name', search_terms, filters, 0.001, 20, fields_of_interest]
+    args = [
+        'name', search_terms, 0.001, fields_of_interest,
+        ['servings'], 20, filters
+    ]
+
     if food_owner == 'user':
         args.append(Foods.searcher.filter_on_user(request.user))
 
@@ -363,116 +348,30 @@ def search_foods(request, food_owner):
     )
 
 
-# def search_my_meals(request):
-
-#     search_terms = request.GET['search_terms'].split(' ')
-
-#     # vector = SearchVector('name')
-#     # terms_query = SearchQuery(search_terms[0])
-
-#     # for term in search_terms[1:]:
-#     #     terms_query |= SearchQuery(term)
-
-
-#     search_terms = request.GET['search_terms'].split(' ')
-#     filters = request.GET.getlist('filters[]')
-
-#     fields_of_interest = [
-#         'main_food', 'main_food__ingredient', 'id', 'name',
-#         'main_food__ingredient__name', 'main_food__amount',
-#         'main_food__serving__description'
-#     ]
-
-#     args = ['name', search_terms, filters, 0.001, 20, fields_of_interest]
-
-#     search_results = Foods.searcher.restructure_food_and_servings_queryset(
-#         Foods.searcher.rank_with_terms_and_filters(*args)
-#     )
-
-#     search_results_dict = Foods.searches.add_nested_ingredients_to_ingredient_dict(
-#         Foods.searches.restructure_ingredients_queryset_to_dict(search_results),
-#         fields_of_interest
-#     )
-#     # make dict instead of dict list to allow easier access to ingredients
-#     # via main_food__id
-
-#     # search_results_dict = {'meals':[], 'meal_info':{}}
-#     # for result in search_results:
-#     #     meal_id = result['id']
-#     #     if meal_id not in search_results_dict['meal_info']:
-#     #         meal_name = result['name']
-#     #         macros_profile = Foods.objects.get(pk=meal_id).get_macros_profile()
-#     #         search_results_dict['meal_info'][meal_id] = []
-#     #         search_results_dict['meals'].append(
-#     #             {'name':meal_name, 'id':meal_id, 'macros_profile': macros_profile}
-#     #         )
-#     #     search_results_dict['meal_info'][meal_id].append(result)
-
-#     # # get nested ingredients if meals contains multi Food ingredients
-#     # for id_ in search_results_dict['meal_info']:
-#     #     for ing_dict in search_results_dict['meal_info'][id_]:
-#     #         get_nested_ingredients(ing_dict, info_of_interest)
-
-#     return HttpResponse(
-#         json.dumps({'search-results': search_results_dict}, cls=DjangoJSONEncoder),
-#         content_type='application/json'
-#     )
-
-def get_nested_ingredients(ing_dict, fields_of_interest):
-    ing_food_id = ing_dict['ingredient__id']
-    ings = Ingredients.objects.filter(
-        main_food=ing_food_id
-    ).values(*fields_of_interest)
-    if ings.count():
-        ing_dict['meal_info'] = {ing_food_id:[]}
-        for sub_ing_dict in ings:
-            ing_dict['meal_info'][ing_food_id].append(sub_ing_dict)
-            get_nested_ingredients(sub_ing_dict, fields_of_interest)
-
-    return ing_dict
-
-
 def search_my_meals(request):
 
     search_terms = request.GET['search_terms'].split(' ')
 
-    vector = SearchVector('main_food__name')
-    terms_query = SearchQuery(search_terms[0])
-
-    for term in search_terms[1:]:
-        terms_query |= SearchQuery(term)
-
-    info_of_interest = [
-        'id', 'ingredient__id', 'main_food', 'main_food__id', 'main_food__name', 'ingredient__name',
-        'amount', 'serving__description'
+    fields_of_interest = [
+        'main_food', 'main_food__ingredient', 'id', 'name',
+        'main_food__ingredient__name', 'main_food__amount',
+        'main_food__serving__description'
     ]
 
-    search_results = Ingredients.objects.filter(main_food__user=request.user).annotate(
-        rank=SearchRank(vector, terms_query)
-    ).filter(rank__gte=0.001).order_by('-rank')[:50].values(*info_of_interest)
+    args = [
+        'name', search_terms, 0.001, fields_of_interest,
+        ['servings'], 20
+    ]
+    kwargs = {'query_set': Foods.searcher.filter_on_user(request.user)}
 
-    # make dict instead of dict list to allow easier access to ingredients
-    # via main_food__id
-    search_results_dict = {'meals':[], 'meal_info':{}}
-    for result in search_results:
-        meal_id = result['main_food__id']
-        if meal_id not in search_results_dict['meal_info']:
-            meal_name = result['main_food__name']
-            meal_id = result['main_food__id']
-            macros_profile = Foods.objects.get(pk=meal_id).get_macros_profile()
-            search_results_dict['meal_info'][meal_id] = []
-            search_results_dict['meals'].append(
-                {'name':meal_name, 'id':meal_id, 'macros_profile': macros_profile}
-            )
-        search_results_dict['meal_info'][meal_id].append(result)
-    
-    # get nested ingredients if meals contains multi Food ingredients
-    for id_ in search_results_dict['meal_info']:
-        for ing_dict in search_results_dict['meal_info'][id_]:
-            get_nested_ingredients(ing_dict, info_of_interest)
+    search_results = Foods.searcher.rank_with_terms_and_filters(*args, **kwargs)
+
+    search_results_dict = Foods.searcher.add_nested_ingredients_to_ingredient_dict(
+        Foods.searcher.restructure_ingredients_queryset_to_dict(search_results),
+        fields_of_interest
+    )
 
     return HttpResponse(
         json.dumps({'search-results': search_results_dict}, cls=DjangoJSONEncoder),
         content_type='application/json'
     )
-

@@ -112,10 +112,11 @@ class SearchFoods(models.Manager):
     def rank_with_terms_and_filters(self,
             rank_on_field,
             rank_by_values, 
-            filters,
             rank_threshold,
-            limit,
             result_fields,
+            relations=None,
+            limit=None,
+            filters=None,
             query_set=None):
 
         rank_on_field = SearchVector(rank_on_field)
@@ -124,15 +125,21 @@ class SearchFoods(models.Manager):
         if query_set is None:
             query_set = self.get_queryset()
 
+        if filters: 
+            query_set = query_set.filter(food_group__informal_name__in=filters)
+
         query_set = query_set.annotate(
             rank=SearchRank(rank_on_field, rank_by_values)
-            ).filter(
-                food_group__informal_name__in=filters
-           ).filter(
-                rank__gte=rank_threshold
-            ).order_by('-rank').prefetch_related('servings')
-            
-        return query_set.values(*result_fields)[:limit]
+        ).filter(rank__gte=rank_threshold).order_by('-rank')
+                
+        if relations:
+            for relation in relations:
+                query_set = query_set.prefetch_related(relation)
+       
+        if limit:
+            query_set = query_set[:limit]
+       
+        return query_set.values(*result_fields)
 
     
     def make_query(self, search_terms):
@@ -174,6 +181,7 @@ class SearchFoods(models.Manager):
             meal_id = result['id']
             if meal_id not in search_results_dict['meal_info']:
                 meal_name = result['name']
+                sf = Foods.objects.get(pk=meal_id)
                 macros_profile = Foods.objects.get(pk=meal_id).get_macros_profile()
                 search_results_dict['meal_info'][meal_id] = []
                 search_results_dict['meals'].append(
@@ -189,19 +197,21 @@ class SearchFoods(models.Manager):
 
         for id_ in ingredient_dict['meal_info']:
             for ing_dict in ingredient_dict['meal_info'][id_]:
-                get_nested_ingredients(ing_dict, fields_of_interest)
+                self.get_nested_ingredients(ing_dict, fields_of_interest)
+
+        return ingredient_dict
 
 
     def get_nested_ingredients(self, ing_dict, fields_of_interest):
-        ing_food_id = ing_dict['ingredient__id']
-        ings = Ingredients.objects.filter(
-            main_food=ing_food_id
+        ing_food_id = ing_dict['main_food__ingredient']
+        ings = Foods.objects.filter(
+            pk=ing_food_id
         ).values(*fields_of_interest)
-        if ings.count():
+        if ings[0]['main_food']:
             ing_dict['meal_info'] = {ing_food_id:[]}
             for sub_ing_dict in ings:
                 ing_dict['meal_info'][ing_food_id].append(sub_ing_dict)
-                get_nested_ingredients(sub_ing_dict, fields_of_interest)
+                self.get_nested_ingredients(sub_ing_dict, fields_of_interest)
 
         return ing_dict
 
