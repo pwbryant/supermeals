@@ -15,7 +15,6 @@ const MY_MEAL_SEARCH = (function() {
                                 search_results['meals']
                         );
 
-                        // $('#my-meals-modal-header').text(my_meal_name);
                         $('#my-meals-search-results-container').html(search_results_html);
                         search_obj.add_result_button_lister();
                         search_results['meals'].map(function(r, i) {
@@ -81,7 +80,8 @@ const MY_MEAL_SEARCH = (function() {
             
             // populate modal content
             // modal header
-            const meal_name = my_meal_info['ingredients'][0]['main_food__name'];
+            const meal_name = my_meal_info['ingredients'][0]['name'];
+            const notes = my_meal_info['ingredients'][0]['notes__notes'];
             const macros_profile = my_meal_info['macros_profile'];
             let macros_profile_summary = (
                 '<div>Percentages may not add up to 100 due to rounding<br>' +
@@ -106,6 +106,11 @@ const MY_MEAL_SEARCH = (function() {
                     search_obj, info, ingredients_html, indent
                 )
             });
+            // notes
+            ingredients_html += '<div id="my-meals-modal-notes">'
+            ingredients_html += '<div id="my-meals-modal-notes-header">Notes:</div>';
+            ingredients_html += `<div id='my-meals-modal-notes-body'>${notes}</div></div>`;
+
             $('.modal-body').html(ingredients_html);
 
             // acivate modal close when x icon clicked

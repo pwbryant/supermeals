@@ -3,7 +3,7 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 
 from .base import FunctionalTest
-from meals.models import Foods, Servings, Ingredients
+from meals.models import Foods, Servings, Ingredients, FoodNotes
 
 
 
@@ -64,6 +64,10 @@ class MyMealTests(FunctionalTest):
                 ingredient=self.cheese,
                 serving=self.cheese_srv,
                 amount=2
+        )
+
+        self.pretzels_cheese_notes = FoodNotes.objects.create(
+            notes='Serve piping hot!', food=self.pretzels_cheese
         )
 
         self.pretzels_cheese_no_user = Foods.objects.create(
@@ -148,15 +152,19 @@ class MyMealTests(FunctionalTest):
         self.browser.find_element_by_id(
                 f'my-meal-result-{self.pretzels_cheese.id}'
         ).click()
+
+        # He sees a headr
         self.check_element_content(
             'my-meals-modal-header', 'id', 'text', self.pretzels_cheese.name
         )
         
+        # a macro breakdown
         self.check_element_content(
             'my-meals-modal-sub-header', 'id', 'text',
             self.make_macro_profile_str(self.pretzels_cheese)
         )
 
+        # a list of ingredients
         ingredients = self.browser.find_elements_by_css_selector(
                 'div[class="my-meals-ingredient"]'
         )
@@ -172,5 +180,13 @@ class MyMealTests(FunctionalTest):
         self.assertEqual(ingredients[0].text, pretzels_str)
         self.assertEqual(ingredients[1].text, cheese_str)
 
+        # and some notes
+        self.check_element_content(
+            'my-meals-modal-notes-header', 'id', 'text', 'Notes:'
+        )
+        self.check_element_content(
+           'my-meals-modal-notes-body', 'id', 'text',
+            self.pretzels_cheese_notes.notes
+        )
         self.fail('Finish Test!')
 

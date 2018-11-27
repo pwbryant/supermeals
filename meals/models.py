@@ -296,7 +296,9 @@ class Foods(models.Model):
 class FoodNotes(models.Model):
 
     notes = models.TextField(blank=False, null=False) 
-    food = models.ForeignKey('Foods', on_delete=models.CASCADE)
+    food = models.ForeignKey(
+        'Foods', related_name='notes', on_delete=models.CASCADE
+    )
 
 
 class Servings(models.Model):

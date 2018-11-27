@@ -355,12 +355,12 @@ def search_my_meals(request):
     fields_of_interest = [
         'main_food', 'main_food__ingredient', 'id', 'name',
         'main_food__ingredient__name', 'main_food__amount',
-        'main_food__serving__description'
+        'main_food__serving__description', 'notes__notes'
     ]
 
     args = [
         'name', search_terms, 0.001, fields_of_interest,
-        ['servings'], 20
+        ['servings', 'notes'], 20
     ]
     kwargs = {'query_set': Foods.searcher.filter_on_user(request.user)}
 

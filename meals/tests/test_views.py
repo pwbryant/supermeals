@@ -99,17 +99,22 @@ class MyMealsTest(BaseTestCase):
         )
 
         self.pretzels_ing = Ingredients.objects.create(
-                main_food=self.pretzels_cheese,
-                ingredient=self.pretzels,
-                serving=self.pretzels_srv,
-                amount=1
+            main_food=self.pretzels_cheese,
+            ingredient=self.pretzels,
+            serving=self.pretzels_srv,
+            amount=1
         )
 
         self.cheese_ing = Ingredients.objects.create(
-                main_food=self.pretzels_cheese,
-                ingredient=self.cheese,
-                serving=self.cheese_srv,
-                amount=2
+            main_food=self.pretzels_cheese,
+            ingredient=self.cheese,
+            serving=self.cheese_srv,
+            amount=2
+        )
+
+        self.pretzels_cheese_notes = FoodNotes.objects.create(
+            notes='Serve piping hot!',
+            food=self.pretzels_cheese
         )
 
     def test_my_meals_url_uses_correct_template(self):
@@ -142,7 +147,7 @@ class MyMealsTest(BaseTestCase):
         response = self.client.get(url, data=data)
         self.assertEqual(response.status_code, 200)
 
-    def test_search_my_meals_returns_food_ingredients_and_servings(self):
+    def test_search_my_meals_returns_food(self):
         self.create_meals(self.user)
         url = reverse('search_my_meals')
         data={'search_terms':'Pretzels and Cheese'}
@@ -152,22 +157,55 @@ class MyMealsTest(BaseTestCase):
         results = response['search-results']['meal_info'][meal_id]
 
         main_food_name = results[0]['name']
+        self.assertEqual(main_food_name, self.pretzels_cheese.name)
+
+    def test_search_my_meals_returns_food_ingredients(self):
+        self.create_meals(self.user)
+        url = reverse('search_my_meals')
+        data={'search_terms':'Pretzels and Cheese'}
+        response = json.loads(self.client.get(url, data=data).content)
+
+        meal_id = list(response['search-results']['meal_info'].keys())[0]
+        results = response['search-results']['meal_info'][meal_id]
+
         ingredient1_name = results[0]['main_food__ingredient__name']
+        ingredient2_name = results[1]['main_food__ingredient__name']
+
+        self.assertEqual(ingredient1_name, self.pretzels.name)
+        self.assertEqual(ingredient2_name, self.cheese.name)
+
+    def test_search_my_meals_returns_food_ingredients_and_servings(self):
+        self.create_meals(self.user)
+        url = reverse('search_my_meals')
+        data={'search_terms':'Pretzels and Cheese'}
+        response = json.loads(self.client.get(url, data=data).content)
+
+        meal_id = list(response['search-results']['meal_info'].keys())[0]
+        results = response['search-results']['meal_info'][meal_id]
+
         serving1_amount = Decimal(results[0]['main_food__amount'])
         serving1_desc =  results[0]['main_food__serving__description']
 
-        ingredient2_name = results[1]['main_food__ingredient__name']
         serving2_amount = Decimal(results[1]['main_food__amount'])
         serving2_desc = results[1]['main_food__serving__description']
 
-        self.assertEqual(main_food_name, self.pretzels_cheese.name)
-        self.assertEqual(ingredient1_name, self.pretzels.name)
         self.assertEqual(serving1_amount, self.pretzels_ing.amount)
         self.assertEqual(serving1_desc, self.pretzels_srv.description)
 
-        self.assertEqual(ingredient2_name, self.cheese.name)
         self.assertEqual(serving2_amount, self.cheese_ing.amount)
         self.assertEqual(serving2_desc, self.cheese_srv.description)
+
+    def test_search_my_meals_returns_food_notes(self):
+        self.create_meals(self.user)
+        url = reverse('search_my_meals')
+        data={'search_terms':'Pretzels and Cheese'}
+        response = json.loads(self.client.get(url, data=data).content)
+
+        meal_id = list(response['search-results']['meal_info'].keys())[0]
+        results = response['search-results']['meal_info'][meal_id]
+
+        main_food_notes = results[0]['notes__notes']
+        self.assertEqual(main_food_notes, self.pretzels_cheese_notes.notes)
 
 
 class MacroMealMakerTest(BaseTestCase):
