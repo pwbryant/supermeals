@@ -331,7 +331,7 @@ def search_foods(request, food_owner):
 
     args = [
         'name', search_terms, 0.001, fields_of_interest,
-        ['servings'], 20, filters
+        ['servings'], 50, filters
     ]
 
     if food_owner == 'user':
