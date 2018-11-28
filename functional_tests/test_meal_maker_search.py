@@ -6,8 +6,6 @@ from meals.models import Foods, FoodGroup, Servings, Ingredients
 
 class MakeMacroMealTest(FunctionalTest):
 
-    # fixtures = ["db.json"]
-
     def this_setup(self):
 
         veg_food_group = FoodGroup.objects.create(
@@ -76,7 +74,6 @@ class MakeMacroMealTest(FunctionalTest):
 
         self.this_setup()
         self.initialize_test(self.USERNAME, self.PASSWORD)
-        # self.create_default_meal_templates(user)
 
         # Joe now wants to make a meal that helps him achieve his macros
         # so he clicks on the "Meal Maker" tab

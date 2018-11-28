@@ -34,6 +34,15 @@ class BaseTestCase(TestCase):
         return user
 
 
+class AddNewIngredientsRecipeTest(BaseTestCase):
+
+    def test_add_new_url(self):
+        url = reverse('add_new')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,'meals/add_ingredients_recipes.html')
+
+
 class MyMealsTest(BaseTestCase):
 
     def setUp(self):

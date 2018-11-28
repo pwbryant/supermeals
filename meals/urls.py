@@ -28,5 +28,6 @@ urlpatterns = [
 	url(r'^save-macro-meal$', views.save_macro_meal, name='save_macro_meal'),
 	url(r'^my-meals/$', views.get_my_meals, name='my_meals'),
 	url(r'^easy-picks/(?P<pick_type>recent|popular)/$', views.easy_picks, name='easy_picks'),
+	url(r'^add-new/$', views.add_new, name='add_new'),
 ]
 	

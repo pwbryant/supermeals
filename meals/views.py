@@ -375,3 +375,7 @@ def search_my_meals(request):
         json.dumps({'search-results': search_results_dict}, cls=DjangoJSONEncoder),
         content_type='application/json'
     )
+
+def add_new(request):
+
+    return render(request, TEMPLATES_DIR + 'add_ingredients_recipes.html')
