@@ -34,14 +34,33 @@ class BaseTestCase(TestCase):
         return user
 
 
-class AddNewIngredientsRecipeTest(BaseTestCase):
+class AddRecipeTest(BaseTestCase):
 
-    def test_add_new_url(self):
-        url = reverse('add_new')
+    def setUp(self):
+        self.my_meals_fg = FoodGroup.objects.create(
+            name='My Meals', informal_name='My Meals'
+        )
+        self.veg_fg = FoodGroup.objects.create(
+            name='Vegatables', informal_name='Veggies'
+        )
+        self.meat_fg = FoodGroup.objects.create(
+            name='Meats', informal_name='Meats'
+        )
+
+    def test_add_recipe_url(self):
+        url = reverse('add_recipe')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response,'meals/add_ingredients_recipes.html')
+        self.assertTemplateUsed(response,'meals/add_recipe.html')
 
+    def test_add_recipe_returns_filters(self):
+        url = reverse('add_recipe')
+        response = self.client.get(url)
+
+        self.assertContains(response, self.my_meals_fg.informal_name)
+        self.assertContains(response, self.veg_fg.informal_name)
+        self.assertContains(response, self.meat_fg.informal_name)
+        
 
 class MyMealsTest(BaseTestCase):
 

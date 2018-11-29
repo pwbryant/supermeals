@@ -41,7 +41,9 @@ let SEARCH = (function() {
                         search_obj.SEARCH_RESULT_ADD_BUTTON_LISTENER_EXISTS = true;
                     } else {
                         search_results_html = '<span>No Foods Found</span>';
-                        $('#meal-maker-food-search-results-container').html(search_results_html);
+                        $('#meal-maker-food-search-results-container').html(
+                            search_results_html
+                        ); 
                     }
                 });
             } else {

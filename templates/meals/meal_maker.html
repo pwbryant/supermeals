@@ -50,10 +50,6 @@
                     <label for='macro-meal-name' class='input__label-black'>Meal Name</label><br>
                     <input id='macro-meal-name' class='input__input--lg' name='macro-meal-name' placeholder='Meal Name'/>
                 </div>
-                <!-- <div class='input'> -->
-                <!--     <label for='macro-meal-serving' class='input__label-black'>Serving  Name</label><br> -->
-                <!--     <input id='macro-meal-serving' class='input__input--lg' name='macro-meal-serving' placeholder='Serving Name'/> -->
-                <!-- </div> -->
 
                 <div class='input'>
                     <label for='macro-meal-notes' class='input__label-black'>Notes (Optional)</label><br>
@@ -70,27 +66,29 @@
 </div>
 
 <div id='meal-maker-food-search-container' class='search-area'>
-    <div id='meal-maker-food-search-wrapper'>
-        <input id='meal-maker-food-search-input' type='text' placeholder='Search For Food'/>
-        <button id='food-search-icon-button' class="icon">
-            <i class='fa fa-search'></i>
-        </button>
-    </div>
-    <div id='meal-maker-food-search-sub-container' class='l-flex--row-start'>
-        <div id='meal-maker-food-search-filter-container'>
-            <div class='l-flex--row-start'>
-                <input id='meal-maker-filter-none' class='non-filter' type='checkbox' name='filter' value='none' checked />
-                <label for='meal-maker-filter-none'>No Filter</label>
-            </div>
-            {% for id, name in food_groups %}
-                <div class='l-flex--row-start'>
-                    <input id='meal-maker-filter-{{ id }}' class='filter' type='checkbox' name='filter' value='{{ name }}' />
-                    <label for='meal-maker-filter-{{ id }}'>{{ name }}</label>
-                </div>
-            {% endfor %}
-        </div>
-        <div id='meal-maker-food-search-results-container'></div>
-    </div>
+
+    {% include 'meals/search.html' with tab_name='meal-maker' %}
+    <!-- <div id='meal-maker-food-search-wrapper'> -->
+    <!--     <input id='meal-maker-food-search-input' type='text' placeholder='Search For Food'/> -->
+    <!--     <button id='food-search-icon-button' class="icon"> -->
+    <!--         <i class='fa fa-search'></i> -->
+    <!--     </button> -->
+    <!-- </div> -->
+    <!-- <div id='meal-maker-food-search-sub-container' class='l-flex--row-start'> -->
+    <!--     <div id='meal-maker-food-search-filter-container'> -->
+    <!--         <div class='l-flex--row-start'> -->
+    <!--             <input id='meal-maker-filter-none' class='non-filter' type='checkbox' name='filter' value='none' checked /> -->
+    <!--             <label for='meal-maker-filter-none'>No Filter</label> -->
+    <!--         </div> -->
+    <!--         {% for id, name in food_groups %} -->
+    <!--             <div class='l-flex--row-start'> -->
+    <!--                 <input id='meal-maker-filter-{{ id }}' class='filter' type='checkbox' name='filter' value='{{ name }}' /> -->
+    <!--                 <label for='meal-maker-filter-{{ id }}'>{{ name }}</label> -->
+    <!--             </div> -->
+    <!--         {% endfor %} -->
+    <!--     </div> -->
+    <!--     <div id='meal-maker-food-search-results-container'></div> -->
+    <!-- </div> -->
 </div>
 
 <div id='meal-maker-food-container' class='food-area'>
@@ -108,19 +106,15 @@
     SAVE.save_meal_button_listener();
 
     // set max height on search results since height is percentage
-    const sub_container_height = $(
-        '#meal-maker-food-search-sub-container'
+    const container_height = $(
+        '#goal-macros-bar-container'
     ).css('height')
     $(
-        '#meal-maker-food-search-results-container'
-    ).css('max-height', sub_container_height);
+        '#meal-maker-filter-container'
+    ).css('max-height', container_height);
     $(
-        '#meal-maker-food-search-filter-container'
-    ).css('height', sub_container_height);
-    
-    $(
-        '#meal-maker-food-search-filter-container'
-    ).css('max-height', sub_container_height);
+        '#meal-maker-search-container'
+    ).css('max-height', container_height);
 
 </script>
 

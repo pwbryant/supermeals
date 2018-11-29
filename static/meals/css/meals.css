@@ -162,13 +162,13 @@
     height: 90%;
 }
 
-#meal-maker-food-search-results-container {
+#meal-maker-search-results-container {
     height: 100%;
     overflow-y: auto;
     width: 65%;
 }
 
-#meal-maker-food-search-filter-container {
+#meal-maker-filter-container {
     background-color: lightblue;
     border: 1px solid #888;
     height: 100%;

@@ -81,42 +81,42 @@ class MacroIngredientForm(forms.ModelForm):
 
     
 
-class oldMacroMealForm(forms.Form):
+# class oldMacroMealForm(forms.Form):
 
-    name = forms.CharField(widget=forms.fields.TextInput())
-    notes = forms.CharField(widget=forms.Textarea, required=False)
+#     name = forms.CharField(widget=forms.fields.TextInput())
+#     notes = forms.CharField(widget=forms.Textarea, required=False)
 
-    cals_per_gram = RoundedDecimalField(
-        max_digits=6, decimal_places=4,
-        widget=forms.HiddenInput()
-    )
-    fat_per_gram = RoundedDecimalField(
-        max_digits=6, decimal_places=4,
-        widget=forms.HiddenInput()
-    )
-    carbs_per_gram = RoundedDecimalField(
-        max_digits=6, decimal_places=4,
-        widget=forms.HiddenInput()
-    )
-    protein_per_gram = RoundedDecimalField(
-        max_digits=6, decimal_places=4,
-        widget=forms.HiddenInput()
-    )
-    total_grams = RoundedDecimalField(
-        max_digits=8, decimal_places=4,
-        widget=forms.HiddenInput()
-    )
+#     cals_per_gram = RoundedDecimalField(
+#         max_digits=6, decimal_places=4,
+#         widget=forms.HiddenInput()
+#     )
+#     fat_per_gram = RoundedDecimalField(
+#         max_digits=6, decimal_places=4,
+#         widget=forms.HiddenInput()
+#     )
+#     carbs_per_gram = RoundedDecimalField(
+#         max_digits=6, decimal_places=4,
+#         widget=forms.HiddenInput()
+#     )
+#     protein_per_gram = RoundedDecimalField(
+#         max_digits=6, decimal_places=4,
+#         widget=forms.HiddenInput()
+#     )
+#     total_grams = RoundedDecimalField(
+#         max_digits=8, decimal_places=4,
+#         widget=forms.HiddenInput()
+#     )
 
-    def __init__(self, *args, **kwargs):
-        ingredient_count = kwargs.pop('ingredient_count')
-        super(MacroMealForm, self).__init__(*args, **kwargs)
+#     def __init__(self, *args, **kwargs):
+#         ingredient_count = kwargs.pop('ingredient_count')
+#         super(MacroMealForm, self).__init__(*args, **kwargs)
 
-        for i in range(ingredient_count):
-            self.fields['ingredient_id_{}'.format(i)] = forms.IntegerField()
-            self.fields['ingredient_amt_{}'.format(i)] = RoundedDecimalField(
-                max_digits=6, decimal_places=2
-            )
-            self.fields['ingredient_unit_{}'.format(i)] = forms.CharField()
+#         for i in range(ingredient_count):
+#             self.fields['ingredient_id_{}'.format(i)] = forms.IntegerField()
+#             self.fields['ingredient_amt_{}'.format(i)] = RoundedDecimalField(
+#                 max_digits=6, decimal_places=2
+#             )
+#             self.fields['ingredient_unit_{}'.format(i)] = forms.CharField()
 
 
 class SignUpForm(forms.models.ModelForm):

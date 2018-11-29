@@ -235,11 +235,11 @@ def get_meal_maker_template(request):
         context = {'macro_meal_form': form}
 
     # informal name to use in input id, and to use in label
-    context['food_groups'] = [
-        (
-            fg['informal_name'].lower().replace(' ', '-'),
-            fg['informal_name'],
-        ) for fg in
+    context['filters'] = [
+        {
+            'id_name': fg['informal_name'].lower().replace(' ', '-'),
+            'informal_name': fg['informal_name']
+        } for fg in
         FoodGroup.objects.all().values('informal_name').distinct()
     ]
     return render(request, TEMPLATES_DIR + 'meal_maker.html', context)
@@ -262,9 +262,8 @@ def save_macro_meal(request):
         holds success/failure status, and any errors
     """
     request.POST._mutable = True
-     
-    meal_form = MacroMealForm(request.POST)
 
+    meal_form = MacroMealForm(request.POST)
     ingredient_formset = make_ingredient_formset(request)
 
     context = {'status': 0, 'errors': ''}
@@ -274,7 +273,9 @@ def save_macro_meal(request):
 
     else:
         context['status'] = 0
-        meal_error_dict = dict([(k, [e for e in v]) for k,v in meal_form.errors.items()])
+        meal_error_dict = dict([
+            (k, [e for e in v]) for k, v in meal_form.errors.items()
+        ])
         context['errors'] = json.dumps(meal_error_dict)
         # ingredient_error_dict = [
         #     [k for k in ingredient_formset.errors]
@@ -372,10 +373,23 @@ def search_my_meals(request):
     )
 
     return HttpResponse(
-        json.dumps({'search-results': search_results_dict}, cls=DjangoJSONEncoder),
+        json.dumps(
+            {'search-results': search_results_dict}, cls=DjangoJSONEncoder
+        ),
         content_type='application/json'
     )
 
-def add_new(request):
 
-    return render(request, TEMPLATES_DIR + 'add_ingredients_recipes.html')
+def add_recipe(request):
+
+    context = {
+        'filters': [
+            {
+                'id_name': fg['informal_name'].lower().replace(' ', '-'),
+                'informal_name': fg['informal_name']
+            } for fg in
+            FoodGroup.objects.all().values('informal_name').distinct()
+        ]
+    }
+
+    return render(request, TEMPLATES_DIR + 'add_recipe.html', context)

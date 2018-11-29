@@ -19,7 +19,7 @@
                     <div id="my-macros-tab" class="header__nav-tab content-tab">My Macros</div>
                     <div id="meal-maker-tab" class="header__nav-tab content-tab">Meal Maker</div>
                     <div id="my-meals-tab" class="header__nav-tab content-tab">My Meals</div>
-                    <div id="add-new-tab" class="header__nav-tab content-tab">Add New Foods/Recipes</div>
+                    <div id="add-recipe-tab" class="header__nav-tab content-tab">Add New Foods/Recipes</div>
                 </div>
                 <div class="header__nav">
                     {% if user.is_authenticated and user.get_username != 'guest' %}
@@ -43,7 +43,7 @@
                 <div id="my-macros-container" class="page-content hide"></div>
                 <div id="meal-maker-container" class="page-content hide"></div>
                 <div id="my-meals-container" class="page-content hide"></div>
-                <div id="add-new-container" class="page-content hide"></div>
+                <div id="add-recipe-container" class="page-content hide"></div>
             </div> 
         </div>
         
