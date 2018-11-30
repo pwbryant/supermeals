@@ -54,22 +54,6 @@ class MakeMacroMealTest(FunctionalTest):
             quantity=Decimal(1), description='slice'
         )
 
-    def search_terms(self, terms, filters):
-
-        self.fill_input(
-            ["input[id='meal-maker-food-search-input']"], [], clear=True
-        )
-
-        for filter_ in filters:
-            filter_.click()
-
-        return self.search_and_results(
-            "input[id='meal-maker-food-search-input']",
-            'food-search-icon-button',
-            'search-result',
-            terms
-        )
-
     def test_make_macro_meal(self):
 
         self.this_setup()
@@ -122,16 +106,24 @@ class MakeMacroMealTest(FunctionalTest):
         # bar fill up with those food results
         search_terms = ['chickpeas carrots lettuce bacon']
 
-        search_results = self.search_terms(search_terms, [no_filter])
+        tab_name = 'meal-maker'
+        search_results = self.setup_and_run_search(
+            search_terms, [no_filter], tab_name
+        )
         self.assertEqual(len(search_results), 4)
 
-        search_results = self.search_terms(search_terms, [meat_filter])
+        search_results = self.setup_and_run_search(
+            search_terms, [meat_filter], tab_name
+        )
         self.assertEqual(search_results[0].text, 'Bacon')
         self.assertEqual(len(search_results), 1)
 
-        search_results = self.search_terms(search_terms, [veg_filter])
+        search_results = self.setup_and_run_search(
+            search_terms, [veg_filter], tab_name
+        )
         self.assertEqual(len(search_results), 4)
 
-        search_results = self.search_terms(search_terms, [meat_filter, veg_filter])
+        search_results = self.setup_and_run_search(
+            search_terms, [meat_filter, veg_filter], tab_name
+        )
         self.assertEqual(len(search_results), 4)
-

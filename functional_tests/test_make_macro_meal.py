@@ -185,11 +185,11 @@ class MakeMacroMealTest(FunctionalTest):
         # "How Many Calories?" input box
         cals_input = ["input[id='goal-meal-cals']"]
         cals_input_value = ["600"]
-        self.fill_input(cals_input,[],clear=True)	
-        self.fill_input(cals_input,cals_input_value)
-        
-        # He starts by typeing "garbonzo beans" in the search bar and 
-        # clicks the search icon. And he sees the area below the search 
+        self.fill_input(cals_input, [], clear=True)
+        self.fill_input(cals_input, cals_input_value)
+
+        # He starts by typeing "garbonzo beans" in the search bar and
+        # clicks the search icon. And he sees the area below the search
         # bar fill up with the top 10 results
         search_results = self.search_and_results(
             "input[id='meal-maker-food-search-input']",
@@ -200,7 +200,7 @@ class MakeMacroMealTest(FunctionalTest):
 
         # Joe clicks on the first result ( on the add + icon )
         # and notices that in the lower left, a series of rectangles
-        # appear with the 
+        # appear with the
         # result text as the header, and "0g" under the bars to the left.
         # The left-most rectangle has a small drag box at the bottom.
         chickpea_id = '1'
@@ -208,8 +208,8 @@ class MakeMacroMealTest(FunctionalTest):
         time.sleep(10)
 
         food_container = self.browser.find_element_by_id(
-                'food-{}-container'.format(chickpea_id)
-        ) 
+            'food-{}-container'.format(chickpea_id)
+        )
         food_container.find_element_by_id('food-{}-cals-svg'.format(chickpea_id))
         food_container.find_element_by_id('food-{}-fat-svg'.format(chickpea_id))
         food_container.find_element_by_id('food-{}-carbs-svg'.format(chickpea_id))

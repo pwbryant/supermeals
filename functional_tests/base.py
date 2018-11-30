@@ -35,6 +35,25 @@ class FunctionalTest(StaticLiveServerTestCase):
         search_results = self.browser.find_elements_by_class_name(result_class)
             
         return search_results
+
+
+    def setup_and_run_search(self, terms, filters, tab_name):
+
+        input_id = f'{tab_name}-search'
+        self.fill_input(
+            [f"input[id='{input_id}']"], [], clear=True
+        )
+
+        for filter_ in filters:
+            filter_.click()
+
+        return self.search_and_results(
+            f"input[id='{input_id}']",
+            f'{input_id}-button',
+            f'{tab_name}-search-result',
+            terms
+        )
+
     
     def fill_input(self,element_selectors,values,clear=None):
         for i in range(len(element_selectors)):
