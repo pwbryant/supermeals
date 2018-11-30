@@ -41,6 +41,27 @@ let ADD_RECIPE_SEARCH = (function() {
             });
         },
 
+        create_ingredient_html: function(food_id, food_name, servings) {
+
+                let ingredient_html = `<div id='add-recipe-ingredient-${food_id}-container' class="l-flex--row-start add-recipe-ingredient">`;
+                // food name
+                ingredient_html += `<label id='add-recipe-ingredient-name-${food_id}' class='bm-margin--sm-right'>${food_name}</label>`;
+                // Amount
+                ingredient_html += `<div class='l-flex--col-start'><label for='add-recipe-ingredient-amt-${food_id}'>Amount</label><input id='add-recipe-ingredient-amt-${food_id}'type='text' name='ingredient' /></div>`;
+                // Unit
+                ingredient_html += `<div class='l-flex--col-start'><label for='add-recipe-ingredient-units-${food_id}'>Units</label><select id='add-recipe-ingredient-units-${food_id}' name='units-${food_id}'>`;
+
+                // first unit is grams
+                ingredient_html += '<option value="0">g</option>';
+                servings.map(function(e, i) {
+                    ingredient_html += `<option value='${i + 1}'>${e.servings__description}</option>`;
+                });
+
+                ingredient_html += `</select></div><i id='add-recipe-ingredient-exit-${food_id}' class='fa fa-times-circle add-recipe-ingredient-exit'></i></div>`;
+
+                return ingredient_html;
+        },
+
         add_recipe_search_result_listener: function() {
             this_obj = this;
             $('.add-recipe-search-result__button').on('click', function() {
@@ -50,10 +71,23 @@ let ADD_RECIPE_SEARCH = (function() {
                 const food_id = food_obj['id'];
                 const food_name = food_obj['name'];
 
-                const ingredient_html = `<p id='add-recipe-ingredient-${food_id}'>${food_name}</p>`;
+                const ingredient_html = this_obj.create_ingredient_html(
+                    food_id, food_name, food_obj['servings']
+                );
+
                 $('#add-recipe-ingredients-container').append(ingredient_html);
+                this_obj.add_ingredient_delete_listener();
             });
 
+        },
+
+        add_ingredient_delete_listener: function() {
+
+            $('.add-recipe-ingredient-exit').on('click', function() {
+                const ingredient_id = this.id.split('-')[4];
+                const ingredient_container_id = `add-recipe-ingredient-${ingredient_id}-container`;
+                $('#' + ingredient_container_id).remove();
+            });
         }
     }
 })();

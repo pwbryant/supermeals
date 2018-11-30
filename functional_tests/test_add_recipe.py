@@ -1,6 +1,7 @@
 import time
 from .base import FunctionalTest
 from decimal import Decimal
+from selenium.webdriver.support.ui import Select
 
 from meals.models import Foods, Servings, Ingredients, FoodNotes, FoodGroup
 
@@ -101,10 +102,73 @@ class AddIngredientRecipeTest(FunctionalTest):
            f'add-recipe-search-result-food-{self.carrots.id}'
         ).click()
 
-        added_food_name = self.browser.find_element_by_id(
-            f'add-recipe-ingredient-{self.carrots.id}'
+        ingredient_name = self.browser.find_element_by_id(
+            f'add-recipe-ingredient-name-{self.carrots.id}'
         ).text
 
-        self.assertEqual(added_food_name, 'carrots')
+        self.assertEqual(ingredient_name, 'carrots')
 
+        carrot_amt_label = self.browser.find_elements_by_css_selector(
+            f'label[for="add-recipe-ingredient-amt-{self.carrots.id}"]'
+        )[0].text
+        carrot_amt_input = self.browser.find_element_by_id(
+            f'add-recipe-ingredient-amt-{self.carrots.id}'
+        )
+        carrot_units_label = self.browser.find_elements_by_css_selector(
+            f'label[for="add-recipe-ingredient-units-{self.carrots.id}"]'
+        )[0].text
+        carrot_units = Select(self.browser.find_element_by_id(
+            f'add-recipe-ingredient-units-{self.carrots.id}'
+        ))
+
+        self.assertEqual(carrot_amt_label, 'Amount')
+        self.assertEqual(carrot_units_label, 'Units')
+
+
+        # Joe wants 100g of carrots so he enters 100 into the amount input
+        carrot_amt_input.send_keys('100')
+
+        # He then adds the chicken and ice cream
+        self.browser.find_element_by_id(
+           f'add-recipe-search-result-food-{self.chicken.id}'
+        ).click()
+        self.browser.find_element_by_id(
+           f'add-recipe-search-result-food-{self.ice_cream.id}'
+        ).click()
+
+        # Joe decides he does'nt want the ice cream so he clicks on 
+        # the x box in the upper right corner and sees the ingredient
+        # disappear
+        self.browser.find_element_by_id(
+           f'add-recipe-ingredient-exit-{self.ice_cream.id}'
+        ).click()
+        self.assertEqual(
+            len(self.browser.find_elements_by_css_selector(
+                f'div[id="add-recipe-ingredient-{self.ice_cream.id}-container"]'
+            )),0
+        )
+
+        # He selects 2 chicken breasts
+        chicken_amt_input = self.browser.find_element_by_id(
+            f'add-recipe-ingredient-amt-{self.chicken.id}'
+        )
+        chicken_units = Select(self.browser.find_element_by_id(
+            f'add-recipe-ingredient-units-{self.chicken.id}'
+        ))
+
+        chicken_amt_input.send_keys('2')
+        chicken_units.select_by_visible_text('breast')
+        
         self.fail('Finish Test')
+        # Joe then sees that there is a grayed out save button below the
+        # ingredients, but once he enters the recipe name and description
+        # the save button becomes activated.
+
+
+        # Joe clicks the save button and he sees a success confirmation
+        # alert message appear that disappears afte 2 seconds.
+
+        # He also notices all all inputs have been cleared from the page
+
+
+
