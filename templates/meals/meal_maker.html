@@ -60,35 +60,11 @@
                 <div id='macro-meal-save-status'></div>
             </form>
         </div>
-
     </div>
-
 </div>
 
 <div id='meal-maker-food-search-container' class='search-area'>
-
     {% include 'meals/search.html' with tab_name='meal-maker' %}
-    <!-- <div id='meal-maker-food-search-wrapper'> -->
-    <!--     <input id='meal-maker-food-search-input' type='text' placeholder='Search For Food'/> -->
-    <!--     <button id='food-search-icon-button' class="icon"> -->
-    <!--         <i class='fa fa-search'></i> -->
-    <!--     </button> -->
-    <!-- </div> -->
-    <!-- <div id='meal-maker-food-search-sub-container' class='l-flex--row-start'> -->
-    <!--     <div id='meal-maker-food-search-filter-container'> -->
-    <!--         <div class='l-flex--row-start'> -->
-    <!--             <input id='meal-maker-filter-none' class='non-filter' type='checkbox' name='filter' value='none' checked /> -->
-    <!--             <label for='meal-maker-filter-none'>No Filter</label> -->
-    <!--         </div> -->
-    <!--         {% for id, name in food_groups %} -->
-    <!--             <div class='l-flex--row-start'> -->
-    <!--                 <input id='meal-maker-filter-{{ id }}' class='filter' type='checkbox' name='filter' value='{{ name }}' /> -->
-    <!--                 <label for='meal-maker-filter-{{ id }}'>{{ name }}</label> -->
-    <!--             </div> -->
-    <!--         {% endfor %} -->
-    <!--     </div> -->
-    <!--     <div id='meal-maker-food-search-results-container'></div> -->
-    <!-- </div> -->
 </div>
 
 <div id='meal-maker-food-container' class='food-area'>
@@ -97,8 +73,8 @@
 </div>
 
 <script>
-	SEARCH.meal_maker_food_search_trigger();
-    SEARCH.filter_checkbox_behavior();
+    SEARCH.filter_checkbox_behavior('meal-maker');
+	MEAL_MAKER_SEARCH.meal_maker_search_listener();
 	MGOAL.goal_cal_inputs_trigger();
 	MGOAL.goal_meal_choose_macro_handler();
 	MGOAL.set_initial_macro_percent_tally();
@@ -113,6 +89,7 @@
         '#meal-maker-filter-container'
     ).css('max-height', container_height);
     $(
+        //'#meal-maker-search-results-container'
         '#meal-maker-search-container'
     ).css('max-height', container_height);
 

@@ -3,12 +3,12 @@
         <label for='{{ tab_name }}-filters'>Search Filters</label>
         <div id='{{ tab_name }}-filters'>
             <div class='l-flex--row-start'>
-                <input id='{{ tab_name }}-filter-none' class='non-filter' type='checkbox' name='filter' value='none' checked />
+                <input id='{{ tab_name }}-filter-none' class='non-filter {{ tab_name }}-non-filter' type='checkbox' name='filter' value='none' checked />
                 <label for='{{ tab_name }}-filter-none'>No Filter</label>
             </div>
             {% for filter_obj in filters %}
                 <div class='l-flex--row-start'>
-                    <input id='{{ tab_name }}-filter-{{ filter_obj.id_name }}' class='filter' type='checkbox' name='filter' value='{{ filter_obj.informal_name }}' />
+                    <input id='{{ tab_name }}-filter-{{ filter_obj.id_name }}' class='filter {{ tab_name }}-filter' type='checkbox' name='filter' value='{{ filter_obj.informal_name }}' />
                     <label for='{{ tab_name }}-filter-{{ filter_obj.id_name }}'>{{ filter_obj.informal_name }}</label>
                 </div>
             {% endfor %}
@@ -17,15 +17,14 @@
 
     <div id='{{ tab_name }}-search-container'>
         <div class='input'>
-            <label for='{{ tab_name }}-search-1' >Search for Ingredient</label> 
+            <label for='{{ tab_name }}-search' >Search for Ingredient</label> 
             <div class='l-flex--row-start'>
-                <input id='{{ tab_name }}-search-1' class='input__input' type='text' />
-                <button class='icon search-button'>
+                <input id='{{ tab_name }}-search' class='input__input' type='text' />
+                <button id='{{ tab_name }}-search-button' class='icon search-button'>
                     <i class='fa fa-search'></i>
                 </button>
             </div>
-            <div id='{{ tab_name }}-search-results-container'>
-            </div>
         </div>
+        <div id='{{ tab_name }}-search-results-container'></div>
     </div>
 </div>

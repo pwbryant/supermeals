@@ -1,55 +1,53 @@
-const MY_MEAL_SEARCH = (function() { 
+const MY_MEALS_SEARCH = (function() {  
     
     return {
-        my_meals_food_search_listener : function() { 
+        my_meals_search_listener : function() { 
 
-			search_obj = this;
-			search_obj['my-meals'] = {};
-            $('#my-meals-search-button').on('click', function() {
-                const search_terms = $.trim($('#my-meals-search-input').val());
-                if(search_terms != '') {
-
-                    $.get('/meals/search-my-meals/', {'search_terms': search_terms}, function(data) {
-                        const search_results = data['search-results'];
-                        search_results_html = search_obj.format_food_search_results(
-                                search_results['meals']
-                        );
-
-                        $('#my-meals-search-results-container').html(search_results_html);
-                        search_obj.add_result_button_lister();
-                        search_results['meals'].map(function(r, i) {
-                            const meal_info = search_results['meal_info'][r.id];
-                            search_obj['my-meals'][r.id] = {
-                                'ingredients': meal_info,
-                                'macros_profile': r.macros_profile
-                            }
-                        });
-                    });
+			THIS_OBJ = this;
+			$('#my-meals-search-button').on('click',function() {
+                const input_element = $(this).prev();
+                const search_terms = $.trim($(input_element).val());
+                if (search_terms != '') {
+                    THIS_OBJ.my_meals_food_search(THIS_OBJ, search_terms);
                 }
-            });
+			});
         },
 
-        // need to test
-        format_food_search_results : function(search_results) {
+        my_meals_food_search: function(this_obj, search_terms) {
+			this_obj['my-meals'] = {};
+            const search_data = {'search_terms': search_terms};
+            $.get('/meals/search-my-meals/', search_data, function(data) {
+                const search_results = data['search-results'];
+                search_results_html = SEARCH.format_food_search_results(
+                        'my-meals',
+                        search_results['meals']
+                );
 
-            let search_results_html = '';	
-            search_results.forEach(function(e, i) {
-                search_results_html += "<div class='my-meal-result search-result'><span>" + e.name + "</span><button id='my-meal-result-" + e.id + "' class='icon'><i class='fa fa-plus'></i></button></div>"; 
+                $('#my-meals-search-results-container').html(search_results_html);
+                search_results['meals'].map(function(r, i) {
+                    const meal_info = search_results['meal_info'][r.id];
+                    this_obj['my-meals'][r.id] = {
+                        'ingredients': meal_info,
+                        'macros_profile': r.macros_profile
+                    }
+                });
+
+                this_obj.add_result_button_lister();
             });
-            return search_results_html;
         },
 
         add_result_button_lister: function() {
-			search_obj = this;
-			$('.my-meal-result>button').on('click',function() {
+			this_obj = this;
+			$('#my-meals-search-results-container button').on('click',function() {
+
                 const my_meal_id = this.id.split('-')[3];
-                const my_meal_info = search_obj['my-meals'][my_meal_id];
-                search_obj.add_result_button_shows_modal(my_meal_info);
+                const my_meal_info = this_obj['my-meals'][my_meal_id];
+                this_obj.add_result_button_shows_modal(my_meal_info);
             });
         },
 
         // need to test
-        handle_nested_ingredients: function(search_obj, ingredient_info, ingredients_html, indent) {
+        handle_nested_ingredients: function(this_obj, ingredient_info, ingredients_html, indent) {
 
             const ing_name = ingredient_info['main_food__ingredient__name'];
             const ing_id = ingredient_info['main_food__ingredient'];
@@ -63,8 +61,8 @@ const MY_MEAL_SEARCH = (function() {
                 ingredients_html += 'Ingredients:'
                 indent += '....';
                 ingredient_info['meal_info'][ing_id].map(function(sub_ingredient_info) {
-                    ingredients_html = search_obj.handle_nested_ingredients(
-                        search_obj, sub_ingredient_info, ingredients_html, indent
+                    ingredients_html = this_obj.handle_nested_ingredients(
+                        this_obj, sub_ingredient_info, ingredients_html, indent
                     );
                 });
             }
@@ -74,7 +72,7 @@ const MY_MEAL_SEARCH = (function() {
 
         add_result_button_shows_modal: function(my_meal_info) {
 
-            const search_obj = this;
+            const this_obj = this;
             let modal = document.getElementById('my-meal-modal');
             modal.style.display = 'block';
             
@@ -102,8 +100,8 @@ const MY_MEAL_SEARCH = (function() {
             let ingredients_html = '';
             my_meal_info['ingredients'].map(function(info) {
                 indent = '';
-                ingredients_html = search_obj.handle_nested_ingredients(
-                    search_obj, info, ingredients_html, indent
+                ingredients_html = this_obj.handle_nested_ingredients(
+                    this_obj, info, ingredients_html, indent
                 )
             });
             // notes

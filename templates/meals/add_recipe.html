@@ -1,1 +1,6 @@
-{% include 'meals/search.html' with tag_name='add-recipe' %}
+{% include 'meals/search.html' with tab_name='add-recipe' %}
+
+<script>
+    SEARCH.filter_checkbox_behavior('add-recipe');
+    ADD_RECIPE_SEARCH.add_recipe_search_listener();
+</script>
