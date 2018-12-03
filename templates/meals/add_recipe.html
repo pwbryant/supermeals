@@ -1,10 +1,23 @@
-{% include 'meals/search.html' with tab_name='add-recipe' %}
+<div class='l-flex--row-start'>
+    {% include 'meals/search.html' with tab_name='add-recipe' %}
 
-<div id='add-recipe-ingredients-container'>
 
+    <form id='add-recipe-form'>
+        {% csrf_token %}
+        <div class='input l-flex--col-start'>
+            <label for='add-recipe-recipe-name'>Recipe Name</label>
+            <input id='add-recipe-recipe-name' name='recipe-name' type='text' />
+            <div id='add-recipe-recipe-name-errors' class='form-errors'></div>
+        </div>
+
+        <div id='add-recipe-ingredients-container'></div>
+        <div id='add-recipe-ingredients-container-errors'></div>
+        <button id='add-recipe-save-button' type='button'>Save Recipe</button>
+    </form>
 </div>
 
 <script>
     SEARCH.filter_checkbox_behavior('add-recipe');
     ADD_RECIPE_SEARCH.add_recipe_search_listener();
+    ADD_RECIPE.add_recipe_form_save();
 </script>

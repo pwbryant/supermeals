@@ -159,15 +159,71 @@ class AddIngredientRecipeTest(FunctionalTest):
         chicken_amt_input.send_keys('2')
         chicken_units.select_by_visible_text('breast')
         
-        self.fail('Finish Test')
-        # Joe then sees that there is a grayed out save button below the
-        # ingredients, but once he enters the recipe name and description
-        # the save button becomes activated.
+        # Joe then sees that there is a save button below the
+        # ingredients so he hits is but gets an error message below
+        # the ingredient input that he needs to fill in the recipe name
+        save_button = self.browser.find_element_by_id(
+            'add-recipe-save-button'
+        )
+        save_button.click()
+
+        self.check_element_content(
+            'add-recipe-recipe-name-errors',
+            'id', 'text', 'Enter recipe name'
+        )
+        recipe_name_input = self.browser.find_element_by_id(
+            'add-recipe-recipe-name'
+        )
+        recipe_name_input.send_keys('Carrot Chicken Slurry')
 
 
-        # Joe clicks the save button and he sees a success confirmation
+        # Joe accidentally deletes one ingredient ingredients and clicks 
+        # the save button again and he gets an alert message
+        # saying recipes need more than one ingredient. He alos notics
+        # the name error has disappeared
+        self.browser.find_element_by_id(
+           f'add-recipe-ingredient-exit-{self.carrots.id}'
+        ).click()
+
+        save_button.click()
+
+        self.check_element_content(
+            'add-recipe-ingredients-container-errors',
+            'id', 'text', 'Recipes require more than one ingredient'
+        )
+        self.check_element_content(
+            'add-recipe-recipe-name-errors',
+            'id', 'text', ''
+        )
+        # He then adds them back
+        self.browser.find_element_by_id(
+           f'add-recipe-search-result-food-{self.carrots.id}'
+        ).click()
+
+        carrot_amt_input = self.browser.find_element_by_id(
+            f'add-recipe-ingredient-amt-{self.carrots.id}'
+        )
+
+        carrot_amt_input.send_keys('100')
+        chicken_amt_input.send_keys('2')
+        chicken_units.select_by_visible_text('breast')
+
+        # Joe clicks the save button and he sees the ingredient
+        # recipe dissapear and a success confirmation
         # alert message appear that disappears afte 2 seconds.
+        save_button.click()
 
+        self.check_element_content(
+            'add-recipe-ingredients-container-errors',
+            'id', 'text', ''
+        )
+
+        self.check_element_content(
+            'add-recipe-save-status',
+            'id', 'text', 'Recipe Saved'
+        )
+        
+        self.fail('Finish Test')
         # He also notices all all inputs have been cleared from the page
 
 

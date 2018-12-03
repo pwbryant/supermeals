@@ -43,7 +43,7 @@ let ADD_RECIPE_SEARCH = (function() {
 
         create_ingredient_html: function(food_id, food_name, servings) {
 
-                let ingredient_html = `<div id='add-recipe-ingredient-${food_id}-container' class="l-flex--row-start add-recipe-ingredient">`;
+                let ingredient_html = `<div id='add-recipe-ingredient-${food_id}-container' class="input l-flex--row-start add-recipe-ingredient">`;
                 // food name
                 ingredient_html += `<label id='add-recipe-ingredient-name-${food_id}' class='bm-margin--sm-right'>${food_name}</label>`;
                 // Amount
@@ -57,7 +57,9 @@ let ADD_RECIPE_SEARCH = (function() {
                     ingredient_html += `<option value='${i + 1}'>${e.servings__description}</option>`;
                 });
 
-                ingredient_html += `</select></div><i id='add-recipe-ingredient-exit-${food_id}' class='fa fa-times-circle add-recipe-ingredient-exit'></i></div>`;
+                ingredient_html += `</select></div><i id='add-recipe-ingredient-exit-${food_id}' class='fa fa-times-circle add-recipe-ingredient-exit'></i>`;
+
+                ingredient_html += `<div id='add-recipe-ingredient-amt-${food_id}-errors' class='form-errors'></div>`;
 
                 return ingredient_html;
         },
