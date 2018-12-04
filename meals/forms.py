@@ -37,6 +37,102 @@ class RoundedDecimalField(forms.DecimalField):
         return round_decimal(value, self.decimal_places)
 
 
+class MealRecipeForm(forms.ModelForm):
+
+    notes = forms.CharField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        ingredient_fields = [
+            key for key in args[0] if key.startswith('ingredient')
+        ]
+
+        for ing_field in ingredient_fields:
+
+            if 'amount' in ing_field:
+                self.fields[ing_field] = RoundedDecimalField(
+                    max_digits=6, decimal_places=2
+                )
+            else:
+                self.fields[ing_field] = forms.CharField()
+
+
+    def clean(self):
+
+        ingredients = set()
+        i = 0
+        name_fieldname = f'ingredient_name_{i}'
+        amount_fieldname = f'ingredient_amount_{i}'
+        unit_fieldname = f'ingredient_unit_{i}'
+
+        while self.cleaned_data.get(name_fieldname):
+
+            name = self.cleaned_data[name_fieldname]
+            amount = self.cleaned_data[amount_fieldname]
+            unit = self.cleaned_data[unit_fieldname]
+
+            ingredient_info = (name, amount, unit,)
+            if ingredient_info in ingredients:
+                self.add_error(name_fieldname, 'Duplicate Ingredient')
+            else:
+                ingredients.add(ingredient_info)
+
+            i += 1
+            name_fieldname = f'ingredient_name_{i}'
+            amount_fieldname = f'ingredient_amount_{i}'
+            unit_fieldname = f'ingredient_unit_{i}'
+
+        self.cleaned_data['ingredients'] = ingredients
+
+    
+    def save(self):
+
+        food = self.instance
+        food.save()
+
+        for ing_name, amount, unit in self.cleaned_data['ingredients']:
+            ingredient = Foods.objects.get(name=ing_name)
+            serving = Servings.objects.get(food=ingredient, description=unit)
+            ing = Ingredients.objects.create(
+                main_food=food,
+                ingredient=ingredient,
+                serving=serving,
+                amount=amount
+            )
+
+
+    class Meta:
+        model = Foods
+        fields = ['name', 'user']
+
+
+
+    
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(self, *args, **kwargs)
+    #     ingredients = Ingredients.objects.filter(food=self.instance)
+
+    #     for i in range(len(ingredients) + 1):
+    #         name_fieldname = f'ingredient_name_{i}'
+    #         amt_fieldname = f'ingredient_amount_{i}'
+    #         unit_fieldname = f'ingredient_unit_{i}'
+
+    #         self.fields[name_fieldname] = forms.CharField()
+    #         self.fields[amt_fieldname] = forms.CharField()
+    #         self.fields[unit_fieldname] = forms.CharField()
+
+    #         self.initial[name_fieldname] = ingredients[i].ingredient.name
+    #         self.initial[amt_fieldname] = ingredients[i].amount
+    #         self.initial[unit_fieldname] = ingredients[i].servings.description
+
+
+
+            
+                
+
+        
+
 class MacroMealForm(forms.ModelForm):
 
     notes = forms.CharField(widget=forms.Textarea, required=False)

@@ -13,7 +13,7 @@ from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, MacroIngredie
     DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR, \
     INVALID_USERNAME_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_WEIGHT_ERROR, \
     EMPTY_HEIGHT_ERROR
-from meals.models import Macros, Foods, FoodGroup ,Servings, Ingredients, \
+from meals.models import Macros, Foods, FoodGroup , Servings, Ingredients, \
         FoodNotes, FoodType
 from meals.views import save_my_macros, get_my_meals, \
     get_meal_maker_template, \
@@ -61,6 +61,30 @@ class AddRecipeTest(BaseTestCase):
         self.assertContains(response, self.veg_fg.informal_name)
         self.assertContains(response, self.meat_fg.informal_name)
         
+    def xtest_add_recipe_save_saves_new_food(self):
+        url = reverse('save_recipe')
+
+        post_data = { 
+            'recipe-name': 'Peanut Butter and Banana Mix',
+            'ingredient-name': ['Peanut Butter', 'Banana'],
+            'ingredient-amt': ['1', '10'],
+            'ingredient-unit': ['g', 'cups']
+        }
+        response = self.client.post(url, post_data)
+        new_food = Foods.objects.filter(name=post_data['recipe-name'])
+        self.assertEqual(len(new_food), 1)
+
+        new_food = new_food[0]
+        self.assertEqual(new_food.name, post_data['recipe-name'])
+
+        ingredients = Ingredients.objects.filter(
+            food=new_food
+        ).order_by('name').values(
+            'ingredient__name', 'amount', 'servings__description'
+        )
+        self.assertEqual(len(new_food), 2)
+        print('ingredients',  ingredients)
+
 
 class MyMealsTest(BaseTestCase):
 

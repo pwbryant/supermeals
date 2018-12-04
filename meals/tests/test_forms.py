@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django import forms
+from django.contrib.auth.models import User
 
 # from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
 #         EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR, EMPTY_AGE_ERROR, \
@@ -7,8 +8,39 @@ from django import forms
 #         INVALID_POST_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_RATE_ERROR, \
 #         INVALID_MACRO_ERROR, OUT_OF_RANGE_MACRO_ERROR, MACROS_DONT_ADD_UP_ERROR
 
-from meals.forms import  MacroMealForm, MacroIngredientForm
+from meals.forms import  MacroMealForm, MacroIngredientForm, MealRecipeForm
 from meals.models import Foods, Ingredients, Servings
+
+class BaseTestCase(TestCase):
+
+    def create_user(self, USERNAME, PASSWORD):
+        user = User.objects.create_user(username=USERNAME, password=PASSWORD)
+        return user
+
+class RecipeFormTest(BaseTestCase):
+
+    def setUp(self):
+
+        self.post = {
+            # added long decimals to test that they get rounded
+            'name': 'Peanut Butter Banana Blitz',
+            'notes': 'Blend for 5 minutes.',
+            'ingredient_name_0': 'Bananas, raw',
+            'ingredient_amount_0': '2',
+            'ingredient_unit_0': 'cup, mashed',
+            'ingredient_name_1': 'Peanut butter, chunk style, without salt',
+            'ingredient_amount_1': '3',
+            'ingredient_unit_1': 'tbsp'
+            }
+
+
+    def test_RecipeForm_valid(self):
+        user = self.create_user('paul', 'password')
+        self.post['user'] = user.pk
+        form = MealRecipeForm(self.post)
+        self.assertTrue(form.is_valid())
+
+
 
 class MacroMealAndIngredientFormTest(TestCase):
 
