@@ -37,6 +37,8 @@ class BaseTestCase(TestCase):
 class AddRecipeTest(BaseTestCase):
 
     def setUp(self):
+
+        user = self.log_in_user(USERNAME, PASSWORD)
         self.my_meals_fg = FoodGroup.objects.create(
             name='My Meals', informal_name='My Meals'
         )
@@ -46,6 +48,34 @@ class AddRecipeTest(BaseTestCase):
         self.meat_fg = FoodGroup.objects.create(
             name='Meats', informal_name='Meats'
         )
+
+        self.peanut_butter = Foods.objects.create(
+            name='Peanut Butter'
+        )
+        peanut_butter_srv = Servings.objects.create(
+            food=self.peanut_butter, grams=10, quantity=1, description='tbsp'
+        )
+
+        self.bananas = Foods.objects.create(
+            name='Bananas'
+        )
+        bananas_srv = Servings.objects.create(
+            food=self.bananas, grams=100, quantity=1, description='cup'
+        )
+
+        self.post = {
+            # added long decimals to test that they get rounded
+            'user': user.pk,
+            'name': 'Peanut Butter Banana Blitz',
+            'notes': 'Blend for 5 minutes.',
+            'ingredient_name_0': self.bananas.name,
+            'ingredient_amount_0': '2',
+            'ingredient_unit_0': bananas_srv.description,
+            'ingredient_name_1': self.peanut_butter.name,
+            'ingredient_amount_1': '3',
+            'ingredient_unit_1': peanut_butter_srv.description
+            }
+
 
     def test_add_recipe_url(self):
         url = reverse('add_recipe')
@@ -61,29 +91,26 @@ class AddRecipeTest(BaseTestCase):
         self.assertContains(response, self.veg_fg.informal_name)
         self.assertContains(response, self.meat_fg.informal_name)
         
-    def xtest_add_recipe_save_saves_new_food(self):
+    def test_add_recipe_save_saves_new_food(self):
         url = reverse('save_recipe')
 
-        post_data = { 
-            'recipe-name': 'Peanut Butter and Banana Mix',
-            'ingredient-name': ['Peanut Butter', 'Banana'],
-            'ingredient-amt': ['1', '10'],
-            'ingredient-unit': ['g', 'cups']
-        }
-        response = self.client.post(url, post_data)
-        new_food = Foods.objects.filter(name=post_data['recipe-name'])
+        response = self.client.post(url, self.post)
+        new_food = Foods.objects.filter(name=self.post['name'])
         self.assertEqual(len(new_food), 1)
 
         new_food = new_food[0]
-        self.assertEqual(new_food.name, post_data['recipe-name'])
+        self.assertEqual(new_food.name, self.post['name'])
 
         ingredients = Ingredients.objects.filter(
-            food=new_food
-        ).order_by('name').values(
-            'ingredient__name', 'amount', 'servings__description'
+            main_food=new_food
+        ).order_by('ingredient__name').values(
+            'ingredient__name', 'amount', 'serving__description'
         )
-        self.assertEqual(len(new_food), 2)
-        print('ingredients',  ingredients)
+        self.assertEqual(len(ingredients), 2)
+        self.assertEqual(ingredients[0]['ingredient__name'], self.bananas.name)
+        self.assertEqual(
+            ingredients[1]['ingredient__name'], self.peanut_butter.name 
+        )
 
 
 class MyMealsTest(BaseTestCase):

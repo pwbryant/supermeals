@@ -29,5 +29,6 @@ urlpatterns = [
 	url(r'^my-meals/$', views.get_my_meals, name='my_meals'),
 	url(r'^easy-picks/(?P<pick_type>recent|popular)/$', views.easy_picks, name='easy_picks'),
 	url(r'^add-recipe/$', views.add_recipe, name='add_recipe'),
+	url(r'^save-recipe/$', views.save_recipe, name='save_recipe'),
 ]
 	

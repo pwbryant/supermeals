@@ -107,37 +107,10 @@ class MealRecipeForm(forms.ModelForm):
                 amount=amount
             )
 
-
     class Meta:
         model = Foods
         fields = ['name', 'user']
 
-
-
-    
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(self, *args, **kwargs)
-    #     ingredients = Ingredients.objects.filter(food=self.instance)
-
-    #     for i in range(len(ingredients) + 1):
-    #         name_fieldname = f'ingredient_name_{i}'
-    #         amt_fieldname = f'ingredient_amount_{i}'
-    #         unit_fieldname = f'ingredient_unit_{i}'
-
-    #         self.fields[name_fieldname] = forms.CharField()
-    #         self.fields[amt_fieldname] = forms.CharField()
-    #         self.fields[unit_fieldname] = forms.CharField()
-
-    #         self.initial[name_fieldname] = ingredients[i].ingredient.name
-    #         self.initial[amt_fieldname] = ingredients[i].amount
-    #         self.initial[unit_fieldname] = ingredients[i].servings.description
-
-
-
-            
-                
-
-        
 
 class MacroMealForm(forms.ModelForm):
 
