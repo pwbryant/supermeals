@@ -34,11 +34,7 @@ def round_decimal(value, places):
 
 class RoundedDecimalField(forms.DecimalField):
     def to_python(self, value):
-        try:
-            value = super(RoundedDecimalField, self).to_python(value)
-        except ValidationError as e:
-            raise e
-
+        value = super(RoundedDecimalField, self).to_python(value)
         return round_decimal(value, self.decimal_places)
 
 
@@ -65,6 +61,7 @@ class MealRecipeForm(forms.ModelForm):
 
     def clean(self):
 
+        self.cleaned_data = super().clean()
         ingredients = set()
         ingredient_names = set()
         i = 0

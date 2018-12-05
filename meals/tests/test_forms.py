@@ -19,29 +19,45 @@ class BaseTestCase(TestCase):
 
 class RecipeFormTest(BaseTestCase):
 
+
     def setUp(self):
+
+
+        self.peanut_butter = Foods.objects.create(
+            name='Peanut Butter'
+        )
+        peanut_butter_srv = Servings.objects.create(
+            food=self.peanut_butter, grams=10, quantity=1, description='tbsp'
+        )
+
+        self.bananas = Foods.objects.create(
+            name='Bananas'
+        )
+        bananas_srv = Servings.objects.create(
+            food=self.bananas, grams=100, quantity=1, description='cup'
+        )
 
         self.post = {
             # added long decimals to test that they get rounded
             'name': 'Peanut Butter Banana Blitz',
             'notes': 'Blend for 5 minutes.',
-            'ingredient_name_0': 'Bananas, raw',
+            'ingredient_name_0': self.bananas.name,
             'ingredient_amount_0': '2',
-            'ingredient_unit_0': 'cup, mashed',
-            'ingredient_name_1': 'Peanut butter, chunk style, without salt',
+            'ingredient_unit_0': bananas_srv.description,
+            'ingredient_name_1': self.peanut_butter.name,
             'ingredient_amount_1': '3',
-            'ingredient_unit_1': 'tbsp'
+            'ingredient_unit_1': peanut_butter_srv.description
             }
 
 
-    def test_RecipeForm_valid(self):
+    def test_MealRecipeForm_valid(self):
         user = self.create_user('paul', 'password')
         self.post['user'] = user.pk
         form = MealRecipeForm(self.post)
         self.assertTrue(form.is_valid())
 
 
-    def test_RecipeForm_invalid_when_amount_contains_text(self):
+    def test_MealRecipeForm_invalid_when_amount_contains_text(self):
         user = self.create_user('paul', 'password')
         self.post['user'] = user.pk
         self.post['ingredient_amount_0'] = 'poop'
@@ -50,13 +66,27 @@ class RecipeFormTest(BaseTestCase):
         self.assertIn('Enter a number.', form.errors['ingredient_amount_0'])
 
 
-    def test_RecipeForm_invalid_when_duplicate_ingredients(self):
+    def test_MealRecipeForm_invalid_when_duplicate_ingredients(self):
         user = self.create_user('paul', 'password')
         self.post['user'] = user.pk
-        self.post['ingredient_name_1'] = 'Bananas, raw'
+        self.post['ingredient_name_1'] = self.bananas.name
         form = MealRecipeForm(self.post)
         self.assertFalse(form.is_valid())
         self.assertIn('Duplicate Ingredient', form.errors['ingredient_name_1'])
+
+
+    def test_MealRecipeForm_handles_duplicate_recipies(self):
+        user = self.create_user('paul', 'password')
+        self.post['user'] = user.pk
+
+        form = MealRecipeForm(self.post)
+        form.is_valid()
+        form.save()
+        form = MealRecipeForm(self.post)
+        form.is_valid()
+
+        error = 'Foods with this Name already exists.'
+        self.assertIn(error, form.errors['name'])
 
 
 class MacroMealAndIngredientFormTest(TestCase):

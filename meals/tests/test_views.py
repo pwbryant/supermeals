@@ -91,7 +91,7 @@ class AddRecipeTest(BaseTestCase):
         self.assertContains(response, self.veg_fg.informal_name)
         self.assertContains(response, self.meat_fg.informal_name)
         
-    def test_add_recipe_save_saves_new_food(self):
+    def test_save_recipe_saves_new_food(self):
         url = reverse('save_recipe')
 
         response = self.client.post(url, self.post)
@@ -111,6 +111,13 @@ class AddRecipeTest(BaseTestCase):
         self.assertEqual(
             ingredients[1]['ingredient__name'], self.peanut_butter.name 
         )
+
+    def test_save_recipe_returns_success(self):
+        url = reverse('save_recipe')
+
+        response = json.loads(self.client.post(url, self.post).content)
+        self.assertEqual(response['status'], 'success')
+
 
 
 class MyMealsTest(BaseTestCase):
