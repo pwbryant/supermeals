@@ -41,6 +41,23 @@ class RecipeFormTest(BaseTestCase):
         self.assertTrue(form.is_valid())
 
 
+    def test_RecipeForm_invalid_when_amount_contains_text(self):
+        user = self.create_user('paul', 'password')
+        self.post['user'] = user.pk
+        self.post['ingredient_amount_0'] = 'poop'
+        form = MealRecipeForm(self.post)
+        self.assertFalse(form.is_valid())
+        self.assertIn('Enter a number.', form.errors['ingredient_amount_0'])
+
+
+    def test_RecipeForm_invalid_when_duplicate_ingredients(self):
+        user = self.create_user('paul', 'password')
+        self.post['user'] = user.pk
+        self.post['ingredient_name_1'] = 'Bananas, raw'
+        form = MealRecipeForm(self.post)
+        self.assertFalse(form.is_valid())
+        self.assertIn('Duplicate Ingredient', form.errors['ingredient_name_1'])
+
 
 class MacroMealAndIngredientFormTest(TestCase):
 

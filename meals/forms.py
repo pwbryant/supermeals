@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from meals.models import Macros, Foods, Ingredients, Servings
 
 
@@ -33,7 +34,11 @@ def round_decimal(value, places):
 
 class RoundedDecimalField(forms.DecimalField):
     def to_python(self, value):
-        value = super(RoundedDecimalField, self).to_python(value)
+        try:
+            value = super(RoundedDecimalField, self).to_python(value)
+        except ValidationError as e:
+            raise e
+
         return round_decimal(value, self.decimal_places)
 
 
@@ -61,6 +66,7 @@ class MealRecipeForm(forms.ModelForm):
     def clean(self):
 
         ingredients = set()
+        ingredient_names = set()
         i = 0
         name_fieldname = f'ingredient_name_{i}'
         amount_fieldname = f'ingredient_amount_{i}'
@@ -69,14 +75,14 @@ class MealRecipeForm(forms.ModelForm):
         while self.cleaned_data.get(name_fieldname):
 
             name = self.cleaned_data[name_fieldname]
-            amount = self.cleaned_data[amount_fieldname]
-            unit = self.cleaned_data[unit_fieldname]
-
-            ingredient_info = (name, amount, unit,)
-            if ingredient_info in ingredients:
+            if name in ingredient_names:
                 self.add_error(name_fieldname, 'Duplicate Ingredient')
             else:
-                ingredients.add(ingredient_info)
+                ingredient_names.add(name)
+                amount = self.cleaned_data.get(amount_fieldname)
+                unit = self.cleaned_data.get(unit_fieldname)
+                if amount and name:
+                    ingredients.add((name, amount, unit,))
 
             i += 1
             name_fieldname = f'ingredient_name_{i}'
