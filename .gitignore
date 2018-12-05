@@ -15,3 +15,4 @@ static/meals/bootstrap/
 static/meals/js/d3/
 static/meals/tests/qunit.js
 static/meals/tests/qunit.css
+*.swp

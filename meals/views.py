@@ -1,3 +1,4 @@
+# FUCK ME in the goat ass!!!
 from decimal import Decimal
 import json
 from django.shortcuts import render, redirect
