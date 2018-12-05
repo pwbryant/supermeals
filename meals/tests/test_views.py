@@ -68,12 +68,12 @@ class AddRecipeTest(BaseTestCase):
             'user': user.pk,
             'name': 'Peanut Butter Banana Blitz',
             'notes': 'Blend for 5 minutes.',
-            'ingredient_name_0': self.bananas.name,
+            'ingredient_0': self.bananas.pk,
             'ingredient_amount_0': '2',
-            'ingredient_unit_0': bananas_srv.description,
-            'ingredient_name_1': self.peanut_butter.name,
+            'ingredient_unit_0': bananas_srv.pk,
+            'ingredient_1': self.peanut_butter.pk,
             'ingredient_amount_1': '3',
-            'ingredient_unit_1': peanut_butter_srv.description
+            'ingredient_unit_1': peanut_butter_srv.pk
             }
 
 
@@ -114,10 +114,16 @@ class AddRecipeTest(BaseTestCase):
 
     def test_save_recipe_returns_success(self):
         url = reverse('save_recipe')
-
         response = json.loads(self.client.post(url, self.post).content)
         self.assertEqual(response['status'], 'success')
 
+    def test_save_recipe_returns_failure_when_errors(self):
+        url = reverse('save_recipe')
+        # trigger duplicate name error
+        self.client.post(url, self.post)
+        response = json.loads(self.client.post(url, self.post).content)
+        self.assertEqual(response['status'], 'failure')
+        self.assertTrue(response.get('errors'))
 
 
 class MyMealsTest(BaseTestCase):

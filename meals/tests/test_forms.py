@@ -41,12 +41,12 @@ class RecipeFormTest(BaseTestCase):
             # added long decimals to test that they get rounded
             'name': 'Peanut Butter Banana Blitz',
             'notes': 'Blend for 5 minutes.',
-            'ingredient_name_0': self.bananas.name,
+            'ingredient_0': self.bananas.pk,
             'ingredient_amount_0': '2',
-            'ingredient_unit_0': bananas_srv.description,
-            'ingredient_name_1': self.peanut_butter.name,
+            'ingredient_unit_0': bananas_srv.pk,
+            'ingredient_1': self.peanut_butter.pk,
             'ingredient_amount_1': '3',
-            'ingredient_unit_1': peanut_butter_srv.description
+            'ingredient_unit_1': peanut_butter_srv.pk
             }
 
 
@@ -69,10 +69,10 @@ class RecipeFormTest(BaseTestCase):
     def test_MealRecipeForm_invalid_when_duplicate_ingredients(self):
         user = self.create_user('paul', 'password')
         self.post['user'] = user.pk
-        self.post['ingredient_name_1'] = self.bananas.name
+        self.post['ingredient_1'] = self.bananas.pk
         form = MealRecipeForm(self.post)
         self.assertFalse(form.is_valid())
-        self.assertIn('Duplicate Ingredient', form.errors['ingredient_name_1'])
+        self.assertIn('Duplicate Ingredient', form.errors['ingredient_1'])
 
 
     def test_MealRecipeForm_handles_duplicate_recipies(self):

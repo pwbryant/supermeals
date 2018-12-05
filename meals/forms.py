@@ -56,7 +56,7 @@ class MealRecipeForm(forms.ModelForm):
                     max_digits=6, decimal_places=2
                 )
             else:
-                self.fields[ing_field] = forms.CharField()
+                self.fields[ing_field] = forms.IntegerField()
 
 
     def clean(self):
@@ -65,7 +65,7 @@ class MealRecipeForm(forms.ModelForm):
         ingredients = set()
         ingredient_names = set()
         i = 0
-        name_fieldname = f'ingredient_name_{i}'
+        name_fieldname = f'ingredient_{i}'
         amount_fieldname = f'ingredient_amount_{i}'
         unit_fieldname = f'ingredient_unit_{i}'
 
@@ -82,7 +82,7 @@ class MealRecipeForm(forms.ModelForm):
                     ingredients.add((name, amount, unit,))
 
             i += 1
-            name_fieldname = f'ingredient_name_{i}'
+            name_fieldname = f'ingredient_{i}'
             amount_fieldname = f'ingredient_amount_{i}'
             unit_fieldname = f'ingredient_unit_{i}'
 
@@ -94,9 +94,9 @@ class MealRecipeForm(forms.ModelForm):
         food = self.instance
         food.save()
 
-        for ing_name, amount, unit in self.cleaned_data['ingredients']:
-            ingredient = Foods.objects.get(name=ing_name)
-            serving = Servings.objects.get(food=ingredient, description=unit)
+        for ing_pk, amount, unit in self.cleaned_data['ingredients']:
+            ingredient = Foods.objects.get(pk=ing_pk)
+            serving = Servings.objects.get(pk=unit)
             ing = Ingredients.objects.create(
                 main_food=food,
                 ingredient=ingredient,

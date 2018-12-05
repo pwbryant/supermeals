@@ -9,6 +9,14 @@ let ADD_RECIPE = (function() {
             console.log('this obj assigned');
             $('#add-recipe-save-button').on('click', function() {
                 const form_valid = this_add_recipe_obj.add_recipe_validation();
+                if (form_valid) {
+                    const post_data = $('#add-recipe-form').serialize();
+                    console.log('post_data', post_data)
+                    $.post('/meals/save-recipe', post_data, function(data) {
+                        console.log('data', data);
+
+                    });
+                }
             });
         },
 
@@ -40,6 +48,8 @@ let ADD_RECIPE = (function() {
             } else {
                 ingredient_errors.html('');
             }
+
+            return is_valid;
         }
     }
 })();

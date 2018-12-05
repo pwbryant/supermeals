@@ -327,7 +327,7 @@ def search_foods(request, food_owner):
     filters = request.GET.getlist('filters[]')
     fields_of_interest = [
         'id', 'name', 'cals_per_gram', 'fat_per_gram', 'carbs_per_gram',
-        'protein_per_gram', 'servings__description', 'servings__grams',
+        'protein_per_gram', 'servings__pk', 'servings__description', 'servings__grams',
         'servings__quantity']
 
     args = [
