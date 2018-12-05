@@ -397,9 +397,11 @@ def add_recipe(request):
 
 def save_recipe(request):
 
+    # request.POST['user'] = request.user
     form = MealRecipeForm(request.POST)
     context = {}
     if form.is_valid():
+        form.instance.user = request.user
         form.save()
         context['status'] = 'success'
        

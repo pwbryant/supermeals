@@ -106,7 +106,7 @@ class MealRecipeForm(forms.ModelForm):
 
     class Meta:
         model = Foods
-        fields = ['name', 'user']
+        fields = ['name']
 
 
 class MacroMealForm(forms.ModelForm):

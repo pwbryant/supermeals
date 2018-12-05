@@ -50,7 +50,7 @@ let ADD_RECIPE_SEARCH = (function() {
             let ingredient_html = `<div id='add-recipe-ingredient-${food_id}-container' class="input l-flex--row-start add-recipe-ingredient">`;
             // food name
             ingredient_html += `<label id='add-recipe-ingredient-name-${food_id}' class='bm-margin--sm-right'>${food_name}</label>`;
-            ingredient_html += `<input type='hidden' name='ingredient_name_${food_num}' value='${food_id}' />`;
+            ingredient_html += `<input type='hidden' name='ingredient_${food_num}' value='${food_id}' />`;
             // Amount
             ingredient_html += `<div class='l-flex--col-start'><label for='add-recipe-ingredient-amt-${food_id}'>Amount</label><input id='add-recipe-ingredient-amt-${food_id}'type='text' name='ingredient_amount_${food_num}' /></div>`;
             // Unit

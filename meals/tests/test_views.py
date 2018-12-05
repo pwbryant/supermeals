@@ -28,8 +28,15 @@ BAD_USERNAME, BAD_PASSWORD = 'bad', 'badpass'
 
 class BaseTestCase(TestCase):
     
-    def log_in_user(self,USERNAME,PASSWORD):
-        user = User.objects.create_user(username=USERNAME,password=PASSWORD)
+    def log_in_user(self, USERNAME, PASSWORD):
+
+        # try:
+        #     user = User.objects.create_user(username=USERNAME, password=PASSWORD)
+        # except:
+        #     user = User.objects.get(username=USERNAME)
+        
+
+        user = User.objects.create_user(username=USERNAME, password=PASSWORD)
         self.client.post('/accounts/login/', data={'username':USERNAME, 'password':PASSWORD})
         return user
 
@@ -38,7 +45,6 @@ class AddRecipeTest(BaseTestCase):
 
     def setUp(self):
 
-        user = self.log_in_user(USERNAME, PASSWORD)
         self.my_meals_fg = FoodGroup.objects.create(
             name='My Meals', informal_name='My Meals'
         )
@@ -65,7 +71,6 @@ class AddRecipeTest(BaseTestCase):
 
         self.post = {
             # added long decimals to test that they get rounded
-            'user': user.pk,
             'name': 'Peanut Butter Banana Blitz',
             'notes': 'Blend for 5 minutes.',
             'ingredient_0': self.bananas.pk,
@@ -83,6 +88,7 @@ class AddRecipeTest(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,'meals/add_recipe.html')
 
+
     def test_add_recipe_returns_filters(self):
         url = reverse('add_recipe')
         response = self.client.get(url)
@@ -92,6 +98,7 @@ class AddRecipeTest(BaseTestCase):
         self.assertContains(response, self.meat_fg.informal_name)
         
     def test_save_recipe_saves_new_food(self):
+        user = self.log_in_user(USERNAME, PASSWORD)
         url = reverse('save_recipe')
 
         response = self.client.post(url, self.post)
@@ -112,12 +119,23 @@ class AddRecipeTest(BaseTestCase):
             ingredients[1]['ingredient__name'], self.peanut_butter.name 
         )
 
+
+    def test_save_recipe_new_food_has_user_set(self):
+        user = self.log_in_user(USERNAME, PASSWORD)
+        url = reverse('save_recipe')
+        self.client.post(url, self.post)
+        new_food = Foods.objects.get(name=self.post['name'])
+        self.assertEqual(new_food.user, user)
+
+
     def test_save_recipe_returns_success(self):
+        self.log_in_user(USERNAME, PASSWORD)
         url = reverse('save_recipe')
         response = json.loads(self.client.post(url, self.post).content)
         self.assertEqual(response['status'], 'success')
 
     def test_save_recipe_returns_failure_when_errors(self):
+        self.log_in_user(USERNAME, PASSWORD)
         url = reverse('save_recipe')
         # trigger duplicate name error
         self.client.post(url, self.post)

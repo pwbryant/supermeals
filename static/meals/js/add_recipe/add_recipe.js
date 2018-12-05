@@ -6,15 +6,14 @@ let ADD_RECIPE = (function() {
         add_recipe_form_save: function() {
 
             this_add_recipe_obj = this;
-            console.log('this obj assigned');
             $('#add-recipe-save-button').on('click', function() {
                 const form_valid = this_add_recipe_obj.add_recipe_validation();
                 if (form_valid) {
                     const post_data = $('#add-recipe-form').serialize();
-                    console.log('post_data', post_data)
                     $.post('/meals/save-recipe', post_data, function(data) {
-                        console.log('data', data);
-
+                        if (data['status'] == 'success') {
+                            $('#add-recipe-save-status').text('Recipe Saved');
+                        }
                     });
                 }
             });
@@ -28,7 +27,7 @@ let ADD_RECIPE = (function() {
                 const error_div = $(`#${e.id}-errors`);
                 if ($.trim(e.value) == '') {
                     is_valid = false;
-                    if (e.name == 'recipe-name') {
+                    if (e.name == 'name') {
                         error_div.html('<p style="color:red;">Enter recipe name</p>');
                     } else {
                         error_div.html('<p style="color:red;">Enter ingredient amount</p>');
@@ -39,7 +38,7 @@ let ADD_RECIPE = (function() {
 
             });
 
-            const ingredient_count = $('input[name="ingredient"]').length;
+            const ingredient_count = $('.add-recipe-ingredient').length;
             const ingredient_errors = $('#add-recipe-ingredients-container-errors');
             if (ingredient_count < 2) {
                 is_valid=false;
