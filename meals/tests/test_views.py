@@ -147,6 +147,23 @@ class AddRecipeTest(BaseTestCase):
         )
 
 
+    def test_save_recipe_saves_notes_if_present(self):
+        url = reverse('save_recipe')
+        self.client.post(url, self.post)
+        new_food = Foods.objects.get(name=self.post['name'])
+        notes = FoodNotes.objects.get(food=new_food)
+        self.assertEqual(notes.notes, self.post['notes'])
+
+
+    def test_save_recipe_saves_handles_notes_if_not_present(self):
+        url = reverse('save_recipe')
+        self.post['notes'] = ''
+        self.client.post(url, self.post)
+        new_food = Foods.objects.get(name=self.post['name'])
+        notes = FoodNotes.objects.filter(food=new_food)
+        self.assertEqual(len(notes), 0)
+
+
     def test_save_recipe_new_food_has_user_set(self):
         url = reverse('save_recipe')
         self.client.post(url, self.post)
