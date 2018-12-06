@@ -16,6 +16,16 @@ let ADD_RECIPE = (function() {
                         console.log('data', data);
                         if (data['status'] == 'success') {
                             $('#add-recipe-save-status').text('Recipe Saved');
+
+                            // clear search results
+                            $('#add-recipe-search-results-container').html('');
+
+                            // clear form of ingredients
+                            $('#add-recipe-ingredients-container').html('');
+
+                            // clear inputs
+                            $('#add-recipe-notes').val('');
+                            $('input:visible').val('');
                         }
                         if (data['status'] == 'failure') {
                             for (let key in data['errors']) {

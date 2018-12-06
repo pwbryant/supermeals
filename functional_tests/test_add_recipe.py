@@ -226,8 +226,28 @@ class AddIngredientRecipeTest(FunctionalTest):
             'id', 'text', 'Recipe Saved'
         )
         
-        self.fail('Finish Test')
         # He also notices all all inputs have been cleared from the page
+        search_results = self.browser.find_elements_by_class_name(
+            'add-recipe-search-results'
+        )
+        self.assertEqual(len(search_results), 0)
 
+        ingredients = self.browser.find_elements_by_class_name(
+            'add-recipe-ingredient'
+        )
+        self.assertEqual(len(ingredients), 0)
 
+        search_input = self.browser.find_element_by_id(
+            'add-recipe-search'
+        ).get_attribute('value')
+        self.assertEqual(search_input, '')
 
+        recipe_name = self.browser.find_element_by_id(
+            'add-recipe-recipe-name'
+        ).get_attribute('value')
+        self.assertEqual(recipe_name, '')
+
+        recipe_notes = self.browser.find_element_by_id(
+            'add-recipe-notes'
+        ).get_attribute('value')
+        self.assertEqual(recipe_notes, '')
