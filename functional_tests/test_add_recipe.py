@@ -42,11 +42,7 @@ class AddIngredientRecipeTest(FunctionalTest):
         )
 
         
-        # Servings
-        self.srv_gram = Servings.objects.create(
-            grams=Decimal(1),
-            quantity=Decimal(1), description='g'
-        )
+        # Servings (grams already created in base.py)
         self.scoop = Servings.objects.create(
             food=self.ice_cream, grams=Decimal(10),
             quantity=Decimal(1), description='scoop'
@@ -92,6 +88,7 @@ class AddIngredientRecipeTest(FunctionalTest):
         search_results = self.setup_and_run_search(
             search_terms, [no_filter], 'add-recipe'
         )
+
         self.assertEqual(len(search_results), 3)
 
         # He clicks on the add button of the carrot result, and he
@@ -168,7 +165,7 @@ class AddIngredientRecipeTest(FunctionalTest):
         save_button.click()
 
         self.check_element_content(
-            'add-recipe-recipe-name-errors',
+            'add-recipe-name-errors',
             'id', 'text', 'Enter recipe name'
         )
         recipe_name_input = self.browser.find_element_by_id(
@@ -192,7 +189,7 @@ class AddIngredientRecipeTest(FunctionalTest):
             'id', 'text', 'Recipes require more than one ingredient'
         )
         self.check_element_content(
-            'add-recipe-recipe-name-errors',
+            'add-recipe-name-errors',
             'id', 'text', ''
         )
         # He then adds them back
@@ -207,6 +204,12 @@ class AddIngredientRecipeTest(FunctionalTest):
         carrot_amt_input.send_keys('100')
         chicken_amt_input.send_keys('2')
         chicken_units.select_by_visible_text('breast')
+
+        # Joe wants to remind himself how to prep this recipe later
+        # so he adds some notes in the Notes area
+        notes = self.browser.find_element_by_id('add-recipe-notes')
+        notes.send_keys('Bake in oven at 100 F for 2000 hours')
+
 
         # Joe clicks the save button and he sees the ingredient
         # recipe dissapear and a success confirmation

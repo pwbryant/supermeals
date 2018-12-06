@@ -19,9 +19,7 @@ class BaseTestCase(TestCase):
 
 class RecipeFormTest(BaseTestCase):
 
-
     def setUp(self):
-
 
         self.peanut_butter = Foods.objects.create(
             name='Peanut Butter'
@@ -51,15 +49,11 @@ class RecipeFormTest(BaseTestCase):
 
 
     def test_MealRecipeForm_valid(self):
-        user = self.create_user('paul', 'password')
-        self.post['user'] = user.pk
         form = MealRecipeForm(self.post)
         self.assertTrue(form.is_valid())
 
 
     def test_MealRecipeForm_invalid_when_amount_contains_text(self):
-        user = self.create_user('paul', 'password')
-        self.post['user'] = user.pk
         self.post['ingredient_amount_0'] = 'poop'
         form = MealRecipeForm(self.post)
         self.assertFalse(form.is_valid())
@@ -67,8 +61,6 @@ class RecipeFormTest(BaseTestCase):
 
 
     def test_MealRecipeForm_invalid_when_duplicate_ingredients(self):
-        user = self.create_user('paul', 'password')
-        self.post['user'] = user.pk
         self.post['ingredient_1'] = self.bananas.pk
         form = MealRecipeForm(self.post)
         self.assertFalse(form.is_valid())
@@ -76,9 +68,6 @@ class RecipeFormTest(BaseTestCase):
 
 
     def test_MealRecipeForm_handles_duplicate_recipies(self):
-        user = self.create_user('paul', 'password')
-        self.post['user'] = user.pk
-
         form = MealRecipeForm(self.post)
         form.is_valid()
         form.save()
@@ -90,7 +79,6 @@ class RecipeFormTest(BaseTestCase):
 
 
 class MacroMealAndIngredientFormTest(TestCase):
-
 
     def setUp(self):
 

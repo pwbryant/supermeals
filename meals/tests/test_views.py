@@ -30,12 +30,6 @@ class BaseTestCase(TestCase):
     
     def log_in_user(self, USERNAME, PASSWORD):
 
-        # try:
-        #     user = User.objects.create_user(username=USERNAME, password=PASSWORD)
-        # except:
-        #     user = User.objects.get(username=USERNAME)
-        
-
         user = User.objects.create_user(username=USERNAME, password=PASSWORD)
         self.client.post('/accounts/login/', data={'username':USERNAME, 'password':PASSWORD})
         return user
@@ -44,6 +38,12 @@ class BaseTestCase(TestCase):
 class AddRecipeTest(BaseTestCase):
 
     def setUp(self):
+
+        self.user = self.log_in_user(USERNAME, PASSWORD)
+
+        Servings.objects.create(
+            food=None, description='g', grams=Decimal(1), quantity=Decimal(1)
+        )
 
         self.my_meals_fg = FoodGroup.objects.create(
             name='My Meals', informal_name='My Meals'
@@ -58,14 +58,14 @@ class AddRecipeTest(BaseTestCase):
         self.peanut_butter = Foods.objects.create(
             name='Peanut Butter'
         )
-        peanut_butter_srv = Servings.objects.create(
+        self.peanut_butter_srv = Servings.objects.create(
             food=self.peanut_butter, grams=10, quantity=1, description='tbsp'
         )
 
         self.bananas = Foods.objects.create(
             name='Bananas'
         )
-        bananas_srv = Servings.objects.create(
+        self.bananas_srv = Servings.objects.create(
             food=self.bananas, grams=100, quantity=1, description='cup'
         )
 
@@ -75,10 +75,10 @@ class AddRecipeTest(BaseTestCase):
             'notes': 'Blend for 5 minutes.',
             'ingredient_0': self.bananas.pk,
             'ingredient_amount_0': '2',
-            'ingredient_unit_0': bananas_srv.pk,
+            'ingredient_unit_0': self.bananas_srv.pk,
             'ingredient_1': self.peanut_butter.pk,
             'ingredient_amount_1': '3',
-            'ingredient_unit_1': peanut_butter_srv.pk
+            'ingredient_unit_1': self.peanut_butter_srv.pk
             }
 
 
@@ -96,9 +96,9 @@ class AddRecipeTest(BaseTestCase):
         self.assertContains(response, self.my_meals_fg.informal_name)
         self.assertContains(response, self.veg_fg.informal_name)
         self.assertContains(response, self.meat_fg.informal_name)
+
         
     def test_save_recipe_saves_new_food(self):
-        user = self.log_in_user(USERNAME, PASSWORD)
         url = reverse('save_recipe')
 
         response = self.client.post(url, self.post)
@@ -108,34 +108,58 @@ class AddRecipeTest(BaseTestCase):
         new_food = new_food[0]
         self.assertEqual(new_food.name, self.post['name'])
 
+
+    def test_save_recipe_saves_new_ingredients(self):
+        url = reverse('save_recipe')
+
+        self.client.post(url, self.post)
+        new_food = Foods.objects.get(name=self.post['name'])
+
         ingredients = Ingredients.objects.filter(
             main_food=new_food
-        ).order_by('ingredient__name').values(
-            'ingredient__name', 'amount', 'serving__description'
-        )
+        ).order_by('ingredient__name').values('ingredient__name')
+
         self.assertEqual(len(ingredients), 2)
         self.assertEqual(ingredients[0]['ingredient__name'], self.bananas.name)
         self.assertEqual(
-            ingredients[1]['ingredient__name'], self.peanut_butter.name 
+            ingredients[1]['ingredient__name'], self.peanut_butter.name
+        )
+
+
+    def test_save_recipe_saves_ingredients_have_correct_servings(self):
+        url = reverse('save_recipe')
+
+        self.client.post(url, self.post)
+        new_food = Foods.objects.get(name=self.post['name'])
+
+        ingredients = Ingredients.objects.filter(
+            main_food=new_food
+        ).order_by('ingredient__name').values(
+            'serving__description'
+        )
+        self.assertEqual(len(ingredients), 2)
+        self.assertEqual(
+            ingredients[0]['serving__description'], self.bananas_srv.description
+        )
+        self.assertEqual(
+            ingredients[1]['serving__description'],
+            self.peanut_butter_srv.description
         )
 
 
     def test_save_recipe_new_food_has_user_set(self):
-        user = self.log_in_user(USERNAME, PASSWORD)
         url = reverse('save_recipe')
         self.client.post(url, self.post)
         new_food = Foods.objects.get(name=self.post['name'])
-        self.assertEqual(new_food.user, user)
+        self.assertEqual(new_food.user, self.user)
 
 
     def test_save_recipe_returns_success(self):
-        self.log_in_user(USERNAME, PASSWORD)
         url = reverse('save_recipe')
         response = json.loads(self.client.post(url, self.post).content)
         self.assertEqual(response['status'], 'success')
 
     def test_save_recipe_returns_failure_when_errors(self):
-        self.log_in_user(USERNAME, PASSWORD)
         url = reverse('save_recipe')
         # trigger duplicate name error
         self.client.post(url, self.post)
@@ -424,6 +448,11 @@ class MacroMealMakerTest(BaseTestCase):
 
 class MealMakerTest(BaseTestCase):
     
+    def setUp(self):
+
+        Servings.objects.create(
+            food=None, grams=Decimal(1), description='g', quantity=Decimal(1)
+        )
     # fixtures = ['db.json']
 
     #################################
