@@ -156,14 +156,26 @@ class SearchFoods(models.Manager):
         search_results_dict = {}
         for result in search_results:
             food_name = result['name']
+            print('food name', food_name)
             if food_name not in search_results_dict:
-                result.update({'servings': []})
+                # add grams serving for all foods
+                # dict keys have to be it the below format to match query
+                # field names
+                grams_serving = Servings.objects.get(food=None, description='g')
+                grams_dict = {
+                    'servings__pk': grams_serving.pk,
+                    'servings__description': grams_serving.description,
+                    'servings__grams':  grams_serving.grams,
+                    'servings__quantity':  grams_serving.quantity
+                }
+                result.update({'servings': [grams_dict]})
                 search_results_dict[food_name] = result
 
             servings = dict(
                 (key, item,) for key, item in result.items()
                 if key.startswith('servings__')
             )
+            print('servings', servings)
             search_results_dict[food_name]['servings'].append(servings)
             search_results_dict[food_name] = dict(
                 (key, item,) for key, item in search_results_dict[food_name].items()

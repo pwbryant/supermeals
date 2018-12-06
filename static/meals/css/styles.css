@@ -42,6 +42,10 @@ a {
     cursor: default;
 }
 
+.form-error {
+    color: red;
+}
+
 .headline {
     padding 3px; 
     font-weight: bold;

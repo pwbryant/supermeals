@@ -7,12 +7,25 @@ let ADD_RECIPE = (function() {
 
             this_add_recipe_obj = this;
             $('#add-recipe-save-button').on('click', function() {
+                // clear any existing errors
+                $('.form-errors').html('');
                 const form_valid = this_add_recipe_obj.add_recipe_validation();
                 if (form_valid) {
                     const post_data = $('#add-recipe-form').serialize();
                     $.post('/meals/save-recipe', post_data, function(data) {
+                        console.log('data', data);
                         if (data['status'] == 'success') {
                             $('#add-recipe-save-status').text('Recipe Saved');
+                        }
+                        if (data['status'] == 'failure') {
+                            for (let key in data['errors']) {
+                                const error_id = `#add-recipe-${key.replace(/_/g, '-')}-errors`;
+                                let errors = '';
+                                data['errors'][key].forEach(function(e, i) {
+                                    errors += `<p class='form-error'>${e}</p>`;
+                                });
+                                $(error_id).html(errors);
+                            }
                         }
                     });
                 }
@@ -28,9 +41,9 @@ let ADD_RECIPE = (function() {
                 if ($.trim(e.value) == '') {
                     is_valid = false;
                     if (e.name == 'name') {
-                        error_div.html('<p style="color:red;">Enter recipe name</p>');
+                        error_div.html('<p class="form-error">Enter recipe name</p>');
                     } else {
-                        error_div.html('<p style="color:red;">Enter ingredient amount</p>');
+                        error_div.html('<p class="form-error">Enter ingredient amount</p>');
                     }
                 } else {
                     error_div.html('');
@@ -42,7 +55,7 @@ let ADD_RECIPE = (function() {
             const ingredient_errors = $('#add-recipe-ingredients-container-errors');
             if (ingredient_count < 2) {
                 is_valid=false;
-                ingredient_errors.html('<p style="color:red;">Recipes require more than one ingredient');
+                ingredient_errors.html('<p class="form-error">Recipes require more than one ingredient');
                
             } else {
                 ingredient_errors.html('');

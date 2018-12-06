@@ -57,7 +57,7 @@ let ADD_RECIPE_SEARCH = (function() {
             ingredient_html += `<div class='l-flex--col-start'><label for='add-recipe-ingredient-units-${food_id}'>Units</label><select id='add-recipe-ingredient-units-${food_id}' name='ingredient_unit_${food_num}'>`;
 
             // first unit is grams
-            ingredient_html += '<option value="0">g</option>';
+            // ingredient_html += '<option value="0">g</option>';
             console.log('servings', servings)
             servings.map(function(e, i) {
                 ingredient_html += `<option value='${e.servings__pk}'>${e.servings__description}</option>`;
@@ -65,7 +65,7 @@ let ADD_RECIPE_SEARCH = (function() {
 
             ingredient_html += `</select></div><i id='add-recipe-ingredient-exit-${food_id}' class='fa fa-times-circle add-recipe-ingredient-exit'></i>`;
 
-            ingredient_html += `<div id='add-recipe-ingredient-amt-${food_id}-errors' class='form-errors'></div>`;
+            ingredient_html += `<div id='add-recipe-ingredient-amount-${food_num}-errors' class='form-errors'></div>`;
 
             return ingredient_html;
         },
