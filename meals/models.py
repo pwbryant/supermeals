@@ -262,8 +262,10 @@ class Foods(models.Model):
             'protein_per_gram': self.protein_per_gram
         }
 
+
     def __repr__(self):
         return '{}'.format(self.name)
+
 
     def set_macros_per_gram(self):
                 

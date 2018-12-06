@@ -106,6 +106,8 @@ class MealRecipeForm(forms.ModelForm):
                 serving=serving,
                 amount=amount
             )
+        food.set_macros_per_gram()
+        food.save()
 
     class Meta:
         model = Foods

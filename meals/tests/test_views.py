@@ -26,6 +26,11 @@ GUEST_USERNAME, GUEST_PASSWORD = 'guest', '321!beware'
 BAD_USERNAME, BAD_PASSWORD = 'bad', 'badpass'
 
 
+def round_decimal(value, places):
+    if value is not None:
+        return round(value, places)
+
+
 class BaseTestCase(TestCase):
     
     def log_in_user(self, USERNAME, PASSWORD):
@@ -56,18 +61,27 @@ class AddRecipeTest(BaseTestCase):
         )
 
         self.peanut_butter = Foods.objects.create(
-            name='Peanut Butter'
+            name='Peanut Butter',
+            cals_per_gram=Decimal(5.9),
+            fat_per_gram=Decimal(4.491),
+            carbs_per_gram=Decimal(0.8732),
+            protein_per_gram=Decimal(0.96)
         )
         self.peanut_butter_srv = Servings.objects.create(
             food=self.peanut_butter, grams=10, quantity=1, description='tbsp'
         )
 
         self.bananas = Foods.objects.create(
-            name='Bananas'
+            name='Bananas',
+            cals_per_gram=Decimal(0.89),
+            fat_per_gram=Decimal(0.0297),
+            carbs_per_gram=Decimal(0.9136),
+            protein_per_gram=Decimal(0.0436)
         )
         self.bananas_srv = Servings.objects.create(
             food=self.bananas, grams=100, quantity=1, description='cup'
         )
+
 
         self.post = {
             # added long decimals to test that they get rounded
@@ -80,6 +94,23 @@ class AddRecipeTest(BaseTestCase):
             'ingredient_amount_1': '3',
             'ingredient_unit_1': self.peanut_butter_srv.pk
             }
+
+        # create a food that should equal the one created after saving
+        self.copy_food = Foods.objects.create(name='copy food')
+        Ingredients.objects.create(
+            main_food=self.copy_food,
+            ingredient=self.bananas,
+            serving=self.bananas_srv,
+            amount=Decimal(self.post['ingredient_amount_0'])
+        )
+        Ingredients.objects.create(
+            main_food=self.copy_food,
+            ingredient=self.peanut_butter,
+            serving=self.peanut_butter_srv,
+            amount=Decimal(self.post['ingredient_amount_1'])
+        )
+        self.copy_food.set_macros_per_gram()
+        self.copy_food.save()
 
 
     def test_add_recipe_url(self):
@@ -97,16 +128,37 @@ class AddRecipeTest(BaseTestCase):
         self.assertContains(response, self.veg_fg.informal_name)
         self.assertContains(response, self.meat_fg.informal_name)
 
-        
+
     def test_save_recipe_saves_new_food(self):
         url = reverse('save_recipe')
 
-        response = self.client.post(url, self.post)
+        self.client.post(url, self.post)
         new_food = Foods.objects.filter(name=self.post['name'])
         self.assertEqual(len(new_food), 1)
 
         new_food = new_food[0]
         self.assertEqual(new_food.name, self.post['name'])
+
+
+    def test_save_recipe_saves_new_food_and_calcs_macros(self):
+        url = reverse('save_recipe')
+
+        self.client.post(url, self.post)
+        new_food = Foods.objects.get(name=self.post['name'])
+
+        self.assertEqual(
+            new_food.cals_per_gram, round_decimal(self.copy_food.cals_per_gram, 4)
+        )
+        self.assertEqual(
+            new_food.fat_per_gram, round_decimal(self.copy_food.fat_per_gram, 4)
+        )
+        self.assertEqual(
+            new_food.carbs_per_gram, round_decimal(self.copy_food.carbs_per_gram, 4)
+        )
+        self.assertEqual(
+            new_food.protein_per_gram,
+            round_decimal(self.copy_food.protein_per_gram, 4)
+        )
 
 
     def test_save_recipe_saves_new_ingredients(self):

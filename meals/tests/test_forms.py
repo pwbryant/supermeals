@@ -2,6 +2,7 @@ from django.test import TestCase
 from django import forms
 from django.contrib.auth.models import User
 
+from decimal import Decimal
 # from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
 #         EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR, EMPTY_AGE_ERROR, \
 #         EMPTY_WEIGHT_ERROR, EMPTY_HEIGHT_ERROR, EMPTY_MACRO_ERROR, \
@@ -22,14 +23,22 @@ class RecipeFormTest(BaseTestCase):
     def setUp(self):
 
         self.peanut_butter = Foods.objects.create(
-            name='Peanut Butter'
+            name='Peanut Butter',
+            cals_per_gram=Decimal(5.9),
+            fat_per_gram=Decimal(4.491),
+            carbs_per_gram=Decimal(0.8732),
+            protein_per_gram=Decimal(0.96)
         )
         peanut_butter_srv = Servings.objects.create(
             food=self.peanut_butter, grams=10, quantity=1, description='tbsp'
         )
 
         self.bananas = Foods.objects.create(
-            name='Bananas'
+            name='Bananas',
+            cals_per_gram=Decimal(0.89),
+            fat_per_gram=Decimal(0.0297),
+            carbs_per_gram=Decimal(0.9136),
+            protein_per_gram=Decimal(0.0436)
         )
         bananas_srv = Servings.objects.create(
             food=self.bananas, grams=100, quantity=1, description='cup'
