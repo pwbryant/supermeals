@@ -98,7 +98,9 @@ class MealRecipeForm(forms.ModelForm):
         food.save()
 
         if self.cleaned_data.get('notes'):
-            FoodNotes.objects.create(food=food, notes=self.cleaned_data['notes'])
+            FoodNotes.objects.create(
+                food=food, notes=self.cleaned_data['notes']
+            )
 
         for ing_pk, amount, unit in self.cleaned_data['ingredients']:
             ingredient = Foods.objects.get(pk=ing_pk)
@@ -109,6 +111,7 @@ class MealRecipeForm(forms.ModelForm):
                 serving=serving,
                 amount=amount
             )
+
         food.set_macros_per_gram()
         food.save()
 

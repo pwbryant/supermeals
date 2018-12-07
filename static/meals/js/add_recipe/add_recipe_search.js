@@ -44,9 +44,6 @@ let ADD_RECIPE_SEARCH = (function() {
 
         create_ingredient_html: function(food_num, food_id, food_name, servings) {
 
-            console.log('html', food_num, food_id, food_name);
-        
-
             let ingredient_html = `<div id='add-recipe-ingredient-${food_id}-container' class="input l-flex--row-start add-recipe-ingredient">`;
             // food name
             ingredient_html += `<label id='add-recipe-ingredient-name-${food_id}' class='bm-margin--sm-right'>${food_name}</label>`;
@@ -58,7 +55,6 @@ let ADD_RECIPE_SEARCH = (function() {
 
             // first unit is grams
             // ingredient_html += '<option value="0">g</option>';
-            console.log('servings', servings)
             servings.map(function(e, i) {
                 ingredient_html += `<option value='${e.servings__pk}'>${e.servings__description}</option>`;
             });
@@ -71,7 +67,7 @@ let ADD_RECIPE_SEARCH = (function() {
         },
 
         add_recipe_search_result_listener: function() {
-            this_obj = this;
+            const this_obj = this;
             $('.add-recipe-search-result__button').on('click', function() {
 
                 const search_result_index = parseFloat(this.value);
@@ -90,12 +86,30 @@ let ADD_RECIPE_SEARCH = (function() {
 
         },
 
+        renumber_ingredients_after_delete: function() {
+            const input_num = 3;
+            let ing_num = 0;
+            $('.add-recipe-ingredient input, select').each(function(i, e) {
+                if (i % input_num == 0 && i != 0) {
+                    ing_num +=1 ;
+                }
+                let new_name = e.name.slice(
+                    0, e.name.lastIndexOf('_') + 1
+                ) + ing_num;
+                $(e).prop('name', new_name);
+            });
+        },
+
         add_ingredient_delete_listener: function() {
 
+            const this_obj = this;
             $('.add-recipe-ingredient-exit').on('click', function() {
                 const ingredient_id = this.id.split('-')[4];
                 const ingredient_container_id = `add-recipe-ingredient-${ingredient_id}-container`;
                 $('#' + ingredient_container_id).remove();
+                this_obj.renumber_ingredients_after_delete()
+
+                
             });
         }
     }

@@ -3,7 +3,8 @@ from .base import FunctionalTest
 from decimal import Decimal
 from selenium.webdriver.support.ui import Select
 
-from meals.models import Foods, Servings, Ingredients, FoodNotes, FoodGroup
+from meals.models import Foods, Servings, Ingredients, FoodNotes, FoodGroup, \
+        FoodType
 
 
 class AddIngredientRecipeTest(FunctionalTest):
@@ -11,36 +12,56 @@ class AddIngredientRecipeTest(FunctionalTest):
     def this_setup(self):
 
 
+        #create FoodGroups
         self.my_meals_food_group = FoodGroup.objects.create(
             name='My Meals', informal_name='My Meals', informal_rank=1
         )
 
+        self.my_recipe_food_group = FoodGroup.objects.create(
+            name='My Recipes', informal_name='My Recipes', informal_rank=2
+        )
         self.veg_food_group = FoodGroup.objects.create(
-            name='Vegatables', informal_name='Veggies', informal_rank=2
+            name='Vegatables', informal_name='Veggies', informal_rank=3
         )
 
         self.meat_food_group = FoodGroup.objects.create(
-            name='Meat', informal_name='Meat', informal_rank=3
+            name='Meat', informal_name='Meat', informal_rank=4
         )
+
+        # create recipe FoodType
+        self.my_recipe_food_type = FoodType.objects.create(name='recipe')
             
         self.filters = [
             self.my_meals_food_group.informal_name, 
+            self.my_recipe_food_group.informal_name, 
             self.veg_food_group.informal_name,
             self.meat_food_group.informal_name
         ]
 
+        # all macro info just copied from one food 
         self.ice_cream = Foods.objects.create(
-            name='ice cream', food_group=self.my_meals_food_group
+            name='ice cream', food_group=self.my_meals_food_group,
+            cals_per_gram=Decimal(5.9),
+            fat_per_gram=Decimal(4.491),
+            carbs_per_gram=Decimal(0.8732),
+            protein_per_gram=Decimal(0.96)
         )
 
         self.carrots = Foods.objects.create(
-            name='carrots', food_group=self.veg_food_group
+            name='carrots', food_group=self.veg_food_group,
+            cals_per_gram=Decimal(5.9),
+            fat_per_gram=Decimal(4.491),
+            carbs_per_gram=Decimal(0.8732),
+            protein_per_gram=Decimal(0.96)
         )
 
         self.chicken = Foods.objects.create(
-            name='chicken', food_group=self.meat_food_group
+            name='chicken', food_group=self.meat_food_group,
+            cals_per_gram=Decimal(5.9),
+            fat_per_gram=Decimal(4.491),
+            carbs_per_gram=Decimal(0.8732),
+            protein_per_gram=Decimal(0.96)
         )
-
         
         # Servings (grams already created in base.py)
         self.scoop = Servings.objects.create(
