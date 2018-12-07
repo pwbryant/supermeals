@@ -79,7 +79,6 @@ class AddRecipeTest(BaseTestCase):
             food=self.bananas, grams=100, quantity=1, description='cup'
         )
 
-
         self.post = {
             # added long decimals to test that they get rounded
             'name': 'Peanut Butter Banana Blitz',
@@ -92,6 +91,9 @@ class AddRecipeTest(BaseTestCase):
             'ingredient_unit_1': self.peanut_butter_srv.pk
             }
 
+        # FoodGroup and FoodType creation
+        FoodGroup.objects.create(name='My Recipes', informal_name='My Recipes')
+        FoodType.objects.create(name='recipe')
 
 
     def test_add_recipe_url(self):

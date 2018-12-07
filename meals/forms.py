@@ -2,7 +2,8 @@ from django import forms
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from meals.models import Macros, Foods, Ingredients, Servings, FoodNotes
+from meals.models import Macros, Foods, Ingredients, Servings, FoodNotes, \
+    FoodGroup, FoodType
 
 
 #LoginForm/SignUpForm errors
@@ -92,6 +93,8 @@ class MealRecipeForm(forms.ModelForm):
     def save(self):
 
         food = self.instance
+        food.food_group = FoodGroup.objects.get(name='My Recipes')
+        food.food_type = FoodType.objects.get(name='recipe')
         food.save()
 
         if self.cleaned_data.get('notes'):

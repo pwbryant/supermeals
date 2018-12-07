@@ -10,7 +10,8 @@ from decimal import Decimal
 #         INVALID_MACRO_ERROR, OUT_OF_RANGE_MACRO_ERROR, MACROS_DONT_ADD_UP_ERROR
 
 from meals.forms import  MacroMealForm, MacroIngredientForm, MealRecipeForm
-from meals.models import Foods, Ingredients, Servings, FoodNotes
+from meals.models import Foods, Ingredients, Servings, FoodNotes, FoodGroup, \
+    FoodType
 
 # FUNCTIONS
 def validate_and_save_form(form, post):
@@ -86,6 +87,10 @@ class RecipeFormTest(BaseTestCase):
         self.copy_food.set_macros_per_gram()
         self.copy_food.save()
 
+        # FoodGroup and FoodType creation
+        FoodGroup.objects.create(name='My Recipes', informal_name='My Recipes')
+        FoodType.objects.create(name='recipe')
+
 
     def test_MealRecipeForm_valid(self):
         form = MealRecipeForm(self.post)
@@ -114,7 +119,6 @@ class RecipeFormTest(BaseTestCase):
 
         error = 'Foods with this Name already exists.'
         self.assertIn(error, form.errors['name'])
-
 
 
     def test_save_recipe_saves_new_food(self):
@@ -198,6 +202,20 @@ class RecipeFormTest(BaseTestCase):
         new_food = Foods.objects.get(name=self.post['name'])
         notes = FoodNotes.objects.filter(food=new_food)
         self.assertEqual(len(notes), 0)
+
+
+    def test_save_recipe_new_food_has_food_group_my_recipes(self):
+        validate_and_save_form(MealRecipeForm, self.post)
+        new_food = Foods.objects.get(name=self.post['name'])
+        food_group_recipe = FoodGroup.objects.get(name='My Recipes')
+        self.assertEqual(new_food.food_group, food_group_recipe)
+
+
+    def test_save_recipe_new_food_has_food_type_recipe(self):
+        validate_and_save_form(MealRecipeForm, self.post)
+        new_food = Foods.objects.get(name=self.post['name'])
+        food_type_recipe = FoodType.objects.get(name='recipe')
+        self.assertEqual(new_food.food_type, food_type_recipe)
 
 
 class MacroMealAndIngredientFormTest(TestCase):
