@@ -26,9 +26,6 @@ GUEST_USERNAME, GUEST_PASSWORD = 'guest', '321!beware'
 BAD_USERNAME, BAD_PASSWORD = 'bad', 'badpass'
 
 
-def round_decimal(value, places):
-    if value is not None:
-        return round(value, places)
 
 
 class BaseTestCase(TestCase):
@@ -95,22 +92,6 @@ class AddRecipeTest(BaseTestCase):
             'ingredient_unit_1': self.peanut_butter_srv.pk
             }
 
-        # create a food that should equal the one created after saving
-        self.copy_food = Foods.objects.create(name='copy food')
-        Ingredients.objects.create(
-            main_food=self.copy_food,
-            ingredient=self.bananas,
-            serving=self.bananas_srv,
-            amount=Decimal(self.post['ingredient_amount_0'])
-        )
-        Ingredients.objects.create(
-            main_food=self.copy_food,
-            ingredient=self.peanut_butter,
-            serving=self.peanut_butter_srv,
-            amount=Decimal(self.post['ingredient_amount_1'])
-        )
-        self.copy_food.set_macros_per_gram()
-        self.copy_food.save()
 
 
     def test_add_recipe_url(self):
@@ -129,93 +110,6 @@ class AddRecipeTest(BaseTestCase):
         self.assertContains(response, self.meat_fg.informal_name)
 
 
-    def test_save_recipe_saves_new_food(self):
-        url = reverse('save_recipe')
-
-        self.client.post(url, self.post)
-        new_food = Foods.objects.filter(name=self.post['name'])
-        self.assertEqual(len(new_food), 1)
-
-        new_food = new_food[0]
-        self.assertEqual(new_food.name, self.post['name'])
-
-
-    def test_save_recipe_saves_new_food_and_calcs_macros(self):
-        url = reverse('save_recipe')
-
-        self.client.post(url, self.post)
-        new_food = Foods.objects.get(name=self.post['name'])
-
-        self.assertEqual(
-            new_food.cals_per_gram, round_decimal(self.copy_food.cals_per_gram, 4)
-        )
-        self.assertEqual(
-            new_food.fat_per_gram, round_decimal(self.copy_food.fat_per_gram, 4)
-        )
-        self.assertEqual(
-            new_food.carbs_per_gram, round_decimal(self.copy_food.carbs_per_gram, 4)
-        )
-        self.assertEqual(
-            new_food.protein_per_gram,
-            round_decimal(self.copy_food.protein_per_gram, 4)
-        )
-
-
-    def test_save_recipe_saves_new_ingredients(self):
-        url = reverse('save_recipe')
-
-        self.client.post(url, self.post)
-        new_food = Foods.objects.get(name=self.post['name'])
-
-        ingredients = Ingredients.objects.filter(
-            main_food=new_food
-        ).order_by('ingredient__name').values('ingredient__name')
-
-        self.assertEqual(len(ingredients), 2)
-        self.assertEqual(ingredients[0]['ingredient__name'], self.bananas.name)
-        self.assertEqual(
-            ingredients[1]['ingredient__name'], self.peanut_butter.name
-        )
-
-
-    def test_save_recipe_saves_ingredients_have_correct_servings(self):
-        url = reverse('save_recipe')
-
-        self.client.post(url, self.post)
-        new_food = Foods.objects.get(name=self.post['name'])
-
-        ingredients = Ingredients.objects.filter(
-            main_food=new_food
-        ).order_by('ingredient__name').values(
-            'serving__description'
-        )
-        self.assertEqual(len(ingredients), 2)
-        self.assertEqual(
-            ingredients[0]['serving__description'], self.bananas_srv.description
-        )
-        self.assertEqual(
-            ingredients[1]['serving__description'],
-            self.peanut_butter_srv.description
-        )
-
-
-    def test_save_recipe_saves_notes_if_present(self):
-        url = reverse('save_recipe')
-        self.client.post(url, self.post)
-        new_food = Foods.objects.get(name=self.post['name'])
-        notes = FoodNotes.objects.get(food=new_food)
-        self.assertEqual(notes.notes, self.post['notes'])
-
-
-    def test_save_recipe_saves_handles_notes_if_not_present(self):
-        url = reverse('save_recipe')
-        self.post['notes'] = ''
-        self.client.post(url, self.post)
-        new_food = Foods.objects.get(name=self.post['name'])
-        notes = FoodNotes.objects.filter(food=new_food)
-        self.assertEqual(len(notes), 0)
-
-
     def test_save_recipe_new_food_has_user_set(self):
         url = reverse('save_recipe')
         self.client.post(url, self.post)
@@ -227,6 +121,7 @@ class AddRecipeTest(BaseTestCase):
         url = reverse('save_recipe')
         response = json.loads(self.client.post(url, self.post).content)
         self.assertEqual(response['status'], 'success')
+
 
     def test_save_recipe_returns_failure_when_errors(self):
         url = reverse('save_recipe')

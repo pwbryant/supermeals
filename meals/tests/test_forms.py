@@ -10,7 +10,20 @@ from decimal import Decimal
 #         INVALID_MACRO_ERROR, OUT_OF_RANGE_MACRO_ERROR, MACROS_DONT_ADD_UP_ERROR
 
 from meals.forms import  MacroMealForm, MacroIngredientForm, MealRecipeForm
-from meals.models import Foods, Ingredients, Servings
+from meals.models import Foods, Ingredients, Servings, FoodNotes
+
+# FUNCTIONS
+def validate_and_save_form(form, post):
+
+    form = form(post)
+    form.is_valid()
+    form.save()
+
+
+def round_decimal(value, places):
+    if value is not None:
+        return round(value, places)
+
 
 class BaseTestCase(TestCase):
 
@@ -29,7 +42,7 @@ class RecipeFormTest(BaseTestCase):
             carbs_per_gram=Decimal(0.8732),
             protein_per_gram=Decimal(0.96)
         )
-        peanut_butter_srv = Servings.objects.create(
+        self.peanut_butter_srv = Servings.objects.create(
             food=self.peanut_butter, grams=10, quantity=1, description='tbsp'
         )
 
@@ -40,7 +53,7 @@ class RecipeFormTest(BaseTestCase):
             carbs_per_gram=Decimal(0.9136),
             protein_per_gram=Decimal(0.0436)
         )
-        bananas_srv = Servings.objects.create(
+        self.bananas_srv = Servings.objects.create(
             food=self.bananas, grams=100, quantity=1, description='cup'
         )
 
@@ -50,11 +63,28 @@ class RecipeFormTest(BaseTestCase):
             'notes': 'Blend for 5 minutes.',
             'ingredient_0': self.bananas.pk,
             'ingredient_amount_0': '2',
-            'ingredient_unit_0': bananas_srv.pk,
+            'ingredient_unit_0': self.bananas_srv.pk,
             'ingredient_1': self.peanut_butter.pk,
             'ingredient_amount_1': '3',
-            'ingredient_unit_1': peanut_butter_srv.pk
+            'ingredient_unit_1': self.peanut_butter_srv.pk
             }
+
+        # create a food that should equal the one created after saving
+        self.copy_food = Foods.objects.create(name='copy food')
+        Ingredients.objects.create(
+            main_food=self.copy_food,
+            ingredient=self.bananas,
+            serving=self.bananas_srv,
+            amount=Decimal(self.post['ingredient_amount_0'])
+        )
+        Ingredients.objects.create(
+            main_food=self.copy_food,
+            ingredient=self.peanut_butter,
+            serving=self.peanut_butter_srv,
+            amount=Decimal(self.post['ingredient_amount_1'])
+        )
+        self.copy_food.set_macros_per_gram()
+        self.copy_food.save()
 
 
     def test_MealRecipeForm_valid(self):
@@ -77,14 +107,97 @@ class RecipeFormTest(BaseTestCase):
 
 
     def test_MealRecipeForm_handles_duplicate_recipies(self):
-        form = MealRecipeForm(self.post)
-        form.is_valid()
-        form.save()
+        validate_and_save_form(MealRecipeForm, self.post)
+
         form = MealRecipeForm(self.post)
         form.is_valid()
 
         error = 'Foods with this Name already exists.'
         self.assertIn(error, form.errors['name'])
+
+
+
+    def test_save_recipe_saves_new_food(self):
+        validate_and_save_form(MealRecipeForm, self.post)
+        new_food = Foods.objects.filter(name=self.post['name'])
+        self.assertEqual(len(new_food), 1)
+
+        new_food = new_food[0]
+        self.assertEqual(new_food.name, self.post['name'])
+
+
+    def test_MealRecipeForm_saves_new_food_and_calcs_macros(self):
+        validate_and_save_form(MealRecipeForm, self.post)
+        new_food = Foods.objects.get(name=self.post['name'])
+
+        # I have to use round_decimal because the max-digit constraint
+        # is not enforced on copy_food
+        self.assertEqual(
+            new_food.cals_per_gram, round_decimal(self.copy_food.cals_per_gram, 4)
+        )
+        self.assertEqual(
+            new_food.fat_per_gram, round_decimal(self.copy_food.fat_per_gram, 4)
+        )
+        self.assertEqual(
+            new_food.carbs_per_gram, round_decimal(self.copy_food.carbs_per_gram, 4)
+        )
+        self.assertEqual(
+            new_food.protein_per_gram,
+            round_decimal(self.copy_food.protein_per_gram, 4)
+        )
+
+
+    def test_test_MealRecipeForm_saves_new_ingredients(self):
+        validate_and_save_form(MealRecipeForm, self.post)
+
+        new_food = Foods.objects.get(name=self.post['name'])
+
+        ingredients = Ingredients.objects.filter(
+            main_food=new_food
+        ).order_by('ingredient__name').values('ingredient__name')
+
+        self.assertEqual(len(ingredients), 2)
+        self.assertEqual(ingredients[0]['ingredient__name'], self.bananas.name)
+        self.assertEqual(
+            ingredients[1]['ingredient__name'], self.peanut_butter.name
+        )
+
+
+    def test_test_MealRecipeForm_saves_ingredients_have_correct_servings(self):
+        validate_and_save_form(MealRecipeForm, self.post)
+
+        new_food = Foods.objects.get(name=self.post['name'])
+
+        ingredients = Ingredients.objects.filter(
+            main_food=new_food
+        ).order_by('ingredient__name').values(
+            'serving__description'
+        )
+        self.assertEqual(len(ingredients), 2)
+        self.assertEqual(
+            ingredients[0]['serving__description'], self.bananas_srv.description
+        )
+        self.assertEqual(
+            ingredients[1]['serving__description'],
+            self.peanut_butter_srv.description
+        )
+
+
+    def test_test_MealRecipeForm_saves_notes_if_present(self):
+        validate_and_save_form(MealRecipeForm, self.post)
+
+        new_food = Foods.objects.get(name=self.post['name'])
+        notes = FoodNotes.objects.get(food=new_food)
+        self.assertEqual(notes.notes, self.post['notes'])
+
+
+    def test_test_MealRecipeForm_saves_handles_notes_if_not_present(self):
+        self.post['notes'] = ''
+        validate_and_save_form(MealRecipeForm, self.post)
+
+        new_food = Foods.objects.get(name=self.post['name'])
+        notes = FoodNotes.objects.filter(food=new_food)
+        self.assertEqual(len(notes), 0)
 
 
 class MacroMealAndIngredientFormTest(TestCase):
