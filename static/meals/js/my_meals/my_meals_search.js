@@ -16,7 +16,8 @@ const MY_MEALS_SEARCH = (function() {
         my_meals_food_search: function(this_obj, search_terms) {
 			this_obj['my-meals'] = {};
             const search_data = {'search_terms': search_terms};
-            $.get('/meals/search-my-meals/', search_data, function(data) {
+            const meal_or_recipe = $('#my-meals-select').find(':selected').val();
+            $.get(`/meals/search-my-meals/${meal_or_recipe}/`, search_data, function(data) {
                 const search_results = data['search-results'];
                 search_results_html = SEARCH.format_food_search_results(
                         'my-meals',
@@ -37,11 +38,12 @@ const MY_MEALS_SEARCH = (function() {
         },
 
         add_result_button_lister: function() {
-			this_obj = this;
+			const this_obj = this;
 			$('#my-meals-search-results-container button').on('click',function() {
 
-                const my_meal_id = this.id.split('-')[3];
+                const my_meal_id = this.id.split('-')[4];
                 const my_meal_info = this_obj['my-meals'][my_meal_id];
+
                 this_obj.add_result_button_shows_modal(my_meal_info);
             });
         },
@@ -105,9 +107,11 @@ const MY_MEALS_SEARCH = (function() {
                 )
             });
             // notes
-            ingredients_html += '<div id="my-meals-modal-notes">'
-            ingredients_html += '<div id="my-meals-modal-notes-header">Notes:</div>';
-            ingredients_html += `<div id='my-meals-modal-notes-body'>${notes}</div></div>`;
+            if (notes) {
+                ingredients_html += '<div id="my-meals-modal-notes">'
+                ingredients_html += '<div id="my-meals-modal-notes-header">Notes:</div>';
+                ingredients_html += `<div id='my-meals-modal-notes-body'>${notes}</div></div>`;
+            }
 
             $('.modal-body').html(ingredients_html);
 

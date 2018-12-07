@@ -11,7 +11,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
         MacroIngredientForm, MealRecipeForm
 from meals.models import Macros, Foods, FoodGroup, Ingredients, Servings, \
-        FoodNotes
+        FoodNotes, FoodType
 from meals.helpers import make_ingredient_formset, \
         save_meal_notes_ingredients
 
@@ -290,16 +290,14 @@ def get_my_meals(request):
     return render(request, TEMPLATES_DIR + 'my_meals.html')
 
 
-def easy_picks(request, pick_type):
+def easy_picks(request, meal_or_recipe):
 
+    food_group = FoodGroup.objects.get(
+        informal_name={'meal': 'My Meals', 'recipe': 'My Recipes'}[meal_or_recipe]
+    )
     context = {'status': 'success'}
-    if pick_type == 'recent':
-        context['my_meals'] = list(
-            Foods.objects.filter(user=request.user).order_by('-date').values()
-        )
-    else:
-        context['my_meals'] = list(
-            Foods.objects.filter(user=request.user).order_by('name').values()
+    context['my_meals'] = list(
+        Foods.objects.filter(user=request.user, food_group=food_group).order_by('-date').values()
         )
 
     return JsonResponse(context)
@@ -349,7 +347,7 @@ def search_foods(request, food_owner):
     )
 
 
-def search_my_meals(request):
+def search_my_meals(request, meal_or_recipe):
 
     search_terms = request.GET['search_terms'].split(' ')
 
@@ -359,9 +357,11 @@ def search_my_meals(request):
         'main_food__serving__description', 'notes__notes'
     ]
 
+    filters = [{'meal': 'My Meals', 'recipe': 'My Recipes'}[meal_or_recipe]]
+
     args = [
         'name', search_terms, 0.001, fields_of_interest,
-        ['servings', 'notes'], 20
+        ['servings', 'notes'], 20, filters
     ]
     kwargs = {'query_set': Foods.searcher.filter_on_user(request.user)}
 

@@ -3,22 +3,58 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 
 from .base import FunctionalTest
-from meals.models import Foods, Servings, Ingredients, FoodNotes
+from meals.models import Foods, Servings, Ingredients, FoodNotes, FoodType, \
+    FoodGroup
+
+from selenium.webdriver.support.select import Select
 
 
 
 class MyMealTests(FunctionalTest):
 
 
+    def create_recipes(self, user):
+
+        recipe_group = FoodGroup.objects.create(
+            name='My Recipes', informal_name='My Recipes'
+        )
+
+        if not Foods.objects.filter(name='Ham Sandwich'):
+            self.create_meals(user)
+
+        ham_sandwich = Foods.objects.get(name='Ham Sandwich')
+        pretzels_cheese = Foods.objects.get(name='Pretzels and Cheese')
+
+        ham_sandwich.name = 'Roasted Broccoli'
+        pretzels_cheese.name = 'Denver Omlette'
+
+        ham_sandwich.food_group = recipe_group
+        pretzels_cheese.food_group = recipe_group
+
+        tmp_date = ham_sandwich.date
+        ham_sandwich.date = pretzels_cheese.date
+        pretzels_cheese.date = tmp_date
+
+        self.roasted_broccoli = ham_sandwich
+        self.roasted_broccoli.save()
+
+        self.omlette = pretzels_cheese
+        self.omlette.save()
+
+
     def create_meals(self, user):
 
+        meal_group = FoodGroup.objects.create(
+            name='My Meals', informal_name='My Meals'
+        )
         first_date = datetime.now()
         self.ham_sandwich = Foods.objects.create(
             name='Ham Sandwich', date=first_date, user=user,
             cals_per_gram = Decimal(1.04),
             fat_per_gram = Decimal(0.31),
             carbs_per_gram = Decimal(0.54),
-            protein_per_gram = Decimal(0.16)
+            protein_per_gram = Decimal(0.16),
+            food_group=meal_group
         )
 
         second_date = first_date + timedelta(days=1)
@@ -27,7 +63,8 @@ class MyMealTests(FunctionalTest):
             cals_per_gram = Decimal(1.04),
             fat_per_gram = Decimal(0.31),
             carbs_per_gram = Decimal(0.54),
-            protein_per_gram = Decimal(0.16)
+            protein_per_gram = Decimal(0.16),
+            food_group=meal_group
         )
 
         self.pretzels = Foods.objects.create(
@@ -100,24 +137,19 @@ class MyMealTests(FunctionalTest):
         # clicks on the 'My Meals' tab
         self.browser.find_element_by_id('my-meals-tab').click()
 
-        # The first thing he sees is a side bar with two radio buttons
-        # 'Recent' and 'Popular', with the 'Recent' option checked
+        # The first thing he sees is a side bar with 
+        # a drop down contianining 'My Meals' and 'My Recipes' with
+        # 'My Recipes' preselected and 
 
-        self.check_element_content(
-            'label[for="recent"]', 'css', 'text', 'Recent'
-        )
-        recent_radio = self.browser.find_element_by_id('recent')
-        self.assertTrue(recent_radio.is_selected())
-
-        self.check_element_content(
-            'label[for="popular"]', 'css', 'text', 'Popular'
-        )
-        popular_radio = self.browser.find_element_by_id('popular')
-        self.assertFalse(popular_radio.is_selected())
+        select = Select(self.browser.find_element_by_id('my-meals-select'))
+        selected_option = select.first_selected_option
+        self.assertEqual(selected_option.text, 'My Meals')
 
         # Below these radio buttons he sees a list of his three meals
         # ordered by most to least recent
+        select.select_by_visible_text('My Meals')
         recent_meals = self.browser.find_elements_by_class_name('my-meals-easy-picks-meal')
+
         most_recent_meal = recent_meals[0]
         self.assertEqual(most_recent_meal.text, self.pretzels_cheese.name)
 
@@ -150,7 +182,7 @@ class MyMealTests(FunctionalTest):
         # clicks on the plus icon, and a modal appears listing the meal info
 
         self.browser.find_element_by_id(
-                f'my-meal-result-{self.pretzels_cheese.id}'
+                f'my-meals-search-result-{self.pretzels_cheese.id}'
         ).click()
 
         # He sees a headr
@@ -188,5 +220,43 @@ class MyMealTests(FunctionalTest):
            'my-meals-modal-notes-body', 'id', 'text',
             self.pretzels_cheese_notes.notes
         )
-        self.fail('Finish Test!')
 
+        # Joe wants to investigate a recipe of his so he closes the modal
+        # and selects 'My Recipes'
+        self.create_recipes(user) #changes meal objects to recipe
+
+        self.browser.find_elements_by_class_name('close-modal')[0].click()
+        select.select_by_visible_text('My Recipes')
+        selected_option = select.first_selected_option
+        self.assertEqual(selected_option.text, 'My Recipes')
+
+        # He notices that the easy pick area has been repopulated with recipes
+        # rather than meals.
+        recent_meals = self.browser.find_elements_by_class_name('my-meals-easy-picks-meal')
+        most_recent_meal = recent_meals[0]
+        self.assertEqual(most_recent_meal.text, self.roasted_broccoli.name)
+
+
+        # He searches for the denver omlette and clicks on the result and
+        # sees a modal pop up with Denver omlette info
+        self.browser.find_element_by_id('my-meals-search-input').clear();
+        search_results = self.search_and_results(
+            "input[id='my-meals-search-input']",
+            'my-meals-search-button',
+            'search-result',
+            ['denver omlette']
+        )
+
+        self.browser.find_element_by_id(
+                f'my-meals-search-result-{self.omlette.id}'
+        ).click()
+
+        # He sees a headr
+        self.check_element_content(
+            'my-meals-modal-header', 'id', 'text', self.omlette.name
+        )
+        # a macro breakdown
+        self.check_element_content(
+            'my-meals-modal-sub-header', 'id', 'text',
+            self.make_macro_profile_str(self.omlette)
+        )

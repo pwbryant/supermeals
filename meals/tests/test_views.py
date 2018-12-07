@@ -146,12 +146,30 @@ class MyMealsTest(BaseTestCase):
         third_date = first_date - timedelta(days=2)
         fourth_date = first_date - timedelta(days=3)
 
+        # Food Groups
+        meal_group = FoodGroup.objects.create(
+            name='My Meals', informal_name='My Meals'
+        )
+        recipe_group = FoodGroup.objects.create(
+            name='My Recipes', informal_name='My Recipes'
+        )
+
+        self.roasted_broccoli = Foods.objects.create(
+            name='Roasted Broccoli', user=user,
+            cals_per_gram=Decimal(1),
+            fat_per_gram=Decimal(1),
+            carbs_per_gram=Decimal(1),
+            protein_per_gram=Decimal(1),
+            food_group=recipe_group
+        )
+
         self.ham_sandwich = Foods.objects.create(
             name='Ham Sandwich', user=user,
             cals_per_gram=Decimal(1),
             fat_per_gram=Decimal(1),
             carbs_per_gram=Decimal(1),
-            protein_per_gram=Decimal(1)
+            protein_per_gram=Decimal(1),
+            food_group=meal_group
         )
 
         self.pretzels_cheese = Foods.objects.create(
@@ -159,7 +177,8 @@ class MyMealsTest(BaseTestCase):
             cals_per_gram=Decimal(1),
             fat_per_gram=Decimal(1),
             carbs_per_gram=Decimal(1),
-            protein_per_gram=Decimal(1)
+            protein_per_gram=Decimal(1),
+            food_group=meal_group
         )
         self.pretzels_cheese.date = second_date
         self.pretzels_cheese.save()
@@ -212,44 +231,74 @@ class MyMealsTest(BaseTestCase):
             amount=2
         )
 
+        Ingredients.objects.create(
+            main_food=self.roasted_broccoli,
+            ingredient=self.pretzels,
+            serving=self.pretzels_srv,
+            amount=1
+        )
+
+        Ingredients.objects.create(
+            main_food=self.roasted_broccoli,
+            ingredient=self.cheese,
+            serving=self.cheese_srv,
+            amount=2
+        )
+
         self.pretzels_cheese_notes = FoodNotes.objects.create(
             notes='Serve piping hot!',
             food=self.pretzels_cheese
         )
 
     def test_my_meals_url_uses_correct_template(self):
-
         url = reverse('my_meals')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,'meals/my_meals.html')
 
-    def test_easy_picks_url_recent(self):
-        url = reverse('easy_picks', kwargs={'pick_type': 'recent'})
+    def test_easy_picks_url_meal(self):
+        self.create_meals(self.user)
+        url = reverse('easy_picks', kwargs={'meal_or_recipe': 'meal'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    def test_easy_picks_url_popular(self):
-        url = reverse('easy_picks', kwargs={'pick_type': 'popular'})
+    def test_easy_picks_url_recipe(self):
+        self.create_meals(self.user)
+        url = reverse('easy_picks', kwargs={'meal_or_recipe': 'recipe'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_easy_picks_recent_gets_meals_ordered_by_date(self):
         self.create_meals(self.user)
-        url = reverse('easy_picks', kwargs={'pick_type': 'recent'})
+        url = reverse('easy_picks', kwargs={'meal_or_recipe': 'meal'})
         context = json.loads(self.client.get(url).content)
         most_recent_meal = Foods.objects.all().order_by('-date')[0]
         self.assertEqual(context['my_meals'][0]['id'], most_recent_meal.id)
 
+    def test_easy_picks_by_meal_gets_meal_food(self):
+        self.create_meals(self.user)
+        url = reverse('easy_picks', kwargs={'meal_or_recipe': 'meal'})
+        context = json.loads(self.client.get(url).content)
+        meal_ids = [
+            f.pk for f in Foods.objects.filter(food_group__name='My Meals')
+        ]
+        self.assertIn(context['my_meals'][0]['id'], meal_ids)
+
+    def test_easy_picks_by_recipe_gets_recipe_food(self):
+        self.create_meals(self.user)
+        url = reverse('easy_picks', kwargs={'meal_or_recipe': 'recipe'})
+        context = json.loads(self.client.get(url).content)
+        self.assertEqual(context['my_meals'][0]['id'], self.roasted_broccoli.id)
+
     def test_search_my_meals_url(self):
-        url = reverse('search_my_meals')
+        url = reverse('search_my_meals', kwargs={'meal_or_recipe': 'meal'})
         data={'search_terms':'Pretzels and Cheese'}
         response = self.client.get(url, data=data)
         self.assertEqual(response.status_code, 200)
 
     def test_search_my_meals_returns_food(self):
         self.create_meals(self.user)
-        url = reverse('search_my_meals')
+        url = reverse('search_my_meals', kwargs={'meal_or_recipe': 'meal'})
         data={'search_terms':'Pretzels and Cheese'}
         response = json.loads(self.client.get(url, data=data).content)
 
@@ -261,7 +310,7 @@ class MyMealsTest(BaseTestCase):
 
     def test_search_my_meals_returns_food_ingredients(self):
         self.create_meals(self.user)
-        url = reverse('search_my_meals')
+        url = reverse('search_my_meals', kwargs={'meal_or_recipe': 'meal'})
         data={'search_terms':'Pretzels and Cheese'}
         response = json.loads(self.client.get(url, data=data).content)
 
@@ -276,7 +325,7 @@ class MyMealsTest(BaseTestCase):
 
     def test_search_my_meals_returns_food_ingredients_and_servings(self):
         self.create_meals(self.user)
-        url = reverse('search_my_meals')
+        url = reverse('search_my_meals', kwargs={'meal_or_recipe': 'meal'})
         data={'search_terms':'Pretzels and Cheese'}
         response = json.loads(self.client.get(url, data=data).content)
 
@@ -297,7 +346,7 @@ class MyMealsTest(BaseTestCase):
 
     def test_search_my_meals_returns_food_notes(self):
         self.create_meals(self.user)
-        url = reverse('search_my_meals')
+        url = reverse('search_my_meals', kwargs={'meal_or_recipe': 'meal'})
         data={'search_terms':'Pretzels and Cheese'}
         response = json.loads(self.client.get(url, data=data).content)
 
@@ -307,6 +356,43 @@ class MyMealsTest(BaseTestCase):
         main_food_notes = results[0]['notes__notes']
         self.assertEqual(main_food_notes, self.pretzels_cheese_notes.notes)
 
+    def test_search_my_meals_by_meals_returns_meal(self):
+        self.create_meals(self.user)
+        url = reverse('search_my_meals', kwargs={'meal_or_recipe': 'meal'})
+        data = {'search_terms': 'Pretzels and Cheese'}
+        response = json.loads(self.client.get(url, data=data).content)
+
+        self.assertTrue(len(response['search-results']['meals']) > 0)
+        self.assertTrue(
+            response['search-results']['meals'][0]['id'] == self.pretzels_cheese.pk 
+        )
+
+    def test_search_my_meals_by_recipe_does_not_return_meal(self):
+        self.create_meals(self.user)
+        url = reverse('search_my_meals', kwargs={'meal_or_recipe': 'recipe'})
+        data = {'search_terms': 'Pretzels and Cheese'}
+        response = json.loads(self.client.get(url, data=data).content)
+
+        self.assertTrue(len(response['search-results']['meals']) == 0)
+
+    def test_search_my_meals_by_recipe_returns_recipe(self):
+        self.create_meals(self.user)
+        url = reverse('search_my_meals', kwargs={'meal_or_recipe': 'recipe'})
+        data = {'search_terms': 'Roasted Broccoli'}
+        response = json.loads(self.client.get(url, data=data).content)
+
+        self.assertTrue(len(response['search-results']['meals']) == 1)
+        self.assertTrue(
+            response['search-results']['meals'][0]['id'] == self.roasted_broccoli.pk 
+        )
+
+    def test_search_my_meals_by_meal_does_not_return_recipe(self):
+        self.create_meals(self.user)
+        url = reverse('search_my_meals', kwargs={'meal_or_recipe': 'meal'})
+        data = {'search_terms': 'Roasted Broccoli'}
+        response = json.loads(self.client.get(url, data=data).content)
+
+        self.assertTrue(len(response['search-results']['meals']) == 0)
 
 class MacroMealMakerTest(BaseTestCase):
 
