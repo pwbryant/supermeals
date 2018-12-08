@@ -110,17 +110,15 @@ class SearchFoods(models.Manager):
 
 
     def rank_with_terms_and_filters(self,
-            rank_on_field,
-            rank_by_values, 
-            rank_threshold,
-            result_fields,
-            relations=None,
-            limit=None,
-            filters=None,
-            query_set=None):
+        rank_on_field,
+        rank_by_values, 
+        rank_threshold,
+        result_fields,
+        relations=None,
+        limit=None,
+        filters=None,
+        query_set=None):
 
-        rank_on_field = SearchVector(rank_on_field)
-        rank_by_values = self.make_query(rank_by_values)
 
         if query_set is None:
             query_set = self.get_queryset()
@@ -128,10 +126,16 @@ class SearchFoods(models.Manager):
         if filters: 
             query_set = query_set.filter(food_group__informal_name__in=filters)
 
-        query_set = query_set.annotate(
-            rank=SearchRank(rank_on_field, rank_by_values)
-        ).filter(rank__gte=rank_threshold).order_by('-rank')
-                
+        rank_on_field = SearchVector(rank_on_field)
+
+        if rank_by_values != ['*']: # '*' indicates 'all'
+
+            rank_by_values = self.make_query(rank_by_values)
+
+            query_set = query_set.annotate(
+                rank=SearchRank(rank_on_field, rank_by_values)
+            ).filter(rank__gte=rank_threshold).order_by('-rank')
+
         if relations:
             for relation in relations:
                 query_set = query_set.prefetch_related(relation)

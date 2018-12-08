@@ -18,6 +18,7 @@ const MY_MEALS_SEARCH = (function() {
             const search_data = {'search_terms': search_terms};
             const meal_or_recipe = $('#my-meals-select').find(':selected').val();
             $.get(`/meals/search-my-meals/${meal_or_recipe}/`, search_data, function(data) {
+                console.log('search data', data);
                 const search_results = data['search-results'];
                 search_results_html = SEARCH.format_food_search_results(
                         'my-meals',

@@ -8,6 +8,7 @@ const EASY_PICK = (function() {
                 const meal_or_recipe = $('#my-meals-select').find(':selected').val();
                 $.get(`/meals/easy-picks/${meal_or_recipe}/`, function(data) {
 
+                    console.log('data', data);
                     let my_meals = '';
                     data['my_meals'].map(function(meal, i) {
                         my_meals += `<div class='my-meals-easy-picks-meal'>${meal.name}</div>`;

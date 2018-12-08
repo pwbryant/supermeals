@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError,transaction
 
-from meals.models import Macros,Foods, Servings, Ingredients
+from meals.models import Macros, Foods, Servings, Ingredients, FoodGroup
 
 GUEST_USER = User.objects.get(username='guest')
 USER = User.objects.get(username='paul')
@@ -55,7 +55,34 @@ class BaseTest(TestCase):
 
 class FoodsTest(TestCase):
 
+    def add_ingredients(self, food):
+        self.ingredient1 = Ingredients.objects.create(
+            main_food=food,
+            ingredient=self.food1,
+            serving=self.srv1,
+            amount=1
+        )
+
+        self.ingredient2 = Ingredients.objects.create(
+            main_food=food,
+            ingredient=self.food2,
+            serving=self.srv2,
+            amount=4
+        )
+
+
     def setUp(self):
+
+        self.user = User.objects.create(username='paul', password='password')
+
+
+        # Food Groups
+        meal_group = FoodGroup.objects.create(
+            name='My Meals', informal_name='My Meals'
+        )
+        recipe_group = FoodGroup.objects.create(
+            name='My Recipes', informal_name='My Recipes'
+        )
 
         self.food1 = Foods.objects.create(
             name='veggie pulled pork',
@@ -87,32 +114,42 @@ class FoodsTest(TestCase):
             description='tbsp'
         )
 
-        self.empty_food = Foods.objects.create(name='veggie pork with bbq')
-
-        self.ingredient1 = Ingredients.objects.create(
-            main_food=self.empty_food,
-            ingredient=self.food1,
-            serving=self.srv1,
-            amount=1
+        self.veg_bbq = Foods.objects.create(
+            name='veggie pork with bbq',
+            user=self.user,
+            food_group=meal_group
+        )
+        self.soup = Foods.objects.create(
+            name='tomato soup',
+            food_group=meal_group
+        )
+        self.grilled_cheese = Foods.objects.create(
+            name='grilled cheese',
+            user=self.user,
+            food_group=recipe_group
+        )
+        self.casserole = Foods.objects.create(
+            name='casserole'
         )
 
-        self.ingredient2 = Ingredients.objects.create(
-            main_food=self.empty_food,
-            ingredient=self.food2,
-            serving=self.srv2,
-            amount=4
-        )
+        self.add_ingredients(self.veg_bbq)
+        self.add_ingredients(self.soup)
+        self.add_ingredients(self.grilled_cheese)
+        self.add_ingredients(self.casserole)
 
 
     def test_saving_and_retrieving_foods(self):
-        Foods.objects.create(name='food name',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,protein_per_gram=1)
+        Foods.objects.create(
+            name='food name', cals_per_gram=1, fat_per_gram=1,
+            carbs_per_gram=1, protein_per_gram=1
+        )
         saved_foods = Foods.objects.filter(name='food name')
         self.assertEqual(saved_foods.count(),1)
 
 
     def test_set_macro_per_gram_method(self):
         
-        food = self.empty_food
+        food = self.veg_bbq
         
         self.assertTrue(food.cals_per_gram is None)
 
@@ -126,6 +163,71 @@ class FoodsTest(TestCase):
         self.assertEqual(food.protein_per_gram, Decimal('0.9123'))
 
 
+    def test_searcher_manager_filter_on_user_gets_user_foods(self):
+
+        query_set = Foods.searcher.filter_on_user(self.user)
+        self.assertEqual(len(query_set), 2)
+        ids = [r.id for r in query_set]
+        self.assertIn(self.veg_bbq.pk, ids)
+        self.assertIn(self.grilled_cheese.pk, ids)
+
+
+    def test_searcher_manager_returns_meals(self):
+
+        search_terms = ['veggie pork bbq']
+        fields_of_interest = ['id']
+        filters = ['My Meals']
+        args = [
+            'name', search_terms, 0.001, fields_of_interest
+        ]
+        kwargs = {'filters': filters}
+
+        search_results = Foods.searcher.rank_with_terms_and_filters(
+            *args, **kwargs
+        )
+        main_foods = list(set([sr['id'] for sr in search_results]))
+
+        self.assertEqual(len(main_foods), 1)
+        self.assertEqual(main_foods[0], self.veg_bbq.pk)
+
+
+    def test_searcher_manager_returns_recipes(self):
+
+        search_terms = ['grilled cheese']
+        fields_of_interest = ['id']
+        filters = ['My Recipes']
+        args = [
+            'name', search_terms, 0.001, fields_of_interest
+        ]
+        kwargs = {'filters': filters}
+
+        search_results = Foods.searcher.rank_with_terms_and_filters(
+            *args, **kwargs
+        )
+        main_foods = list(set([sr['id'] for sr in search_results]))
+
+        self.assertEqual(len(main_foods), 1)
+        self.assertEqual(main_foods[0], self.grilled_cheese.pk)
+
+
+    def test_searcher_manager_returns_all_meals(self):
+
+        search_terms = ['*']
+        fields_of_interest = ['id']
+        filters = ['My Meals']
+        args = [
+            'name', search_terms, 0.001, fields_of_interest
+        ]
+        kwargs = {'filters': filters}
+
+        search_results = Foods.searcher.rank_with_terms_and_filters(
+            *args, **kwargs
+        )
+        main_foods = list(set([sr['id'] for sr in search_results]))
+
+        self.assertEqual(len(main_foods), 2)
+        self.assertIn(self.veg_bbq.pk, main_foods)
+        self.assertIn(self.soup.pk, main_foods)
 
 c = """
 class MacrosTest(BaseTest):
