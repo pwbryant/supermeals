@@ -128,13 +128,15 @@ class SearchFoods(models.Manager):
 
         rank_on_field = SearchVector(rank_on_field)
 
-        if rank_by_values != ['*']: # '*' indicates 'all'
+        if rank_by_values != ['_all_']:
 
             rank_by_values = self.make_query(rank_by_values)
 
             query_set = query_set.annotate(
                 rank=SearchRank(rank_on_field, rank_by_values)
             ).filter(rank__gte=rank_threshold).order_by('-rank')
+        else:
+            query_set = query_set.order_by('-date')
 
         if relations:
             for relation in relations:

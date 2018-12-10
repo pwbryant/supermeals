@@ -27,7 +27,6 @@ urlpatterns = [
     url(r'^search-my-meals/(?P<meal_or_recipe>meal|recipe)/$', views.search_my_meals, name='search_my_meals'),
     url(r'^save-macro-meal$', views.save_macro_meal, name='save_macro_meal'),
     url(r'^my-meals/$', views.get_my_meals, name='my_meals'),
-    url(r'^easy-picks/(?P<meal_or_recipe>meal|recipe)/$', views.easy_picks, name='easy_picks'),
     url(r'^add-recipe/$', views.add_recipe, name='add_recipe'),
     url(r'^save-recipe$', views.save_recipe, name='save_recipe'),
 ]

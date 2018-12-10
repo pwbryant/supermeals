@@ -32,12 +32,12 @@ let SEARCH = (function() {
             return search_data;
         },
 
-        format_food_search_results: function(tab_name, search_results) {
+        format_food_search_results: function(tab_name, search_results, result_class) {
 
             var search_results_html = '';	
             search_results.forEach(function(e,i) {
-                search_results_html += `<div class='search-result ${tab_name}-search-result l-flex--row-start'>`;
-                search_results_html += `<button id='${tab_name}-search-result-${e.id}' class='icon search-result__button ${tab_name}-search-result__button bm-margin--sm-right' value='${i}'><i class='fa fa-plus'></i></button><div class='search-result__name ${tab_name}-search-result__name'>${e.name}</div></div>`; 
+                search_results_html += `<div class='search-result ${tab_name}-search-result ${result_class} l-flex--row-start'>`;
+                search_results_html += `<button id='${tab_name}-${result_class}-${e.id}' class='icon search-result__button ${tab_name}-search-result__button ${tab_name}-${result_class}__button bm-margin--sm-right' value='${i}'><i class='fa fa-plus'></i></button><div class='search-result__name ${tab_name}-search-result__name'>${e.name}</div></div>`; 
 
             });
             return search_results_html;

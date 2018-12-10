@@ -8,42 +8,62 @@ const MY_MEALS_SEARCH = (function() {
                 const input_element = $(this).prev();
                 const search_terms = $.trim($(input_element).val());
                 if (search_terms != '') {
-                    THIS_OBJ.my_meals_food_search(THIS_OBJ, search_terms);
+                    const meal_or_recipe = $(
+                        '#my-meals-select'
+                    ).find(':selected').val();
+                    const destination_id = '#my-meals-search-results-container';
+                    THIS_OBJ.my_meals_food_search(
+                        THIS_OBJ, search_terms, meal_or_recipe, destination_id,
+                        'my-meals', 'my-meals-meal'
+                    );
                 }
 			});
         },
 
-        my_meals_food_search: function(this_obj, search_terms) {
-			this_obj['my-meals'] = {};
+        easy_picks: function() {
+            $('#my-meals-select').on('change', function() {
+                const meal_or_recipe = $('#my-meals-select').find(':selected').val();
+                const search_terms = '_all_';
+                const destination_id = '#my-meals-easy-picks-meals-container'
+                THIS_OBJ.my_meals_food_search(
+                    THIS_OBJ, search_terms, meal_or_recipe, destination_id,
+                    'easy-picks', 'easy-picks-meal'
+                );
+            });
+        }, 
+       
+        my_meals_food_search: function(this_obj, search_terms, meal_or_recipe,  destination_id, meal_storage, result_class) {
+			this_obj[meal_storage] = {};
             const search_data = {'search_terms': search_terms};
-            const meal_or_recipe = $('#my-meals-select').find(':selected').val();
             $.get(`/meals/search-my-meals/${meal_or_recipe}/`, search_data, function(data) {
-                console.log('search data', data);
                 const search_results = data['search-results'];
+
                 search_results_html = SEARCH.format_food_search_results(
-                        'my-meals',
-                        search_results['meals']
+                    'my-meals',
+                    search_results['meals'],
+                    result_class
                 );
 
-                $('#my-meals-search-results-container').html(search_results_html);
+                $(destination_id).html(search_results_html);
                 search_results['meals'].map(function(r, i) {
                     const meal_info = search_results['meal_info'][r.id];
-                    this_obj['my-meals'][r.id] = {
+                    this_obj[meal_storage][r.id] = {
                         'ingredients': meal_info,
                         'macros_profile': r.macros_profile
                     }
                 });
 
-                this_obj.add_result_button_lister();
+                const listen_selector = destination_id + ' button';
+                this_obj.add_result_button_lister(listen_selector, meal_storage);
             });
         },
 
-        add_result_button_lister: function() {
+        add_result_button_lister: function(listen_selector, meal_storage) {
 			const this_obj = this;
-			$('#my-meals-search-results-container button').on('click',function() {
+			$(listen_selector).on('click',function() {
 
-                const my_meal_id = this.id.split('-')[4];
-                const my_meal_info = this_obj['my-meals'][my_meal_id];
+                const my_meal_id = this.id.split('-')[5];
+                const my_meal_info = this_obj[meal_storage][my_meal_id];
 
                 this_obj.add_result_button_shows_modal(my_meal_info);
             });
