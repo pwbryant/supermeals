@@ -290,19 +290,6 @@ def get_my_meals(request):
     return render(request, TEMPLATES_DIR + 'my_meals.html')
 
 
-def easy_picks(request, meal_or_recipe):
-
-    food_group = FoodGroup.objects.get(
-        informal_name={'meal': 'My Meals', 'recipe': 'My Recipes'}[meal_or_recipe]
-    )
-    context = {'status': 'success'}
-    context['my_meals'] = list(
-        Foods.objects.filter(user=request.user, food_group=food_group).order_by('-date').values()
-        )
-
-    return JsonResponse(context)
-
-
 def search_foods(request, food_owner):
     """search db
 

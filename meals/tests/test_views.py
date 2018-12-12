@@ -17,7 +17,7 @@ from meals.models import Macros, Foods, FoodGroup , Servings, Ingredients, \
         FoodNotes, FoodType
 from meals.views import save_my_macros, get_my_meals, \
     get_meal_maker_template, \
-    make_macro_breakdown_dict_list, save_macro_meal, easy_picks, search_my_meals
+    make_macro_breakdown_dict_list, save_macro_meal, search_my_meals
 from meals.helpers import get_ingredient_count
 # Create your tests here.
 
@@ -62,6 +62,7 @@ class AddRecipeTest(BaseTestCase):
             cals_per_gram=Decimal(5.9),
             fat_per_gram=Decimal(4.491),
             carbs_per_gram=Decimal(0.8732),
+            sugar_per_gram=Decimal(0.8732),
             protein_per_gram=Decimal(0.96)
         )
         self.peanut_butter_srv = Servings.objects.create(
@@ -73,6 +74,7 @@ class AddRecipeTest(BaseTestCase):
             cals_per_gram=Decimal(0.89),
             fat_per_gram=Decimal(0.0297),
             carbs_per_gram=Decimal(0.9136),
+            sugar_per_gram=Decimal(0.9136),
             protein_per_gram=Decimal(0.0436)
         )
         self.bananas_srv = Servings.objects.create(
@@ -159,6 +161,7 @@ class MyMealsTest(BaseTestCase):
             cals_per_gram=Decimal(1),
             fat_per_gram=Decimal(1),
             carbs_per_gram=Decimal(1),
+            sugar_per_gram=Decimal(1),
             protein_per_gram=Decimal(1),
             food_group=recipe_group
         )
@@ -168,6 +171,7 @@ class MyMealsTest(BaseTestCase):
             cals_per_gram=Decimal(1),
             fat_per_gram=Decimal(1),
             carbs_per_gram=Decimal(1),
+            sugar_per_gram=Decimal(1),
             protein_per_gram=Decimal(1),
             food_group=meal_group
         )
@@ -177,6 +181,7 @@ class MyMealsTest(BaseTestCase):
             cals_per_gram=Decimal(1),
             fat_per_gram=Decimal(1),
             carbs_per_gram=Decimal(1),
+            sugar_per_gram=Decimal(1),
             protein_per_gram=Decimal(1),
             food_group=meal_group
         )
@@ -188,6 +193,7 @@ class MyMealsTest(BaseTestCase):
             cals_per_gram=Decimal(1),
             fat_per_gram=Decimal(1),
             carbs_per_gram=Decimal(1),
+            sugar_per_gram=Decimal(1),
             protein_per_gram=Decimal(1)
         )
         self.pretzels.date = third_date
@@ -205,6 +211,7 @@ class MyMealsTest(BaseTestCase):
             cals_per_gram=Decimal(1),
             fat_per_gram=Decimal(1),
             carbs_per_gram=Decimal(1),
+            sugar_per_gram=Decimal(1),
             protein_per_gram=Decimal(1)
         )
         self.cheese.date = fourth_date
@@ -250,51 +257,20 @@ class MyMealsTest(BaseTestCase):
             food=self.pretzels_cheese
         )
 
+
     def test_my_meals_url_uses_correct_template(self):
         url = reverse('my_meals')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,'meals/my_meals.html')
 
-    def test_easy_picks_url_meal(self):
-        self.create_meals(self.user)
-        url = reverse('easy_picks', kwargs={'meal_or_recipe': 'meal'})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    def test_easy_picks_url_recipe(self):
-        self.create_meals(self.user)
-        url = reverse('easy_picks', kwargs={'meal_or_recipe': 'recipe'})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    def test_easy_picks_recent_gets_meals_ordered_by_date(self):
-        self.create_meals(self.user)
-        url = reverse('easy_picks', kwargs={'meal_or_recipe': 'meal'})
-        context = json.loads(self.client.get(url).content)
-        most_recent_meal = Foods.objects.all().order_by('-date')[0]
-        self.assertEqual(context['my_meals'][0]['id'], most_recent_meal.id)
-
-    def test_easy_picks_by_meal_gets_meal_food(self):
-        self.create_meals(self.user)
-        url = reverse('easy_picks', kwargs={'meal_or_recipe': 'meal'})
-        context = json.loads(self.client.get(url).content)
-        meal_ids = [
-            f.pk for f in Foods.objects.filter(food_group__name='My Meals')
-        ]
-        self.assertIn(context['my_meals'][0]['id'], meal_ids)
-
-    def test_easy_picks_by_recipe_gets_recipe_food(self):
-        self.create_meals(self.user)
-        url = reverse('easy_picks', kwargs={'meal_or_recipe': 'recipe'})
-        context = json.loads(self.client.get(url).content)
-        self.assertEqual(context['my_meals'][0]['id'], self.roasted_broccoli.id)
 
     def test_search_my_meals_url(self):
         url = reverse('search_my_meals', kwargs={'meal_or_recipe': 'meal'})
         data={'search_terms':'Pretzels and Cheese'}
         response = self.client.get(url, data=data)
         self.assertEqual(response.status_code, 200)
+
 
     def test_search_my_meals_returns_food(self):
         self.create_meals(self.user)
@@ -307,6 +283,7 @@ class MyMealsTest(BaseTestCase):
 
         main_food_name = results[0]['name']
         self.assertEqual(main_food_name, self.pretzels_cheese.name)
+
 
     def test_search_my_meals_returns_food_ingredients(self):
         self.create_meals(self.user)
@@ -411,6 +388,7 @@ class MacroMealMakerTest(BaseTestCase):
             cals_per_gram='1.6456',
             fat_per_gram='0.3418',
             carbs_per_gram='0.1519',
+            sugar_per_gram='0.1519',
             protein_per_gram='1.1646',
             food_type=self.food_type_food
         )
@@ -427,6 +405,7 @@ class MacroMealMakerTest(BaseTestCase):
             cals_per_gram='1.7200',
             fat_per_gram='0.0567', 
             carbs_per_gram='1.6308', 
+            sugar_per_gram='1.6308', 
             protein_per_gram='0.0328',
             food_type=self.food_type_food
         )

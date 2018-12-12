@@ -5,6 +5,8 @@ from django.core.exceptions import ValidationError
 from meals.models import Macros, Foods, Ingredients, Servings, FoodNotes, \
     FoodGroup, FoodType
 
+from decimal import Decimal
+
 
 #LoginForm/SignUpForm errors
 EMPTY_USERNAME_ERROR = "Username Missing"
@@ -28,15 +30,58 @@ MACROS_DONT_ADD_UP_ERROR = "Macro Percentages Do Not Add Up Too 100"
 EMPTY_CALS_ERROR = "Meal/Snack Calories Missing"
 
 
+# FUNCTIONS
+# ==================================================
+
 def round_decimal(value, places):
     if value is not None:
         return round(value, places)
 
 
+# FIELDS
+# ==================================================
+
 class RoundedDecimalField(forms.DecimalField):
     def to_python(self, value):
         value = super(RoundedDecimalField, self).to_python(value)
         return round_decimal(value, self.decimal_places)
+
+
+# FORMS
+# ==================================================
+
+
+class NewFoodForm(forms.ModelForm):
+
+    cals = forms.DecimalField(max_digits=6, decimal_places=2)
+    serving = forms.DecimalField(max_digits=6, decimal_places=2)
+    fat = forms.DecimalField(max_digits=6, decimal_places=2)
+    carbs = forms.DecimalField(max_digits=6, decimal_places=2)
+    sugar = forms.DecimalField(max_digits=6, decimal_places=2)
+    protein = forms.DecimalField(max_digits=6, decimal_places=2)
+    food_group = forms.CharField()
+
+    def save(self):
+
+        food = self.instance
+        food.food_group = FoodGroup.objects.get(
+            name=self.cleaned_data['food_group']
+        )
+        food.food_type = FoodType.objects.get(name='food')
+
+        food.set_macros_per_gram(
+            Decimal(self.cleaned_data['cals']),
+            Decimal(self.cleaned_data['fat']),
+            Decimal(self.cleaned_data['carbs']),
+            Decimal(self.cleaned_data['sugar']),
+            Decimal(self.cleaned_data['protein']),
+            Decimal(self.cleaned_data['serving'])
+        )
+        food.save()
+                    
+    class Meta:
+        model = Foods
+        fields = ['name']
 
 
 class MealRecipeForm(forms.ModelForm):

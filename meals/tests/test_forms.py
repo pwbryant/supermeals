@@ -9,11 +9,25 @@ from decimal import Decimal
 #         INVALID_POST_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_RATE_ERROR, \
 #         INVALID_MACRO_ERROR, OUT_OF_RANGE_MACRO_ERROR, MACROS_DONT_ADD_UP_ERROR
 
-from meals.forms import  MacroMealForm, MacroIngredientForm, MealRecipeForm
+from meals.forms import  MacroMealForm, MacroIngredientForm, MealRecipeForm, \
+    NewFoodForm
 from meals.models import Foods, Ingredients, Servings, FoodNotes, FoodGroup, \
     FoodType
 
+# CONSTANTS
+# ==================================================
+
+MACRO_FACTORS = {
+    'cals': 1,
+    'fat': 9,
+    'carbs': 4,
+    'protein': 4,
+    'sugar': 4
+}
+
+
 # FUNCTIONS
+# ==================================================
 def validate_and_save_form(form, post):
 
     form = form(post)
@@ -26,11 +40,72 @@ def round_decimal(value, places):
         return round(value, places)
 
 
+def calc_macro_per_gram(macro, macro_amt, serving_amt):
+
+    return round(
+        Decimal(macro_amt) * MACRO_FACTORS[macro] / Decimal(serving_amt), 4
+    )
+
+
+# MISC CLASSES
 class BaseTestCase(TestCase):
 
     def create_user(self, USERNAME, PASSWORD):
         user = User.objects.create_user(username=USERNAME, password=PASSWORD)
         return user
+
+
+# FORM TESTS
+# ==================================================
+
+class NewFoodFormTest(BaseTestCase):
+
+    def setUp(self):
+
+        self.post = {
+            'name': 'Broccoli',
+            'serving': 100,
+            'cals': 34,
+            'fat': 0.4,
+            'carbs': 1.7,
+            'sugar': 2.6,
+            'protein': 2.8,
+            'food_group': 'Veggies'
+        }
+
+        FoodGroup.objects.create(name='Veggies')
+        FoodType.objects.create(name='food')
+
+    def test_NewFoodForm_valid(self):
+        form = NewFoodForm(self.post)
+        self.assertTrue(form.is_valid())
+
+    def test_NewFoodForm_invalid(self):
+        self.post['name'] = ''
+        self.post['serving'] = 'poo'
+        form = NewFoodForm(self.post)
+        self.assertFalse(form.is_valid())
+        self.assertIn('This field is required.', form.errors['name'])
+        self.assertIn('Enter a number.', form.errors['serving'])
+
+    
+    def test_NewFoodForm_save_macros_are_calced(self):
+        form = NewFoodForm(self.post)
+        form.is_valid()
+        form.save()
+        food = form.instance
+
+        def assert_equal(macro):
+            self.assertEqual(
+                getattr(food, f'{macro}_per_gram'),
+                calc_macro_per_gram(macro, self.post[macro], self.post['serving'])
+            )
+
+        assert_equal('cals')
+        assert_equal('fat')
+        assert_equal('carbs')
+        assert_equal('protein')
+
 
 class RecipeFormTest(BaseTestCase):
 
@@ -41,6 +116,7 @@ class RecipeFormTest(BaseTestCase):
             cals_per_gram=Decimal(5.9),
             fat_per_gram=Decimal(4.491),
             carbs_per_gram=Decimal(0.8732),
+            sugar_per_gram=Decimal(0.8732),
             protein_per_gram=Decimal(0.96)
         )
         self.peanut_butter_srv = Servings.objects.create(
@@ -52,6 +128,7 @@ class RecipeFormTest(BaseTestCase):
             cals_per_gram=Decimal(0.89),
             fat_per_gram=Decimal(0.0297),
             carbs_per_gram=Decimal(0.9136),
+            sugar_per_gram=Decimal(0.9136),
             protein_per_gram=Decimal(0.0436)
         )
         self.bananas_srv = Servings.objects.create(
@@ -146,6 +223,9 @@ class RecipeFormTest(BaseTestCase):
             new_food.carbs_per_gram, round_decimal(self.copy_food.carbs_per_gram, 4)
         )
         self.assertEqual(
+            new_food.sugar_per_gram, round_decimal(self.copy_food.sugar_per_gram, 4)
+        )
+        self.assertEqual(
             new_food.protein_per_gram,
             round_decimal(self.copy_food.protein_per_gram, 4)
         )
@@ -227,6 +307,7 @@ class MacroMealAndIngredientFormTest(TestCase):
             cals_per_gram='1.6456',
             fat_per_gram='0.3418',
             carbs_per_gram='0.1519',
+            sugar_per_gram='0.1519',
             protein_per_gram='1.1646'
         )
 
@@ -242,6 +323,7 @@ class MacroMealAndIngredientFormTest(TestCase):
             cals_per_gram='1.7200',
             fat_per_gram='0.0567', 
             carbs_per_gram='1.6308', 
+            sugar_per_gram='1.6308', 
             protein_per_gram='0.0328' 
         )
 

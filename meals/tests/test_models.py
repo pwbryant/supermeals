@@ -89,6 +89,7 @@ class FoodsTest(TestCase):
             cals_per_gram='1.6456',
             fat_per_gram='0.3418',
             carbs_per_gram='0.1519',
+            sugar_per_gram='0.1519',
             protein_per_gram='1.1646'
         )
 
@@ -104,6 +105,7 @@ class FoodsTest(TestCase):
             cals_per_gram='1.7200',
             fat_per_gram='0.0567', 
             carbs_per_gram='1.6308', 
+            sugar_per_gram='1.6308', 
             protein_per_gram='0.0328' 
         )
 
@@ -141,7 +143,7 @@ class FoodsTest(TestCase):
     def test_saving_and_retrieving_foods(self):
         Foods.objects.create(
             name='food name', cals_per_gram=1, fat_per_gram=1,
-            carbs_per_gram=1, protein_per_gram=1
+            carbs_per_gram=1, sugar_per_gram=1, protein_per_gram=1
         )
         saved_foods = Foods.objects.filter(name='food name')
         self.assertEqual(saved_foods.count(),1)
@@ -160,6 +162,7 @@ class FoodsTest(TestCase):
         self.assertEqual(food.cals_per_gram, Decimal('1.6622'))
         self.assertEqual(food.fat_per_gram, Decimal('0.2782'))
         self.assertEqual(food.carbs_per_gram, Decimal('0.4816'))
+        self.assertEqual(food.sugar_per_gram, Decimal('0.4816'))
         self.assertEqual(food.protein_per_gram, Decimal('0.9123'))
 
 
@@ -212,7 +215,7 @@ class FoodsTest(TestCase):
 
     def test_searcher_manager_returns_all_meals(self):
 
-        search_terms = ['*']
+        search_terms = ['_all_']
         fields_of_interest = ['id']
         filters = ['My Meals']
         args = [
@@ -316,16 +319,25 @@ class ServingsTest(TestCase):
 	
     def test_saving_and_retrieving_servings(self):
 
-        food = Foods.objects.create(name='food name',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,protein_per_gram=1)
+        food = Foods.objects.create(
+            name='food name', cals_per_gram=1, fat_per_gram=1, carbs_per_gram=1,
+            sugar_per_gram=1, protein_per_gram=1
+            
+        )
 
-        servings = Servings.objects.create(quantity=1,description='cup',grams=100,food=food)
+        servings = Servings.objects.create(
+            quantity=1,description='cup',grams=100,food=food
+        )
 
         saved_servings = Servings.objects.all()
         self.assertEqual(saved_servings.count(),1)
 
 
     def test_delete_food_deletes_servings(self):
-        food = Foods.objects.create(name='food name',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,protein_per_gram=1)
+        food = Foods.objects.create(
+            name='food name', cals_per_gram=1, fat_per_gram=1, carbs_per_gram=1,
+            sugar_per_gram=1, protein_per_gram=1
+        )
         Servings.objects.create(quantity=1,description='cup',grams=100,food=food)
         food.delete()
         self.assertEqual(Servings.objects.all().count(),0)
@@ -335,40 +347,92 @@ class IngredientsTest(TestCase):
 
     def test_saving_and_retrieving_ingrdients(self):
 
-        main_food = Foods.objects.create(name='food name',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,protein_per_gram=1)
-        food1 = Foods.objects.create(name='food name1',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,protein_per_gram=1)
-        food2 = Foods.objects.create(name='food name2',cals_per_gram=2,fat_per_gram=2,carbs_per_gram=2,protein_per_gram=2)
+        main_food = Foods.objects.create(
+            name='food name',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,
+            sugar_per_gram=1,protein_per_gram=1
+        )
+        food1 = Foods.objects.create(
+            name='food name1',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,
+            sugar_per_gram=1,protein_per_gram=1
+        )
+        food2 = Foods.objects.create(
+            name='food name2',cals_per_gram=2,fat_per_gram=2,carbs_per_gram=2,
+            sugar_per_gram=2,protein_per_gram=2
+        )
 
-        servings1 = Servings.objects.create(quantity=1,description='cup',grams=100,food=food1)
-        servings2 = Servings.objects.create(quantity=2,description='cup',grams=100,food=food2)
-        ing1 = Ingredients.objects.create(main_food=main_food,ingredient=food1, serving = servings1, amount=1)
-        ing2 = Ingredients.objects.create(main_food=main_food,ingredient=food2, serving = servings2, amount=1)
+        servings1 = Servings.objects.create(
+            quantity=1,description='cup',grams=100,food=food1
+        )
+        servings2 = Servings.objects.create(
+            quantity=2,description='cup',grams=100,food=food2
+        )
+        ing1 = Ingredients.objects.create(
+            main_food=main_food,ingredient=food1, serving = servings1, amount=1
+        )
+        ing2 = Ingredients.objects.create(
+            main_food=main_food,ingredient=food2, serving = servings2, amount=1
+        )
 
         saved_ingredients = Ingredients.objects.all()
         self.assertEqual(saved_ingredients.count(),2)
 
     def test_calc_macros_method(self):
-        main_food = Foods.objects.create(name='food name',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,protein_per_gram=1)
-        food1 = Foods.objects.create(name='food name1',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,protein_per_gram=1)
-        food2 = Foods.objects.create(name='food name2',cals_per_gram=2,fat_per_gram=2,carbs_per_gram=2,protein_per_gram=2)
 
-        servings1 = Servings.objects.create(quantity=1,description='cup',grams=100,food=food1)
-        servings2 = Servings.objects.create(quantity=2,description='cup',grams=100,food=food2)
-        ing1 = Ingredients.objects.create(main_food=main_food,ingredient=food1, serving = servings1, amount=1)
-        ing2 = Ingredients.objects.create(main_food=main_food,ingredient=food2, serving = servings2, amount=1)
+        main_food = Foods.objects.create(
+            name='food name',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,
+            sugar_per_gram=1,protein_per_gram=1
+        )
+        food1 = Foods.objects.create(
+            name='food name1',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,
+            sugar_per_gram=1,protein_per_gram=1
+        )
+        food2 = Foods.objects.create(
+            name='food name2',cals_per_gram=2,fat_per_gram=2,carbs_per_gram=2,
+            sugar_per_gram=2,protein_per_gram=2
+        )
+
+        servings1 = Servings.objects.create(
+            quantity=1,description='cup',grams=100,food=food1
+        )
+        servings2 = Servings.objects.create(
+            quantity=2,description='cup',grams=100,food=food2
+        )
+        ing1 = Ingredients.objects.create(
+            main_food=main_food,ingredient=food1, serving = servings1, amount=1
+        )
+        ing2 = Ingredients.objects.create(
+            main_food=main_food,ingredient=food2, serving = servings2, amount=1
+        )
 
         saved_ingredients = Ingredients.objects.all()
         self.assertEqual(saved_ingredients.count(),2)
     
     def test_delete_food_deletes_ingredients(self):
-        main_food = Foods.objects.create(name='food name',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,protein_per_gram=1)
-        food1 = Foods.objects.create(name='food name1',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,protein_per_gram=1)
-        food2 = Foods.objects.create(name='food name2',cals_per_gram=2,fat_per_gram=2,carbs_per_gram=2,protein_per_gram=2)
+        main_food = Foods.objects.create(
+            name='food name',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,
+            sugar_per_gram=1,protein_per_gram=1
+        )
+        food1 = Foods.objects.create(
+            name='food name1',cals_per_gram=1,fat_per_gram=1,carbs_per_gram=1,
+            sugar_per_gram=1,protein_per_gram=1
+        )
+        food2 = Foods.objects.create(
+            name='food name2',cals_per_gram=2,fat_per_gram=2,carbs_per_gram=2,
+            sugar_per_gram=2,protein_per_gram=2
+        )
 
-        servings1 = Servings.objects.create(quantity=1,description='cup',grams=100,food=food1)
-        servings2 = Servings.objects.create(quantity=2,description='cup',grams=100,food=food2)
-        ing1 = Ingredients.objects.create(main_food=main_food,ingredient=food1, serving = servings1, amount=1)
-        ing2 = Ingredients.objects.create(main_food=main_food,ingredient=food2, serving = servings2, amount=1)
+        servings1 = Servings.objects.create(
+            quantity=1,description='cup',grams=100,food=food1
+        )
+        servings2 = Servings.objects.create(
+            quantity=2,description='cup',grams=100,food=food2
+        )
+        ing1 = Ingredients.objects.create(
+            main_food=main_food,ingredient=food1, serving = servings1, amount=1
+        )
+        ing2 = Ingredients.objects.create(
+            main_food=main_food,ingredient=food2, serving = servings2, amount=1
+        )
 
         food1.delete()
 

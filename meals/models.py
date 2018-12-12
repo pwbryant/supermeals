@@ -273,15 +273,47 @@ class Foods(models.Model):
         return '{}'.format(self.name)
 
 
-    def set_macros_per_gram(self):
-                
-        ings = Ingredients.objects.filter(main_food=self)
-        total_grams = sum([ing.serving.grams * ing.amount for ing in ings])
+    def set_macros_per_gram(self, cals=None, fat=None, carbs=None, sugar=None,
+        protein=None, serving_amount=None):
 
-        self.cals_per_gram = self.calc_macro_per_gram(ings, 'cals', total_grams)
-        self.fat_per_gram = self.calc_macro_per_gram(ings, 'fat', total_grams)
-        self.carbs_per_gram = self.calc_macro_per_gram(ings, 'carbs', total_grams)
-        self.protein_per_gram = self.calc_macro_per_gram(ings, 'protein', total_grams)
+        if cals:
+
+            self.cals_per_gram = self.calc_macro_per_gram(
+                'cals', cals, serving_amount
+            )
+            self.fat_per_gram = self.calc_macro_per_gram(
+                'fat', fat, serving_amount
+            )
+            self.carbs_per_gram = self.calc_macro_per_gram(
+                'carbs', carbs, serving_amount
+            )
+            self.sugar_per_gram = self.calc_macro_per_gram(
+                'sugar', sugar, serving_amount
+            )
+            self.protein_per_gram = self.calc_macro_per_gram(
+                'protein', protein, serving_amount
+            )
+
+        else:
+                
+            ings = Ingredients.objects.filter(main_food=self)
+            total_grams = sum([ing.serving.grams * ing.amount for ing in ings])
+
+            self.cals_per_gram = self.calc_ingredients_macro_per_gram(
+                ings, 'cals', total_grams
+            )
+            self.fat_per_gram = self.calc_ingredients_macro_per_gram(
+                ings, 'fat', total_grams
+            )
+            self.carbs_per_gram = self.calc_ingredients_macro_per_gram(
+                ings, 'carbs', total_grams
+            )
+            self.sugar_per_gram = self.calc_ingredients_macro_per_gram(
+                ings, 'sugar', total_grams
+            )
+            self.protein_per_gram = self.calc_ingredients_macro_per_gram(
+                ings, 'protein', total_grams
+            )
 
 
     def get_macros_profile(self):
@@ -302,7 +334,7 @@ class Foods(models.Model):
         return macros_dict
 
 
-    def calc_macro_per_gram(self, ingredients, macro, total_grams):
+    def calc_ingredients_macro_per_gram(self, ingredients, macro, total_grams):
         macro_per_gram = sum([
             ing.ingredient.__getattribute__(f'{macro}_per_gram')
             * ing.serving.grams * ing.amount for ing in ingredients
@@ -310,6 +342,18 @@ class Foods(models.Model):
 
         return macro_per_gram
 
+
+    def calc_macro_per_gram(self, macro, macro_amount, serving_amount):
+        macro_multipliers = {
+            'cals': 1,
+            'fat': 9,
+            'carbs': 4,
+            'sugar': 4,
+            'protein': 4
+        }
+        macro_per_gram = macro_amount * macro_multipliers[macro] / serving_amount
+
+        return macro_per_gram
 
 class FoodNotes(models.Model):
 
