@@ -12,53 +12,53 @@ class AddFoodTest(FunctionalTest):
 
         # Joe has some potato chips that he would like to the DB
         # so he goes to the 'Add Food' tabe.
-        self.browser.find_elements_by_css_selector("add-food-tab").click()
+        self.browser.find_element_by_id("add-food-tab").click()
 
         # Once he arrives he sees a form with inputs for adding a new food
-        name_label = self.browser.find_element_css_selector(
+        name_label = self.browser.find_elements_by_css_selector(
             'label[for="add-food-name"]'
         )
-        name_input = self.browser.find_elements_by_css_selector('add-food-name')
+        name_input = self.browser.find_element_by_id('add-food-name')
 
-        serving_label = self.browser.find_element_css_selector(
+        serving_label = self.browser.find_elements_by_css_selector(
             'label[for="add-food-serving"]'
         )
-        serving_input = self.browser.find_elements_by_css_selector(
+        serving_input = self.browser.find_element_by_id(
             'add-food-serving'
         )
 
-        cals_label = self.browser.find_element_css_selector(
+        cals_label = self.browser.find_elements_by_css_selector(
             'label[for="add-food-cals"]'
         )
-        cals_input = self.browser.find_elements_by_css_selector('add-food-cals')
+        cals_input = self.browser.find_element_by_id('add-food-cals')
 
-        fat_label = self.browser.find_element_css_selector(
+        fat_label = self.browser.find_elements_by_css_selector(
             'label[for="add-food-fat"]'
         )
-        fat_input = self.browser.find_elements_by_css_selector('add-food-fat')
+        fat_input = self.browser.find_element_by_id('add-food-fat')
 
-        carbs_label = self.browser.find_element_css_selector(
+        carbs_label = self.browser.find_elements_by_css_selector(
             'label[for="add-food-carbs"]'
         )
-        carbs_input = self.browser.find_elements_by_css_selector(
+        carbs_input = self.browser.find_element_by_id(
             'add-food-carbs'
         )
 
-        sugar_label = self.browser.find_element_css_selector(
+        sugar_label = self.browser.find_elements_by_css_selector(
             'label[for="add-food-sugar"]'
         )
-        sugar_input = self.browser.find_elements_by_css_selector(
+        sugar_input = self.browser.find_element_by_id(
             'add-food-sugar'
         )
 
-        protein_label = self.browser.find_element_css_selector(
+        protein_label = self.browser.find_elements_by_css_selector(
             'label[for="add-food-protein"]'
         )
-        protein_input = self.browser.find_elements_by_css_selector(
+        protein_input = self.browser.find_element_by_id(
             'add-food-protein'
         )
 
-        save_button = self.browser.find_elements_by_css_selector('add-food-save')
+        save_button = self.browser.find_element_by_id('add-food-save')
         # Joe enters all the info in the form and clicks the 'Add Food to DB'
         # button after which he sees a 'New Food Successfully Added' message.
         save_button.click()

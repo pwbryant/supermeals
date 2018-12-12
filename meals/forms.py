@@ -53,13 +53,44 @@ class RoundedDecimalField(forms.DecimalField):
 
 class NewFoodForm(forms.ModelForm):
 
-    cals = forms.DecimalField(max_digits=6, decimal_places=2)
-    serving = forms.DecimalField(max_digits=6, decimal_places=2)
-    fat = forms.DecimalField(max_digits=6, decimal_places=2)
-    carbs = forms.DecimalField(max_digits=6, decimal_places=2)
-    sugar = forms.DecimalField(max_digits=6, decimal_places=2)
-    protein = forms.DecimalField(max_digits=6, decimal_places=2)
+    serving = forms.DecimalField(
+        max_digits=6, decimal_places=2, widget=forms.TextInput(
+            attrs={'id': 'add-food-serving'}
+        )
+    )
+    cals = forms.DecimalField(
+        max_digits=6, decimal_places=2, widget=forms.TextInput(
+            attrs={'id': 'add-food-cals'}
+        )
+    )
+    fat = forms.DecimalField(
+        max_digits=6, decimal_places=2, widget=forms.TextInput(
+            attrs={'id': 'add-food-fat'}
+        )
+    )
+    carbs = forms.DecimalField(
+        max_digits=6, decimal_places=2, widget=forms.TextInput(
+            attrs={'id': 'add-food-carbs'}
+        )
+    )
+    sugar = forms.DecimalField(
+        max_digits=6, decimal_places=2, widget=forms.TextInput(
+            attrs={'id': 'add-food-sugar'}
+        )
+    )
+    protein = forms.DecimalField(
+        max_digits=6, decimal_places=2, widget=forms.TextInput(
+            attrs={'id': 'add-food-protein'}
+        )
+    )
     food_group = forms.CharField()
+
+
+    class Meta:
+        model = Foods
+        fields = ['name']
+        widgets = {'name': forms.TextInput(attrs={'id': 'add-food-name'})}
+
 
     def save(self):
 
@@ -79,9 +110,6 @@ class NewFoodForm(forms.ModelForm):
         )
         food.save()
                     
-    class Meta:
-        model = Foods
-        fields = ['name']
 
 
 class MealRecipeForm(forms.ModelForm):
