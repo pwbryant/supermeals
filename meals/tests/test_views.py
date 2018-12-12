@@ -9,7 +9,8 @@ from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django import forms
 
-from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, MacroIngredientForm, \
+from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
+    MacroIngredientForm, NewFoodForm, \
     DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR, \
     INVALID_USERNAME_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_WEIGHT_ERROR, \
     EMPTY_HEIGHT_ERROR
@@ -21,6 +22,10 @@ from meals.views import save_my_macros, get_my_meals, \
 from meals.helpers import get_ingredient_count
 # Create your tests here.
 
+
+
+# CONTANTS
+# ===================================================
 USERNAME, EMAIL, PASSWORD = 'JoeSchmoe', 'joe@joemail.com', '321pass123!'
 GUEST_USERNAME, GUEST_PASSWORD = 'guest', '321!beware'
 BAD_USERNAME, BAD_PASSWORD = 'bad', 'badpass'
@@ -28,6 +33,8 @@ BAD_USERNAME, BAD_PASSWORD = 'bad', 'badpass'
 
 
 
+# OTHER CLASSES
+# ===================================================
 class BaseTestCase(TestCase):
     
     def log_in_user(self, USERNAME, PASSWORD):
@@ -35,6 +42,25 @@ class BaseTestCase(TestCase):
         user = User.objects.create_user(username=USERNAME, password=PASSWORD)
         self.client.post('/accounts/login/', data={'username':USERNAME, 'password':PASSWORD})
         return user
+
+
+# VIEW TESTS
+# ===================================================
+
+class NewFoodTest(BaseTestCase):
+
+    def setUp(self):
+
+        self.url = reverse('add_food')
+        self.response = self.client.get(self.url)
+
+    def test_add_food_url(self):
+        self.assertEqual(self.response.status_code, 200)
+        self.assertTemplateUsed(self.response,'meals/add_food.html')
+
+    def test_add_food_uses_correct_form(self):
+        self.assertIsInstance(self.response.context['add_food_form'], NewFoodForm)
+
 
 
 class AddRecipeTest(BaseTestCase):

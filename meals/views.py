@@ -9,7 +9,7 @@ from django.db import transaction
 from django.core.serializers.json import DjangoJSONEncoder
 
 from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
-        MacroIngredientForm, MealRecipeForm
+        MacroIngredientForm, MealRecipeForm, NewFoodForm
 from meals.models import Macros, Foods, FoodGroup, Ingredients, Servings, \
         FoodNotes, FoodType
 from meals.helpers import make_ingredient_formset, \
@@ -397,3 +397,11 @@ def save_recipe(request):
         context['status'] = 'failure'
 
     return JsonResponse(context)
+
+
+def add_food(request):
+
+    context = {'add_food_form': NewFoodForm()}
+    return render(request, TEMPLATES_DIR + 'add_food.html', context)
+
+
