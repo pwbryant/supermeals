@@ -20,14 +20,15 @@ let ADD_RECIPE_SEARCH = (function() {
 
             $.get('/meals/search-foods/all/', search_data, function(data) {
                 const search_results = data['search-results'];
-                console.log('data', data['search-results']);
                 let search_results_html = '';
                 if(search_results.length > 0) {
                     // give results to this_obj for later use
                     this_obj.SEARCH_RESULTS = search_results;
+
                     search_results_html = SEARCH.format_food_search_results(
                         'add-recipe',
-                        search_results
+                        search_results,
+                        'ingredient-result'
                     );
                     $(`#${tab_name}-search-results-container`).html(search_results_html);
 

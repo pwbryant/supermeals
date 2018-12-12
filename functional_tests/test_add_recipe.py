@@ -117,7 +117,7 @@ class AddIngredientRecipeTest(FunctionalTest):
         # accompanied by an input for the amount followed by a dropdown
         # with units.
         self.browser.find_element_by_id(
-           f'add-recipe-search-result-food-{self.carrots.id}'
+           f'add-recipe-ingredient-result-{self.carrots.id}'
         ).click()
 
         ingredient_name = self.browser.find_element_by_id(
@@ -148,10 +148,10 @@ class AddIngredientRecipeTest(FunctionalTest):
 
         # He then adds the chicken and ice cream
         self.browser.find_element_by_id(
-           f'add-recipe-search-result-food-{self.chicken.id}'
+           f'add-recipe-ingredient-result-{self.chicken.id}'
         ).click()
         self.browser.find_element_by_id(
-           f'add-recipe-search-result-food-{self.ice_cream.id}'
+           f'add-recipe-ingredient-result-{self.ice_cream.id}'
         ).click()
 
         # Joe decides he does'nt want the ice cream so he clicks on 
@@ -215,7 +215,7 @@ class AddIngredientRecipeTest(FunctionalTest):
         )
         # He then adds them back
         self.browser.find_element_by_id(
-           f'add-recipe-search-result-food-{self.carrots.id}'
+           f'add-recipe-ingredient-result-{self.carrots.id}'
         ).click()
 
         carrot_amt_input = self.browser.find_element_by_id(
