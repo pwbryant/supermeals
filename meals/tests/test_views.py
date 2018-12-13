@@ -47,20 +47,46 @@ class BaseTestCase(TestCase):
 # VIEW TESTS
 # ===================================================
 
+
+
+
 class NewFoodTest(BaseTestCase):
 
     def setUp(self):
 
         self.url = reverse('add_food')
-        self.response = self.client.get(self.url)
+        self.get_response = self.client.get(self.url)
+
+        FoodGroup.objects.create(name='Veggies', informal_name='Veggies')
+        FoodType.objects.create(name='food')
+
+        self.post = {
+            'name': 'Broccoli',
+            'serving': Decimal(100),
+            'cals': Decimal(50),
+            'fat': Decimal(2),
+            'carbs': Decimal(10),
+            'sugar': Decimal(5),
+            'protein': Decimal(2),
+            'food_group': 'Veggies'
+        }
 
     def test_add_food_url(self):
-        self.assertEqual(self.response.status_code, 200)
-        self.assertTemplateUsed(self.response,'meals/add_food.html')
+        self.assertEqual(self.get_response.status_code, 200)
+        self.assertTemplateUsed(self.get_response,'meals/add_food.html')
 
     def test_add_food_uses_correct_form(self):
-        self.assertIsInstance(self.response.context['add_food_form'], NewFoodForm)
+        self.assertIsInstance(
+            self.get_response.context['add_food_form'], NewFoodForm
+        )
 
+    def test_add_food_can_save(self):
+        response = json.loads(
+            self.client.post(self.url, self.post).content
+        )
+        self.assertEqual(response['status_code'], 201)
+        new_foods = Foods.objects.all()
+        self.assertEqual(new_foods.count(), 1)
 
 
 class AddRecipeTest(BaseTestCase):

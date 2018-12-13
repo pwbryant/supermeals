@@ -401,6 +401,14 @@ def save_recipe(request):
 
 def add_food(request):
 
+    if request.method == 'POST':
+        form = NewFoodForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'status_code': 201})
+
+        return JsonResponse({'status_code': 400, 'errors': form.errors})
+
     context = {'add_food_form': NewFoodForm()}
     return render(request, TEMPLATES_DIR + 'add_food.html', context)
 
