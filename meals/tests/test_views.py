@@ -80,7 +80,7 @@ class NewFoodTest(BaseTestCase):
             self.get_response.context['add_food_form'], NewFoodForm
         )
 
-    def test_add_food_can_save(self):
+    def test_add_food_can_save_post(self):
         response = json.loads(
             self.client.post(self.url, self.post).content
         )
@@ -88,6 +88,14 @@ class NewFoodTest(BaseTestCase):
         new_foods = Foods.objects.all()
         self.assertEqual(new_foods.count(), 1)
 
+    def test_add_food_can_handle_bad_post(self):
+        self.post['name'] = ''
+        response = json.loads(
+            self.client.post(self.url, self.post).content
+        )
+        self.assertEqual(response['status_code'], 400)
+        new_foods = Foods.objects.all()
+        self.assertEqual(new_foods.count(), 0)
 
 class AddRecipeTest(BaseTestCase):
 

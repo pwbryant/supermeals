@@ -391,7 +391,7 @@ def save_recipe(request):
         form.instance.user = request.user
         form.save()
         context['status'] = 'success'
-       
+
     else:
         context['errors'] = form.errors
         context['status'] = 'failure'
@@ -411,5 +411,4 @@ def add_food(request):
 
     context = {'add_food_form': NewFoodForm()}
     return render(request, TEMPLATES_DIR + 'add_food.html', context)
-
 
