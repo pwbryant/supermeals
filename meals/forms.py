@@ -85,9 +85,9 @@ class NewFoodForm(forms.ModelForm):
     )
 
     choices = tuple(
-        (fg['informal_name'], fg['informal_name'],) for fg
-        in FoodGroup.objects.all().values('informal_name').distinct()
-        if not fg['informal_name'].startswith('My')
+        (fg['name'], fg['name'],) for fg
+        in FoodGroup.objects.all().values('name').distinct()
+        if not fg['name'].startswith('My')
     )
     food_group = forms.ChoiceField(
         choices=choices, label='Food Group', widget=forms.Select(

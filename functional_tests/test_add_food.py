@@ -3,12 +3,17 @@ from .base import FunctionalTest
 from decimal import Decimal
 from selenium.webdriver.support.ui import Select
 
-from meals.models import FoodGroup
+from meals.models import FoodGroup, FoodType
 from meals.forms import NewFoodForm #for some reason, importing the form
     # gets its food_group attribute populated with all the existing FoodGroups
+    # even though at the time of the test those groups don't exist
 
 class AddFoodTest(FunctionalTest):
 
+    def setUp(self):
+        super().setUp()
+        FoodType.objects.create(name='food')
+        FoodGroup.objects.create(name='Snacks', informal_name='Snacks')
 
     def test_add_food(self):
 
@@ -94,12 +99,10 @@ class AddFoodTest(FunctionalTest):
 
         status = self.browser.find_element_by_id('add-food-save-status')
         self.assertEqual(status.text, 'Food Saved!')
-
+        time.sleep(4) # wait for status to dissapear
         self.assertEqual(status.text, '')
 
-
-
-
+        self.fail('Finish Test')
         # He notices the form has been cleared.
 
         # Joe wants to add another food, Hummus, to the DB, but being piss drunk
@@ -109,8 +112,3 @@ class AddFoodTest(FunctionalTest):
         # Joe, still being smashed, proceeds to fill in the form, but has text
         # mixed in with all the number fields. He hits the save button again
         # and now sees different error messages just under the numeric fields
-
-
-
-
-
