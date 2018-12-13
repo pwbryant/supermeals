@@ -54,6 +54,8 @@ class NewFoodTest(BaseTestCase):
 
     def setUp(self):
 
+        self.user = self.log_in_user(USERNAME, PASSWORD)
+
         self.url = reverse('add_food')
         self.get_response = self.client.get(self.url)
 
@@ -87,6 +89,13 @@ class NewFoodTest(BaseTestCase):
         self.assertEqual(response['status_code'], 201)
         new_foods = Foods.objects.all()
         self.assertEqual(new_foods.count(), 1)
+
+    def test_add_food_save_sets_user_on_new_food(self):
+        response = json.loads(
+            self.client.post(self.url, self.post).content
+        )
+        new_food = Foods.objects.all()[0]
+        self.assertEqual(new_food.user, self.user)
 
     def test_add_food_can_handle_bad_post(self):
         self.post['name'] = ''
