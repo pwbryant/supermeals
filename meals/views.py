@@ -404,7 +404,9 @@ def add_food(request):
     if request.method == 'POST':
         form = NewFoodForm(request.POST)
         if form.is_valid():
+            form.instance.user = request.user
             form.save()
+
             return JsonResponse({'status_code': 201})
 
         return JsonResponse({'status_code': 400, 'errors': form.errors})
