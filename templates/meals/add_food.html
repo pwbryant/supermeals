@@ -6,9 +6,13 @@
 
         {{ add_food_form }}
 
-        <button id='add-food-save' type="submit">Save New Food</button>
+        <button id='add-food-save' type='button'>Save New Food</button>
+        <div id='add-food-save-status'></div>
 
     </form>
 
-
 </div>
+
+<script>
+    ADD_FOOD.save_food();
+</script>

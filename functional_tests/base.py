@@ -15,12 +15,12 @@ class FunctionalTest(StaticLiveServerTestCase):
     GUESTPASS = "321!beware"
 
     def setUp(self):
-        self.browser = webdriver.Firefox()
         Servings.objects.create(
             grams=Decimal(1),
             quantity=Decimal(1),
             description='g'
         )
+        self.browser = webdriver.Firefox()
 
 
     def tearDown(self):

@@ -83,7 +83,17 @@ class NewFoodForm(forms.ModelForm):
             attrs={'id': 'add-food-protein'}
         )
     )
-    food_group = forms.CharField()
+
+    choices = tuple(
+        (fg['informal_name'], fg['informal_name'],) for fg
+        in FoodGroup.objects.all().values('informal_name').distinct()
+        if not fg['informal_name'].startswith('My')
+    )
+    food_group = forms.ChoiceField(
+        choices=choices, label='Food Group', widget=forms.Select(
+            attrs={'id': 'add-food-food-group'},
+        )
+    )
 
 
     class Meta:
