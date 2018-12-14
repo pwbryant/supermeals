@@ -154,11 +154,8 @@ def save_my_macros(request):
     macro_dict['protein_percent'] = Decimal(macro_dict['protein_percent'])
     macro_dict['fat_percent'] = Decimal(macro_dict['fat_percent'])
     macro_dict['user'] = request.user
-    try:
-        with transaction.atomic():
-            Macros.objects.create(**macro_dict)
-    except IntegrityError:
-        pass
+    Macros.objects.filter(user=request.user).delete()
+    Macros.objects.create(**macro_dict)
 
     return HttpResponse('1')
 

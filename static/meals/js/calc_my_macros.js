@@ -2,14 +2,19 @@
 
 //not tested
 var save_my_macros_button_posts_form = function() {
-	$("#save-my-macros-button").on("click",function() {
+	$("#my-macros-form").on("submit", function(e) {
+
+        e.preventDefault();
 		var form_validated = form_validation("my-macros-form-container");
 		if (form_validated) {
-			var post_data = {};
-			$("#my-macros-forms-container").find(":input[type='text'],:input[type='hidden'],:input[type='radio']:checked").each(function() {
-			    post_data[this.name] = $(this).val();
-			});
+			// var post_data = {};
+
+            const post_data = $('#my-macros-form').serialize();
+			// $("#my-macros-forms-container").find(":input[type='text'],:input[type='hidden'],:input[type='radio']:checked").each(function() {
+			    // post_data[this.name] = $(this).val();
+			// });
             //post_data["csrfmiddlewaretoken"] = $("input[name='csrfmiddlewaretoken']").val();
+            console.log('post data', post_data);
 			$.post("/meals/save-my-macros",post_data,function(data) {
 				if (data == "1") {
                     console.log('success!!!!');
@@ -26,25 +31,28 @@ var save_my_macros_button_posts_form = function() {
 
 //tested
 var switch_between_imperial_metric = function() {
-	$("input[name='unit-type']").on("click",function() {	
-		var unit_type = $(this).val(),
-        weight_input = "<label class='input__label'>Weight:</label>",
-        height_input = "<label class='input__label'>Height:</label>",
-        change_input = "<label class='input__label'>Rate of Change:</label>";
+	$("input[name='unit_type']").on("click",function() {	
+        console.log('switch');
+		const unit_type = $(this).val();
+        const tab_name = 'my-macros';
+        let weight_placeholder = 'lbs';
+        let height_placeholder_0 = 'ft';
+        let height_placeholder_1 = 'in';
+        let change_rate_placeholder = 'lbs/wk';
+
 		if (unit_type == "metric") {
-            weight_input += "<input type='text' name='weight-m' class='input__input--sm' placeholder='kg' data-type='number' />";
-            height_input += "<input type='text' name='height-m' class='input__input--sm' placeholder='cm' data-type='number' />";
-            change_input += "<input type='text' name='change-rate-m' class='input__input--sm' placeholder='kg/wk' data-type='number' />";
+            weight_placeholder = 'kgs';
+            height_placeholder_0 = 'cm';
+            change_rate_placeholder = 'kgs/wk';
+            $(`#${tab_name}-height-1`).hide();	
 
 		} else {
-            weight_input += "<input type='text' name='weight-i' class='input__input--sm' placeholder='lb' data-type='number' />";
-            height_input += "<input type='text' name='height-i-ft' class='input__input--sm' placeholder='ft' data-type='number' />";
-            height_input += "<input type='text' name='height-i-in' class='input__input--sm' placeholder='in' data-type='number' />";
-            change_input += "<input type='text' name='change-rate-i' class='input__input--sm' placeholder='lb/wk' data-type='number' />";
+            $(`#${tab_name}-height-1`).show();	
+            $(`#${tab_name}-height-1`).attr('placeholder', height_placeholder_1);	
 		}
-        $("#weight-input").html(weight_input);	
-        $("#height-input").html(height_input);		
-        $("#change-rate-input").html(change_input);
+        $(`#${tab_name}-weight`).attr('placeholder', weight_placeholder);	
+        $(`#${tab_name}-height-0`).attr('placeholder', height_placeholder_0);	
+        $(`#${tab_name}-change-rate`).attr('placeholder', change_rate_placeholder);	
 	});
 
 }
@@ -89,14 +97,14 @@ var calc_tdee = function() {
 					"gain": 1,
 				}[tdee_data["direction"]];
 
-				if (tdee_data["unit-type"] == "imperial") {
-					tdee_data["weight"] = convert_between_metric_english(tdee_data["weight-i"],"lb-to-kg");
-					tdee_data["height"] = convert_between_metric_english(tdee_data["height-i-ft"] * 12 + tdee_data["height-i-in"],"in-to-cm");
-					tdee_data["change-rate"] = tdee_data["change-rate-i"] * weight_change_direction * 500;
+				if (tdee_data["unit_type"] == "imperial") {
+					tdee_data["weight"] = convert_between_metric_english(tdee_data["weight"],"lb-to-kg");
+					tdee_data["height"] = convert_between_metric_english(tdee_data["height_0"] * 12 + tdee_data["height_1"],"in-to-cm");
+					tdee_data["change_rate"] = tdee_data["change_rate"] * weight_change_direction * 500;
 				} else {
-					tdee_data["weight"] = tdee_data["weight-m"];
-					tdee_data["height"] = tdee_data["height-m"];
-					tdee_data["change-rate"] = convert_between_metric_english(tdee_data["change-rate-m"],"kg-to-lb") * weight_change_direction * 500;
+					// tdee_data["weight"] = tdee_data["weight-m"];
+					// tdee_data["height"] = tdee_data["height-m"];
+					tdee_data["change_rate"] = convert_between_metric_english(tdee_data["change_rate"],"kg-to-lb") * weight_change_direction * 500;
 				}
 				const formula_data = {
 					"female":-161,
@@ -113,12 +121,14 @@ var calc_tdee = function() {
 					"very high":1.9
 				};
 				var tdee_return_value = (formula_data["weight"] + formula_data["height"] - formula_data["age"]  + formula_data[tdee_data["gender"]]) * activity_data[tdee_data["activity"]];
-			    var change_tdee_return_value = ((formula_data["weight"] + formula_data["height"] - formula_data["age"]  + formula_data[tdee_data["gender"]]) * activity_data[tdee_data["activity"]]) + tdee_data["change-rate"];
+			    var change_tdee_return_value = ((formula_data["weight"] + formula_data["height"] - formula_data["age"]  + formula_data[tdee_data["gender"]]) * activity_data[tdee_data["activity"]]) + tdee_data["change_rate"];
 
 
 			} else {
 				tdee_return_value = "Missing Value. Check Form.";
 			}
+            console.log('tdee-data', tdee_data);
+
 
             tdee_return_value_str = "Maintenance: " + Math.round(tdee_return_value).toString() + " Cals";
             change_tdee_return_value_str = "Change: " + Math.round(change_tdee_return_value).toString() + " Cals";

@@ -5,7 +5,8 @@ let ADD_FOOD = (function() {
 
         save_food: function() {
 
-            $('#add-food-save').on('click', function() {
+            $('#add-food-form').on('submit', function(e) {
+                e.preventDefault();
                 const post_data = $('#add-food-form').serialize();
                 console.log('post data', post_data);
                 $.post('/meals/add-food/', post_data, function(data) {

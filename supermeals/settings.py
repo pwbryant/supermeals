@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'meals',
     'django_extensions',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

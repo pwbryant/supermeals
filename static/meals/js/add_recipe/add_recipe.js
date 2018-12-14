@@ -10,8 +10,10 @@ let ADD_RECIPE = (function() {
                 // clear any existing errors
                 $('.form-errors').html('');
                 const form_valid = this_add_recipe_obj.add_recipe_validation();
+                console.log('clicked valid', form_valid);
                 if (form_valid) {
                     const post_data = $('#add-recipe-form').serialize();
+                    console.log('post data', post_data)
                     $.post('/meals/save-recipe', post_data, function(data) {
                         console.log('data', data);
                         if (data['status'] == 'success') {

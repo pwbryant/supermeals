@@ -44,6 +44,7 @@ class AddIngredientRecipeTest(FunctionalTest):
             cals_per_gram=Decimal(5.9),
             fat_per_gram=Decimal(4.491),
             carbs_per_gram=Decimal(0.8732),
+            sugar_per_gram=Decimal(0.8732),
             protein_per_gram=Decimal(0.96)
         )
 
@@ -52,6 +53,7 @@ class AddIngredientRecipeTest(FunctionalTest):
             cals_per_gram=Decimal(5.9),
             fat_per_gram=Decimal(4.491),
             carbs_per_gram=Decimal(0.8732),
+            sugar_per_gram=Decimal(0.8732),
             protein_per_gram=Decimal(0.96)
         )
 
@@ -60,6 +62,7 @@ class AddIngredientRecipeTest(FunctionalTest):
             cals_per_gram=Decimal(5.9),
             fat_per_gram=Decimal(4.491),
             carbs_per_gram=Decimal(0.8732),
+            sugar_per_gram=Decimal(0.8732),
             protein_per_gram=Decimal(0.96)
         )
         
