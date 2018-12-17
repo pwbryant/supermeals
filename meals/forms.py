@@ -105,6 +105,7 @@ class NewFoodForm(forms.ModelForm):
     def save(self):
 
         food = self.instance
+
         food.food_group = FoodGroup.objects.get(
             name=self.cleaned_data['food_group']
         )
@@ -317,23 +318,10 @@ class SignUpForm(forms.models.ModelForm):
 class MakeMacrosForm(forms.models.ModelForm):
 	
 
-        # weight = forms.CharField(label='Weight', widget=forms.fields.TextInput(
-        #     attrs={
-        #         'id': f'{tab_name}-weight',
-        #         'data-type': data_type,
-        #         'class': input_class
-        #     }
-        # ), required=False)
-        # change_rate = forms.CharField(widget=forms.fields.TextInput(attrs={
-        #     'id': f'{tab_name}-m-change-rate',
-        #     'placeholder':'kg/wk',
-        #     'data-type': data_type,
-        #     'class': input_class
-        # }), required=False)
-
         data_type='number'
         input_class = 'input__input input__input--sm'
         tab_name = 'my-macros'
+
         macro_error_messages = {
             'required': EMPTY_MACRO_ERROR,
             'invalid': INVALID_MACRO_ERROR,
@@ -356,19 +344,14 @@ class MakeMacrosForm(forms.models.ModelForm):
                 'data-type': data_type,
                 'class': input_class
             }
-        ),required=False)
+        ), required=False)
 
         height_1 = forms.CharField(widget=forms.fields.TextInput(attrs={
             'id': f'{tab_name}-height-1',
             'data-type': data_type,
             'class': input_class
-        }),required=False)
+        }), required=False)
 
-        protein_percent = forms.IntegerField(
-            min_value=0, max_value=100,
-            widget=forms.fields.TextInput(attrs=pct_attrs),
-            error_messages=macro_error_messages, required=True
-        )
         protein_g = forms.IntegerField(
             widget=forms.fields.TextInput(attrs=g_attrs),
             error_messages=macro_error_messages, required=True
@@ -405,7 +388,11 @@ class MakeMacrosForm(forms.models.ModelForm):
             tab_name = 'my-macros'
 
             model = Macros
-            fields = ('unit_type','gender','age','weight','height','activity','direction','change_rate',)
+            fields = (
+                'unit_type', 'gender', 'age', 'weight', 'height', 'activity',
+                'direction', 'change_rate', 'fat_percent', 'carbs_percent',
+                'protein_percent'
+            )
 
             labels = {
                 'change_rate': 'Rate of Change'
@@ -433,8 +420,29 @@ class MakeMacrosForm(forms.models.ModelForm):
                     attrs = {
                         'id': f'{tab_name}-change-rate',
                         'data-type': data_type,
+                }),
+                'fat_percent': forms.fields.TextInput(
+                    attrs = {
+                        'id': 'my-macros-fat-percent',
+                        'placeholder': '%',
+                        'data-type': data_type,
                         'class': input_class
                 }),
+                'carbs_percent': forms.fields.TextInput(
+                    attrs = {
+                        'id': 'my-macros-carbs-percent',
+                        'placeholder': '%',
+                        'data-type': data_type,
+                        'class': input_class
+                }),
+                'protein_percent': forms.fields.TextInput(
+                    attrs = {
+                        'id': 'my-macros-protein-percent',
+                        'placeholder': '%',
+                        'data-type': data_type,
+                        'class': input_class
+                }),
+
             }
 
             #error constants
@@ -472,8 +480,11 @@ class MakeMacrosForm(forms.models.ModelForm):
                             'invalid':DEFAULT_INVALID_INT_ERROR,
                     },
             }
-	
+            
+
         def __init__(self,*args,**kwargs):
-            initial = {'unit_type':kwargs.pop('unit_type')}
-            kwargs['initial'] = initial
+            
+            if kwargs.get('unit_type'):
+                initial = {'unit_type':kwargs.pop('unit_type')}
+                kwargs['initial'] = initial
             super(MakeMacrosForm,self).__init__(*args,**kwargs)

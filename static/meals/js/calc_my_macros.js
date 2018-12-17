@@ -7,15 +7,34 @@ var save_my_macros_button_posts_form = function() {
         e.preventDefault();
 		var form_validated = form_validation("my-macros-form-container");
 		if (form_validated) {
-			// var post_data = {};
 
-            const post_data = $('#my-macros-form').serialize();
-			// $("#my-macros-forms-container").find(":input[type='text'],:input[type='hidden'],:input[type='radio']:checked").each(function() {
-			    // post_data[this.name] = $(this).val();
-			// });
-            //post_data["csrfmiddlewaretoken"] = $("input[name='csrfmiddlewaretoken']").val();
-            console.log('post data', post_data);
+            let post_data = $('#my-macros-form').serialize();
+            const unit_type = $('input[name="unit_type"]:checked').val();
+            let height;
+            const height_0 = $('#my-macros-height-0').val();
+            if (unit_type === 'imperial') {
+                const height_1 = $('#my-macros-height-1').val();
+                const metric_height_0 = convert_between_metric_english(
+                    height_0 * 12, 'in-to-cm'
+                );
+                const metric_height_1 = convert_between_metric_english(
+                    height_1, 'in-to-cm'
+                );
+                const decimal_val = 100 // allows rounding to 2 decimals
+                height = Math.round(
+                    (metric_height_0 + metric_height_1) * decimal_val 
+                ) / decimal_val;
+            } else {
+                height = height_0;
+            }
+
+            const total_macro_percent = 100 - $('#choose-macros-total').text();
+
+            post_data += `&height=${ height }`;
+            post_data += `&total_macro_percent=${ total_macro_percent }`;
+            console.log('pd', post_data);
 			$.post("/meals/save-my-macros",post_data,function(data) {
+                console.log('response data', data);
 				if (data == "1") {
                     console.log('success!!!!');
 					$("#my-macros-successful-save").html("Macros Successfully Saved! Now Go Make a Meal!");
@@ -166,24 +185,24 @@ var choose_macro_handler = function() {
 		} else {
 			var tdee_result = parseFloat($("#tdee-result").html().split(" ")[1]);
 		}
-		var input_array = this.name.split("-"),
+		var input_array = this.name.split("_"),
 		macro_value = parseFloat(this.value),
 		macro = input_array[0],
 		type = input_array[1],
 		macro_factor = MACRO_FACTORS[macro];
-		if (type == "pct") {
+		if (type == 'percent') {
 			return_value = (tdee_result * macro_value / 100.0 / macro_factor).toFixed(0);
-			var return_selector = "input[name='" + macro + "-g']";
+			var return_selector = "input[name='" + macro + "_g']";
 		} else {
 			return_value = (macro_value * macro_factor / tdee_result * 100).toFixed(0);	
-			var return_selector = "input[name='" + macro + "-pct']";
+			var return_selector = "input[name='" + macro + "_percent']";
 		}
 		if (isNaN(macro_value)) {
 			$(return_selector).val("");
 		} else {
 			$(return_selector).val(return_value);
 		}
-		macro_percent_totaler("input[name='" + macro + "-pct']")
+		macro_percent_totaler("input[name='" + macro + "_percent']")
 
 	});
 }

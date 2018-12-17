@@ -70,10 +70,10 @@ class NewFoodFormTest(BaseTestCase):
             'carbs': 1.7,
             'sugar': 2.6,
             'protein': 2.8,
-            'food_group': 'Veggies'
+            'food_group': 'Vegetables and Vegetable Products'
         }
 
-        FoodGroup.objects.create(name='Veggies')
+        FoodGroup.objects.create(name='Vegetables and Vegetable Products')
         FoodType.objects.create(name='food')
 
     def test_NewFoodForm_valid(self):

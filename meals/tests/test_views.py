@@ -20,7 +20,6 @@ from meals.views import save_my_macros, get_my_meals, \
     get_meal_maker_template, \
     make_macro_breakdown_dict_list, save_macro_meal, search_my_meals
 from meals.helpers import get_ingredient_count
-# Create your tests here.
 
 
 
@@ -29,8 +28,6 @@ from meals.helpers import get_ingredient_count
 USERNAME, EMAIL, PASSWORD = 'JoeSchmoe', 'joe@joemail.com', '321pass123!'
 GUEST_USERNAME, GUEST_PASSWORD = 'guest', '321!beware'
 BAD_USERNAME, BAD_PASSWORD = 'bad', 'badpass'
-
-
 
 
 # OTHER CLASSES
@@ -46,10 +43,7 @@ class BaseTestCase(TestCase):
 
 # VIEW TESTS
 # ===================================================
-
-
-
-
+# Create your tests here.
 class NewFoodTest(BaseTestCase):
 
     def setUp(self):
@@ -59,7 +53,9 @@ class NewFoodTest(BaseTestCase):
         self.url = reverse('add_food')
         self.get_response = self.client.get(self.url)
 
-        FoodGroup.objects.create(name='Veggies', informal_name='Veggies')
+        FoodGroup.objects.create(
+            name='Vegetables and Vegetable Products', informal_name='Veggies'
+        )
         FoodType.objects.create(name='food')
 
         self.post = {
@@ -70,7 +66,7 @@ class NewFoodTest(BaseTestCase):
             'carbs': Decimal(10),
             'sugar': Decimal(5),
             'protein': Decimal(2),
-            'food_group': 'Veggies'
+            'food_group': 'Vegetables and Vegetable Products'
         }
 
     def test_add_food_url(self):
@@ -83,6 +79,7 @@ class NewFoodTest(BaseTestCase):
         )
 
     def test_add_food_can_save_post(self):
+        NewFoodForm.choices += (('Veggies', 'Veggies',),)
         response = json.loads(
             self.client.post(self.url, self.post).content
         )

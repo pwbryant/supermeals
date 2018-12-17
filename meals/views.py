@@ -21,6 +21,9 @@ KG_TO_LB = .45359237
 IN_TO_CM = .3937
 TEMPLATES_DIR = 'meals/'
 
+BAD_REQUEST = 400
+OK = 200
+
 # Create your views here.
 def home_or_login(request):
 
@@ -31,7 +34,9 @@ def home_or_login(request):
 
 
 def sign_up(request):
-    return render(request, TEMPLATES_DIR + 'sign_up.html', {'form': SignUpForm()})
+    return render(
+        request, TEMPLATES_DIR + 'sign_up.html', {'form': SignUpForm()}
+    )
 
 
 def create_account(request):
@@ -59,63 +64,10 @@ def get_my_macros(request):
     })
 
 
-def create_macro_form_dict(POST):
-    """
-    Creates dict containing fields needed for MakeMacroForm model.
-
-    Parameters
-    ----------
-        POST: QueryDict
-
-    Returns
-    ----------
-        dict with fields for MakeMacroForm model
-    """
-    macro_form_dict = {}
-    macro_form_dict['unit_type'] = POST['unit-type']
-    if macro_form_dict['unit_type'] == 'imperial':
-        height1 = POST.get('height-i-ft', '')
-        height2 = POST.get('height-i-in', '')
-        if height1 != '' and height2 != '':
-            macro_form_dict['height'] = str(
-                round(((int(height1) * 12) + int(height2)) / IN_TO_CM, 2)
-            )
-
-        macro_form_dict['weight'] = POST.get('weight-i', '')
-        macro_form_dict['change_rate'] = POST.get('change-rate-i', '')
-        if macro_form_dict['weight'] != '':
-            macro_form_dict['weight'] = str(round(int(macro_form_dict['weight']) * KG_TO_LB, 2))
-
-        if macro_form_dict['change_rate'] != '':
-            macro_form_dict['change_rate'] = str(
-                round(int(macro_form_dict['change_rate']) * KG_TO_LB, 8)
-            )
-
-    if macro_form_dict['unit_type'] == 'metric':
-        macro_form_dict['height'] = POST.get('height-m', 0)
-        macro_form_dict['weight'] = POST.get('weight-m', 0)
-        macro_form_dict['change_rate'] = POST.get('change-rate-m', '')
-
-    macro_form_dict['total_macro_percent'] = int(POST.get('protein-pct', 0))\
-            + int(POST.get('fat-pct', 0)) + int(POST.get('carbs-pct', 0))
-    macro_form_dict = {
-        **{
-            'gender':POST.get('gender', ''), 'age':POST.get('age', ''),
-            'activity':POST.get('activity', ''), 'direction':POST.get('direction', ''),
-            'fat_percent':POST.get('fat-pct', ''), 'fat_g':POST.get('fat-g', ''),
-            'carbs_percent':POST.get('carbs-pct', ''), 'carbs_g':POST.get('carbs-g', ''),
-            'protein_percent':POST.get('protein-pct', ''), 'protein_g':POST.get('protein-g', '')
-        },
-        **macro_form_dict
-    }
-    return macro_form_dict
-
-
 def save_my_macros(request):
     """saves new Macro
 
-    Attempts to save new Macro model object, but passes still
-    with Integrity Error.
+    Save new Macro model object
 
     Parameters
     ----------
@@ -127,37 +79,22 @@ def save_my_macros(request):
         dict with status, form, and unit-type upon
         success or failure
 
-    Raises
-    ----------
-    IngegrityError
     """
 
-    macro_form_dict = create_macro_form_dict(request.POST)
-    macro_form = MakeMacrosForm(macro_form_dict, unit_type=macro_form_dict['unit_type'])
+    macro_form = MakeMacrosForm(request.POST)
+    context = {}
+    if macro_form.is_valid():
+        Macros.objects.filter(user=request.user).delete()
+        macro_form.instance.user = request.user
+        macro_form.save()
+        context['status_code'] = OK 
 
-    context = {
-        'form':macro_form,
-        'unit_type':macro_form_dict['unit_type']
-    }
+        return JsonResponse(context)
 
-    if not macro_form.is_valid():
-        context['status'] = 0
-        return context
+    context['status_code'] = BAD_REQUEST
+    context['errors'] = macro_form.errors
+    return JsonResponse(context)
 
-    macro_dict = macro_form_dict
-    for key in ['fat_g', 'carbs_g', 'protein_g', 'carbs_percent', 'total_macro_percent']:
-        macro_dict.pop(key)
-
-    macro_dict['height'] = Decimal(macro_dict['height'])
-    macro_dict['weight'] = Decimal(macro_dict['weight'])
-    macro_dict['change_rate'] = Decimal(macro_dict['change_rate'])
-    macro_dict['protein_percent'] = Decimal(macro_dict['protein_percent'])
-    macro_dict['fat_percent'] = Decimal(macro_dict['fat_percent'])
-    macro_dict['user'] = request.user
-    Macros.objects.filter(user=request.user).delete()
-    Macros.objects.create(**macro_dict)
-
-    return HttpResponse('1')
 
 
 def make_macro_breakdown_dict_list(macro):
