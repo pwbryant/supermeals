@@ -34,6 +34,7 @@
                 <div id="age-input" class="input l-flex--col-start">
                     <label for='{{ form.age.id_for_label }}' class="input__label">{{ form.age.label }}</label>
                     {{ form.age }}
+                    <div id='my-macros-age-errors'></div>
                 </div>
                 <div id="weight-input" class="input l-flex--col-start">
                         <label for='{{ form.weight.id_for_label }}' class="input__label">{{ form.weight.label }}</label>
@@ -43,6 +44,7 @@
                         {% if form.unit_type.initial == "metric" %}
                             {% render_field form.weight placeholder='kg' %}
                         {% endif %}
+                    <div id='my-macros-weight-errors'></div>
                 </div>
                 <div id="height-input" class="input l-flex--col-start">
               
@@ -54,6 +56,7 @@
                     {% if form.unit_type.initial == "metric" %}
                         {% render_field form.height_0 placeholder='cm' %}
                     {% endif %}
+                    <div id='my-macros-height-errors'></div>
                 </div>
             </div>        
             <div id="activity" class="content-box l-tdee--mid-top">
@@ -116,6 +119,7 @@
                     {% if form.unit_type.initial == "metric" %}
                         {% render_field form.change_rate placeholder='kgs/wk' %}
                     {% endif %}
+                    <div id='my-macros-change_rate-errors'></div>
                 </div>
             </div>
             <div class="content-box l-tdee--footer l-flex--row-btw">
@@ -175,6 +179,7 @@
 </div>
 <script>
 
+    clear_form_errors();
 	switch_between_imperial_metric();
 	calc_tdee();
 	change_change_rate_display();

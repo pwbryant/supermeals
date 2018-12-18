@@ -344,7 +344,7 @@ class MakeMacrosForm(forms.models.ModelForm):
                 'data-type': data_type,
                 'class': input_class
             }
-        ), required=False)
+        ), required=True)
 
         height_1 = forms.CharField(widget=forms.fields.TextInput(attrs={
             'id': f'{tab_name}-height-1',

@@ -211,10 +211,6 @@ def save_macro_meal(request):
             (k, [e for e in v]) for k, v in meal_form.errors.items()
         ])
         context['errors'] = json.dumps(meal_error_dict)
-        # ingredient_error_dict = [
-        #     [k for k in ingredient_formset.errors]
-        # ]
-        # context['errors'] += ingredient_formset.errors
 
     return JsonResponse(context)
 
@@ -246,8 +242,9 @@ def search_foods(request, food_owner):
     filters = request.GET.getlist('filters[]')
     fields_of_interest = [
         'id', 'name', 'cals_per_gram', 'fat_per_gram', 'carbs_per_gram',
-        'protein_per_gram', 'servings__pk', 'servings__description', 'servings__grams',
-        'servings__quantity']
+        'protein_per_gram', 'servings__pk', 'servings__description',
+        'servings__grams', 'servings__quantity'
+    ]
 
     args = [
         'name', search_terms, 0.001, fields_of_interest,

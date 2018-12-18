@@ -1,45 +1,100 @@
+const convert_body_measurements_in_post_to_metric = function(
+    height1, height2, weight, change_rate, post_data) {
 
+    console.log('heights', height1, height2);
+    console.log('weights', weight);
+
+    const metric_height_0 = convert_between_metric_english(
+        height1 * 12, 'in-to-cm'
+    );
+    const metric_height_1 = convert_between_metric_english(
+        height2, 'in-to-cm'
+    );
+    let height;
+
+    const decimal_val = 100 // allows rounding to 2 decimals
+    height = Math.round(
+        (metric_height_0 + metric_height_1) * decimal_val 
+    ) / decimal_val;
+
+    // remove old weight and change_rate
+    post_data = post_data.replace(`&change_rate=${change_rate}`, '')
+    post_data = post_data.replace(`&weight=${weight}`, '')
+
+    weight = Math.round(convert_between_metric_english(
+        weight, 'lb-to-kg'
+    ) * decimal_val) / decimal_val;
+
+    change_rate = Math.round(convert_between_metric_english(
+        change_rate, 'lb-to-kg'
+    ) * decimal_val) / decimal_val;
+    
+    // add metric height, weight, and change_rate
+    post_data += `&height=${ height }`;
+    post_data += `&weight=${ weight }`;
+    post_data += `&change_rate=${ change_rate }`;
+
+    return post_data;
+
+}
+
+// not tested
+const clear_form_errors = function() {
+    $('input[type="text"]').on('keyup', function() {
+        $(this).siblings('.has-errors').html('');
+        $(this).siblings().removeClass('has-errors');
+    });
+}
 
 //not tested
 var save_my_macros_button_posts_form = function() {
 	$("#my-macros-form").on("submit", function(e) {
 
         e.preventDefault();
-		var form_validated = form_validation("my-macros-form-container");
+        clear_form_errors();
+		const form_validated = form_validation("my-macros-form-container");
 		if (form_validated) {
 
             let post_data = $('#my-macros-form').serialize();
+
+            // total percentage to post
+            const total_macro_percent = 100 - $('#choose-macros-total').text();
+            post_data += `&total_macro_percent=${ total_macro_percent }`;
+
+            // convert body measurements in post to metric
             const unit_type = $('input[name="unit_type"]:checked').val();
-            let height;
-            const height_0 = $('#my-macros-height-0').val();
             if (unit_type === 'imperial') {
+                // get height, weight, and change rate to switch to metric
+                const height_0 = $('#my-macros-height-0').val();
                 const height_1 = $('#my-macros-height-1').val();
-                const metric_height_0 = convert_between_metric_english(
-                    height_0 * 12, 'in-to-cm'
-                );
-                const metric_height_1 = convert_between_metric_english(
-                    height_1, 'in-to-cm'
-                );
-                const decimal_val = 100 // allows rounding to 2 decimals
-                height = Math.round(
-                    (metric_height_0 + metric_height_1) * decimal_val 
-                ) / decimal_val;
+                let weight = $('#my-macros-weight').val();
+                let change_rate = $('#my-macros-change-rate').val();
+                post_data = convert_body_measurements_in_post_to_metric(
+                    height_0, height_1, weight, change_rate, post_data
+                )
             } else {
-                height = height_0;
+                let height = height_0;
+                post_data += `&height=${ height }`;
             }
 
-            const total_macro_percent = 100 - $('#choose-macros-total').text();
-
-            post_data += `&height=${ height }`;
-            post_data += `&total_macro_percent=${ total_macro_percent }`;
-            console.log('pd', post_data);
+            console.log('post', post_data);
 			$.post("/meals/save-my-macros",post_data,function(data) {
                 console.log('response data', data);
-				if (data == "1") {
+				if (data['status_code'] == 200) {
                     console.log('success!!!!');
 					$("#my-macros-successful-save").html("Macros Successfully Saved! Now Go Make a Meal!");
 				} else {
-					$("#my-macros-form-container").html(data);
+                    TMP = data['errors'];
+                    for (input_name in data['errors']) {
+                        let error_list = '<ul class="form-error">';
+                        data['errors'][input_name].forEach(function(error) {
+                            error_list += `<li>${error}</li>`;
+                        });
+                        error_list += '</ul>';
+                        $(`#my-macros-${input_name}-errors`).addClass('has-errors');
+                        $(`#my-macros-${input_name}-errors`).html(error_list);
+                    }
+					// $("#my-macros-form-container").html(data);
 				}
 				
 			});

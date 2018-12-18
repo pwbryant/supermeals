@@ -157,12 +157,12 @@ class CalcAndViewMacros(FunctionalTest):
         #macros_form = self.browser.find_element_by_id('choose-macros-form-container')
         self.assertTrue(macros_form.location['x'] > 0 and macros_form.location['y'] > 0) 
 
-        self.check_element_content("input[name='fat-pct']",'css','placeholder','%')
-        self.check_element_content("input[name='fat-g']",'css','placeholder','g')
-        self.check_element_content("input[name='carbs-pct']",'css','placeholder','%')
-        self.check_element_content("input[name='carbs-g']",'css','placeholder','g')
-        self.check_element_content("input[name='protein-pct']",'css','placeholder','%')
-        self.check_element_content("input[name='protein-g']",'css','placeholder','g')
+        self.check_element_content("input[name='fat_percent']",'css','placeholder','%')
+        self.check_element_content("input[name='fat_g']",'css','placeholder','g')
+        self.check_element_content("input[name='carbs_percent']",'css','placeholder','%')
+        self.check_element_content("input[name='carbs_g']",'css','placeholder','g')
+        self.check_element_content("input[name='protein_percent']",'css','placeholder','%')
+        self.check_element_content("input[name='protein_g']",'css','placeholder','g')
         choose_macro_form = self.browser.find_element_by_id('choose-macros-form')
         macro_row_headers = choose_macro_form.find_elements_by_css_selector('span')
         self.assertEqual(macro_row_headers[1].text,'%')
@@ -192,12 +192,12 @@ class CalcAndViewMacros(FunctionalTest):
         #after typeing in his percents, the inputs in the 'g' column automatically get filled in
         #and the % remaing is updated
         macro_form_selectors = [
-            "input[name='fat-pct']", "input[name='carbs-pct']",
-            "input[name='protein-pct']"
+            "input[name='fat_percent']", "input[name='carbs_percent']",
+            "input[name='protein_percent']"
         ]
         macro_form_values = ['30','50','20']
         self.fill_input(macro_form_selectors,macro_form_values)	
-        self.check_element_content("input[name='protein-g']",'css','value','89')
+        self.check_element_content("input[name='protein_g']",'css','value','89')
         self.check_element_content('choose-macros-total','id','text','0')
 
         #When the % Remaining equals 0, The Continue button becomes ungreyed and so Joe clicks it, and 

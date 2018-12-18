@@ -41,10 +41,15 @@ class Macros(models.Model):
             ('maintain','Maintain',),
             ('gain','Gain',),
     )
-    direction = models.CharField(max_length=8, choices=DIRECTIONS, default='lose', blank=False)	
+    direction = models.CharField(
+        max_length=8, choices=DIRECTIONS, default='lose', blank=False
+    )
+
     change_rate = models.DecimalField(max_digits=9, decimal_places=8, blank=False)
     fat_percent = models.DecimalField(max_digits=4, decimal_places=2 ,blank=False)
-    protein_percent = models.DecimalField(max_digits=4, decimal_places=2, blank=False)
+    protein_percent = models.DecimalField(
+        max_digits=4, decimal_places=2, blank=False
+    )
 
     def calc_tdee(self):
         activity_factor = {
@@ -62,7 +67,9 @@ class Macros(models.Model):
          }[self.direction];
 
         # convert kg to lb by dividing by .45359237
-        weight_change = self.change_rate / Decimal('.45359237') * direction_factor * 500 
+        weight_change = (
+            self.change_rate / Decimal('.45359237') * direction_factor * 500 
+        )
         
         tdee = (
             (Decimal('10') * self.weight) + (Decimal('6.25') * self.height)
