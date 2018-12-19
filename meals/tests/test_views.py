@@ -6,6 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.http import HttpRequest, QueryDict
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from django.template.loader import render_to_string
 from django import forms
 
@@ -34,12 +35,14 @@ BAD_USERNAME, BAD_PASSWORD = 'bad', 'badpass'
 # ===================================================
 class BaseTestCase(TestCase):
     
-    def log_in_user(self, USERNAME, PASSWORD):
+    def log_in_user(self, username, password):
 
-        user = User.objects.create_user(username=USERNAME, password=PASSWORD)
-        self.client.post('/accounts/login/', data={'username':USERNAME, 'password':PASSWORD})
+        user = User.objects.create_user(username=username, password=password)
+        self.client.post(
+            '/accounts/login/',
+            data={'username': username, 'password': password}
+        )
         return user
-
 
 # VIEW TESTS
 # ===================================================
@@ -330,6 +333,12 @@ class MyMealsTest(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,'meals/my_meals.html')
 
+    def test_my_meals_url_renders_correct_template_as_guest(self):
+        print('test happening')
+        url = reverse('my_meals')
+        self.log_in_user('guest', 'password')
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'meals/bad_raw_url.html')
 
     def test_search_my_meals_url(self):
         url = reverse('search_my_meals', kwargs={'meal_or_recipe': 'meal'})
@@ -759,7 +768,6 @@ class MealMakerTest(BaseTestCase):
         self.assertIn('goal-meal-cals-select',response.content.decode())
 
 
-c = """
 class LoginLogoffTest(TestCase):
     
     def test_anonymous_user_home_redirects_to_login_template(self):
@@ -795,7 +803,7 @@ class LoginLogoffTest(TestCase):
         guest_user = User.objects.create_user(username=GUEST_USERNAME,password=GUEST_PASSWORD)
         response = self.client.post('/accounts/login/', data={'username':GUEST_USERNAME, 'password':GUEST_PASSWORD})
         response = self.client.get('/')
-        self.assertTemplateUsed(response, 'base.html')
+        self.assertTemplateUsed(response, 'meals/base.html')
 
         response = self.client.post('/accounts/logout/')
         response = self.client.get('/')
@@ -807,7 +815,7 @@ class CreateAccountTest(TestCase):
 
     def test_sign_up_button_leads_to_correct_template(self):
         response = self.client.get('/meals/sign-up/')
-        self.assertTemplateUsed(response, 'sign_up.html')
+        self.assertTemplateUsed(response, 'meals/sign_up.html')
     
     def test_sign_up_page_uses_sign_up_form(self):
         response = self.client.get('/meals/sign-up/')
@@ -815,10 +823,15 @@ class CreateAccountTest(TestCase):
 
     def test_can_save_POST_and_create_user_account(self):
         request = HttpRequest()
-        response = self.client.post('/meals/create-account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
+        response = self.client.post(
+            '/meals/create-account',
+            data={'username':USERNAME, 'email':EMAIL, 'password':PASSWORD}
+        )
         self.assertEqual(User.objects.count(),1)
         new_user = User.objects.first()
-        self.assertTrue(authenticate(request,username=USERNAME,password=PASSWORD) is not None)
+        self.assertTrue(
+            authenticate(username=USERNAME, password=PASSWORD) is not None
+        )
 
     def test_can_save_POST_and_create_user_account_redirects(self):
         response = self.client.post('/meals/create-account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
@@ -850,7 +863,7 @@ class CreateAccountTest(TestCase):
         response = self.client.post('/meals/create-account', data={'username':USERNAME, 'email':EMAIL,'password':PASSWORD})
         
         self.assertEqual(response.status_code,200)
-        self.assertTemplateUsed(response,'sign_up.html')
+        self.assertTemplateUsed(response, 'meals/sign_up.html')
 
     def test_sign_up_duplicate_validation_error_gets_sign_up_form_back(self):	
         username, email, password = USERNAME,EMAIL,PASSWORD
@@ -874,14 +887,18 @@ class CreateAccountTest(TestCase):
         self.assertContains(response,EMPTY_PASSWORD_ERROR)
 
 
-class MyMacrosTabTest(TestCase):
+class MyMacrosTabTest(BaseTestCase):
+
+    def setUp(self):
+
+        self.url = reverse('my_macros')
 
     SHARED_MACRO_DATA = {'gender':'male','age':'34','activity':'none','direction':'lose','fat-g':'10','fat-pct':'30',
                     'protein-g':'10','protein-pct':'30','carbs-g':'10','carbs-pct':'40','meal-0':'287',
                             'meal-1':'287','meal-2':'287','meal-3':'285','meal-4':'289','meal-number':'5','tdee':'1435'}
     IMPERIAL_MACRO_DATA = {**SHARED_MACRO_DATA,**{'unit-type':'imperial','height-i-ft':'5','height-i-in':'10','weight-i':'210','change-rate-i':'2'}}
     METRIC_MACRO_DATA = {**SHARED_MACRO_DATA,**{'unit-type':'metric','height-m':'5','weight-m':'210','change-rate-m':'2'}}
-    
+
     def setup_user_request_for_post_to_view(self,post_data):
         request = HttpRequest()
         request.POST = post_data
@@ -889,9 +906,11 @@ class MyMacrosTabTest(TestCase):
         return request
 
     def test_my_macros_url_renders_correct_template(self):
-        response = self.client.get('/meals/get-my-macros/')
-        self.assertTemplateUsed(response, 'my_macros.html')
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, 'meals/my_macros.html')
 
+
+c = """
     def test_my_macros_template_uses_my_macros_form(self):
         response = self.client.get('/meals/get-my-macros/')
         self.assertIsInstance(response.context['form'], MakeMacrosForm)

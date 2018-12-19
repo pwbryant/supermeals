@@ -9,10 +9,10 @@ from meals.models import Macros, Servings
 
 class FunctionalTest(StaticLiveServerTestCase):
 
-    USERNAME = "JoeSchmoe"
-    PASSWORD = "123pass123"
-    GUESTNAME = "guest"
-    GUESTPASS = "321!beware"
+    USERNAME = 'JoeSchmoe'
+    PASSWORD = '123pass123'
+    GUESTNAME = 'guest'
+    GUESTPASS = 'password'
 
     def setUp(self):
         Servings.objects.create(
@@ -75,8 +75,8 @@ class FunctionalTest(StaticLiveServerTestCase):
 
         if "" not in [username,password]:
             
-            if username == "guest":
-                    login_button_id = "guest"
+            if username == 'guest':
+                login_button = "input[value='Login As Guest']"
             else:
                 self.fill_input(["input[name='username']","input[name='password']"],[username,password])
                 login_button = "input[value='Login']"
@@ -106,9 +106,9 @@ class FunctionalTest(StaticLiveServerTestCase):
 
 
     def initialize_test(self,username,password):
-        user = User.objects.create_user(username=username,password=password)
+        user = User.objects.create_user(username=username, password=password)
         self.browser.get(self.live_server_url)
-        self.login_user(username,password)
+        self.login_user(username, password)
         return user
             
 

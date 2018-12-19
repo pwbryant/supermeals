@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login
+from django.contrib.auth.decorators import user_passes_test
 from django.db.utils import IntegrityError
 from django.db import transaction
 from django.core.serializers.json import DjangoJSONEncoder
@@ -14,6 +15,8 @@ from meals.models import Macros, Foods, FoodGroup, Ingredients, Servings, \
         FoodNotes, FoodType
 from meals.helpers import make_ingredient_formset, \
         save_meal_notes_ingredients
+
+from meals.decorators import user_is_not_guest
 
 
 # Constants
@@ -54,10 +57,14 @@ def create_account(request):
         login(request, user)
         return redirect('/')
 
-    return render(request, 'sign_up.html', {"form":form})
+    return render(request, TEMPLATES_DIR + 'sign_up.html', {"form":form})
 
 
 def get_my_macros(request):
+
+    # if request.user.username == 'guest':
+    #     return render(request, TEMPLATES_DIR + 'bad_raw_url.html')
+
     form = MakeMacrosForm(unit_type='imperial')
     return render(request, TEMPLATES_DIR + 'my_macros.html', {
         'form':form
@@ -215,8 +222,8 @@ def save_macro_meal(request):
     return JsonResponse(context)
 
 
+@user_is_not_guest
 def get_my_meals(request):
-
     return render(request, TEMPLATES_DIR + 'my_meals.html')
 
 

@@ -20,9 +20,15 @@
                 <div class="header__nav">
                     <div id="my-macros-tab" class="header__nav-tab content-tab">My Macros</div>
                     <div id="meal-maker-tab" class="header__nav-tab content-tab">Meal Maker</div>
-                    <div id="my-meals-tab" class="header__nav-tab content-tab">My Meals/Recipes</div>
-                    <div id="add-recipe-tab" class="header__nav-tab content-tab">Add New Recipes</div>
-                    <div id="add-food-tab" class="header__nav-tab content-tab">Add New Foods</div>
+                    {% if request.user.username == 'guest' %}
+                        <div id="my-meals-tab" class="header__nav-tab content-tab disabled">My Meals/Recipes</div>
+                        <div id="add-recipe-tab" class="header__nav-tab content-tab disabled">Add New Recipes</div>
+                        <div id="add-food-tab" class="header__nav-tab content-tab disabled">Add New Foods</div>
+                    {% else %}
+                        <div id="my-meals-tab" class="header__nav-tab content-tab">My Meals/Recipes</div>
+                        <div id="add-recipe-tab" class="header__nav-tab content-tab">Add New Recipes</div>
+                        <div id="add-food-tab" class="header__nav-tab content-tab">Add New Foods</div>
+                    {% endif %}
                 </div>
                 <div class="header__nav">
                     {% if user.is_authenticated and user.get_username != 'guest' %}
@@ -67,6 +73,7 @@
 		<script src="/static/meals/js/add_recipe/add_recipe.js"></script>
 		<script src="/static/meals/js/add_food/add_food.js"></script>
 		<script>
+            disabled_return_alert();
             set_navs_to_active();
 			hide_home_header_on_tab_select();
 			key_press_hides_error();

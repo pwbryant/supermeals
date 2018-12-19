@@ -217,12 +217,16 @@ a {
     font-size: 25px;
 }
 
+.disabled {
+    background-color: gray;
+    color: white;
+    cursor: default;
+}
+
+
 .header__nav-tab:hover,.header__nav-tab.active {
     /* Style */
     background-color: #ca365d;
-    /*background-color: #f9e34b; 
-    color: #0d1650;
-    */
 }
 
 .page-content {

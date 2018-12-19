@@ -1,9 +1,6 @@
 const convert_body_measurements_in_post_to_metric = function(
     height1, height2, weight, change_rate, post_data) {
 
-    console.log('heights', height1, height2);
-    console.log('weights', weight);
-
     const metric_height_0 = convert_between_metric_english(
         height1 * 12, 'in-to-cm'
     );
@@ -77,11 +74,8 @@ var save_my_macros_button_posts_form = function() {
                 post_data += `&height=${ height }`;
             }
 
-            console.log('post', post_data);
 			$.post("/meals/save-my-macros",post_data,function(data) {
-                console.log('response data', data);
 				if (data['status_code'] == 200) {
-                    console.log('success!!!!');
 					$("#my-macros-successful-save").html("Macros Successfully Saved! Now Go Make a Meal!");
 				} else {
                     TMP = data['errors'];
@@ -106,7 +100,6 @@ var save_my_macros_button_posts_form = function() {
 //tested
 var switch_between_imperial_metric = function() {
 	$("input[name='unit_type']").on("click",function() {	
-        console.log('switch');
 		const unit_type = $(this).val();
         const tab_name = 'my-macros';
         let weight_placeholder = 'lbs';
@@ -201,7 +194,6 @@ var calc_tdee = function() {
 			} else {
 				tdee_return_value = "Missing Value. Check Form.";
 			}
-            console.log('tdee-data', tdee_data);
 
 
             tdee_return_value_str = "Maintenance: " + Math.round(tdee_return_value).toString() + " Cals";
