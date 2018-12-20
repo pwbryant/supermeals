@@ -76,14 +76,21 @@ class GuestTest(FunctionalTest):
             save_area.text, 'To Save this info, create and account!!!'
         )
 
-        self.fail('Finish Test')
-
-        # He sees that My Macros and Meal Maker tabs are not grayed out
-        # so he clicks on My Macros and fills out the form. At the very bottom
-        # he sees a grayed out save button, that when he tries to click he
-        # gets the same alert as above
-
-        # He then goes to meal maker, makes a little meal but when he goes
-        # to save the meal, the button is grayed out and he gets the same
-        # alert
+        # He sees that Meal Maker tabs are not grayed out
+        # so he clicks on Meal Maker and fills out the form. He sees a Save Meal
+        # button, that when he tries to click he gets the same alert as above
+        self.browser.find_element_by_id('meal-maker-tab').click()
+        self.fill_input(
+            [
+                "input[id='goal-meal-fat-percent']",
+                "input[id='goal-meal-carbs-percent']",
+                "input[id='goal-meal-protein-percent']",
+                "input[id='goal-meal-cals']"
+            ],
+            [34, 33, 33, 500]
+        )
+        self.browser.find_element_by_id('create-macro-bars-button').click()
+        save_button = self.browser.find_element_by_id('show-modal-button')
+        save_button.click()
+        self.browser.switch_to_alert().accept()
 

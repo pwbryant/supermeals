@@ -54,8 +54,7 @@ var get_tab_page_content = function() {
 };
 
 const disabled_return_alert = function() {
-
-    $('.disabled').on('click', function() {
+    $('.container').on('click', '.disabled', function() {
         alert('You must have an account to use this. GO SIGN UP :)!');
     });
 }

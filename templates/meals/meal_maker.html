@@ -1,3 +1,10 @@
+{% ifnotequal request.user.username 'guest' %}
+
+    <input id='is-guest' type='hidden' value='false' />
+{% else %}
+    <input id='is-guest' type='hidden' value='true' />
+{% endifnotequal %}
+
 <div id='meal-maker-side-bar' class='sidebar'>
     {% if tdee %}
         <h4 id="tdee">TDEE: {{ tdee }}</h4>

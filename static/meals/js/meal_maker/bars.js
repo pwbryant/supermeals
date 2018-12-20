@@ -12,6 +12,8 @@ var BARS = (function() {
 	return {
         MGOAL : MGOAL,// set_macro_goals.js needs to be loaded
         FOOD_COUNT: 0,
+        // I must have copy pasted this because I'm not sure what the fuck
+        // this is all about
         enable_save_meal_button: function() {
             const target_node = document.getElementById('cals-amt');
             const config = { attributes: true, childList: true, subtree: true };
@@ -105,7 +107,7 @@ var BARS = (function() {
                 });
 			});
 		},
-        // event test in Functional tests
+
 		create_macro_button_trigger : function() {
 			bars_obj = this;
 			$('#create-macro-bars-button').on('click',function() {
@@ -119,14 +121,6 @@ var BARS = (function() {
 
                 //clear bar area
                 $('#goal-macros-bar-content').html('');
-                
-                // add save macro meal button
-                $('#goal-macros-bar-content').html('');//clear bar area
-                $('#goal-macros-bar-footer').html('');//clear save button
-                const show_modal_button = '<button id="show-modal-button" class="btn" disabled>Save Meal</button>'
-                $('#goal-macros-bar-footer').append(show_modal_button);
-
-                // create macro goal bars
 				let macro_bars_obj = bars_obj.create_macro_bars_obj({
                     'cal_bar_height': $('#goal-macros-bar-content').height() * .9,
                     'macro_amts_obj': macro_amts_obj 
@@ -141,9 +135,29 @@ var BARS = (function() {
                     bars_obj.create_macro_bar_labels(macro, macro_bars_obj);
                 });
 
-                // change in cals enables meal save button
-                bars_obj.enable_save_meal_button();
-                bars_obj.create_save_macro_meal_modal();
+
+                
+                // add save macro meal button if user not guest
+                $('#goal-macros-bar-footer').html('');//clear save button
+                const is_guest = $('#is-guest').val();
+                console.log('is guest', is_guest);
+                if (!is_guest) {
+                    const show_modal_button = (
+                        '<button id="show-modal-button" \
+                        class="btn" disabled>Save Meal</button>'
+                    )
+                    $('#goal-macros-bar-footer').append(show_modal_button);
+                    // change in cals enables meal save button
+                    bars_obj.enable_save_meal_button();
+                    bars_obj.create_save_macro_meal_modal();
+                } else {
+
+                    const show_modal_button = (
+                        '<button id="show-modal-button" \
+                        class="btn disabled">Save Meal</button>'
+                    )
+                    $('#goal-macros-bar-footer').append(show_modal_button);
+                }
 			});
 		},
 
