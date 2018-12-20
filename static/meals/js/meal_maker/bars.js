@@ -140,8 +140,7 @@ var BARS = (function() {
                 // add save macro meal button if user not guest
                 $('#goal-macros-bar-footer').html('');//clear save button
                 const is_guest = $('#is-guest').val();
-                console.log('is guest', is_guest);
-                if (!is_guest) {
+                if (is_guest === 'false') {
                     const show_modal_button = (
                         '<button id="show-modal-button" \
                         class="btn" disabled>Save Meal</button>'

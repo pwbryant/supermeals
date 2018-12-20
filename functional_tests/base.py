@@ -26,6 +26,7 @@ class FunctionalTest(StaticLiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
+
     def search_and_results(self, input_selector, button_id, result_class, term_list):
         self.fill_input(
             [input_selector],
@@ -54,7 +55,6 @@ class FunctionalTest(StaticLiveServerTestCase):
             terms
         )
 
-    
     def fill_input(self,element_selectors,values,clear=None):
         for i in range(len(element_selectors)):
             element = self.browser.find_element_by_css_selector(
@@ -71,9 +71,9 @@ class FunctionalTest(StaticLiveServerTestCase):
                         element.click()
 
 
-    def login_user(self,username,password = False):
+    def login_user(self, username, password=False):
 
-        if "" not in [username,password]:
+        if "" not in [username, password]:
             
             if username == 'guest':
                 login_button = "input[value='Login As Guest']"
@@ -110,8 +110,8 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.browser.get(self.live_server_url)
         self.login_user(username, password)
         return user
-            
 
+            
     def create_default_macro(self,user):
         macro = Macros.objects.create(**{
             "user":user,
@@ -129,17 +129,9 @@ class FunctionalTest(StaticLiveServerTestCase):
 
         return macro
 
-            
-    # def xcreate_default_meal_templates(self,user):
-        # MealTemplate.objects.create(
-            # user=user,name="meal_0",cals_percent=Decimal("28")
-        # )
-        # MealTemplate.objects.create(
-            # user=user,name="meal_1",cals_percent=Decimal("28")
-        # )
-        # MealTemplate.objects.create(
-            # user=user,name="meal_2",cals_percent=Decimal("28")
-        # )
-        # MealTemplate.objects.create(
-            # user=user,name="meal_3",cals_percent=Decimal("16")
-        # )
+    
+    def create_user(self, username, email,  password):
+        user = User.objects.create_user(
+            username=username, email=email, password=password
+        )
+        return user
