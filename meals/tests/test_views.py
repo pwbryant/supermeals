@@ -81,6 +81,12 @@ class NewFoodTest(BaseTestCase):
             self.get_response.context['add_food_form'], NewFoodForm
         )
 
+    def test_add_food_url_renders_correct_template_as_guest(self):
+        url = reverse('add_food')
+        self.log_in_user('guest', 'password')
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'meals/bad_raw_url.html')
+
     def test_add_food_can_save_post(self):
         NewFoodForm.choices += (('Veggies', 'Veggies',),)
         response = json.loads(
@@ -174,6 +180,12 @@ class AddRecipeTest(BaseTestCase):
         self.assertTemplateUsed(response,'meals/add_recipe.html')
 
 
+    def test_add_recipe_url_renders_correct_template_as_guest(self):
+        url = reverse('add_recipe')
+        self.log_in_user('guest', 'password')
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'meals/bad_raw_url.html')
+
     def test_add_recipe_returns_filters(self):
         url = reverse('add_recipe')
         response = self.client.get(url)
@@ -189,6 +201,11 @@ class AddRecipeTest(BaseTestCase):
         new_food = Foods.objects.get(name=self.post['name'])
         self.assertEqual(new_food.user, self.user)
 
+    def test_save_recipe_url_renders_correct_template_as_guest(self):
+        url = reverse('save_recipe')
+        self.log_in_user('guest', 'password')
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'meals/bad_raw_url.html')
 
     def test_save_recipe_returns_success(self):
         url = reverse('save_recipe')
@@ -334,7 +351,6 @@ class MyMealsTest(BaseTestCase):
         self.assertTemplateUsed(response,'meals/my_meals.html')
 
     def test_my_meals_url_renders_correct_template_as_guest(self):
-        print('test happening')
         url = reverse('my_meals')
         self.log_in_user('guest', 'password')
         response = self.client.get(url)

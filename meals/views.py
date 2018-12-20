@@ -305,6 +305,7 @@ def search_my_meals(request, meal_or_recipe):
     )
 
 
+@user_is_not_guest
 def add_recipe(request):
 
     context = {
@@ -320,6 +321,7 @@ def add_recipe(request):
     return render(request, TEMPLATES_DIR + 'add_recipe.html', context)
 
 
+@user_is_not_guest
 def save_recipe(request):
 
     # request.POST['user'] = request.user
@@ -337,6 +339,7 @@ def save_recipe(request):
     return JsonResponse(context)
 
 
+@user_is_not_guest
 def add_food(request):
 
     if request.method == 'POST':

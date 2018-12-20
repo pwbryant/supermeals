@@ -15,16 +15,33 @@ class GuestTest(FunctionalTest):
         # He sees several tabs across the top of the page, with several
         # My Recipes/Meals, Add New Recipes, and Add New Foods being
         # grayed out
+        # Out of curiosity, he clicks on the tabs and gets an alert dialog
+        # telling him he must have an account to use these features
 
         self.browser.find_element_by_id('my-meals-tab').click()
+        self.browser.switch_to_alert().accept()
+
+        self.browser.find_element_by_id('add-recipe-tab').click()
+        self.browser.switch_to_alert().accept()
+
+        self.browser.find_element_by_id('add-food-tab').click()
         self.browser.switch_to_alert().accept()
 
         # Being a tricky asshole, Joe gets around the front end protections
         # and just types in the url for the content, after which he recieves
         # an error page telling him he cannot nagivate using raw urls
+        raw_url_error = 'You cannot navigate using raw urls'
         self.browser.get(f'{self.live_server_url}/meals/my-meals/')
         error = self.browser.find_element_by_id('raw-url-error').text
-        self.assertEqual(error, 'You cannot navigate using raw urls')
+        self.assertEqual(error, raw_url_error)
+
+        self.browser.get(f'{self.live_server_url}/meals/add-recipe/')
+        error = self.browser.find_element_by_id('raw-url-error').text
+        self.assertEqual(error, raw_url_error)
+
+        self.browser.get(f'{self.live_server_url}/meals/add-food/')
+        error = self.browser.find_element_by_id('raw-url-error').text
+        self.assertEqual(error, raw_url_error)
 
         # He then clicks on the Home button and returns to the previous screen
         # and then he tries the same thing on the Add Recipe tab
@@ -35,8 +52,6 @@ class GuestTest(FunctionalTest):
 
 
 
-        # Out of curiosity, he clicks on the tabs and gets an alert dialog
-        # telling him he must have an account to use these features
 
         # He sees that My Macros and Meal Maker tabs are not grayed out
         # so he clicks on My Macros and fills out the form. At the very bottom
