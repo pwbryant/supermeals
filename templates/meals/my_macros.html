@@ -157,7 +157,15 @@
                         <span id="choose-macros-total" class="text--label">100</span><span class="text--label">%</span>
                     </span>
                 </div>
-                <button id="save-my-macros-button" type='submit' class="btn" disabled>Save</button>
+                {% if request.user.username == 'guest' %}
+
+                <div>
+                    <p id='save-my-macros-guest'>To Save this info, create and account!!!</p>
+                </div>
+                {% else %}
+                    <button id="save-my-macros-button" type='submit' class="btn" disabled>Save</button>
+                {% endif %}
+
             </div>
         </div>
 

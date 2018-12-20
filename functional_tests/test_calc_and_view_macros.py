@@ -146,7 +146,7 @@ class CalcAndViewMacros(FunctionalTest):
         ]
             
         macro_form_values = [None, None, '34', '210', '5', '10', None, None, '1']
-        self.fill_input(macro_form_selectors,macro_form_values)	
+        self.fill_input(macro_form_selectors, macro_form_values)	
         self.browser.find_element_by_id('calc-tdee').click()
 
         self.check_element_content('tdee-result', 'id', 'text', 'Maintenance: 2079 Cals')

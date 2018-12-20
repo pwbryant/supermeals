@@ -43,15 +43,40 @@ class GuestTest(FunctionalTest):
         error = self.browser.find_element_by_id('raw-url-error').text
         self.assertEqual(error, raw_url_error)
 
-        # He then clicks on the Home button and returns to the previous screen
-        # and then he tries the same thing on the Add Recipe tab
         self.browser.find_element_by_id('home').click()
-        self.browser.find_element_by_id('add-recipe-tab').click()
+
+        # He is still curious about his TDEE so he goes to the My Macros tab
+        # and fills out the TDEE form
+        self.browser.find_element_by_id('my-macros-tab').click()
+
+        macro_form_selectors = [
+            "input[value='male']",
+            "input[name='age']",
+            "input[name='weight']", "input[name='height_0']",
+            "input[name='height_1']", "input[value='none']",
+            "input[value='lose']", "input[name='change_rate']"
+        ]
+            
+        macro_form_values = [None, '34', '210', '5', '10', None, None, '1']
+        self.fill_input(macro_form_selectors, macro_form_values)	
+        self.browser.find_element_by_id('calc-tdee').click()
+
+
+        macro_form_selectors = [
+            "input[name='fat_percent']", "input[name='carbs_percent']",
+            "input[name='protein_percent']"
+        ]
+        macro_form_values = ['30','50','20']
+        self.fill_input(macro_form_selectors,macro_form_values)	
+
+        # After he fills in the form he sees a message indicating that if
+        # he wants to save this info, he has to create an account
+        save_area = self.browser.find_element_by_id('save-my-macros-guest')
+        self.assertEqual(
+            save_area.text, 'To Save this info, create and account!!!'
+        )
 
         self.fail('Finish Test')
-
-
-
 
         # He sees that My Macros and Meal Maker tabs are not grayed out
         # so he clicks on My Macros and fills out the form. At the very bottom
