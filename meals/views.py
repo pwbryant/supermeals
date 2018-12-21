@@ -186,6 +186,7 @@ def get_meal_maker_template(request):
     return render(request, TEMPLATES_DIR + 'meal_maker.html', context)
 
 
+@user_is_not_guest
 def save_macro_meal(request):
     """saves the models associated with a 'macro meal'
 

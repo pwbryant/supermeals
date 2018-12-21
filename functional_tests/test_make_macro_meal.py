@@ -7,7 +7,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.select import Select
 
 from .base import FunctionalTest
-from meals.models import Foods, FoodGroup, Servings, Ingredients
+from meals.models import Foods, FoodGroup, Servings, Ingredients, FoodType
 
 class ElementPresentException(Exception):
 
@@ -22,23 +22,31 @@ class MakeMacroMealTest(FunctionalTest):
         veg_food_group = FoodGroup.objects.create(
             name='Vegatables',
             informal_name='Veggies',
-            informal_rank=1
+            informal_rank=2
         )
         legume_food_group = FoodGroup.objects.create(
             name='Legumes',
             informal_name='Veggies',
-            informal_rank=1
+            informal_rank=2
         )
         pork_food_group = FoodGroup.objects.create(
             name='Pork',
             informal_name='Meat',
-            informal_rank=2
+            informal_rank=3
         )
+        my_meals_food_group = FoodGroup.objects.create(
+            name='My Meals',
+            informal_name='My Meals',
+            informal_rank=1
+        )
+
+        FoodType.objects.create(name='meal')
 
         names = ['Chickpeas', 'Carrots', 'Bacon', 'Lettuce']
         cals = [1.3800, 0.3500, 4.6800, 0.1600]
         fat = [0.2223, 0.0117, 3.1581, 0.0198]
         carbs = [0.9148, 0.3296, 0.0680, 0.0904]
+        sugar = [0.9148, 0.3296, 0.0680, 0.0904]
         protein = [0.2816, 0.0256, 1.3568, 0.0532]
         
         foods = []
@@ -50,17 +58,19 @@ class MakeMacroMealTest(FunctionalTest):
             else:
                 fg = veg_food_group
             food = Foods.objects.create(
-               name=names[i],
-               cals_per_gram=cals[i],
-               fat_per_gram=fat[i],
-               carbs_per_gram=carbs[i],
-               protein_per_gram=protein[i],
-               food_group = fg
+                name=names[i],
+                cals_per_gram=cals[i],
+                fat_per_gram=fat[i],
+                carbs_per_gram=carbs[i],
+                sugar_per_gram=sugar[i],
+                protein_per_gram=protein[i],
+                food_group=fg
             )
             foods.append(food)
 
-        Servings.objects.create(
-            food=foods[2], grams=Decimal(11.5), quantity=Decimal(1), description='slice'
+        self.slice_ = Servings.objects.create(
+            food=foods[2], grams=Decimal(11.5), quantity=Decimal(1),
+            description='slice'
         )
         
         duplicate_food = Foods.objects.create(name='duplicate food')
@@ -333,7 +343,7 @@ class MakeMacroMealTest(FunctionalTest):
         # Joe adds some of every food, but after thinking about how much he
         # doesn"t really like garbonzo beans, he decides he"s going to replace it.
         # Joe notices an "x" in the upper left of each food, he clicks on it and
-        # garbonzo beans disappears 
+        # garbonzo beans disappears
         self.browser.find_element_by_id('exit-' + chickpea_id).click()
         self.assertTrue(self.make_sure_absent('exit-' + chickpea_id))
 
@@ -349,19 +359,19 @@ class MakeMacroMealTest(FunctionalTest):
         self.move_slider('food-{}-slider'.format(bacon_id), test_can_move_dist)
         bacon_slice = self.browser.find_element_by_id(
             'food-amt-units-{}'.format(bacon_id)
-        ).find_elements_by_css_selector('option[value="1"]')[0]
+        ).find_elements_by_css_selector('option[value="2"]')[0]
         bacon_slice.click()
         self.check_element_content(
             'food-amt-{}'.format(bacon_id),
-            'id', 'text', '3.91'
+            'id', 'text', '6.67'
         )
 
         # Joe wants to save this meal so he moves up all the foods
         # clicks on the save button below the 
         # goal macro bars, after which he sees a modal form pop up.
         
-        self.move_slider('food-{}-slider'.format(carrot_id), 500)
-        self.move_slider('food-{}-slider'.format(lettuce_id), 500)
+        self.move_slider('food-{}-slider'.format(carrot_id), test_can_move_dist)
+        self.move_slider('food-{}-slider'.format(lettuce_id), test_can_move_dist)
         
         save_modal = self.browser.find_element_by_id('save-macro-meal-modal')
         
@@ -433,7 +443,7 @@ class MakeMacroMealTest(FunctionalTest):
         # as the meal name and he gets a success message. After 3 secs
         # the modal disappears
 
-        self.fill_input(["input[id='macro-meal-name']"],[], clear=True)
+        self.fill_input(["input[id='macro-meal-name']"], [], clear=True)
 
         self.fill_input(
             [
@@ -475,7 +485,7 @@ class MakeMacroMealTest(FunctionalTest):
             ''
         )
         self.check_element_content(
-            'meal-maker-food-search-results-container', 'id', 'innerHTML',
+            'meal-maker-search-results-container', 'id', 'innerHTML',
             ''
         )
         self.check_element_content(

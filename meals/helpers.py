@@ -86,7 +86,7 @@ def save_meal_notes_ingredients(user, meal_form, ingredient_formset):
     new_food.food_type = food_type_meal
 
     # Add meal food group
-    food_group_meal = FoodGroup.objects.get(name='meal')
+    food_group_meal = FoodGroup.objects.get(name='My Meals')
     new_food.food_group = food_group_meal
 
     for ing_form in ingredient_formset:
@@ -96,4 +96,3 @@ def save_meal_notes_ingredients(user, meal_form, ingredient_formset):
 
     new_food.set_macros_per_gram()
     new_food.save()
-
