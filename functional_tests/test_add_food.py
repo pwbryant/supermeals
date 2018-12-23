@@ -102,7 +102,6 @@ class AddFoodTest(FunctionalTest):
         time.sleep(4) # wait for status to dissapear
         self.assertEqual(status.text, '')
 
-        self.fail('Finish Test')
         # He notices the form has been cleared.
 
         # Joe wants to add another food, Hummus, to the DB, but being piss drunk

@@ -64,6 +64,7 @@ class MyMealTests(FunctionalTest):
             cals_per_gram = Decimal(1.04),
             fat_per_gram = Decimal(0.31),
             carbs_per_gram = Decimal(0.54),
+            sugar_per_gram = Decimal(0.54),
             protein_per_gram = Decimal(0.16),
         )
 
@@ -79,6 +80,7 @@ class MyMealTests(FunctionalTest):
             cals_per_gram = Decimal(1.04),
             fat_per_gram = Decimal(0.31),
             carbs_per_gram = Decimal(0.54),
+            sugar_per_gram = Decimal(0.54),
             protein_per_gram = Decimal(0.16),
         )
 
@@ -210,11 +212,11 @@ class MyMealTests(FunctionalTest):
         # The second thing he sees is a search bar and he searches
         # for a meal he made.
         self.check_element_content(
-            'my-meals-search-input', 'id', 'placeholder', 'Search My Meals'
+            'my-meals-search', 'id', 'placeholder', 'Search My Meals'
         )
 
         search_results = self.search_and_results(
-            "input[id='my-meals-search-input']",
+            "input[id='my-meals-search']",
             'my-meals-search-button',
             'my-meals-meal',
             ['pretzels cheese']
@@ -292,9 +294,9 @@ class MyMealTests(FunctionalTest):
 
         # He searches for the denver omlette and clicks on the result and
         # sees a modal pop up with Denver omlette info
-        self.browser.find_element_by_id('my-meals-search-input').clear();
+        self.browser.find_element_by_id('my-meals-search').clear();
         search_results = self.search_and_results(
-            "input[id='my-meals-search-input']",
+            "input[id='my-meals-search']",
             'my-meals-search-button',
             'my-meals-meal',
             ['denver omlette']

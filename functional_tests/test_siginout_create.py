@@ -33,17 +33,19 @@ class FormValidation(FunctionalTest):
         error_message = self.browser.find_element_by_id('login-errors').text
         self.assertEqual(error_message, bad_login_message)
         # He gets it right and is brought to a new page where he then clicks
-        # on the 'My Macros' tab
+        # on the logoff button, and is taken back to the login page
         self.login_user(USERNAME, PASSWORD)
-        self.browser.find_element_by_id("my-macros-tab").click()
+        self.browser.find_element_by_id('logoff').click()
+
+        # He sees he's back on the login page (test for Login button)
+        self.check_element_content(
+            'input[value="Login"]', 'css', 'value',
+            'Login'
+        )
 
 
     def test_sign_up_form_validation(self):
 
-        # Joe goes to sign up for Meal maker
-        User.objects.create_user(
-            username=USERNAME, email=EMAIL, password=PASSWORD
-        )
         self.browser.get(self.live_server_url + '/meals/sign-up/')
 
         # Joe thinks twice about it and goes to hit cancel, but instead hits
@@ -70,9 +72,21 @@ class FormValidation(FunctionalTest):
         error_message = self.browser.find_elements_by_class_name('errorlist')[0].text
         self.assertEqual(error_message, bad_user_name_error)
 
+        # Finally Joe gets it right and signs up, but later forgets.
+        self.browser.find_element_by_id('id_username').clear()
+        self.browser.find_element_by_id('id_email').clear()
+        self.browser.find_element_by_id('id_password').clear()
+        signup_values = [USERNAME, EMAIL, PASSWORD]
+        self.fill_input(signup_selectors, signup_values)
+        self.browser.find_element_by_id('create').click()
+
+        # Hes signs out
+        self.browser.find_element_by_id('logoff').click()
+
         # Joe forgets that he already signed up so when he goes to the sign up
         # page and and enters the same username and password, he gets an error
         # message "Username already taken
+        self.browser.get(self.live_server_url + '/meals/sign-up/')
         duplicate_user_name_error = 'Username taken'
         self.browser.find_element_by_id('id_username').clear()
         self.browser.find_element_by_id('id_email').clear()
@@ -82,3 +96,4 @@ class FormValidation(FunctionalTest):
         self.browser.find_element_by_id('create').click()
         error_message = self.browser.find_elements_by_class_name('errorlist')[0].text
         self.assertEqual(error_message, duplicate_user_name_error)
+

@@ -326,7 +326,9 @@ class Foods(models.Model):
     def get_macros_profile(self):
                 
         ings = Ingredients.objects.filter(main_food=self)
-        total_grams = Decimal(sum([ing.serving.grams * ing.amount for ing in ings]))
+        total_grams = Decimal(
+            sum([ing.serving.grams * ing.amount for ing in ings])
+        )
         total_cals = Decimal(self.cals_per_gram * total_grams)
 
         macros_dict = {
@@ -335,9 +337,12 @@ class Foods(models.Model):
             'fat_pct':  (self.fat_per_gram * total_grams / total_cals) * 100,
             'carbs': self.carbs_per_gram * total_grams / Decimal(4.0),
             'carbs_pct': (self.carbs_per_gram * total_grams / total_cals) * 100,
+            'sugar': self.sugar_per_gram * total_grams / Decimal(4.0),
+            'sugar_pct': (self.sugar_per_gram * total_grams / total_cals) * 100,
             'protein': self.protein_per_gram * total_grams / Decimal(4.0),
             'protein_pct': (self.protein_per_gram * total_grams / total_cals) * 100
         }
+
         return macros_dict
 
 

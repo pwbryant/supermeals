@@ -63,11 +63,11 @@ class MakeMacroMealTest(FunctionalTest):
         # so he clicks on the "Meal Maker" tab
         self.browser.find_element_by_id("meal-maker-tab").click()
 
-        # To the right of that is a an input with the place holder
+        # To the right of that is a an input with the label
         # "Search for ingredients" with a magnifying glass icon button
         self.check_element_content(
-            'meal-maker-food-search-input', 'id', 'placeholder',
-            'Search For Food')
+            'label[for="meal-maker-search"]', 'css', 'text',
+            'Search for Ingredient')
 
         # He sees that the search filter is pre-selected on 'No Filter'
         # But he knows he wants veggies so he select the Veggie option.

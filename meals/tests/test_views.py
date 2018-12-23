@@ -471,7 +471,7 @@ class MacroMealMakerTest(BaseTestCase):
         self.food_type_food = FoodType.objects.create(name='food')
         self.food_type_meal = FoodType.objects.create(name='meal')
         self.food_group_meal = FoodGroup.objects.create(
-            name='meal', informal_name='My Meals'
+            name='My Meals', informal_name='My Meals'
         )
 
         self.ingredient1 = Foods.objects.create(
@@ -494,9 +494,9 @@ class MacroMealMakerTest(BaseTestCase):
         self.ingredient2 = Foods.objects.create(
             name='bbq sauce',
             cals_per_gram='1.7200',
-            fat_per_gram='0.0567', 
-            carbs_per_gram='1.6308', 
-            sugar_per_gram='1.6308', 
+            fat_per_gram='0.0567',
+            carbs_per_gram='1.6308',
+            sugar_per_gram='1.6308',
             protein_per_gram='0.0328',
             food_type=self.food_type_food
         )

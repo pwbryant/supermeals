@@ -286,7 +286,6 @@ class MakeMacroMealTest(FunctionalTest):
         search_results[0].find_elements_by_class_name("icon")[0].click()
 
         #He then adjusts the dragbar on the bacon cal bar.
-        print(self.browser.get_window_size())
         test_can_move_dist = self.browser.get_window_size()['height'] * -.13
         self.move_slider(
             'food-{}-slider'.format(bacon_id), test_can_move_dist
