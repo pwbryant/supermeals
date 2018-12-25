@@ -5,6 +5,7 @@
  * are found here.
  *
 /****************************************************/
+
 #choose-macros-form {
     /* Display & Box Model */
     width: 30%;
@@ -29,22 +30,22 @@
  *
 /****************************************************/
 /* Layout */
-.l-tdee {
-    /* Display & Box Model */
-    display: grid;
-    grid-template-rows: auto;
-    grid-template-columns: repeat(9,1fr);
-    grid-template-areas: 
-    "h h h h h h h h h" 
-    "s s mt mt mt mt mt mt mt" 
-    "s s mt mt mt mt mt mt mt" 
-    "s s mt mt mt mt mt mt mt" 
-    "s s mt mt mt mt mt mt mt" 
-    "s s ml ml ml ml ml ml ml" 
-    "s s ml ml ml ml ml ml ml" 
-    "f f f f f f f f f" 
-    "f f f f f f f f f"; 
-}
+/* .l-tdee { */
+/*     /1* Display & Box Model *1/ */
+/*     display: grid; */
+/*     grid-template-rows: auto; */
+/*     grid-template-columns: repeat(9,1fr); */
+/*     grid-template-areas: */ 
+/*     "h h h h h h h h h" */ 
+/*     "s s mt mt mt mt mt mt mt" */ 
+/*     "s s mt mt mt mt mt mt mt" */ 
+/*     "s s mt mt mt mt mt mt mt" */ 
+/*     "s s mt mt mt mt mt mt mt" */ 
+/*     "s s ml ml ml ml ml ml ml" */ 
+/*     "s s ml ml ml ml ml ml ml" */ 
+/*     "f f f f f f f f f" */ 
+/*     "f f f f f f f f f"; */ 
+/* } */
 
 .l-tdee--top {
     /* Display & Box Model */

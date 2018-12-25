@@ -419,6 +419,7 @@ class MakeMacrosForm(forms.models.ModelForm):
                 'change_rate': forms.fields.TextInput(
                     attrs = {
                         'id': f'{tab_name}-change-rate',
+                        'class': 'input__input input__input--sm',
                         'data-type': data_type,
                 }),
                 'fat_percent': forms.fields.TextInput(

@@ -7,54 +7,64 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link href="/static/meals/css/meals.css" rel="stylesheet">
 		<link href="/static/meals/css/authenticate.css" rel="stylesheet">
+		<link href="/static/meals/css/styles.css" rel="stylesheet">
 
     </head>
 
     <body>
-        <div id="login-container"> 
-            <div id="login-errors">
+        <div class='l-flex--center'>
+            <div>
 
-                {% if form.errors %}
-                <p>Your username and password didn't match. Please try again.</p>
-                {% endif %}
+                <div id='login-welcome' class='l-flex--center'>
+                    <h1>The<br>Meal Lab</h1>
 
-                {% if next %}
-                    {% if user.is_authenticated %}
-                        <p>Your account doesn't have access to this page. To proceed,
-                            please login with an account that has access.</p>
-                    {% else %}
-                        <p>Please login to see this page.</p>
-                    {% endif %}
-                {% endif %}
-            </div>
-
-            <form method="post" action="{% url 'login' %}">
-                <div id="login-form" class="content-box auth-form-content">
-                    {% csrf_token %}
-
-                    <div id="login-username-input" class="input l-flex--col-start">
-                        <label class="input__label">Username:</label>
-                        <input class="input__input input__input--lg" name="username" placeholder="Username"/>
-                    </div>
-
-                    <div id="login-password-input" class="input l-flex--col-start">
-                        <label class="input__label">Password:</label>
-                        <input class="input__input input__input--lg" name="password" placeholder="Password"/>
-                    </div>
-
-                    <div>
-                        <input class="btn" type="submit" value="Login" />
-                        <input class="btn" type="hidden" name="next" value="{{ next }}" />
-                    </div>
-                    <p class="text--label">- Or -</p>
-                    <div>
-                        <input class="btn" type="submit" value="Login As Guest" />
-                    </div>
                 </div>
-            </form>
 
+                <div id="login-container"> 
+                    <div id="login-errors">
 
+                        {% if form.errors %}
+                        <p>Your username and password didn't match. Please try again.</p>
+                        {% endif %}
+
+                        {% if next %}
+                            {% if user.is_authenticated %}
+                                <p>Your account doesn't have access to this page. To proceed,
+                                    please login with an account that has access.</p>
+                            {% else %}
+                                <p>Please login to see this page.</p>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                    <form method="post" action="{% url 'login' %}">
+                        <div id="login-form" class="content-box auth-form-content">
+                            {% csrf_token %}
+
+                            <div id="login-username-input" class="input l-flex--col-start">
+                                <label class="input__label">Username:</label>
+                                <input class="input__input input__input--lg" name="username" placeholder="Username"/>
+                            </div>
+
+                            <div id="login-password-input" class="input l-flex--col-start">
+                                <label class="input__label">Password:</label>
+                                <input class="input__input input__input--lg" name="password" placeholder="Password"/>
+                            </div>
+
+                            <div>
+                                <input class="btn" type="submit" value="Login" />
+                                <input class="btn" type="hidden" name="next" value="{{ next }}" />
+                            </div>
+                            <p class="text--label">- Or -</p>
+                            <div>
+                                <input class="btn" type="submit" value="Login As Guest" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
+
         <script src="http://code.jquery.com/jquery.js"></script>
         <script>
                 $("input[value='Login As Guest']").on("click", function() {

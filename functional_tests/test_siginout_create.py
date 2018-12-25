@@ -14,7 +14,12 @@ class FormValidation(FunctionalTest):
 
     def test_login_form_validation(self):
 
+        # Joe goes to The Meal Lab and finds himself at the login page
         self.browser.get(self.live_server_url)
+
+        # He sees a welcome message
+        welcome_msg = self.browser.find_element_by_id('login-welcome').text
+        self.assertEqual(welcome_msg, 'The\nMeal Lab')
 
         bad_login_message = (
             'Your username and password didn\'t match. Please try again.'

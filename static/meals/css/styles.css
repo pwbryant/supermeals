@@ -8,27 +8,24 @@
 /****************************************************/
 
 html, body {
-    /* Display & Box Model */
-    display: border-box;
     box-sizing: border-box;
-    ms-box-sizing: border-box;
-    webkit-box-sizing: border-box;
-    mox-box-sizing: border-box;
+    display: border-box;
+    font-family: "Philosopher"; 
     height: 100vh; 
     margin: 0;
-    /* Style */
-    background-color: #e9e1cf;
-    font-family: "Philosopher"; 
+    mox-box-sizing: border-box;
+    ms-box-sizing: border-box;
+    webkit-box-sizing: border-box;
 }
 
 a {
+    color: black;
     text-decoration:none;
 }
 
 .btn {
-    background-color: #ca365d;
+    background-color: #ba3d1e;
     border: none;
-    border-radius: 10px;
     color: #f9e34b;
     cursor: pointer;
     font-family: "Philosopher"; 
@@ -38,7 +35,6 @@ a {
 }
 
 .btn:disabled {
-    background-color: gray;
     cursor: default;
 }
 
@@ -56,65 +52,55 @@ a {
 }
 
 .input__input {
-    /* Display & Box Model */
     border-radius: 10px;
     height: 30px;
     padding-left: 5px;
 }
 
 .input__input--sm {
-    /* Display & Box Model */
+    border: 1px solid black;
     width: 75px;
 }
 
 .input__input--md {
-    /* Display & Box Model */
     width: 115px;
 }
 
 .input__input--lg {
-    /* Display & Box Model */
     width: 250px;
 }
 
 .input__label {
-    /* Style */
-    color: #f9e34b;
     font-size: 20px;
 }
 
 .input__label-black {
-    /* Style */
     font-size: 20px;
 }
 
 /* Modal Background */
 .modal {
     display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    height: 100%; /* Full height */
     left: 0;
+    overflow: auto; /* Enable scroll if needed */
+    position: fixed; /* Stay in place */
     top: 0;
     width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    /* background-color: rgb(0,0,0); /1* Fallback color *1/ */
-    /* background-color: rgba(0,0,0,0.4); /1* Black w/ opacity *1/ */
+    z-index: 1; /* Sit on top */
 }
 
 
 /* Modal Content/Box */
 .modal-content {
-    background-color: #fefefe;
+    border: 1px solid #888;
     margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
-    border: 1px solid #888;
     width: 80%; /* Could be more or less, depending on screen size */
 }
 
 /* The Modal Close Button */
 .close-modal {
-    color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
@@ -128,54 +114,40 @@ a {
 }
 
 .radio-input__label {
-    /* Style */
-    color: #f9e34b;
     font-size: 20px;
 }
 
 .radio-input__input {
-    /* Display & Box Model */
     height:2em;
     width:2em;
 }
 
 .table-like__cell--header {
-    /* Display & Box Model */
     text-align: center;
 }
 
 .text-box {
-    /* Display & Box Model */
    flex-wrap: nowrap;
    padding:5px;
 }
 
 .text-box__text {
-    /* Style */
-    color: #f9e34b;
     font-size:25px;
 }
 
 .text--color-alert {
-    /* Style */
     color: red !important;
 }
 
 .text--primary {
-    /* Style */
-    color: #f9e34b;
     font-size:25px;
 }
 
 .text--highlight {
-    /* Style */
-    color: #ca365d;
     font-size:35px;
 }
 
 .text--label {
-    /* Style */
-    color: #f9e34b;
     font-size: 20px;
 }
 
@@ -189,48 +161,61 @@ a {
 /****************************************************/
 
 .container {
-    /* Display & Box Model */
     height: 100%;
 }
 
+.content {
+    height:90%;
+}
+
+.content-box {
+    margin: 5px;
+    padding: 5px;
+}
+
+.content-box__header {
+    font-size: 25px;
+}
+.content-tab {
+    // just for triggering GET for tab content
+}
+
 .header {
-    /* Display & Box Model */
     display: flex;
     height:10%;
     justify-content: space-between;
     width: 100%;
-    /* Style */
-    background-color: #0d1650;
 }
 
 .header__nav {
-    /* Display & Box Model */
-    display: flex;
     height: 100%;
+    width: 100%;
 }
 
 .header__nav-tab {
-    /* Display & Box Model */
-    padding: 10px;
-    /* Style */
-    color: #f9e34b;
+    align-items: center;
+    border: 1px solid black;
+    display: flex;
     font-size: 25px;
+    justify-content: center;
+    padding: 10px;
+}
+
+.header__nav-tab--third {
+    width: 33%;
 }
 
 .disabled {
-    background-color: gray;
-    color: white;
     cursor: default;
 }
 
 
 .header__nav-tab:hover,.header__nav-tab.active {
-    /* Style */
-    background-color: #ca365d;
+    background-color: #ba3d1e;
+    cursor: pointer;
 }
 
 .page-content {
-    /* Display & Box Model */
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -238,29 +223,6 @@ a {
 
 }
 
-.content {
-    /* Display & Box Model */
-    height:90%;
-    /* Style */
-    /* border: 9px solid red; */
-}
-
-.content-box {
-    /* Display & Box Model */
-    padding: 5px;
-    margin: 5px;
-    /* Style */
-    background-color: #0d1650;
-}
-
-.content-box__header {
-    /* Display & Box Model */
-    padding: 5px;
-    /* Style */
-    border-bottom: 3px solid #e4b93f;
-    color: #e9e1cf;
-    font-size: 25px;
-}
 
 
 /****************************************************/
@@ -272,51 +234,49 @@ a {
 /****************************************************/
 /* Layout */
 .l-flex--col-start {
-    /* Display & Box Model */
     display: flex;
     justify-content: start;
     flex-direction: column;
-    /* padding: 5px; */
 }
 
 .l-flex--col-btw {
-    /* Display & Box Model */
     display: flex;
     justify-content: space-between;
     flex-direction: column;
-    /* padding: 5px; */
 }
 
 .l-flex--col-end {
-    /* Display & Box Model */
     display: flex;
     justify-content: end;
     flex-direction: column;
-    /* padding: 5px; */
+}
+
+.l-flex--row-around {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
 }
 
 .l-flex--row-btw {
-    /* Display & Box Model */
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-    /* padding: 5px; */
 }
 
 .l-flex--row-start {
-    /* Display & Box Model */
     display: flex;
     justify-content: start;
     flex-direction: row;
-    /* padding: 5px; */
 }
 
 .l-flex--center {
-    /* Display & Box Model */
     display: flex;
     justify-content: center;
     align-items: center;
-    /* padding: 5px; */
+}
+
+.l-flex {
+    flex: 1;
 }
 
 /* Modifiers */
@@ -339,6 +299,14 @@ a {
 
  .bm-margin--md-top {
      margin-top: 15px;
+ }
+
+ .bm-margin--sm-bottom {
+     margin-bottom: 5px;
+ }
+
+ .bm-margin--md-bottom {
+     margin-bottom: 15px;
  }
 
  .bm-margin--sm-right {

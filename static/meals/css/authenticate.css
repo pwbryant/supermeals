@@ -7,6 +7,16 @@
  *
 /****************************************************/
 
+ #login-welcome {
+     /* background-color: red; */
+     font-size: 40px;
+     /* width: 50%; */
+ }
+ /* #login-container { */
+ /*     background-color: blue; */
+ /*     /1* width: 50%; *1/ */
+ /* } */
+
 
 .auth-form-content {
     padding: 15%;

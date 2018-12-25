@@ -1,190 +1,189 @@
-
 {% load widget_tweaks %}
-<div id="my-macros-forms-container">
-    <form id='my-macros-form' action='#' method='POST' >
-        {% csrf_token %}
-        <div id="my-macros-headline" class="headline--md">Find Total Daily Energy Expenditure (TDEE)</div>
-        <div id="tdee-form-container" class="l-tdee" >
+<form id='my-macros-form' action='#' method='POST' >
+    {% csrf_token %}
+    <div id='my-macros-headline' class='headline--md'>Find Total Daily Energy Expenditure (TDEE)</div>
+    <div id='tdee-form-container' class='l-tdee' >
 
-            <div id="unit-type" class="content-box l-tdee--top l-flex--col-start">
-                <div class="content-box__header">Unit Type</div>
-                <div id="unit-input-container" class="content-box__content l-flex--row-start">
-                    <div class="radio-input">
-                        <label class="radio-input__label">Imperial</label>
-                        <input class="radio-input__input" type="radio" name="unit_type" value="imperial" checked/>
-                    </div>
-                    <div class="radio-input">
-                        <label class="radio-input__label">Metric</label>
-                        <input class="radio-input__input" type="radio" name="unit_type" value="metric"/>
-                    </div>
+        <div id='unit-type' class='content-box l-tdee--top l-flex--col-start bm-margin--md-bottom'>
+            <label for='unit-input-container' class='content-box__header'><u>Unit Type</u></label>
+            <div id='unit-input-container' class='content-box__content l-flex--row-start'>
+                <div class='radio-input'>
+                    <label class='radio-input__label'>Imperial</label>
+                    <input class='radio-input__input' type='radio' name='unit_type' value='imperial' checked/>
                 </div>
-            </div>
-            <div id="traits" class="content-box l-tdee--side l-flex--col-start">
-                <div class="content-box__header">Physical Traits</div>
-                <div id="gender-inputs" class="radio l-flex--row-start">
-                    <div class="radio-input">
-                        <label class="radio-input__label">Male</label>
-                        <input class="radio-input__input" type="radio" name="gender" value="male"/>
-                    </div>
-                    <div class="radio-input">
-                        <label class="radio-input__label">Female</label>
-                        <input class="radio-input__input" type="radio" name="gender" value="female"/>
-                    </div>
+                <div class='radio-input'>
+                    <label class='radio-input__label'>Metric</label>
+                    <input class='radio-input__input' type='radio' name='unit_type' value='metric'/>
                 </div>
-                <div id="age-input" class="input l-flex--col-start">
-                    <label for='{{ form.age.id_for_label }}' class="input__label">{{ form.age.label }}</label>
-                    {{ form.age }}
-                    <div id='my-macros-age-errors'></div>
-                </div>
-                <div id="weight-input" class="input l-flex--col-start">
-                        <label for='{{ form.weight.id_for_label }}' class="input__label">{{ form.weight.label }}</label>
-                        {% if form.unit_type.initial == "imperial" %}
-                            {% render_field form.weight placeholder='lbs' %}
-                        {% endif %}
-                        {% if form.unit_type.initial == "metric" %}
-                            {% render_field form.weight placeholder='kg' %}
-                        {% endif %}
-                    <div id='my-macros-weight-errors'></div>
-                </div>
-                <div id="height-input" class="input l-flex--col-start">
-              
-                    <label for='{{ form.height_0.id_for_label }}' class="input__label">{{ form.height_0.label }}</label>
-                    {% if form.unit_type.initial == "imperial" %}
-                        {% render_field form.height_0 placeholder='ft' %}
-                        {% render_field form.height_1 placeholder='in' %}
-                    {% endif %}
-                    {% if form.unit_type.initial == "metric" %}
-                        {% render_field form.height_0 placeholder='cm' %}
-                    {% endif %}
-                    <div id='my-macros-height-errors'></div>
-                </div>
-            </div>        
-            <div id="activity" class="content-box l-tdee--mid-top">
-                <div class="content-box__header">Activity Level</div>
-                <div id="activity-inputs" class="content-box__content l-flex--row-btw">
-                    <div class="text-box">
-                        <div class="radio-input">
-                            <input class="radio-input__input" type="radio" name="activity" value="none"/>
-                        </div>
-                        <span class="text-box__text">xxxx xx xxxx xx xx xxx xx xx xx </span>
-                    </div>
-                    <div class="text-box">
-                        <div class="radio-input">
-                            <input class="radio-input__input" type="radio" name="activity" value="light"/>
-                        </div>
-                        <span class="text-box__text">xxxx xx xxxx xx xx xxx xx xx xx </span>
-                    </div>
-                    <div class="text-box">
-                        <div class="radio-input">
-                            <input class="radio-input__input" type="radio" name="activity" value="medium"/>
-                        </div>
-                        <span class="text-box__text">xxxx xx xxxx xx xx xxx xx xx xx </span>
-                    </div>
-                    <div class="text-box">
-                        <div class="radio-input">
-                            <input class="radio-input__input" type="radio" name="activity" value="high"/>
-                        </div>
-                        <span class="text-box__text">xxxx xx xxxx xx xx xxx xx xx xx </span>
-                    </div>
-                    <div class="text-box">
-                        <div class="radio-input">
-                            <input class="radio-input__input" type="radio" name="activity" value="very high"/>
-                        </div>
-                        <span class="text-box__text">xxxx xx xxxx xx xx xxx xx xx xx </span>
-                    </div>
-                </div>
-            </div>
-            <div id="weight-change" class="content-box l-tdee--mid-bottom l-flex--col-start">
-                <div class="content-box__header">Weight Change</div>
-                <div id="direction-inputs" class="content-box__content l-flex--row-start">
-                    <div class="radio-input">
-                        <label class="radio-input__label">Lose</label>
-                        <input class="radio-input__input" type="radio" name="direction" value="lose" checked/>
-                    </div>
-                    <div class="radio-input">
-                        <label class="radio-input__label">Maintain</label>
-                        <input class="radio-input__input" type="radio" name="direction" value="maintain"/>
-                    </div>
-                    <div class="radio-input">
-                        <label class="radio-input__label">Gain</label>
-                        <input class="radio-input__input" type="radio" name="direction" value="gain"/>
-                    </div>
-
-                </div>
-                <div id="change-rate-input" class="input">
-                    <label for='{{ form.change_rate.id_for_label }}' class="input__label">{{ form.change_rate.label }}</label>
-                    {% if form.unit_type.initial == "imperial" %}
-                        {% render_field form.change_rate placeholder='lbs/wk' %}
-                    {% endif %}
-                    {% if form.unit_type.initial == "metric" %}
-                        {% render_field form.change_rate placeholder='kgs/wk' %}
-                    {% endif %}
-                    <div id='my-macros-change_rate-errors'></div>
-                </div>
-            </div>
-            <div class="content-box l-tdee--footer l-flex--row-btw">
-                    <button id="calc-tdee" type='button' class="btn" onclick="form-validation('tdee-form-container')">Calculate</button>
-                    <div id="tdee-result" class="text--highlight"></div>
-                    <div id="change-tdee-result" class="text--highlight"></div>
-                    <input id="hidden-tdee" name="tdee" type="hidden"/>
-                    <div id="calc-tdee-errors"></div>
             </div>
         </div>
-        <div id="choose-macros-form-container" class="content-box l-flex--col-start hide">
-            <div class="content-box__header">Choose Macro Ratios</div>
-            <div id="choose-macros-form">
-                <div class="l-flex--row-start">
-                    <span class="table-like__cell"></span><span class="text--primary table-like__cell table-like__cell--header">%</span><span class="text--primary table-like__cell table-like__cell--header">g</span>
-                </div>
-                <div id="choose-fat-inputs" class="input l-flex--row-start">
-                    <label class="input__label table-like__cell">Fat</label>
-                    <input class="input__input input__input--sm table-like__cell" type="text" name="fat_percent" data-type="number" data-value="0" placeholder="%"/>
-                    <input class="input__input input__input--sm table-like__cell" type="text" name="fat_g" data-type="number" data-value="0" placeholder="g"/>
-                </div>
-                <div id="choose-carbs-inputs" class="input l-flex--row-start">
-                    <label class="input__label table-like__cell">Carbs</label>
-                    <input class="input__input input__input--sm table-like__cell" type="text" name="carbs_percent" data-type="number" data-value="0" placeholder="%"/>
-                    <input class="input__input input__input--sm table-like__cell" type="text" name="carbs_g" data-type="number" data-value="0" placeholder="g"/>
-                </div>
-                <div id="choose-protein-inputs" class="input l-flex--row-start">
-                    <label class="input__label table-like__cell">Protein</label>
-                    <input class="input__input input__input--sm table-like__cell" type="text" name="protein_percent" data-type="number" data-value="0" placeholder="%"/>
-                    <input class="input__input input__input--sm table-like__cell" type="text" name="protein_g" data-type="number" data-value="0" placeholder="g"/>
-                </div>
-                <div id="choose-macros-totals-container" class="l-flex--row-start">
-                    <label class="input__label table-like__cell">% Left</label>
-                    <span id="choose-macros-totals-wrapper" class="table-like__cell">
-                        <span id="choose-macros-total" class="text--label">100</span><span class="text--label">%</span>
-                    </span>
-                </div>
-                {% if request.user.username == 'guest' %}
 
-                <div>
-                    <p id='save-my-macros-guest'>To Save this info, create and account!!!</p>
+        <div id='traits' class='content-box l-tdee--side l-flex--col-start bm-margin--md-bottom'>
+            <label for='gender-inputs' class='content-box__header'><u>Physical Traits</u></label>
+            <div id='gender-inputs' class='radio l-flex--row-start'>
+                <div class='radio-input'>
+                    <label class='radio-input__label'>Male</label>
+                    <input class='radio-input__input' type='radio' name='gender' value='male'/>
                 </div>
-                {% else %}
-                    <button id="save-my-macros-button" type='submit' class="btn" disabled>Save</button>
+                <div class='radio-input'>
+                    <label class='radio-input__label'>Female</label>
+                    <input class='radio-input__input' type='radio' name='gender' value='female'/>
+                </div>
+            </div>
+            <div id='age-input' class='input l-flex--col-start'>
+                <label for='{{ form.age.id_for_label }}' class='input__label'>{{ form.age.label }}</label>
+                {{ form.age }}
+                <div id='my-macros-age-errors'></div>
+            </div>
+            <div id='weight-input' class='input l-flex--col-start'>
+                    <label for='{{ form.weight.id_for_label }}' class='input__label'>{{ form.weight.label }}</label>
+                    {% if form.unit_type.initial == 'imperial' %}
+                        {% render_field form.weight placeholder='lbs' %}
+                    {% endif %}
+                    {% if form.unit_type.initial == 'metric' %}
+                        {% render_field form.weight placeholder='kg' %}
+                    {% endif %}
+                <div id='my-macros-weight-errors'></div>
+            </div>
+            <div id='height-input' class='input l-flex--col-start'>
+                <label for='{{ form.height_0.id_for_label }}' class='input__label'>{{ form.height_0.label }}</label>
+                {% if form.unit_type.initial == 'imperial' %}
+                    {% render_field form.height_0 placeholder='ft' %}
+                    {% render_field form.height_1 placeholder='in' %}
                 {% endif %}
+                {% if form.unit_type.initial == 'metric' %}
+                    {% render_field form.height_0 placeholder='cm' %}
+                {% endif %}
+                <div id='my-macros-height-errors'></div>
+            </div>
+        </div>        
 
+        <div id='activity' class='content-box l-tdee--mid-top bm-margin--md-bottom'>
+            <label for='activity-inputs' class='content-box__header'><u>Activity Level</u></label>
+            <div id='activity-inputs' class='content-box__content l-flex--row-btw'>
+                <div class='text-box'>
+                    <div class='radio-input'>
+                        <input class='radio-input__input' type='radio' name='activity' value='none'/>
+                    </div>
+                    <span class='text-box__text'>xxxx xx xxxx xx xx xxx xx xx xx </span>
+                </div>
+                <div class='text-box'>
+                    <div class='radio-input'>
+                        <input class='radio-input__input' type='radio' name='activity' value='light'/>
+                    </div>
+                    <span class='text-box__text'>xxxx xx xxxx xx xx xxx xx xx xx </span>
+                </div>
+                <div class='text-box'>
+                    <div class='radio-input'>
+                        <input class='radio-input__input' type='radio' name='activity' value='medium'/>
+                    </div>
+                    <span class='text-box__text'>xxxx xx xxxx xx xx xxx xx xx xx </span>
+                </div>
+                <div class='text-box'>
+                    <div class='radio-input'>
+                        <input class='radio-input__input' type='radio' name='activity' value='high'/>
+                    </div>
+                    <span class='text-box__text'>xxxx xx xxxx xx xx xxx xx xx xx </span>
+                </div>
+                <div class='text-box'>
+                    <div class='radio-input'>
+                        <input class='radio-input__input' type='radio' name='activity' value='very high'/>
+                    </div>
+                    <span class='text-box__text'>xxxx xx xxxx xx xx xxx xx xx xx </span>
+                </div>
             </div>
         </div>
 
-        {% if form.errors %}
-            <div class="form-group has-error">
-                <div class="help-block">{{ form.errors }}</div>
+        <div id='weight-change' class='content-box l-tdee--mid-bottom l-flex--col-start bm-margin--md-bottom'>
+            <label for='direction-inputs' class='content-box__header'><u>Weight Change</u></label>
+            <div id='direction-inputs' class='content-box__content l-flex--row-start'>
+                <div class='radio-input'>
+                    <label class='radio-input__label'>Lose</label>
+                    <input class='radio-input__input' type='radio' name='direction' value='lose' checked/>
+                </div>
+                <div class='radio-input'>
+                    <label class='radio-input__label'>Maintain</label>
+                    <input class='radio-input__input' type='radio' name='direction' value='maintain'/>
+                </div>
+                <div class='radio-input'>
+                    <label class='radio-input__label'>Gain</label>
+                    <input class='radio-input__input' type='radio' name='direction' value='gain'/>
+                </div>
+
             </div>
-        {% endif %}
-        {% if errors %}
-            <div class="form-group has-error">
-                <div class="help-block">{{ errors }}</div>
+            <div id='change-rate-input' class='input'>
+                <label for='{{ form.change_rate.id_for_label }}' class='input__label'>{{ form.change_rate.label }}</label>
+                {% if form.unit_type.initial == 'imperial' %}
+                    {% render_field form.change_rate placeholder='lbs/wk' %}
+                {% endif %}
+                {% if form.unit_type.initial == 'metric' %}
+                    {% render_field form.change_rate placeholder='kgs/wk' %}
+                {% endif %}
+                <div id='my-macros-change_rate-errors'></div>
             </div>
-        {% endif %}
-        <div id="client-side-form-errors"></div>
-        <div id="my-macros-successful-save" class="alert alert-success">
-            <!--    Macros Successfully Saved! Now Go Make a Meal! -->
         </div>
-    </form>
-</div>
+        <div class='content-box l-tdee--footer l-flex--row-btw'>
+                <button id='calc-tdee' type='button' class='btn' onclick='form-validation("tdee-form-container")'>Calculate</button>
+                <div id='tdee-result' class='text--highlight'></div>
+                <div id='change-tdee-result' class='text--highlight'></div>
+                <input id='hidden-tdee' name='tdee' type='hidden'/>
+                <div id='calc-tdee-errors'></div>
+        </div>
+    </div>
+    <div id='choose-macros-form-container' class='content-box l-flex--col-start hide'>
+        <label for='choose-macro-form' class='content-box__header'><u>Choose Macro Ratios</u></label>
+        <div id='choose-macros-form'>
+            <div class='l-flex--row-start'>
+                <span class='table-like__cell'></span><span class='text--primary table-like__cell table-like__cell--header'>%</span><span class='text--primary table-like__cell table-like__cell--header'>g</span>
+            </div>
+            <div id='choose-fat-inputs' class='input l-flex--row-start'>
+                <label class='input__label table-like__cell'>Fat</label>
+                <input class='input__input input__input--sm table-like__cell' type='text' name='fat_percent' data-type='number' data-value='0' placeholder='%'/>
+                <input class='input__input input__input--sm table-like__cell' type='text' name='fat_g' data-type='number' data-value='0' placeholder='g'/>
+            </div>
+            <div id='choose-carbs-inputs' class='input l-flex--row-start'>
+                <label class='input__label table-like__cell'>Carbs</label>
+                <input class='input__input input__input--sm table-like__cell' type='text' name='carbs_percent' data-type='number' data-value='0' placeholder='%'/>
+                <input class='input__input input__input--sm table-like__cell' type='text' name='carbs_g' data-type='number' data-value='0' placeholder='g'/>
+            </div>
+            <div id='choose-protein-inputs' class='input l-flex--row-start'>
+                <label class='input__label table-like__cell'>Protein</label>
+                <input class='input__input input__input--sm table-like__cell' type='text' name='protein_percent' data-type='number' data-value='0' placeholder='%'/>
+                <input class='input__input input__input--sm table-like__cell' type='text' name='protein_g' data-type='number' data-value='0' placeholder='g'/>
+            </div>
+            <div id='choose-macros-totals-container' class='l-flex--row-start'>
+                <label class='input__label table-like__cell'>% Left</label>
+                <span id='choose-macros-totals-wrapper' class='table-like__cell'>
+                    <span id='choose-macros-total' class='text--label'>100</span><span class='text--label'>%</span>
+                </span>
+            </div>
+            {% if request.user.username == 'guest' %}
+
+            <div>
+                <p id='save-my-macros-guest'>To Save this info, create and account!!!</p>
+            </div>
+            {% else %}
+                <button id='save-my-macros-button' type='submit' class='btn' disabled>Save</button>
+            {% endif %}
+
+        </div>
+    </div>
+
+    {% if form.errors %}
+        <div class='form-group has-error'>
+            <div class='help-block'>{{ form.errors }}</div>
+        </div>
+    {% endif %}
+    {% if errors %}
+        <div class='form-group has-error'>
+            <div class='help-block'>{{ errors }}</div>
+        </div>
+    {% endif %}
+    <div id='client-side-form-errors'></div>
+    <div id='my-macros-successful-save' class='alert alert-success'>
+        <!--    Macros Successfully Saved! Now Go Make a Meal! -->
+    </div>
+</form>
 <script>
 
     clear_form_errors();

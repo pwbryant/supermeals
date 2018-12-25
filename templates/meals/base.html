@@ -13,39 +13,48 @@
         
 	</head>
 	<body>
-
-        <div class="container">
-
-            <div class="header">
-                <div class="header__nav">
-                    <div id="my-macros-tab" class="header__nav-tab content-tab">My Macros</div>
-                    <div id="meal-maker-tab" class="header__nav-tab content-tab">Meal Maker</div>
+        <div class='container'>
+            <div class='header'>
+                <div class='header__nav l-flex--row-start'>
+                    <div id='my-macros-tab' class='header__nav-tab content-tab'>My Macros</div>
+                    <div id='meal-maker-tab' class='header__nav-tab content-tab'>Meal Maker</div>
                     {% if request.user.username == 'guest' %}
-                        <div id="my-meals-tab" class="header__nav-tab content-tab disabled">My Meals/Recipes</div>
-                        <div id="add-recipe-tab" class="header__nav-tab content-tab disabled">Add New Recipes</div>
-                        <div id="add-food-tab" class="header__nav-tab content-tab disabled">Add New Foods</div>
+                        <div id='my-meals-tab' class='header__nav-tab content-tab disabled'>
+                            <div>My Meals/Recipes</div>
+                        </div>
+                        <div id='add-recipe-tab' class='header__nav-tab content-tab disabled'>Add New Recipes</div>
+                        <div id='add-food-tab' class='header__nav-tab content-tab disabled'>Add New Foods</div>
                     {% else %}
-                        <div id="my-meals-tab" class="header__nav-tab content-tab">My Meals/Recipes</div>
-                        <div id="add-recipe-tab" class="header__nav-tab content-tab">Add New Recipes</div>
-                        <div id="add-food-tab" class="header__nav-tab content-tab">Add New Foods</div>
+                        <div id='my-meals-tab' class='header__nav-tab content-tab'>My Meals/Recipes</div>
+                        <div id='add-recipe-tab' class='header__nav-tab content-tab'>Add New Recipes</div>
+                        <div id='add-food-tab' class='header__nav-tab content-tab'>Add New Foods</div>
                     {% endif %}
-                </div>
-                <div class="header__nav">
+                <!-- </div> -->
+                    <div class='l-flex l-flex--row-around'>
                     {% if user.is_authenticated and user.get_username != 'guest' %}
-                        <a id="logoff" href="/accounts/logout/?next=/accounts/login/">
-                            <div class="header__nav-tab">Logout</div>
+                    <div class='header__nav-tab l-flex--center'>
+                        <a id='logoff' href='/accounts/logout/?next=/accounts/login/'>
+                            <div class='nav-tab'>Logout</div>
                         </a>
+                    </div>
                     {% else %}
-                        <a id="sign-up" href="/meals/sign-up/">
-                            <div class="header__nav-tab">Sign up</div>
+                    <div class='header__nav-tab header__nav-tab--third'>
+                        <a id='sign-up' href='/meals/sign-up/'>
+                            Sign up
                         </a>
-                        <a id="login" href="/accounts/login/">
-                            <div class="header__nav-tab">Login</div>
+                    </div>
+                    <div class='header__nav-tab header__nav-tab--third'>
+                        <a id='login' href='/accounts/login/'>
+                            Login
                         </a>
-                        <a id="logoff" href="/accounts/logout/?next=/accounts/login/">
-                            <div class="header__nav-tab">Logout</div>
+                    </div>
+                    <div class='header__nav-tab header__nav-tab--third'>
+                        <a id='logoff' href='/accounts/logout/?next=/accounts/login/'>
+                            Logout
                         </a>
+                    </div>
                     {% endif %}
+                    </div>
                 </div>
             </div>
             <div class="content">
