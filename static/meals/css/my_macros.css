@@ -6,21 +6,18 @@
  *
 /****************************************************/
 
-#choose-macros-form {
-    /* Display & Box Model */
-    width: 30%;
-    height: 30%;
+#choose-macros {
+    width: 35%;
 }
 
-#choose-macros-form .table-like__cell {
-    /* Display & Box Model */
-    width: 20%;
+#choose-macros-container {
+    width: 100%;
 }
 
-#set-cals-form-container {
-    /* Display & Box Model */
-    width: 15%;
+#choose-macros .table-like__cell {
+    width: 25%;
 }
+
 
 /****************************************************/
 /* Layout classes

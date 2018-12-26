@@ -32,7 +32,6 @@ const convert_body_measurements_in_post_to_metric = function(
     post_data += `&change_rate=${ change_rate }`;
 
     return post_data;
-
 }
 
 // not tested
@@ -203,7 +202,7 @@ var calc_tdee = function() {
             
 			$("#hidden-tdee").val(Math.round(change_tdee_return_value));
 			
-			$("#choose-macros-form-container").removeClass("hide");
+			$("#choose-macros-container").removeClass("hide");
             document.getElementById("save-my-macros-button").scrollIntoView();
 		}
 	});
@@ -226,7 +225,7 @@ var change_change_rate_display = function() {
 
 //tested
 var choose_macro_handler = function() {
-	$("#choose-macros-form input").on("keyup",function() {	
+	$("#choose-macros input").on("keyup",function() {	
 		if ($("#change-tdee-result") != "") {	
 			var tdee_result = parseFloat($("#change-tdee-result").html().split(" ")[1]);
 		} else {
@@ -237,6 +236,8 @@ var choose_macro_handler = function() {
 		macro = input_array[0],
 		type = input_array[1],
 		macro_factor = MACRO_FACTORS[macro];
+        let return_value;
+        console.log(tdee_result, input_array, macro_value, macro, type, macro_factor);
 		if (type == 'percent') {
 			return_value = (tdee_result * macro_value / 100.0 / macro_factor).toFixed(0);
 			var return_selector = "input[name='" + macro + "_g']";
@@ -244,6 +245,7 @@ var choose_macro_handler = function() {
 			return_value = (macro_value * macro_factor / tdee_result * 100).toFixed(0);	
 			var return_selector = "input[name='" + macro + "_percent']";
 		}
+        console.log('rv', return_value, return_selector);
 		if (isNaN(macro_value)) {
 			$(return_selector).val("");
 		} else {

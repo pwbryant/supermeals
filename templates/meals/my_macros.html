@@ -130,38 +130,37 @@
                 <div id='calc-tdee-errors'></div>
         </div>
     </div>
-    <div id='choose-macros-form-container' class='content-box l-flex--col-start hide'>
+    <div id='choose-macros-container' class='content-box hide'>
         <label for='choose-macro-form' class='content-box__header'><u>Choose Macro Ratios</u></label>
-        <div id='choose-macros-form'>
+        <div id='choose-macros'>
             <div class='l-flex--row-start'>
                 <span class='table-like__cell'></span><span class='text--primary table-like__cell table-like__cell--header'>%</span><span class='text--primary table-like__cell table-like__cell--header'>g</span>
             </div>
             <div id='choose-fat-inputs' class='input l-flex--row-start'>
-                <label class='input__label table-like__cell'>Fat</label>
+                <label class='input__label table-like__cell bm-margin--sm-right'>Fat</label>
                 <input class='input__input input__input--sm table-like__cell' type='text' name='fat_percent' data-type='number' data-value='0' placeholder='%'/>
                 <input class='input__input input__input--sm table-like__cell' type='text' name='fat_g' data-type='number' data-value='0' placeholder='g'/>
             </div>
             <div id='choose-carbs-inputs' class='input l-flex--row-start'>
-                <label class='input__label table-like__cell'>Carbs</label>
+                <label class='input__label table-like__cell bm-margin--sm-right'>Carbs</label>
                 <input class='input__input input__input--sm table-like__cell' type='text' name='carbs_percent' data-type='number' data-value='0' placeholder='%'/>
                 <input class='input__input input__input--sm table-like__cell' type='text' name='carbs_g' data-type='number' data-value='0' placeholder='g'/>
             </div>
             <div id='choose-protein-inputs' class='input l-flex--row-start'>
-                <label class='input__label table-like__cell'>Protein</label>
+                <label class='input__label table-like__cell bm-margin--sm-right'>Protein</label>
                 <input class='input__input input__input--sm table-like__cell' type='text' name='protein_percent' data-type='number' data-value='0' placeholder='%'/>
                 <input class='input__input input__input--sm table-like__cell' type='text' name='protein_g' data-type='number' data-value='0' placeholder='g'/>
             </div>
             <div id='choose-macros-totals-container' class='l-flex--row-start'>
-                <label class='input__label table-like__cell'>% Left</label>
+                <label for='choose-macros-totals-wrapper' class='input__label table-like__cell bm-margin--sm-right'>Pct. Left</label>
                 <span id='choose-macros-totals-wrapper' class='table-like__cell'>
                     <span id='choose-macros-total' class='text--label'>100</span><span class='text--label'>%</span>
                 </span>
             </div>
             {% if request.user.username == 'guest' %}
 
-            <div>
-                <p id='save-my-macros-guest'>To Save this info, create and account!!!</p>
             </div>
+            <p id='save-my-macros-guest' class='text--highlight text--color-alert'>To Save this info, create an account!!!</p>
             {% else %}
                 <button id='save-my-macros-button' type='submit' class='btn' disabled>Save</button>
             {% endif %}
@@ -184,8 +183,8 @@
         <!--    Macros Successfully Saved! Now Go Make a Meal! -->
     </div>
 </form>
-<script>
 
+<script>
     clear_form_errors();
 	switch_between_imperial_metric();
 	calc_tdee();

@@ -86,7 +86,9 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.browser.find_element_by_css_selector(login_button).click()
 
 
-    def check_element_content(self,selector,selector_type,comparison_type, comparison_text,child=None):
+    def check_element_content(
+        self, selector, selector_type, comparison_type, comparison_text,
+        child=None):
     
         if selector_type == "id":
             element = self.browser.find_element_by_id(selector)
