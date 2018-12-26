@@ -5,6 +5,9 @@
  * are found here.
  *
 /****************************************************/
+ #activity-inputs {
+     width: 100%;
+ }
 
 #choose-macros {
     width: 35%;
@@ -43,6 +46,10 @@
 /*     "f f f f f f f f f" */ 
 /*     "f f f f f f f f f"; */ 
 /* } */
+
+.text-box {
+    width: 20%;
+}
 
 .l-tdee--top {
     /* Display & Box Model */

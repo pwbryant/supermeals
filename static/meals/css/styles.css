@@ -157,7 +157,6 @@ a {
     font-size: 20px;
 }
 
-
 /****************************************************/
 /* Positional tags and classes
  * 
@@ -226,11 +225,6 @@ a {
 }
 
 /* Header scroll behavior */
-
-
-
-/* Header scroll behavior */
-
 .sticky {
     position: fixed;
     top: 0;
@@ -249,8 +243,6 @@ a {
     padding: 20px;
 
 }
-
-
 
 /****************************************************/
 /* Layout classes

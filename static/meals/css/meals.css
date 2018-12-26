@@ -52,8 +52,12 @@
     margin-left: 5%;
 }
 
+.goal-cal-inputs {
+    // for javascript behavior
+}
+
 .item {
-    width: 50px;
+    width: 30%;
 }
 
 .macro-bar-container {
@@ -76,10 +80,12 @@
 .sidebar {
     grid-area: sidebar;
 }
+
 .macro-area {
-    background-color: yellow;
+    /* background-color: yellow; */
     grid-area: maker;
 }
+
 .search-area {
     grid-area: search;
 }
@@ -106,12 +112,12 @@
  *
 /****************************************************/
 
-#goal-meal-macros-container {
-    display: grid;
-    grid-gap:5px;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: auto;
-}
+/* #goal-meal-macros-container { */
+/*     display: grid; */
+/*     grid-gap:5px; */
+/*     grid-template-columns: 1fr 1fr 1fr; */
+/*     grid-template-rows: auto; */
+/* } */
 
 #goal-macros-bar-content { 
     height: 85%;
@@ -119,6 +125,11 @@
 
 #goal-macros-bar-footer {
     height: auto;
+}
+
+#goal-meal-macro-percent-total-container {
+    vertical-align: bottom;
+    display: table-cell;
 }
 
 #meal-maker-container {

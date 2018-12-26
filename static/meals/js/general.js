@@ -60,14 +60,9 @@ const key_press_hides_error = function () {
 };
 
 const sticky_scroll_header = function() {
-
-
-    console.log('scroll');
     const header = document.getElementsByClassName('header')[0];
     const get_sticky = header.offsetTop;
-    console.log(get_sticky, window.pageYOffset);
     if (window.pageYOffset > get_sticky) {
-        console.log('got sticky');
         header.classList.add('sticky');
     } else {
         header.classList.remove('sticky');
