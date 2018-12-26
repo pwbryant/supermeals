@@ -11,7 +11,7 @@
     {% endif %}
 
     <div class='input bm-margin--sm-bottom'>
-        <label for='goal-meal-cals' class='input__label'>How Many Calories?</label>
+        <label for='goal-meal-cals' class='input__label'>How many calories in meal?</label>
         <input id='goal-meal-cals' class='input__input input__input--sm goal-cal-inputs' name='goal-meal-cals' class='goal-cal-inputs' type='text' placeholder='Cals'/>
     </div>
 
@@ -79,12 +79,14 @@
     </div>
 </div>
 
-<div id='meal-maker-food-search-container' class='search-area'>
+<div id='meal-maker-food-search-container' class='search-area hide'>
     {% include 'meals/search.html' with tab_name='meal-maker' %}
 </div>
 
 <div id='meal-maker-food-container' class='food-area'>
-    <div id='meal-maker-food-content'></div>
+    <div id='meal-maker-food-content'>
+        <div id='meal-maker-food-content-banner' class='hide'>Add Ingredients Using Search</div>
+    </div>
 </div>
 
 <script>

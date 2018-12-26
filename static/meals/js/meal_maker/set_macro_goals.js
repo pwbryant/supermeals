@@ -44,8 +44,6 @@ var MGOAL = (function() {
 
         //tested
         set_mgoal_goal_cals : function(obj,cals) {
-
-            console.log('cals',cals);
             if (isNaN(cals) == false) {
                 obj.CAL_GOAL = parseFloat(cals);
             } else { 

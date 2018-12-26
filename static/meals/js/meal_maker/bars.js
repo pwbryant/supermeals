@@ -52,6 +52,10 @@ var BARS = (function() {
         add_food : function() {
 			bars_obj = this;
 			$('.meal-maker-search-result__button').on('click',function() {
+
+                // hide the food banner
+                $('#meal-maker-food-content-banner').addClass('hide');
+
                 bars_obj.FOOD_COUNT += 1;
 
                 // create food macros obj
@@ -111,6 +115,12 @@ var BARS = (function() {
 		create_macro_button_trigger : function() {
 			bars_obj = this;
 			$('#create-macro-bars-button').on('click',function() {
+
+
+                // show search area and food bar banner
+                $('#meal-maker-food-search-container').removeClass('hide');
+                $('#meal-maker-food-content-banner').removeClass('hide');
+
                 // set macro amts
                 let macro_amts_obj = {};
                 $('.choose-macros-pct').each(function(i,e) {
