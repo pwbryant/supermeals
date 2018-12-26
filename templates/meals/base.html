@@ -5,7 +5,9 @@
 		<meta http-equiv="X-UA-Compatible" content="ID=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Meal Lab</title>
-        <link href="https://fonts.googleapis.com/css?family=Philosopher" rel="stylesheet">
+        <!-- <link href="https://fonts.googleapis.com/css?family=Philosopher" rel="stylesheet"> -->
+        <!-- <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet"> -->
+        <link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
         {% load static %}
         <link href="{% static "meals/css/styles.css" %}" rel="stylesheet">
@@ -15,7 +17,7 @@
 	</head>
 	<body>
         <div class='container'>
-            <div class='header'>
+            <div class='header s-border--bottom-thin'>
                 <div class='header__nav l-flex--row-start'>
                     <div id='my-macros-tab' class='header__nav-tab content-tab'>My Macros</div>
                     <div id='meal-maker-tab' class='header__nav-tab content-tab'>Meal Maker</div>
@@ -31,14 +33,15 @@
                         <div id='add-food-tab' class='header__nav-tab content-tab'>Add New Foods</div>
                     {% endif %}
                 <!-- </div> -->
-                    <div class='l-flex l-flex--row-around'>
                     {% if user.is_authenticated and user.get_username != 'guest' %}
+                    <div class='l-flex l-flex--row-start'>
                     <div class='header__nav-tab l-flex--center'>
                         <a id='logoff' href='/accounts/logout/?next=/accounts/login/'>
                             <div class='nav-tab'>Logout</div>
                         </a>
                     </div>
                     {% else %}
+                    <div class='l-flex l-flex--row-around'>
                     <div class='header__nav-tab header__nav-tab--third'>
                         <a id='sign-up' href='/meals/sign-up/'>
                             Sign up
@@ -85,7 +88,9 @@
 		<script>
             disabled_return_alert();
             set_navs_to_active();
-			hide_home_header_on_tab_select();
+			//hide_home_header_on_tab_select(); -->
+            window.onscroll = function() {sticky_scroll_header()};
+            sticky_scroll_header();
 			key_press_hides_error();
             hide_non_active_content();
             get_tab_page_content();

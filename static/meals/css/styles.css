@@ -10,7 +10,8 @@
 html, body {
     box-sizing: border-box;
     display: border-box;
-    font-family: "Philosopher"; 
+    /* font-family: "Philosopher"; */ 
+    font-family: "Quicksand", sans-serif; 
     height: 100vh; 
     margin: 0;
     mox-box-sizing: border-box;
@@ -28,13 +29,18 @@ a {
     border: none;
     color: #f9e34b;
     cursor: pointer;
-    font-family: "Philosopher"; 
+    /* font-family: "Philosopher"; */ 
+    font-family: "Quicksand", sans-serif; 
     font-size: 20px;
     font-weight: bold;
     padding: 10px;
 }
 
 .btn:disabled {
+    cursor: default;
+}
+
+.disabled {
     cursor: default;
 }
 
@@ -182,8 +188,10 @@ a {
 
 .header {
     display: flex;
+    background-color: white;
+    /* color: red; */
     height:10%;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     width: 100%;
 }
 
@@ -194,7 +202,7 @@ a {
 
 .header__nav-tab {
     align-items: center;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     display: flex;
     font-size: 25px;
     justify-content: center;
@@ -205,15 +213,34 @@ a {
     width: 33%;
 }
 
-.disabled {
-    cursor: default;
-}
 
 
-.header__nav-tab:hover,.header__nav-tab.active {
+.header__nav-tab:hover {
     background-color: #ba3d1e;
     cursor: pointer;
 }
+
+.header__nav-tab.active {
+    background-color: #1e9bba;
+    cursor: pointer;
+}
+
+/* Header scroll behavior */
+
+
+
+/* Header scroll behavior */
+
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%
+}
+
+.sticky + .content {
+    padding-top: 50px;
+}
+/**************************/
 
 .page-content {
     display: flex;
@@ -315,4 +342,16 @@ a {
 
  .bm-margin--md-right {
      margin-right: 15px;
+ }
+
+/****************************************************/
+/* Style classes
+ * 
+ * Rules for style classes
+ * are found here.
+ *
+/****************************************************/
+
+.s-border--bottom-thin {
+    border-bottom: 1px solid black;
  }
