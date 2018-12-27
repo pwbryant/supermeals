@@ -1,6 +1,7 @@
-<div class='l-flex--row-start'>
-    <div id='{{ tab_name }}-filter-container'>
-        <label for='{{ tab_name }}-filters'>Search Filters</label>
+<div class='l-flex--row-start search-container'>
+    <div id='{{ tab_name }}-filter-container' class='l-flex--col-start search-filter-container'>
+        <label for='{{ tab_name }}-filters' class='text--label'>Search Filters</label>
+        <!-- <div id='{{ tab_name }}-filter-container'> -->
         <div id='{{ tab_name }}-filters'>
             <div class='l-flex--row-start'>
                 <input id='{{ tab_name }}-filter-none' class='non-filter {{ tab_name }}-non-filter' type='checkbox' name='filter' value='none' checked />
@@ -15,9 +16,9 @@
         </div>
     </div>
 
-    <div id='{{ tab_name }}-search-container'>
+    <div id='{{ tab_name }}-search-container' class='search-bar-container'>
         <div class='input'>
-            <label for='{{ tab_name }}-search' >Search for Ingredient</label> 
+            <label for='{{ tab_name }}-search' class='text--label'>Search for Ingredients</label> 
             <div class='l-flex--row-start'>
                 <input id='{{ tab_name }}-search' class='input__input' type='text' />
                 <button id='{{ tab_name }}-search-button' class='icon search-button'>

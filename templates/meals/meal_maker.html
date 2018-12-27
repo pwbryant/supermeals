@@ -68,7 +68,7 @@
                 </div>
 
                 <div class='input'>
-                    <label for='macro-meal-notes' class='input__label-black'>Notes (Optional)</label><br>
+                    <label for='macro-meal-notes' class='input__label'>Notes (Optional)</label><br>
                     <textarea id='macro-meal-notes' class='input__input--lg' name='macro-meal-notes' placeholder='Notes (Optional)'></textarea>
                 </div>
 
@@ -102,9 +102,12 @@
     const container_height = $(
         '#goal-macros-bar-container'
     ).css('height')
+    const filter_container_height = container_height.split('px')[0] - $(
+        'label[for="meal-maker-filters"]'
+    ).css('height').split('px')[0] + 'px'
     $(
-        '#meal-maker-filter-container'
-    ).css('max-height', container_height);
+        '#meal-maker-filters'
+    ).css('max-height', filter_container_height);
     $(
         //'#meal-maker-search-results-container'
         '#meal-maker-search-container'

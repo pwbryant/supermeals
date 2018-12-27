@@ -59,7 +59,9 @@ let SAVE = (function() {
             $('#goal-meal-carbs-g').val('');
             $('#goal-meal-protein-g').val('');
             $('#meal-maker-search').val('');
+            $('#meal-maker-search').val('');
             $('#meal-maker-search-results-container').html('');
+            $('#meal-maker-food-search-container').addClass('hide');
             $('#goal-macros-bar-content').html('');
             $('#goal-macros-bar-footer').html('');
             $('#meal-maker-food-content').html('');
@@ -78,7 +80,6 @@ let SAVE = (function() {
 
             $.post('/meals/save-macro-meal', meal_info_obj, function(data) {
                 console.log('data', data);
-
                 if (data.status == 1) {
                     console.log('success');
                     $('#macro-meal-save-status').text("Successfully Saved!");
