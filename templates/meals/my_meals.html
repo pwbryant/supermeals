@@ -1,5 +1,5 @@
 <div class='l-flex--row-start'>
-    <div id='my-meals-easy-picks-container'>
+    <div id='my-meals-easy-picks-container' class='bm-margin--sm-right'>
             <div id='my-meals-easy-picks-input-wrapper'>
                 <select id='my-meals-select'>
                     <option value="meal" name='meal-or-recipe' checked>My Meals</option>
@@ -9,13 +9,18 @@
         <div id='my-meals-easy-picks-meals-container'></div>
     </div>
 
-    <div id='my-meals'>
-        <input id='my-meals-search' placeholder='Search My Meals' />
-        <button id='my-meals-search-button' class="icon">
-            <i class='fa fa-search'></i>
-        </button>
+    <div class='l-flex--col-start'>
+        <div id='my-meals' class='input l-flex--col-start'>
+            <label for='my-meals-search' class='input__label'>Search for your saved meals</label>
+            <div class='l-flex--row-start'>
+                <input id='my-meals-search' class='input__input input__input--lg' placeholder='Search My Meals' />
+                <button id='my-meals-search-button' class="icon">
+                    <i class='fa fa-search'></i>
+                </button>
+            </div>
+        </div>
+        <div id='my-meals-search-results-container'></div>
     </div>
-    <div id='my-meals-search-results-container'></div>
     <!-- The Modal -->
     <div id='my-meal-modal' class="modal">
 
@@ -23,7 +28,7 @@
         <div class='modal-content'>
             <div class="modal-header">
                 <span class="close-modal">&times;</span>
-                <h2 id='my-meals-modal-header'></h2>
+                <u><h2 id='my-meals-modal-header'></h2></u>
                 <h4 id='my-meals-modal-sub-header'></h4>
             </div>
             <div class="modal-body">

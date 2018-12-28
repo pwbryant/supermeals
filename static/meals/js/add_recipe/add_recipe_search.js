@@ -45,14 +45,15 @@ let ADD_RECIPE_SEARCH = (function() {
 
         create_ingredient_html: function(food_num, food_id, food_name, servings) {
 
-            let ingredient_html = `<div id='add-recipe-ingredient-${food_id}-container' class="input l-flex--row-start add-recipe-ingredient">`;
+            let ingredient_html = `<div id='add-recipe-ingredient-${food_id}-container' class='add-recipe-ingredient l-flex--row-btw '><div class='input l-flex--row-start'>`;
             // food name
-            ingredient_html += `<label id='add-recipe-ingredient-name-${food_id}' class='bm-margin--sm-right'>${food_name}</label>`;
+            ingredient_html += `<div class='add-recipe-ingredient-label bm-margin--md-right'><label id='add-recipe-ingredient-name-${food_id}' class='text--label'>${food_name}</label></div>`;
+
             ingredient_html += `<input type='hidden' name='ingredient_${food_num}' value='${food_id}' />`;
             // Amount
-            ingredient_html += `<div class='l-flex--col-start'><label for='add-recipe-ingredient-amt-${food_id}'>Amount</label><input id='add-recipe-ingredient-amt-${food_id}'type='text' name='ingredient_amount_${food_num}' /></div>`;
+            ingredient_html += `<div class='l-flex--col-start input bm-margin--sm-right'><label for='add-recipe-ingredient-amt-${food_id}' class='input__label'><u>Amount</u></label><input id='add-recipe-ingredient-amt-${food_id}'  class='input__input input__input--sm' type='text' name='ingredient_amount_${food_num}' /></div>`;
             // Unit
-            ingredient_html += `<div class='l-flex--col-start'><label for='add-recipe-ingredient-units-${food_id}'>Units</label><select id='add-recipe-ingredient-units-${food_id}' name='ingredient_unit_${food_num}'>`;
+            ingredient_html += `<div class='l-flex--col-start bm-margin--sm-right' ><label for='add-recipe-ingredient-units-${food_id}' class='input__label'><u>Units</u></label><select id='add-recipe-ingredient-units-${food_id}' name='ingredient_unit_${food_num}'>`;
 
             // first unit is grams
             // ingredient_html += '<option value="0">g</option>';
@@ -60,7 +61,7 @@ let ADD_RECIPE_SEARCH = (function() {
                 ingredient_html += `<option value='${e.servings__pk}'>${e.servings__description}</option>`;
             });
 
-            ingredient_html += `</select></div><i id='add-recipe-ingredient-exit-${food_id}' class='fa fa-times-circle add-recipe-ingredient-exit'></i>`;
+            ingredient_html += `</select></div></div><i id='add-recipe-ingredient-exit-${food_id}' class='fa fa-times-circle add-recipe-ingredient-exit'></i></div>`;
 
             ingredient_html += `<div id='add-recipe-ingredient-amount-${food_num}-errors' class='form-errors'></div>`;
 

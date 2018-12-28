@@ -9,7 +9,6 @@
 html, body {
     box-sizing: border-box;
     display: border-box;
-    /* font-family: "Philosopher"; */ 
     font-family: "Quicksand", sans-serif; 
     height: 100vh; 
     margin: 0;
@@ -28,7 +27,6 @@ a {
     border: none;
     color: #f9e34b;
     cursor: pointer;
-    /* font-family: "Philosopher"; */ 
     font-family: "Quicksand", sans-serif; 
     font-size: 20px;
     font-weight: bold;
@@ -58,6 +56,9 @@ a {
 
 .input__input {
     border-radius: 10px;
+    font-family: "Quicksand", sans-serif; 
+    font-size: 19px;
+    font-weight: bold;
     height: 30px;
     padding-left: 5px;
 }
@@ -77,6 +78,10 @@ a {
 
 .input__label {
     font-size: 20px;
+}
+
+.input__input--textarea {
+    height: 60px !important;
 }
 
 .input__label-black {
@@ -127,6 +132,12 @@ a {
     width:2em;
 }
 
+select {
+    height: 35px;
+    font-size: 20px;
+    font-family: "Quicksand", sans-serif; 
+}
+
 .table-like__cell--header {
     text-align: center;
 }
@@ -160,6 +171,13 @@ a {
     width: auto;
 }
 
+.width-max {
+    width: 100%;
+}
+
+.width-half {
+    width: 50%;
+}
 /****************************************************/
 /* Positional tags and classes
  * 
@@ -338,6 +356,17 @@ a {
      margin-right: 15px;
  }
 
+ .bm-margin--sm-left {
+     margin-left: 5px;
+ }
+
+ .bm-margin--md-left {
+     margin-left: 15px;
+ }
+
+ .bm-padding--md-bottom {
+     padding-bottom: 15px;
+ }
 /****************************************************/
 /* Style classes
  * 

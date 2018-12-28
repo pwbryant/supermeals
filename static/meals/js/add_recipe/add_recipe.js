@@ -1,13 +1,11 @@
 let ADD_RECIPE = (function() { 
 
-
     return {
-
         add_recipe_form_save: function() {
-
             this_add_recipe_obj = this;
-            $('#add-recipe-save-button').on('click', function() {
+            $('#add-recipe-form').on('submit', function(e) {
                 // clear any existing errors
+                e.preventDefault();
                 $('.form-errors').html('');
                 const form_valid = this_add_recipe_obj.add_recipe_validation();
                 console.log('clicked valid', form_valid);

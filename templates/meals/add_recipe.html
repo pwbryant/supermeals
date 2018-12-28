@@ -1,23 +1,25 @@
-<div class='l-flex--row-start'>
+<div class='l-flex--row-start '>
     {% include 'meals/search.html' with tab_name='add-recipe' %}
 
-    <form id='add-recipe-form'>
-        {% csrf_token %}
-        <div class='input l-flex--col-start'>
-            <label for='add-recipe-recipe-name'>Recipe Name</label>
-            <input id='add-recipe-recipe-name' name='name' type='text' />
-            <div id='add-recipe-name-errors' class='form-errors'></div>
-        </div>
-        <div class='input l-flex--col-start'>
-            <label for='add-recipe-notes'>Notes (optional):</label>
-            <textarea id='add-recipe-notes' name='notes' type='textarea'></textarea>
-        </div>
+    <div class='bm-margin--md-left width-half'>
+        <form id='add-recipe-form' >
+            {% csrf_token %}
+            <div class='input l-flex--col-start'>
+                <label for='add-recipe-recipe-name' class='input__label'>Recipe Name</label>
+                <input id='add-recipe-recipe-name' class='input__input input__input--lg' name='name' type='text' required />
+                <div id='add-recipe-name-errors' class='form-errors'></div>
+            </div>
+            <div class='input l-flex--col-start'>
+                <label for='add-recipe-notes' class='input__label'>Notes (optional):</label>
+                <textarea id='add-recipe-notes' class='input__input input__input--lg input__input--textarea' name='notes' type='textarea'></textarea>
+            </div>
 
-        <div id='add-recipe-ingredients-container'></div>
-        <div id='add-recipe-ingredients-container-errors'></div>
-        <button id='add-recipe-save-button' type='button'>Save Recipe</button>
-        <div id='add-recipe-save-status'></div>
-    </form>
+            <div id='add-recipe-ingredients-container'></div>
+            <div id='add-recipe-ingredients-container-errors'></div>
+            <button id='add-recipe-save-button' class='btn bm-margin--md-top' type='submit'>Save Recipe</button>
+            <div id='add-recipe-save-status'></div>
+        </form>
+    </div>
 </div>
 
 <script>

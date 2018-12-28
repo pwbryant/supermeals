@@ -248,7 +248,7 @@ var BARS = (function() {
             const macro_title = macro[0].toUpperCase() + macro.slice(1,);
             const label = `<span class='macro-label'>${macro_title}: </span>`;
             const amt = `<span id='${macro}-amt' class='macro-amt'></span>`;
-if (macro != 'cals') {
+            if (macro != 'cals') {
                 const unit = `<span class='macro-unit'>g</span>`;
                 $(`#${macro}-label-container`).html(label + amt + unit);
             } else {
@@ -362,7 +362,6 @@ if (macro != 'cals') {
 
             food_div += `<span id='food-amt-${food_id}' class='food-amt'></span>`;
             food_div += `<select id='food-amt-units-${food_id}' class='food-amt-units'>`;
-            food_div += `<option value='0'>g</option>`;
             food_macros_obj['servings'].forEach(function(obj, i) {
                 food_div += `<option value='${i+1}'>${obj.servings__description}</option>`;
             });
