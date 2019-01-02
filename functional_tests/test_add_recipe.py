@@ -188,10 +188,11 @@ class AddIngredientRecipeTest(FunctionalTest):
         )
         save_button.click()
 
-        self.check_element_content(
-            'add-recipe-name-errors',
-            'id', 'text', 'Enter recipe name'
-        )
+        validation_msg = self.browser.find_element_by_id(
+            'add-recipe-recipe-name'
+        ).get_attribute('validationMessage')
+        self.assertEqual(validation_msg, 'Please fill out this field.')
+
         recipe_name_input = self.browser.find_element_by_id(
             'add-recipe-recipe-name'
         )
@@ -245,6 +246,7 @@ class AddIngredientRecipeTest(FunctionalTest):
             'id', 'text', ''
         )
 
+        time.sleep(1)
         self.check_element_content(
             'add-recipe-save-status',
             'id', 'text', 'Recipe Saved'

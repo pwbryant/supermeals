@@ -1,4 +1,9 @@
+{% if tab_name == 'add-recipe' %}
+<div class='l-flex--row-start search-container width-half'>
+{% else %}
+
 <div class='l-flex--row-start search-container'>
+{% endif %}
     <div id='{{ tab_name }}-filter-container' class='l-flex--col-start search-filter-container'>
 
         <label for='{{ tab_name }}-filters' class='text--label'>Search Filters</label>

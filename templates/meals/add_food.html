@@ -4,9 +4,49 @@
 
         {% csrf_token %}
 
-        {{ add_food_form }}
+        <div class='input bm-margin--sm-bottom'>
+            <label for='{{ add_food_form.name.id_for_label }}' class='input__label'>{{ add_food_form.name.label }}</label><br>
+            {{ add_food_form.name }}
+        </div>
 
-        <button id='add-food-save' type='submit'>Save New Food</button>
+        <div class='input bm-margin--sm-bottom'>
+            <label for='{{ add_food_form.serving.id_for_label }}' class='input__label'>{{ add_food_form.serving.label }}</label><br>
+            {{ add_food_form.serving }}
+        </div>
+
+        <div class='input bm-margin--sm-bottom'>
+            <label for='{{ add_food_form.cals.id_for_label }}' class='input__label'>{{ add_food_form.cals.label }}</label><br>
+            {{ add_food_form.cals }}
+        </div>
+
+        <div class='input bm-margin--sm-bottom'>
+            <label for='{{ add_food_form.fat.id_for_label }}' class='input__label'>{{ add_food_form.fat.label }}</label><br>
+            {{ add_food_form.fat }}
+        </div>
+
+        <div class='input bm-margin--sm-bottom'>
+            <label for='{{ add_food_form.carbs.id_for_label }}' class='input__label'>{{ add_food_form.carbs.label }}</label><br>
+            {{ add_food_form.carbs }}
+        </div>
+
+        <div class='input bm-margin--sm-bottom'>
+            <label for='{{ add_food_form.sugar.id_for_label }}' class='input__label'>{{ add_food_form.sugar.label }}</label><br>
+            {{ add_food_form.sugar }}
+        </div>
+
+        <div class='input bm-margin--sm-bottom'>
+            <label for='{{ add_food_form.protein.id_for_label }}' class='input__label'>{{ add_food_form.protein.label }}</label><br>
+            {{ add_food_form.protein }}
+        </div>
+
+        <div class='input bm-margin--sm-bottom'>
+            <label for='{{ add_food_form.food_group.id_for_label }}' class='input__label'>{{ add_food_form.food_group.label }}</label><br>
+            {{ add_food_form.food_group }}
+        </div>
+
+
+        <div class='bm-margin--md-bottom'></div><!-- add some space befor button -->
+        <button id='add-food-save' class='btn' type='submit'>Save New Food</button>
         <div id='add-food-save-status'></div>
 
     </form>

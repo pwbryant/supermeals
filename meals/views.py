@@ -1,12 +1,9 @@
-from decimal import Decimal
 import json
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login
-from django.contrib.auth.decorators import user_passes_test
-from django.db.utils import IntegrityError
-from django.db import transaction
+from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 
 from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
@@ -14,7 +11,7 @@ from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
 from meals.models import Macros, Foods, FoodGroup, Ingredients, Servings, \
         FoodNotes, FoodType
 from meals.helpers import make_ingredient_formset, \
-        save_meal_notes_ingredients
+        save_meal_notes_ingredients, make_macro_breakdown_dict_list
 
 from meals.decorators import user_is_not_guest
 
@@ -28,12 +25,9 @@ BAD_REQUEST = 400
 OK = 200
 
 # Create your views here.
+@login_required
 def home_or_login(request):
-
-    if request.user.is_authenticated():
-        return render(request, TEMPLATES_DIR + 'base.html')
-
-    return redirect('login')
+    return render(request, TEMPLATES_DIR + 'base.html')
 
 
 def sign_up(request):
@@ -60,10 +54,8 @@ def create_account(request):
     return render(request, TEMPLATES_DIR + 'sign_up.html', {"form":form})
 
 
+@login_required
 def get_my_macros(request):
-
-    # if request.user.username == 'guest':
-    #     return render(request, TEMPLATES_DIR + 'bad_raw_url.html')
 
     form = MakeMacrosForm(unit_type='imperial')
     return render(request, TEMPLATES_DIR + 'my_macros.html', {
@@ -71,6 +63,7 @@ def get_my_macros(request):
     })
 
 
+@login_required
 def save_my_macros(request):
     """saves new Macro
 
@@ -103,51 +96,9 @@ def save_my_macros(request):
     return JsonResponse(context)
 
 
-
-def make_macro_breakdown_dict_list(macro):
-    """
-    Creates dictionaries to be used for the Macro inputs on the
-    meal maker tab.
-
-    Parameters
-    ----------
-        macro: Macros instance
-
-    Returns
-    ----------
-    macros_dict_list: list
-        list of dictionaries corresponding to each macro
-    """
-
-    fat_pct = macro.fat_percent
-    protein_pct = macro.protein_percent
-
-
-    macros_dict_list = [
-        {
-            'name':'Fat',
-            'percent':round(fat_pct),
-            'data':fat_pct
-        },
-        {
-            'name':'Carbs',
-            'percent':100 - (round(fat_pct) + round(protein_pct)),
-            'data':Decimal(100 - (fat_pct + protein_pct))
-        },
-        {
-            'name':'Protein',
-            'percent':round(protein_pct),
-            'data':protein_pct
-        }
-    ]
-
-    return macros_dict_list 
-
-
+@login_required
 def get_meal_maker_template(request):
     """passes saved info to meal_maker tab
-
-    Get saved Macros and MealTemplates to pass to meal_maker.html.
 
     Parameters
     ----------
@@ -160,20 +111,21 @@ def get_meal_maker_template(request):
         such as tdee, MealTemplate info, and the Macros breakdown
     """
 
-    macro_set = Macros.objects.filter(user = request.user)
-    form = MacroMealForm()
+    macro_set = Macros.objects.filter(user=request.user)
     if macro_set:
         macro = macro_set[0]
-        tdee = macro.calc_tdee()
-
         macro_breakdown_dict_list = make_macro_breakdown_dict_list(macro)
+        tdee = macro.calc_tdee()
         context = {
-            'tdee':round(tdee),
-            'macro_breakdown':macro_breakdown_dict_list,
-            'macro_meal_form': form
+            'tdee': round(tdee),
+            'has_macro': True
         }
     else:
-        context = {'macro_meal_form': form}
+        macro_breakdown_dict_list = make_macro_breakdown_dict_list()
+        context = {'has_macro': False}
+
+    context['macro_breakdown'] = macro_breakdown_dict_list
+    context['macro_meal_form'] = MacroMealForm()
 
     # informal name to use in input id, and to use in label
     context['filters'] = [
@@ -187,6 +139,7 @@ def get_meal_maker_template(request):
 
 
 @user_is_not_guest
+@login_required
 def save_macro_meal(request):
     """saves the models associated with a 'macro meal'
 
@@ -224,10 +177,12 @@ def save_macro_meal(request):
 
 
 @user_is_not_guest
+@login_required
 def get_my_meals(request):
     return render(request, TEMPLATES_DIR + 'my_meals.html')
 
 
+@login_required
 def search_foods(request, food_owner):
     """search db
 
@@ -273,6 +228,7 @@ def search_foods(request, food_owner):
     )
 
 
+@login_required
 def search_my_meals(request, meal_or_recipe):
 
     search_terms = request.GET['search_terms'].split(' ')
@@ -307,6 +263,7 @@ def search_my_meals(request, meal_or_recipe):
 
 
 @user_is_not_guest
+@login_required
 def add_recipe(request):
 
     context = {
@@ -323,6 +280,7 @@ def add_recipe(request):
 
 
 @user_is_not_guest
+@login_required
 def save_recipe(request):
 
     # request.POST['user'] = request.user
@@ -341,6 +299,7 @@ def save_recipe(request):
 
 
 @user_is_not_guest
+@login_required
 def add_food(request):
 
     if request.method == 'POST':

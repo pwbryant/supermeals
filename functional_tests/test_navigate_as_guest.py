@@ -73,7 +73,7 @@ class GuestTest(FunctionalTest):
         # he wants to save this info, he has to create an account
         save_area = self.browser.find_element_by_id('save-my-macros-guest')
         self.assertEqual(
-            save_area.text, 'To Save this info, create and account!!!'
+            save_area.text, 'To Save this info, create an account!!!'
         )
 
         # He sees that Meal Maker tabs are not grayed out

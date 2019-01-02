@@ -23,6 +23,7 @@ class FormValidation(FunctionalTest):
 
         bad_login_message = (
             'Your username and password didn\'t match. Please try again.'
+            '\nPlease login to see this page.'
         )
 
         # Joe goes to login but he failed to enter his username and password
@@ -56,6 +57,7 @@ class FormValidation(FunctionalTest):
         # Joe thinks twice about it and goes to hit cancel, but instead hits
         # the Create Account but the page doesn't submit because there arent
         # any fields filled in
+
         self.browser.find_element_by_id('create').click()
         self.browser.find_element_by_id('id_username') # shows no submit
 

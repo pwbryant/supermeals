@@ -21,16 +21,17 @@ class MakeMacroMealTest(FunctionalTest):
         # still make a meal.
         #He notices an input to enter the desired calories.
         self.check_element_content(
-            "label[for='goal-meal-cals-container']",
-            'css', 'text', 'How Many Calories?'
+            "label[for='goal-meal-cals']",
+            'css', 'text', 'How many calories in meal?'
         )
         self.check_element_content(
             'goal-meal-cals', 'id', 'placeholder', 'Cals'
         )
 
-        #Below he sees a table like area for entering the percentages/grams for each macros
-        macro_div = self.browser.find_element_by_id("goal-meal-macros-container")
-        macro_spans = macro_div.find_elements_by_css_selector("label")
+        # Below he sees a table like area for entering the percentages/grams
+        # for each macros
+        macro_div = self.browser.find_element_by_id('goal-meal-macros-container')
+        macro_spans = macro_div.find_elements_by_css_selector('label')
         self.assertEqual(macro_spans[0].text, 'Percent')
         self.assertEqual(macro_spans[1].text, 'Grams')
         self.assertEqual(macro_spans[2].text, 'Fat')
@@ -75,11 +76,6 @@ class MakeMacroMealTest(FunctionalTest):
 
         self.browser.find_element_by_id('meal-maker-tab').click()
         self.check_element_content('tdee', 'id', 'text', 'TDEE: 2166')
-        self.check_element_content(
-            "label[for='goal-meal-cals-container']", 'css', 'text',
-            'How Many Calories?')
-        self.check_element_content(
-            'goal-meal-cals', 'id', 'placeholder', 'Cals')
 
         # Below this input there is an  table like input area with
         # the macros "Fat"/"Carbs"/"Protein" and their

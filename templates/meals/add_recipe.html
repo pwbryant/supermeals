@@ -1,6 +1,8 @@
 <div class='l-flex--row-start '>
+    <div class='width-half s-border--right-thin'>
     {% include 'meals/search.html' with tab_name='add-recipe' %}
 
+    </div>
     <div class='bm-margin--md-left width-half'>
         <form id='add-recipe-form' >
             {% csrf_token %}
@@ -14,7 +16,9 @@
                 <textarea id='add-recipe-notes' class='input__input input__input--lg input__input--textarea' name='notes' type='textarea'></textarea>
             </div>
 
-            <div id='add-recipe-ingredients-container'></div>
+            <div id='add-recipe-ingredients-container'>
+                <p><u>Add Ingredients Using Search</u></p>
+            </div>
             <div id='add-recipe-ingredients-container-errors'></div>
             <button id='add-recipe-save-button' class='btn bm-margin--md-top' type='submit'>Save Recipe</button>
             <div id='add-recipe-save-status'></div>

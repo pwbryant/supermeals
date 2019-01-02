@@ -28,7 +28,7 @@ class AddFoodTest(FunctionalTest):
             'label[for="add-food-name"]'
         )[0].text
         name_input = self.browser.find_element_by_id('add-food-name')
-        self.assertEqual(name_label, 'Name:')
+        self.assertEqual(name_label, 'Food Name')
         name_input.send_keys('Potato Chips')
 
         serving_label = self.browser.find_elements_by_css_selector(
@@ -37,21 +37,21 @@ class AddFoodTest(FunctionalTest):
         serving_input = self.browser.find_element_by_id(
             'add-food-serving'
         )
-        self.assertEqual(serving_label, 'Serving:')
+        self.assertEqual(serving_label, 'Serving Size(in grams)')
         serving_input.send_keys('100')
 
         cals_label = self.browser.find_elements_by_css_selector(
             'label[for="add-food-cals"]'
         )[0].text
         cals_input = self.browser.find_element_by_id('add-food-cals')
-        self.assertEqual(cals_label, 'Cals:')
+        self.assertEqual(cals_label, 'Cals')
         cals_input.send_keys('536')
 
         fat_label = self.browser.find_elements_by_css_selector(
             'label[for="add-food-fat"]'
         )[0].text
         fat_input = self.browser.find_element_by_id('add-food-fat')
-        self.assertEqual(fat_label, 'Fat:')
+        self.assertEqual(fat_label, 'Fat')
         fat_input.send_keys('35')
 
         carbs_label = self.browser.find_elements_by_css_selector(
@@ -60,7 +60,7 @@ class AddFoodTest(FunctionalTest):
         carbs_input = self.browser.find_element_by_id(
             'add-food-carbs'
         )
-        self.assertEqual(carbs_label, 'Carbs:')
+        self.assertEqual(carbs_label, 'Carbs')
         carbs_input.send_keys('53')
 
         sugar_label = self.browser.find_elements_by_css_selector(
@@ -69,7 +69,7 @@ class AddFoodTest(FunctionalTest):
         sugar_input = self.browser.find_element_by_id(
             'add-food-sugar'
         )
-        self.assertEqual(sugar_label, 'Sugar:')
+        self.assertEqual(sugar_label, 'Sugar')
         sugar_input.send_keys('0.2')
 
         protein_label = self.browser.find_elements_by_css_selector(
@@ -78,7 +78,7 @@ class AddFoodTest(FunctionalTest):
         protein_input = self.browser.find_element_by_id(
             'add-food-protein'
         )
-        self.assertEqual(protein_label, 'Protein:')
+        self.assertEqual(protein_label, 'Protein')
         protein_input.send_keys('7')
 
         food_group_label = self.browser.find_elements_by_css_selector(
@@ -87,7 +87,7 @@ class AddFoodTest(FunctionalTest):
         food_group_select = Select(self.browser.find_element_by_id(
             'add-food-food-group'
         ))
-        self.assertEqual(food_group_label, 'Food Group:')
+        self.assertEqual(food_group_label, 'Food Group')
         food_group_select.select_by_visible_text('Snacks')
 
         save_button = self.browser.find_element_by_id('add-food-save')

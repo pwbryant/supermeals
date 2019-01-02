@@ -1,8 +1,58 @@
+from decimal import Decimal
 from django import forms
-from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
-
-from meals.models import Foods, FoodGroup, Ingredients, Servings, FoodNotes, FoodType
+from meals.models import FoodGroup, FoodNotes, FoodType
 from meals.forms import MacroIngredientForm
+
+
+def make_macro_breakdown_dict_list(macro=None):
+    """
+    Creates dictionaries to be used for the Macro inputs on the
+    meal maker tab.
+
+    Parameters
+    ----------
+        macro: Macros instance
+
+    Returns
+    ----------
+    macros_dict_list: list
+        list of dictionaries corresponding to each macro
+    """
+
+    macros_dict_list = [
+        {
+            'name':'Fat',
+            'percent': 0,
+            'data': 0
+        },
+        {
+            'name':'Carbs',
+            'percent': 0,
+            'data': 0
+        },
+        {
+            'name':'Protein',
+            'percent': 0,
+            'data': 0
+        }
+    ]
+
+    if macro:
+        fat_pct = macro.fat_percent
+        protein_pct = macro.protein_percent
+
+        macros_dict_list[0]['percent'] = round(fat_pct)
+        macros_dict_list[0]['data'] = fat_pct
+
+        macros_dict_list[1]['percent'] = 100 - (
+            round(fat_pct) + round(protein_pct)
+        )
+        macros_dict_list[1]['data'] = Decimal(100 - (fat_pct + protein_pct))
+
+        macros_dict_list[2]['percent'] = round(protein_pct)
+        macros_dict_list[2]['data'] = protein_pct
+
+    return macros_dict_list
 
 
 def get_ingredient_count(post_data):

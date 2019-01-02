@@ -21,7 +21,7 @@
             <label for='goal-meal-fat-percent' class='item text--label'>Percent</label>
             <label for='goal-meal-fat-g' class='item text--label'>Grams</label>
         </div>
-        {% if macro_breakdown %}
+        {% if has_macro %}
             {% for macro in macro_breakdown %}
                 <div class='input l-flex--row-start'>
                     <label for='goal-meal-{{ macro.name|lower }}-percent' class='item input__label'>{{ macro.name }}</label>
@@ -31,15 +31,14 @@
 
             {% endfor %}
         {% else %}
-            <label for='goal-meal-fat-percent' class='item'>Fat</label>
-            <input id='goal-meal-fat-percent' class='choose-macros choose-macros-pct item' name='goal-meal-fat-percent' type='text' placeholder='%' data-value='0'/>
-            <input id='goal-meal-fat-g' class='choose-macros choose-macros-g item' type='text' placeholder='g'/>
-            <label for='goal-meal-carbs-percent' class='item'>Carbs</label>
-            <input id='goal-meal-carbs-percent' class='choose-macros choose-macros-pct item' type='text' placeholder='%' data-value='0'/>
-            <input id='goal-meal-carbs-g' class='choose-macros choose-macros-g item' type='text' placeholder='g'/>
-            <label for='goal-meal-protein-percent' class='item'>Protein</label>
-            <input id='goal-meal-protein-percent' class='choose-macros choose-macros-pct item' type='text' placeholder='%' data-value='0'/>
-            <input id='goal-meal-protein-g' class='choose-macros choose-macros-g item' type='text' placeholder='g'/>
+            {% for macro in macro_breakdown %}
+                <div class='input l-flex--row-start'>
+                    <label for='goal-meal-{{ macro.name|lower }}-percent' class='item input__label'>{{ macro.name }}</label>
+                    <input id='goal-meal-{{ macro.name|lower }}-percent' class='choose-macros choose-macros-pct item input__input input__input--sm' type='text' placeholder='%' data-value='0' value=''/>
+                    <input id='goal-meal-{{ macro.name|lower }}-g' class='choose-macros choose-macros-g item input__input input__input--sm' type='text' placeholder='g'/>
+                </div>
+
+            {% endfor %}
         {% endif %}
     </div> 
     <div id='goal-meal-macro-percent-total-container' class='l-flex--row-start'>

@@ -53,34 +53,59 @@ class RoundedDecimalField(forms.DecimalField):
 
 class NewFoodForm(forms.ModelForm):
 
+    small_input_class = 'input__input input__input--sm'
     serving = forms.DecimalField(
-        max_digits=6, decimal_places=2, widget=forms.TextInput(
-            attrs={'id': 'add-food-serving'}
+        label='Serving Size(in grams)', max_digits=6, decimal_places=2,
+        widget=forms.TextInput(
+            attrs={
+                'id': 'add-food-serving',
+                'class': small_input_class,
+                'placeholder': 'g'
+            }
         )
     )
     cals = forms.DecimalField(
         max_digits=6, decimal_places=2, widget=forms.TextInput(
-            attrs={'id': 'add-food-cals'}
+            attrs={
+                'id': 'add-food-cals',
+                'class': small_input_class
+            }
         )
     )
     fat = forms.DecimalField(
         max_digits=6, decimal_places=2, widget=forms.TextInput(
-            attrs={'id': 'add-food-fat'}
+            attrs={
+                'id': 'add-food-fat',
+                'class': small_input_class,
+                'placeholder': 'g'
+            }
         )
     )
     carbs = forms.DecimalField(
         max_digits=6, decimal_places=2, widget=forms.TextInput(
-            attrs={'id': 'add-food-carbs'}
+            attrs={
+                'id': 'add-food-carbs',
+                'class': small_input_class,
+                'placeholder': 'g'
+            }
         )
     )
     sugar = forms.DecimalField(
         max_digits=6, decimal_places=2, widget=forms.TextInput(
-            attrs={'id': 'add-food-sugar'}
+            attrs={
+                'id': 'add-food-sugar',
+                'class': small_input_class,
+                'placeholder': 'g'
+            }
         )
     )
     protein = forms.DecimalField(
         max_digits=6, decimal_places=2, widget=forms.TextInput(
-            attrs={'id': 'add-food-protein'}
+            attrs={
+                'id': 'add-food-protein',
+                'class': small_input_class,
+                'placeholder': 'g'
+            }
         )
     )
 
@@ -95,11 +120,20 @@ class NewFoodForm(forms.ModelForm):
         )
     )
 
-
     class Meta:
         model = Foods
         fields = ['name']
-        widgets = {'name': forms.TextInput(attrs={'id': 'add-food-name'})}
+        widgets = {
+            'name': forms.TextInput(
+                attrs={
+                    'id': 'add-food-name',
+                    'class': 'input__input input__input--lg'
+                }
+            )
+        }
+        labels = {
+            'name': 'Food Name'
+        }
 
 
     def save(self):
@@ -121,6 +155,7 @@ class NewFoodForm(forms.ModelForm):
         )
         food.save()
                     
+
 
 
 class MealRecipeForm(forms.ModelForm):

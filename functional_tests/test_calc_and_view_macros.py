@@ -75,8 +75,13 @@ class CalcAndViewMacros(FunctionalTest):
         self.check_element_content(
             "input[type='radio'][value='none']", 'css', 'value', 'none'
         )
+
+        activty_label = (
+            "Activity Level (Don't get hung up on these. When in doubt, "
+            "be conservative)"
+        )
         self.check_element_content(
-            'label[for="activity-inputs"]', 'css', 'text', 'Activity Level'
+            'label[for="activity-inputs"]', 'css', 'text', activty_label
         )
         none_activity = self.browser.find_elements_by_css_selector(
             "input[type='radio'][value='none']"
