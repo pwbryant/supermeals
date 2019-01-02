@@ -36,7 +36,6 @@ BAD_USERNAME, BAD_PASSWORD = 'bad', 'badpass'
 class BaseTestCase(TestCase):
     
     def log_in_user(self, username, password):
-
         user = User.objects.create_user(username=username, password=password)
         self.client.post(
             '/accounts/login/',
@@ -789,10 +788,10 @@ class LoginLogoffTest(TestCase):
     def test_anonymous_user_home_redirects_to_login_template(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/accounts/login/')
+        self.assertEqual(response['location'], '/accounts/login/?next=/')
 
     def test_can_login_as_authenticated_user(self):
-        username,password = USERNAME,PASSWORD
+        username, password = USERNAME, PASSWORD
         user = User.objects.create_user(username=username,password=password)
         response = self.client.post('/accounts/login/', data={'username':username, 'password':password})
         
@@ -800,31 +799,50 @@ class LoginLogoffTest(TestCase):
         self.assertEqual(response['location'], '/')
 
     def test_can_login_as_guest(self):
-        guest_user = User.objects.create_user(username=GUEST_USERNAME,password=GUEST_PASSWORD)
-        response = self.client.post('/accounts/login/', data={'username':GUEST_USERNAME, 'password':GUEST_PASSWORD})
+        guest_user = User.objects.create_user(
+            username=GUEST_USERNAME, password=GUEST_PASSWORD
+        )
+        response = self.client.post(
+            '/accounts/login/', data={
+                'username':GUEST_USERNAME, 'password':GUEST_PASSWORD
+            }
+        )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/')
 
     def test_login_error_renders_login_page(self):
-        response = self.client.post('/accounts/login/', data={'username':BAD_USERNAME, 'password':BAD_PASSWORD})
-        self.assertEqual(response.status_code,200)
-        self.assertTemplateUsed(response,'registration/login.html')
+        response = self.client.post(
+            '/accounts/login/', data={
+                'username':BAD_USERNAME, 'password':BAD_PASSWORD
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'registration/login.html')
 
     def test_login_error_shows_up_on_login_page(self):
-        response = self.client.post('/accounts/login/', data={'username':BAD_USERNAME, 'password':BAD_PASSWORD})
+        response = self.client.post(
+            '/accounts/login/', data={
+                'username':BAD_USERNAME, 'password':BAD_PASSWORD
+            }
+        )
         expected_error = "Your username and password didn't match. Please try again."
-        self.assertContains(response,expected_error)
+        self.assertContains(response, expected_error)
 
     def test_logoff(self):
-        guest_user = User.objects.create_user(username=GUEST_USERNAME,password=GUEST_PASSWORD)
-        response = self.client.post('/accounts/login/', data={'username':GUEST_USERNAME, 'password':GUEST_PASSWORD})
+        guest_user = User.objects.create_user(
+            username=GUEST_USERNAME, password=GUEST_PASSWORD
+        )
+        response = self.client.post(
+            '/accounts/login/', data={
+                'username':GUEST_USERNAME, 'password':GUEST_PASSWORD
+            }
+        )
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'meals/base.html')
 
-        response = self.client.post('/accounts/logout/')
+        response = self.client.get('/accounts/logout/')
         response = self.client.get('/')
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/accounts/login/')
+        self.assertEqual(response['location'], '/accounts/login/?next=/')
 
 
 class CreateAccountTest(TestCase):
@@ -907,6 +925,7 @@ class MyMacrosTabTest(BaseTestCase):
 
     def setUp(self):
 
+        self.log_in_user(USERNAME, PASSWORD)
         self.url = reverse('my_macros')
 
     SHARED_MACRO_DATA = {'gender':'male','age':'34','activity':'none','direction':'lose','fat-g':'10','fat-pct':'30',
