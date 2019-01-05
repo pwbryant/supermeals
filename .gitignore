@@ -16,3 +16,8 @@ static/meals/js/d3/
 static/meals/tests/qunit.js
 static/meals/tests/qunit.css
 *.swp
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
