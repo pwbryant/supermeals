@@ -23,7 +23,7 @@ BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 SECRET_KEY = '^vplbekluo44&d_52u(ap#bl4!!fmt6dpc4^($x915g98tnjja'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['mlab.us-east-2.elasticbeanstalk.com', '127.0.0.1']
 
