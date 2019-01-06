@@ -20,32 +20,11 @@ BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 # SECURITY WARNING: keep the secret key used in production secret!
 
-def find_or_create_secret_key():
-    """ 
-    Look for secret_key.py and return the SECRET_KEY entry in it if the
-    file exists. Otherwise, generate a new secret key, save it in
-    secret_key.py, and return the key.
-    """
-    SECRET_KEY_DIR = os.path.dirname(__file__)
-    SECRET_KEY_FILEPATH = os.path.join(SECRET_KEY_DIR, 'secret_key.py') 
-    sys.path.insert(1,SECRET_KEY_DIR) 
 
-    if os.path.isfile(SECRET_KEY_FILEPATH):
-        from secret_key import SECRET_KEY
-        return SECRET_KEY
-    else:
-        from django.utils.crypto import get_random_string
-        chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&amp;*(-_=+)'
-        new_key = get_random_string(50, chars)
-        with open(SECRET_KEY_FILEPATH, 'w') as f:
-            f.write(
-                "# Django secret key\n# Do NOT check this into version control."
-                "\n\nSECRET_KEY = '%s'\n" % new_key
-            )
-        from secret_key import SECRET_KEY
-        return SECRET_KEY
-
-SECRET_KEY = find_or_create_secret_key()
+if 'DJANGO_SECRET_KEY' in os.environ:
+    SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+else:
+    SECRET_KEY = '^_2aa*k$wbacum-z^ram)_i54t(c3g@e-2f_z5n@!!6#l3ja%='
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -80,14 +59,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'supermeals.urls'
 
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates/'),
-)
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': TEMPLATE_DIRS,
+        'DIRS': os.path.join(BASE_DIR, 'templates/'),
         'APP_DIRS': True,
         'OPTIONS': {
             'debug': DEBUG,
