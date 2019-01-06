@@ -1,22 +1,10 @@
-db.sqlite3
-geckodriver.log
-__pycache__
-*.pyc
-.ipynb_checkpoints/
-Untitled.ipynb
-sandbox.ipynb
-meals/static/d3/
-virtualenv
+virtualenv/
 tmp/
-meals/static/meals/js/d3/
-add food to db.ipynb
-static/meals/bootstrap/
-static/meals/js/d3/
-static/meals/tests/qunit.js
-static/meals/tests/qunit.css
-*.swp
-
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
+__pycache__
+.elasticbeanstalk/
+.ipynb_checkpoints/
+geckodriver.log
+*.ipynb
+supermeals/secret_key.py
+qunit.css
+qunit.js
