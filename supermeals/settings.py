@@ -78,7 +78,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'supermeals.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 if 'RDS_DB_NAME' in os.environ:
@@ -96,7 +95,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'meal_maker_new_db',
+            'NAME': 'meal_maker',
             'USER': 'paul',
             'PASSWORD': 'password',
             'HOST': 'localhost',
