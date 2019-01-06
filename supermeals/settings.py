@@ -25,7 +25,7 @@ SECRET_KEY = '^vplbekluo44&d_52u(ap#bl4!!fmt6dpc4^($x915g98tnjja'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['http://mlab.us-east-2.elasticbeanstalk.com/', '127.0.0.1']
 
 
 # Application definition
