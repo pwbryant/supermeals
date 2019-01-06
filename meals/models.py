@@ -101,7 +101,6 @@ class FoodGroup(models.Model):
     informal_name = models.TextField(blank=False)
     informal_rank = models.IntegerField(blank=True, null=True)
 
-
     class Meta:
         ordering = ('informal_rank',)
 

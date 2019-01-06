@@ -92,6 +92,7 @@ if 'RDS_DB_NAME' in os.environ:
         }
     }
 else:
+    print('else')
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
