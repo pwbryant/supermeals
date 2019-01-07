@@ -23,7 +23,7 @@ BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 if 'DJANGO_SECRET_KEY' in os.environ:
     # DEPLOY SETTINGS
     SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
-    SESSION_COOKIE_SECURE = True
+    # SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
