@@ -22,6 +22,7 @@ const MY_MEALS_SEARCH = (function() {
 
         easy_picks: function() {
             $('#my-meals-select').on('change', function() {
+                console.log('select chante');
                 const meal_or_recipe = $('#my-meals-select').find(':selected').val();
                 const search_terms = '_all_';
                 const destination_id = '#my-meals-easy-picks-meals-container'
@@ -36,6 +37,7 @@ const MY_MEALS_SEARCH = (function() {
 			this_obj[meal_storage] = {};
             const search_data = {'search_terms': search_terms};
             $.get(`/meals/search-my-meals/${meal_or_recipe}/`, search_data, function(data) {
+                console.log('response data', data);
                 const search_results = data['search-results'];
 
                 search_results_html = SEARCH.format_food_search_results(

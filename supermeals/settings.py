@@ -19,9 +19,9 @@ BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 # SECURITY WARNING: keep the secret key used in production secret!
 
-
 if 'DJANGO_SECRET_KEY' in os.environ:
     # DEPLOY SETTINGS
+    DEBUG = False
     SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
     # SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
@@ -29,11 +29,11 @@ if 'DJANGO_SECRET_KEY' in os.environ:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
 else:
+    DEBUG = True
     SECRET_KEY = '^_2aa*k$wbacum-z^ram)_i54t(c3g@e-2f_z5n@!!6#l3ja%='
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
 
 ALLOWED_HOSTS = ['mlab.us-east-2.elasticbeanstalk.com', '127.0.0.1']
 
