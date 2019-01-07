@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
-import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
@@ -22,9 +21,16 @@ BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 
 
 if 'DJANGO_SECRET_KEY' in os.environ:
+    # DEPLOY SETTINGS
     SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
 else:
     SECRET_KEY = '^_2aa*k$wbacum-z^ram)_i54t(c3g@e-2f_z5n@!!6#l3ja%='
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -33,7 +39,6 @@ ALLOWED_HOSTS = ['mlab.us-east-2.elasticbeanstalk.com', '127.0.0.1']
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -62,7 +67,7 @@ ROOT_URLCONF = 'supermeals.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': os.path.join(BASE_DIR, 'templates/'),
+        'DIRS': (os.path.join(BASE_DIR, 'templates/'),),
         'APP_DIRS': True,
         'OPTIONS': {
             'debug': DEBUG,
@@ -148,3 +153,5 @@ STATICFILES_DIRS = (
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = '/'
+
+

@@ -15,6 +15,7 @@ from meals.helpers import make_ingredient_formset, \
 
 from meals.decorators import user_is_not_guest
 
+from supermeals.settings import SECRET_KEY
 
 # Constants
 KG_TO_LB = .45359237
@@ -27,7 +28,8 @@ OK = 200
 # Create your views here.
 @login_required
 def home_or_login(request):
-    return render(request, TEMPLATES_DIR + 'base.html')
+    context = {'key': SECRET_KEY}
+    return render(request, TEMPLATES_DIR + 'base.html', context)
 
 
 def sign_up(request):
