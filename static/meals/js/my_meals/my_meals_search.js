@@ -21,6 +21,7 @@ const MY_MEALS_SEARCH = (function() {
         },
 
         easy_picks: function() {
+            console.log('easy pick defined');
             $('#my-meals-select').on('change', function() {
                 console.log('select chante');
                 const meal_or_recipe = $('#my-meals-select').find(':selected').val();
