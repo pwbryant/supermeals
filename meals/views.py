@@ -129,10 +129,10 @@ def get_meal_maker_template(request):
     # informal name to use in input id, and to use in label
     context['filters'] = [
         {
-            'id_name': fg['informal_name'].lower().replace(' ', '-'),
-            'informal_name': fg['informal_name']
+            'id_name': fg['name'].lower().replace(' ', '-'),
+            'name': fg['name']
         } for fg in
-        FoodGroup.objects.all().values('informal_name').distinct()
+        FoodGroup.objects.all().values('name').distinct()
     ]
     return render(request, TEMPLATES_DIR + 'meal_maker.html', context)
 
@@ -268,10 +268,10 @@ def add_recipe(request):
     context = {
         'filters': [
             {
-                'id_name': fg['informal_name'].lower().replace(' ', '-'),
-                'informal_name': fg['informal_name']
+                'id_name': fg['name'].lower().replace(' ', '-'),
+                'name': fg['name']
             } for fg in
-            FoodGroup.objects.all().values('informal_name').distinct()
+            FoodGroup.objects.all().values('name')
         ]
     }
 

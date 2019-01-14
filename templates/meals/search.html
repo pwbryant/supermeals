@@ -15,8 +15,8 @@
             </div>
             {% for filter_obj in filters %}
                 <div class='l-flex--row-start'>
-                    <input id='{{ tab_name }}-filter-{{ filter_obj.id_name }}' class='filter {{ tab_name }}-filter' type='checkbox' name='filter' value='{{ filter_obj.informal_name }}' />
-                    <label for='{{ tab_name }}-filter-{{ filter_obj.id_name }}'>{{ filter_obj.informal_name }}</label>
+                    <input id='{{ tab_name }}-filter-{{ filter_obj.id_name }}' class='filter {{ tab_name }}-filter' type='checkbox' name='filter' value='{{ filter_obj.name }}' />
+                    <label for='{{ tab_name }}-filter-{{ filter_obj.id_name }}'>{{ filter_obj.name }}</label>
                 </div>
             {% endfor %}
         </div>

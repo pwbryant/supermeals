@@ -20,24 +20,20 @@ class MakeMacroMealTest(FunctionalTest):
     def this_setup(self):
 
         veg_food_group = FoodGroup.objects.create(
-            name='Vegatables',
-            informal_name='Veggies',
-            informal_rank=2
+            name='Veggies',
+            rank=2
         )
         legume_food_group = FoodGroup.objects.create(
             name='Legumes',
-            informal_name='Veggies',
-            informal_rank=2
+            rank=2
         )
         pork_food_group = FoodGroup.objects.create(
-            name='Pork',
-            informal_name='Meat',
-            informal_rank=3
+            name='Meat',
+            rank=3
         )
         my_meals_food_group = FoodGroup.objects.create(
             name='My Meals',
-            informal_name='My Meals',
-            informal_rank=1
+            rank=1
         )
 
         FoodType.objects.create(name='meal')

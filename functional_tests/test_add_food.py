@@ -13,7 +13,7 @@ class AddFoodTest(FunctionalTest):
     def setUp(self):
         super().setUp()
         FoodType.objects.create(name='food')
-        FoodGroup.objects.create(name='Snacks', informal_name='Snacks')
+        FoodGroup.objects.create(name='Snacks')
 
     def test_add_food(self):
 

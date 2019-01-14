@@ -9,19 +9,16 @@ class MakeMacroMealTest(FunctionalTest):
     def this_setup(self):
 
         veg_food_group = FoodGroup.objects.create(
-            name='Vegatables',
-            informal_name='Veggies',
-            informal_rank=1
+            name='Veggies',
+            rank=1
         )
-        legume_food_group = FoodGroup.objects.create(
-            name='Legumes',
-            informal_name='Veggies',
-            informal_rank=1
-        )
+        # legume_food_group = FoodGroup.objects.create(
+        #     name='Legumes',
+        #     rank=1
+        # )
         pork_food_group = FoodGroup.objects.create(
-            name='Pork',
-            informal_name='Meat',
-            informal_rank=2
+            name='Meat',
+            rank=2
         )
 
         names = ['Chickpeas', 'Carrots', 'Bacon', 'Lettuce']
@@ -32,9 +29,7 @@ class MakeMacroMealTest(FunctionalTest):
 
         foods = []
         for i, name in enumerate(names):
-            if name == 'Chickpeas':
-                fd_group = legume_food_group
-            elif name == 'Bacon':
+            if name == 'Bacon':
                 fd_group = pork_food_group
             else:
                 fd_group = veg_food_group
@@ -133,6 +128,7 @@ class MakeMacroMealTest(FunctionalTest):
         search_results = self.setup_and_run_search(
             search_terms, [veg_filter], tab_name
         )
+
         self.assertEqual(len(search_results), 4)
 
         search_results = self.setup_and_run_search(

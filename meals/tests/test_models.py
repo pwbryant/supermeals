@@ -78,10 +78,10 @@ class FoodsTest(TestCase):
 
         # Food Groups
         meal_group = FoodGroup.objects.create(
-            name='My Meals', informal_name='My Meals'
+            name='My Meals'
         )
         recipe_group = FoodGroup.objects.create(
-            name='My Recipes', informal_name='My Recipes'
+            name='My Recipes'
         )
 
         self.food1 = Foods.objects.create(

@@ -16,7 +16,7 @@ class MyMealTests(FunctionalTest):
     def create_recipes(self, user):
 
         recipe_group = FoodGroup.objects.create(
-            name='My Recipes', informal_name='My Recipes'
+            name='My Recipes'
         )
 
         if not Foods.objects.filter(name='Ham Sandwich'):
@@ -45,7 +45,7 @@ class MyMealTests(FunctionalTest):
     def create_meals(self, user):
 
         meal_group = FoodGroup.objects.create(
-            name='My Meals', informal_name='My Meals'
+            name='My Meals'
         )
         first_date = datetime.now()
         self.ham_sandwich = Foods.objects.create(

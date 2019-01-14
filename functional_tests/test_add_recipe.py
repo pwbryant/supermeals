@@ -14,28 +14,28 @@ class AddIngredientRecipeTest(FunctionalTest):
 
         #create FoodGroups
         self.my_meals_food_group = FoodGroup.objects.create(
-            name='My Meals', informal_name='My Meals', informal_rank=1
+            name='My Meals', rank=1
         )
 
         self.my_recipe_food_group = FoodGroup.objects.create(
-            name='My Recipes', informal_name='My Recipes', informal_rank=2
+            name='My Recipes', rank=2
         )
         self.veg_food_group = FoodGroup.objects.create(
-            name='Vegatables', informal_name='Veggies', informal_rank=3
+            name='Vegatables', rank=3
         )
 
         self.meat_food_group = FoodGroup.objects.create(
-            name='Meat', informal_name='Meat', informal_rank=4
+            name='Meat', rank=4
         )
 
         # create recipe FoodType
         self.my_recipe_food_type = FoodType.objects.create(name='recipe')
             
         self.filters = [
-            self.my_meals_food_group.informal_name, 
-            self.my_recipe_food_group.informal_name, 
-            self.veg_food_group.informal_name,
-            self.meat_food_group.informal_name
+            self.my_meals_food_group.name, 
+            self.my_recipe_food_group.name, 
+            self.veg_food_group.name,
+            self.meat_food_group.name
         ]
 
         # all macro info just copied from one food 

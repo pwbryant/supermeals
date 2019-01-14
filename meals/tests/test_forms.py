@@ -70,10 +70,10 @@ class NewFoodFormTest(BaseTestCase):
             'carbs': 1.7,
             'sugar': 2.6,
             'protein': 2.8,
-            'food_group': 'Vegetables and Vegetable Products'
+            'food_group': 'Veggies'
         }
 
-        FoodGroup.objects.create(name='Vegetables and Vegetable Products')
+        FoodGroup.objects.create(name='Veggies')
         FoodType.objects.create(name='food')
 
     def test_NewFoodForm_valid(self):
@@ -165,7 +165,7 @@ class RecipeFormTest(BaseTestCase):
         self.copy_food.save()
 
         # FoodGroup and FoodType creation
-        FoodGroup.objects.create(name='My Recipes', informal_name='My Recipes')
+        FoodGroup.objects.create(name='My Recipes')
         FoodType.objects.create(name='recipe')
 
 

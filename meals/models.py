@@ -98,14 +98,13 @@ class FoodGroup(models.Model):
     """ USDA DB Food Group"""
 
     name = models.TextField(blank=False, unique=True)
-    informal_name = models.TextField(blank=False)
-    informal_rank = models.IntegerField(blank=True, null=True)
+    rank = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        ordering = ('informal_rank',)
+        ordering = ('rank',)
 
     def __repr__(self):
-        return f'{self.name}, {self.informal_name}, {self.informal_rank}'
+        return f'{self.name}, {self.rank}'
 
 
 class SearchFoods(models.Manager):
@@ -130,7 +129,7 @@ class SearchFoods(models.Manager):
             query_set = self.get_queryset()
 
         if filters: 
-            query_set = query_set.filter(food_group__informal_name__in=filters)
+            query_set = query_set.filter(food_group__name__in=filters)
 
         rank_on_field = SearchVector(rank_on_field)
 

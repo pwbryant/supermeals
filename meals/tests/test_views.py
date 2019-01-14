@@ -56,7 +56,7 @@ class NewFoodTest(BaseTestCase):
         self.get_response = self.client.get(self.url)
 
         FoodGroup.objects.create(
-            name='Vegetables and Vegetable Products', informal_name='Veggies'
+            name='Veggies'
         )
         FoodType.objects.create(name='food')
 
@@ -68,7 +68,7 @@ class NewFoodTest(BaseTestCase):
             'carbs': Decimal(10),
             'sugar': Decimal(5),
             'protein': Decimal(2),
-            'food_group': 'Vegetables and Vegetable Products'
+            'food_group': 'Veggies'
         }
 
     def test_add_food_url(self):
@@ -122,13 +122,13 @@ class AddRecipeTest(BaseTestCase):
         )
 
         self.my_meals_fg = FoodGroup.objects.create(
-            name='My Meals', informal_name='My Meals'
+            name='My Meals'
         )
         self.veg_fg = FoodGroup.objects.create(
-            name='Vegatables', informal_name='Veggies'
+            name='Veggies'
         )
         self.meat_fg = FoodGroup.objects.create(
-            name='Meats', informal_name='Meats'
+            name='Meats'
         )
 
         self.peanut_butter = Foods.objects.create(
@@ -168,7 +168,7 @@ class AddRecipeTest(BaseTestCase):
             }
 
         # FoodGroup and FoodType creation
-        FoodGroup.objects.create(name='My Recipes', informal_name='My Recipes')
+        FoodGroup.objects.create(name='My Recipes')
         FoodType.objects.create(name='recipe')
 
 
@@ -189,9 +189,9 @@ class AddRecipeTest(BaseTestCase):
         url = reverse('add_recipe')
         response = self.client.get(url)
 
-        self.assertContains(response, self.my_meals_fg.informal_name)
-        self.assertContains(response, self.veg_fg.informal_name)
-        self.assertContains(response, self.meat_fg.informal_name)
+        self.assertContains(response, self.my_meals_fg.name)
+        self.assertContains(response, self.veg_fg.name)
+        self.assertContains(response, self.meat_fg.name)
 
 
     def test_save_recipe_new_food_has_user_set(self):
@@ -235,10 +235,10 @@ class MyMealsTest(BaseTestCase):
 
         # Food Groups
         meal_group = FoodGroup.objects.create(
-            name='My Meals', informal_name='My Meals'
+            name='My Meals'
         )
         recipe_group = FoodGroup.objects.create(
-            name='My Recipes', informal_name='My Recipes'
+            name='My Recipes'
         )
 
         self.roasted_broccoli = Foods.objects.create(
@@ -470,7 +470,7 @@ class MacroMealMakerTest(BaseTestCase):
         self.food_type_food = FoodType.objects.create(name='food')
         self.food_type_meal = FoodType.objects.create(name='meal')
         self.food_group_meal = FoodGroup.objects.create(
-            name='My Meals', informal_name='My Meals'
+            name='My Meals'
         )
 
         self.ingredient1 = Foods.objects.create(
@@ -609,14 +609,12 @@ class MealMakerTest(BaseTestCase):
     #################################
     def create_foods_for_search(self, user):
         veg_food_group = FoodGroup.objects.create(
-            name='Vegatables',
-            informal_name='Veggies',
-            informal_rank=1
+            name='Veggies',
+            rank=1
         )
         meat_food_group = FoodGroup.objects.create(
-            name='Beef',
-            informal_name='Meat',
-            informal_rank=2
+            name='Meat',
+            rank=2
         )
 
         Foods.objects.create(
@@ -633,8 +631,8 @@ class MealMakerTest(BaseTestCase):
         )
 
         self.all_filters = [
-            v['informal_name'] for v in
-            FoodGroup.objects.all().values('informal_name').distinct()
+            v['name'] for v in
+            FoodGroup.objects.all().values('name').distinct()
         ]
 
 
@@ -731,7 +729,7 @@ class MealMakerTest(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'meals/meal_maker.html')
 
-    def test_get_meal_maker_context_contains_food_group_informal_names(self):
+    def test_get_meal_maker_context_contains_food_group_names(self):
         user = self.log_in_user(USERNAME, PASSWORD)
         self.create_foods_for_search(user)
         response = self.client.get('/meals/meal-maker/')

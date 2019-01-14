@@ -111,7 +111,7 @@ class NewFoodForm(forms.ModelForm):
 
     choices = tuple(
         (fg['name'], fg['name'],) for fg
-        in FoodGroup.objects.all().values('name').distinct()
+        in FoodGroup.objects.all().values('name')
         if not fg['name'].startswith('My')
     )
     # choices = (('dummy', 'dummy',),)
