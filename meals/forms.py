@@ -1,3 +1,7 @@
+import os
+from decimal import Decimal
+from supermeals.settings import BASE_DIR
+
 from django import forms
 from django.forms import ModelForm
 from django.contrib.auth.models import User
@@ -5,7 +9,6 @@ from django.core.exceptions import ValidationError
 from meals.models import Macros, Foods, Ingredients, Servings, FoodNotes, \
     FoodGroup, FoodType
 
-from decimal import Decimal
 
 
 #LoginForm/SignUpForm errors
@@ -109,12 +112,14 @@ class NewFoodForm(forms.ModelForm):
         )
     )
 
-    choices = tuple(
-        (fg['name'], fg['name'],) for fg
-        in FoodGroup.objects.all().values('name')
-        if not fg['name'].startswith('My')
-    )
-    # choices = (('dummy', 'dummy',),)
+    with open(
+            os.path.join(BASE_DIR, 'data', 'meals', 'food_groups.csv'), 'r'
+        ) as food_groups_file:
+        food_groups = food_groups_file.readlines()
+        choices = tuple(
+            (fd_grp.strip(), fd_grp.strip(),) for fd_grp in food_groups
+        )
+
     food_group = forms.ChoiceField(
         choices=choices, label='Food Group', widget=forms.Select(
             attrs={'id': 'add-food-food-group'},
