@@ -115,10 +115,11 @@ class NewFoodForm(forms.ModelForm):
     with open(
             os.path.join(BASE_DIR, 'data', 'meals', 'food_groups.csv'), 'r'
         ) as food_groups_file:
-        food_groups = food_groups_file.readlines()
-        choices = tuple(
-            (fd_grp.strip(), fd_grp.strip(),) for fd_grp in food_groups
-        )
+        
+        choices = [
+            (fd_grp.strip(), fd_grp.strip(),) for fd_grp
+            in food_groups_file.readlines()
+        ]
 
     food_group = forms.ChoiceField(
         choices=choices, label='Food Group', widget=forms.Select(
