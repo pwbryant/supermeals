@@ -101,14 +101,24 @@ if 'RDS_DB_NAME' in os.environ:
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'meal_maker',
-            'USER': 'paul',
-            'PASSWORD': 'password',
-            'HOST': 'localhost',
-            'PORT': '',
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'ebdb',
+            'USER': 'ebroot',
+            'PASSWORD': 'Wptoorbe1!',
+            'HOST': 'aas1yqzv5g8jai.c8ktcx42to7h.us-east-2.rds.amazonaws.com',
+            'PORT': '5432',
         }
     }
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.postgresql',
+    #         'NAME': 'meal_maker',
+    #         'USER': 'paul',
+    #         'PASSWORD': 'password',
+    #         'HOST': 'localhost',
+    #         'PORT': '',
+    #     }
+    # }
 
 
 # Password validation

@@ -4,11 +4,12 @@ from decimal import Decimal
 import os
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.http import HttpRequest
 
 from meals.models import Macros, Servings
+from supermeals.settings import DATABASES as dbs
 
 class FunctionalTest(StaticLiveServerTestCase):
 
@@ -18,6 +19,7 @@ class FunctionalTest(StaticLiveServerTestCase):
     GUESTPASS = 'password'
 
     def setUp(self):
+        print(dbs)
         Servings.objects.create(
             grams=Decimal(1),
             quantity=Decimal(1),
@@ -86,7 +88,9 @@ class FunctionalTest(StaticLiveServerTestCase):
             if username == 'guest':
                 login_button = "input[value='Login As Guest']"
             else:
-                self.fill_input(["input[name='username']","input[name='password']"],[username,password])
+                self.fill_input(
+                    ["input[name='username']","input[name='password']"],[username,password]
+                )
                 login_button = "input[value='Login']"
         else:
             login_button = "input[value='Login']"
@@ -115,10 +119,13 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.assertEqual(content,comparison_text)
 
 
-    def initialize_test(self,username,password):
-        user = User.objects.create_user(username=username, password=password)
+    def initialize_test(self, username, password):
         self.browser.get(self.live_server_url)
-        self.login_user(username, password)
+        user = User.objects.create_user(username=username, password=password)
+        user = authenticate(username=username, password=password)
+        time.sleep(20)
+
+        # self.login_user(username, password)
         return user
 
             
