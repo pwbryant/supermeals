@@ -1,10 +1,13 @@
+from selenium import webdriver
+import time
+from decimal import Decimal
+import os
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.http import HttpRequest
-from selenium import webdriver
-import time
-from decimal import Decimal
+
 from meals.models import Macros, Servings
 
 class FunctionalTest(StaticLiveServerTestCase):
@@ -21,13 +24,18 @@ class FunctionalTest(StaticLiveServerTestCase):
             description='g'
         )
         self.browser = webdriver.Firefox()
+        staging_server = os.environ.get('STAGING_SERVER')
+        if staging_server:
+            self.live_server_url = 'http://' + staging_server
 
 
     def tearDown(self):
         self.browser.quit()
 
 
-    def search_and_results(self, input_selector, button_id, result_class, term_list):
+    def search_and_results(
+        self, input_selector, button_id, result_class, term_list):
+
         self.fill_input(
             [input_selector],
             term_list
