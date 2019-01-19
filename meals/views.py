@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login
+from django.contrib.auth.views import LoginView
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 
@@ -24,6 +26,8 @@ BAD_REQUEST = 400
 OK = 200
 
 # Create your views here.
+
+
 @login_required
 def home_or_login(request):
     return render(request, TEMPLATES_DIR + 'base.html')

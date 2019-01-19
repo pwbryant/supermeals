@@ -19,7 +19,6 @@ class FunctionalTest(StaticLiveServerTestCase):
     GUESTPASS = 'password'
 
     def setUp(self):
-        print(dbs)
         Servings.objects.create(
             grams=Decimal(1),
             quantity=Decimal(1),
@@ -122,10 +121,7 @@ class FunctionalTest(StaticLiveServerTestCase):
     def initialize_test(self, username, password):
         self.browser.get(self.live_server_url)
         user = User.objects.create_user(username=username, password=password)
-        user = authenticate(username=username, password=password)
-        time.sleep(20)
-
-        # self.login_user(username, password)
+        self.login_user(username, password)
         return user
 
             
