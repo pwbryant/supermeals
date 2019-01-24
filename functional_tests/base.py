@@ -19,6 +19,8 @@ class FunctionalTest(StaticLiveServerTestCase):
     GUESTPASS = 'password'
 
     def setUp(self):
+
+
         Servings.objects.create(
             grams=Decimal(1),
             quantity=Decimal(1),

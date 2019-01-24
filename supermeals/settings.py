@@ -98,24 +98,19 @@ if 'RDS_DB_NAME' in os.environ:
             'PORT': os.environ['RDS_PORT'],
         }
     }
-elif 'AWS_PATH' in os.environ and 'RDS_DB_NAME' not in os.environ:
-    print('succes')
+elif 'STAGE_DB_NAME' in os.environ:
+    print('stage envs')
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'test.db'),
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ['STAGE_DB_NAME'],
+            'USER': os.environ['STAGE_USERNAME'],
+            'PASSWORD': os.environ['STAGE_PASSWORD'],
+            'HOST': os.environ['STAGE_HOSTNAME'],
+            'PORT': os.environ['STAGE_PORT'],
         }
     }
 else:
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'ebdb',
-    #     'USER': 'ebroot',
-    #     'PASSWORD': 'Wptoorbe1!',
-    #     'HOST': 'aas1yqzv5g8jai.c8ktcx42to7h.us-east-2.rds.amazonaws.com',
-    #     'PORT': '5432',
-    # }
-    # }
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',

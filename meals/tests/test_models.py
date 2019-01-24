@@ -6,23 +6,20 @@ from django.db import IntegrityError,transaction
 
 from meals.models import Macros, Foods, Servings, Ingredients, FoodGroup
 
-GUEST_USER = User.objects.get(username='guest')
-USER = User.objects.get(username='paul')
-USERNAME1,PASSWORD1 = 'Joe1','joepass1'
-USERNAME2,PASSWORD2 = 'Joe2','joepass2'
+USERNAME1, PASSWORD1 = 'Joe1', 'joepass1'
+USERNAME2, PASSWORD2 = 'Joe2', 'joepass2'
 MACRO_INIT_FIELD_DICT = {
-	'unit_type':'metric',
-	'gender':'m',
-	'age':35,
-	'weight':200,
-	'height':70,
-	'activity':'none',
-	'direction':'lose',
-	'change_rate':Decimal('5'),
-	'fat_percent':Decimal('35'),
-	'protein_percent':Decimal('25')
+    'unit_type':'metric',
+    'gender':'m',
+    'age':35,
+    'weight':200,
+    'height':70,
+    'activity':'none',
+    'direction':'lose',
+    'change_rate':Decimal('5'),
+    'fat_percent':Decimal('35'),
+    'protein_percent':Decimal('25')
 }
-MEAL_TEMPLATE_ARGS = {'user':USER,'name':'breakfast','cals_percent':Decimal('50')}
 
 class BaseTest(TestCase):
 
