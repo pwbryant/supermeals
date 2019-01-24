@@ -98,7 +98,8 @@ if 'RDS_DB_NAME' in os.environ:
             'PORT': os.environ['RDS_PORT'],
         }
     }
-elif 'STAGE_TEST_ENV_VAR' in os.environ:
+elif 'AWS_PATH' in os.environ and 'RDS_DB_NAME' not in os.environ:
+    print('succes')
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
