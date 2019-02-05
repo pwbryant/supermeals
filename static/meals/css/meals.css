@@ -110,6 +110,11 @@
     height: auto;
 }
 
+#goal-meal-macro-percent-total {
+    font-size: 30px;
+    font-weight: solid;
+}
+
 #goal-meal-macro-percent-total-container {
     vertical-align: bottom;
     display: table-cell;

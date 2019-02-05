@@ -22,6 +22,11 @@ a {
     text-decoration:none;
 }
 
+.alert {
+    font-size: 30px;
+    font-weight: bold;
+}
+
 .btn {
     background-color: #ba3d1e;
     border: none;
@@ -134,7 +139,7 @@ a {
 }
 
 select {
-    height: 35px;
+    height: 40px;
     font-size: 20px;
     font-family: "Quicksand", sans-serif; 
 }

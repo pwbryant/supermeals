@@ -73,9 +73,10 @@ var save_my_macros_button_posts_form = function() {
                 post_data += `&height=${ height }`;
             }
 
-			$.post("/meals/save-my-macros",post_data,function(data) {
+			$.post('/meals/save-my-macros',post_data,function(data) {
 				if (data['status_code'] == 200) {
-					$("#my-macros-successful-save").html("Macros Successfully Saved! Now Go Make a Meal!");
+					$('#my-macros-successful-save').html('Macros Successfully Saved! Now Go Make a Meal!');
+                    document.getElementById('my-macros-successful-save').scrollIntoView();
 				} else {
                     TMP = data['errors'];
                     for (input_name in data['errors']) {
@@ -322,6 +323,7 @@ var form_validation = function(form_id) {
 		});
 		error_html += "</ul>";
 		$("#client-side-form-errors").html(error_html);
+        document.getElementById('client-side-form-errors').scrollIntoView();
 		return 0;
 	} else {
 		$("#client-side-form-errors").html("");

@@ -10,8 +10,8 @@
         <div id='tdee' class='text--primary'>TDEE: {{ tdee }}</div>
     {% endif %}
 
-    <div class='input bm-margin--sm-bottom'>
-        <label for='goal-meal-cals' class='input__label'>How many calories in meal?</label>
+    <div class='input bm-margin--sm-bottom l-flex--col-start'>
+        <label for='goal-meal-cals' class='input__label'>How many cals in meal?</label>
         <input id='goal-meal-cals' class='input__input input__input--sm goal-cal-inputs' name='goal-meal-cals' class='goal-cal-inputs' type='text' placeholder='Cals'/>
     </div>
 
@@ -72,7 +72,7 @@
                 </div>
 
                 <button id='save-macro-meal-button' type='button' class='btn'>Save Meal</button>
-                <div id='macro-meal-save-status'></div>
+                <div id='macro-meal-save-status' class='alert'></div>
             </form>
         </div>
     </div>
