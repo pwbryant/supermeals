@@ -24,11 +24,6 @@ urlpatterns = [
     url(r'^$', views.home_or_login, name='home_or_login'),
     url(r'^meals/', include(meal_urls)),
     url(r'^admin/', admin.site.urls),
-    url(r'^accounts/login/$', login,
-        {'extra_context':{'users': [u.username for u in User.objects.all()]}}
-        ,name='login',
-    ),
-    url(r'^accounts/logout/$', logout, name='logout'),
-    # url(r'^accounts/', include('django.contrib.auth.urls')),
+    url(r'^accounts/', include('django.contrib.auth.urls')),
 ]
 	
