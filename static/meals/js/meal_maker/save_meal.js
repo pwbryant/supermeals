@@ -65,6 +65,8 @@ let SAVE = (function() {
             $('#goal-macros-bar-content').html('');
             $('#goal-macros-bar-footer').html('');
             $('#meal-maker-food-content').html('');
+
+
         },
         /**
         * save_meal posts meal data to server to save as
@@ -86,6 +88,9 @@ let SAVE = (function() {
 
                     setTimeout(function() {
                         let modal = document.getElementById('save-macro-meal-modal');
+                        $('#macro-meal-name').val('');
+                        $('#macro-meal-notes').val('');
+                        $('#macro-meal-save-status').html('');
                         modal.style.display = 'none';
                     }, 3000);
 

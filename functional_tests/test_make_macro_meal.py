@@ -16,7 +16,6 @@ class ElementPresentException(Exception):
 
 class MakeMacroMealTest(FunctionalTest):
 
-
     def this_setup(self):
 
         veg_food_group = FoodGroup.objects.create(
@@ -498,6 +497,20 @@ class MakeMacroMealTest(FunctionalTest):
             ''
         )
 
+        self.check_element_content(
+            'macro-meal-name', 'id', 'value',
+            ''
+        )
+
+        self.check_element_content(
+            'macro-meal-notes', 'id', 'value',
+            ''
+        )
+
+        self.check_element_content(
+            'macro-meal-save-status', 'id', 'innerHTML',
+            ''
+        )
         # Out of curiosity he want to see what the newly saved meals
         # macro bars look like so he searches for the food on the meal
         # maker tab and notices that 'meal' is one of the units
