@@ -149,9 +149,6 @@ class MakeMacroMealTest(FunctionalTest):
                 "goal-macros-bar-container").size["width"]
         bar_width = bar_container_width * .2
 
-        #self.assertTrue(np.isclose(
-        #    self.get_bar_ratio(cal_bar.get_attribute("height"),
-        #    svg_height),85))
         self.assertEqual(self.get_bar_ratio(
             fat_bar.size["height"],
             cal_bar.size["height"]),.30)
@@ -500,3 +497,38 @@ class MakeMacroMealTest(FunctionalTest):
             'meal-maker-food-content', 'id', 'innerHTML',
             ''
         )
+
+        # Out of curiosity he want to see what the newly saved meals
+        # macro bars look like so he searches for the food on the meal
+        # maker tab and notices that 'meal' is one of the units
+
+        save_meal_name = 'bacon lettuce carrot mix'
+        saved_meal = Foods.objects.get(name=save_meal_name)
+
+        self.browser.find_element_by_id("meal-maker-tab").click()
+        self.fill_input(
+            [
+                "input[id='goal-meal-fat-percent']",
+                "input[id='goal-meal-carbs-percent']",
+                "input[id='goal-meal-protein-percent']",
+                "input[id='goal-meal-cals']"
+            ],
+            [30, 37, 33, 338]
+        )
+        self.browser.find_element_by_id("create-macro-bars-button").click()
+
+        search_results = self.search_and_results(
+            "input[id='meal-maker-search']",
+            'meal-maker-search-button',
+            'search-result',
+            [save_meal_name]
+        )
+
+        search_results[0].find_elements_by_class_name("icon")[0].click()
+        food_container = self.browser.find_element_by_id(
+            'food-{}-container'.format(saved_meal.id)
+        )
+        footer_unit = food_container.find_element_by_id(
+            'food-amt-units-{}'.format(saved_meal.id)
+        ).find_elements_by_css_selector('option[value="2"]')[0].text
+        self.assertEqual(footer_unit, 'meal')

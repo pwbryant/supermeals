@@ -23,7 +23,6 @@ from meals.views import save_my_macros, get_my_meals, \
 from meals.helpers import get_ingredient_count
 
 
-
 # CONTANTS
 # ===================================================
 USERNAME, EMAIL, PASSWORD = 'JoeSchmoe', 'joe@joemail.com', '321pass123!'
@@ -42,6 +41,7 @@ class BaseTestCase(TestCase):
             data={'username': username, 'password': password}
         )
         return user
+
 
 # VIEW TESTS
 # ===================================================
@@ -111,6 +111,7 @@ class NewFoodTest(BaseTestCase):
         new_foods = Foods.objects.all()
         self.assertEqual(new_foods.count(), 0)
 
+
 class AddRecipeTest(BaseTestCase):
 
     def setUp(self):
@@ -171,13 +172,11 @@ class AddRecipeTest(BaseTestCase):
         FoodGroup.objects.create(name='My Recipes')
         FoodType.objects.create(name='recipe')
 
-
     def test_add_recipe_url(self):
         url = reverse('add_recipe')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,'meals/add_recipe.html')
-
 
     def test_add_recipe_url_renders_correct_template_as_guest(self):
         url = reverse('add_recipe')
@@ -192,7 +191,6 @@ class AddRecipeTest(BaseTestCase):
         self.assertContains(response, self.my_meals_fg.name)
         self.assertContains(response, self.veg_fg.name)
         self.assertContains(response, self.meat_fg.name)
-
 
     def test_save_recipe_new_food_has_user_set(self):
         url = reverse('save_recipe')
@@ -210,7 +208,6 @@ class AddRecipeTest(BaseTestCase):
         url = reverse('save_recipe')
         response = json.loads(self.client.post(url, self.post).content)
         self.assertEqual(response['status'], 'success')
-
 
     def test_save_recipe_returns_failure_when_errors(self):
         url = reverse('save_recipe')
@@ -361,7 +358,6 @@ class MyMealsTest(BaseTestCase):
         response = self.client.get(url, data=data)
         self.assertEqual(response.status_code, 200)
 
-
     def test_search_my_meals_returns_food(self):
         self.create_meals(self.user)
         url = reverse('search_my_meals', kwargs={'meal_or_recipe': 'meal'})
@@ -373,7 +369,6 @@ class MyMealsTest(BaseTestCase):
 
         main_food_name = results[0]['name']
         self.assertEqual(main_food_name, self.pretzels_cheese.name)
-
 
     def test_search_my_meals_returns_food_ingredients(self):
         self.create_meals(self.user)
@@ -538,26 +533,61 @@ class MacroMealMakerTest(BaseTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-
-    def test_save_macro_meal_saves_meal(self):
+    def test_save_macro_meal_returns_1_status(self):
         url = reverse('save_macro_meal')
         response = json.loads(
             self.client.post(url, data=self.food_amt_dict).content
         )
 
         self.assertEqual(response['status'], 1)
-        saved_foods = Foods.objects.filter(name=self.food_amt_dict['name'])
-        self.assertEqual(saved_foods.count(), 1)
 
+    def test_save_macro_meal_saves_ingredients(self):
+        url = reverse('save_macro_meal')
+        response = json.loads(
+            self.client.post(url, data=self.food_amt_dict).content
+        )
+
+        saved_foods = Foods.objects.filter(name=self.food_amt_dict['name'])
         main_food = saved_foods[0]
         saved_ingredients = Ingredients.objects.filter(main_food=main_food)
         self.assertEqual(saved_ingredients.count(), 2)
 
+    def test_save_macro_meal_saves_notes(self):
+        url = reverse('save_macro_meal')
+        response = json.loads(
+            self.client.post(url, data=self.food_amt_dict).content
+        )
+
+        saved_foods = Foods.objects.filter(name=self.food_amt_dict['name'])
+        main_food = saved_foods[0]
+
         notes = FoodNotes.objects.filter(food=main_food)
         self.assertEqual(notes.count(), 1)
 
+    def test_save_macro_meal_has_correct_food_group_type(self):
+        url = reverse('save_macro_meal')
+        response = json.loads(
+            self.client.post(url, data=self.food_amt_dict).content
+        )
+
+        saved_foods = Foods.objects.filter(name=self.food_amt_dict['name'])
+        main_food = saved_foods[0]
+
         self.assertEqual(self.food_type_meal, main_food.food_type)
         self.assertEqual(self.food_group_meal, main_food.food_group)
+
+    def test_save_macro_meal_saves_meal_serving(self):
+        url = reverse('save_macro_meal')
+        response = json.loads(
+            self.client.post(url, data=self.food_amt_dict).content
+        )
+
+        saved_foods = Foods.objects.filter(name=self.food_amt_dict['name'])
+        main_food = saved_foods[0]
+
+        servings = Servings.objects.filter(food=main_food, description='meal')
+
+        self.assertEqual(servings.count(), 1)
 
     def test_get_ingredient_count(self):
 

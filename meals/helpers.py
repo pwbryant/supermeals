@@ -1,6 +1,6 @@
 from decimal import Decimal
 from django import forms
-from meals.models import FoodGroup, FoodNotes, FoodType
+from meals.models import FoodGroup, FoodNotes, FoodType, Servings
 from meals.forms import MacroIngredientForm
 
 
@@ -139,10 +139,18 @@ def save_meal_notes_ingredients(user, meal_form, ingredient_formset):
     food_group_meal = FoodGroup.objects.get(name='My Meals')
     new_food.food_group = food_group_meal
 
+    total_grams = 0
     for ing_form in ingredient_formset:
         new_ing = ing_form.save(commit=False)
         new_ing.main_food = new_food
+        total_grams += new_ing.amount
         new_ing.save()
+
+    # Add meal servings
+    Servings.objects.create(
+        description='meal', quantity=1, grams=Decimal(total_grams),
+        food_id=new_food.id
+    )
 
     new_food.set_macros_per_gram()
     new_food.save()
