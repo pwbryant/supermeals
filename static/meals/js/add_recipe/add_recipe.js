@@ -25,7 +25,8 @@ let ADD_RECIPE = (function() {
 
                             // clear inputs
                             $('#add-recipe-notes').val('');
-                            $('input:visible').val('');
+                            $('input[type="text"]:visible').val('');
+                            $('input:checkbox').removeAttr('checked');
                         }
                         if (data['status'] == 'failure') {
                             for (let key in data['errors']) {

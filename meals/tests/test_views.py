@@ -217,6 +217,14 @@ class AddRecipeTest(BaseTestCase):
         self.assertEqual(response['status'], 'failure')
         self.assertTrue(response.get('errors'))
 
+    def test_save_recipe_creates_recipe_serving(self):
+        url = reverse('save_recipe')
+        self.client.post(url, self.post)
+
+        new_food = Foods.objects.get(name=self.post['name'])
+        serving = Servings.objects.filter(food=new_food, description='recipe')
+        self.assertEqual(serving.count(), 1)
+
 
 class MyMealsTest(BaseTestCase):
 

@@ -10,7 +10,6 @@ from meals.models import Macros, Foods, Ingredients, Servings, FoodNotes, \
     FoodGroup, FoodType
 
 
-
 #LoginForm/SignUpForm errors
 EMPTY_USERNAME_ERROR = 'Username Missing'
 EMPTY_EMAIL_ERROR = 'Email Missing'
@@ -228,6 +227,7 @@ class MealRecipeForm(forms.ModelForm):
                 food=food, notes=self.cleaned_data['notes']
             )
 
+        total_grams = 0
         for ing_pk, amount, unit in self.cleaned_data['ingredients']:
             ingredient = Foods.objects.get(pk=ing_pk)
             serving = Servings.objects.get(pk=unit)
@@ -237,6 +237,11 @@ class MealRecipeForm(forms.ModelForm):
                 serving=serving,
                 amount=amount
             )
+            total_grams += amount
+
+        Servings.objects.create(
+            food=food, description='recipe', grams=total_grams, quantity=1
+        )
 
         food.set_macros_per_gram()
         food.save()
@@ -287,46 +292,7 @@ class MacroIngredientForm(forms.ModelForm):
         args[0][f'{prefix}-ingredient'] = ingredient.pk
 
         super(MacroIngredientForm, self).__init__(*args, **kwargs)
-
     
-
-# class oldMacroMealForm(forms.Form):
-
-#     name = forms.CharField(widget=forms.fields.TextInput())
-#     notes = forms.CharField(widget=forms.Textarea, required=False)
-
-#     cals_per_gram = RoundedDecimalField(
-#         max_digits=6, decimal_places=4,
-#         widget=forms.HiddenInput()
-#     )
-#     fat_per_gram = RoundedDecimalField(
-#         max_digits=6, decimal_places=4,
-#         widget=forms.HiddenInput()
-#     )
-#     carbs_per_gram = RoundedDecimalField(
-#         max_digits=6, decimal_places=4,
-#         widget=forms.HiddenInput()
-#     )
-#     protein_per_gram = RoundedDecimalField(
-#         max_digits=6, decimal_places=4,
-#         widget=forms.HiddenInput()
-#     )
-#     total_grams = RoundedDecimalField(
-#         max_digits=8, decimal_places=4,
-#         widget=forms.HiddenInput()
-#     )
-
-#     def __init__(self, *args, **kwargs):
-#         ingredient_count = kwargs.pop('ingredient_count')
-#         super(MacroMealForm, self).__init__(*args, **kwargs)
-
-#         for i in range(ingredient_count):
-#             self.fields['ingredient_id_{}'.format(i)] = forms.IntegerField()
-#             self.fields['ingredient_amt_{}'.format(i)] = RoundedDecimalField(
-#                 max_digits=6, decimal_places=2
-#             )
-#             self.fields['ingredient_unit_{}'.format(i)] = forms.CharField()
-
 
 class SignUpForm(forms.models.ModelForm):
 

@@ -11,7 +11,6 @@ class AddIngredientRecipeTest(FunctionalTest):
 
     def this_setup(self):
 
-
         #create FoodGroups
         self.my_meals_food_group = FoodGroup.objects.create(
             name='My Meals', rank=1
@@ -276,4 +275,20 @@ class AddIngredientRecipeTest(FunctionalTest):
         recipe_notes = self.browser.find_element_by_id(
             'add-recipe-notes'
         ).get_attribute('value')
+
         self.assertEqual(recipe_notes, '')
+
+        # He wants to create another recipes using the recipe he just made
+        # he notices that when he goes to select the units for the recipe
+        # he notices that 'recipe' is a listed unit
+
+        search_results = self.setup_and_run_search(
+            ['Carrot Chicken Slurry'], [no_filter], 'add-recipe'
+        )
+
+        self.browser.find_elements_by_class_name(
+            'search-result__button'
+        )[0].click()
+        
+        units = self.browser.find_elements_by_css_selector('option')
+        self.assertEqual(units[1].text, 'recipe')
