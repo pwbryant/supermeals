@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 
 from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
-        MacroIngredientForm, MealRecipeForm, NewFoodForm
+        MacroIngredientForm, MealRecipeForm, NewFoodForm, NewFoodServingForm
 from meals.models import Macros, Foods, FoodGroup, Ingredients, Servings, \
         FoodNotes, FoodType
 from meals.helpers import make_ingredient_formset, \
@@ -26,7 +26,6 @@ BAD_REQUEST = 400
 OK = 200
 
 # Create your views here.
-
 
 @login_required
 def home_or_login(request):
@@ -307,14 +306,23 @@ def add_food(request):
 
     if request.method == 'POST':
         form = NewFoodForm(request.POST)
-        if form.is_valid():
+        srv_form = NewFoodServingForm(request.POST)
+        if form.is_valid() and srv_form.is_valid():
+            form.get_grams(srv_form.cleaned_data['grams'])
             form.instance.user = request.user
             form.save()
+            srv_form.instance.food = form.instance
+            srv_form.save()
 
             return JsonResponse({'status_code': 201})
 
-        return JsonResponse({'status_code': 400, 'errors': form.errors})
+        return JsonResponse({
+            'status_code': 400,
+            'errors': {**srv_form.errors, **form.errors}
+        })
 
-    context = {'add_food_form': NewFoodForm()}
+    context = {
+        'add_food_form': NewFoodForm(),
+        'add_food_srv_form': NewFoodServingForm()
+    }
     return render(request, TEMPLATES_DIR + 'add_food.html', context)
-

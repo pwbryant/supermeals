@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 from django import forms
 
 from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
-    MacroIngredientForm, NewFoodForm, \
+    MacroIngredientForm, NewFoodForm, NewFoodServingForm, \
     DUPLICATE_USERNAME_ERROR, EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR, \
     INVALID_USERNAME_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_WEIGHT_ERROR, \
     EMPTY_HEIGHT_ERROR
@@ -62,7 +62,9 @@ class NewFoodTest(BaseTestCase):
 
         self.post = {
             'name': 'Broccoli',
-            'serving': Decimal(100),
+            'grams': Decimal(100),
+            'quantity': Decimal(1),
+            'description': 'cup',
             'cals': Decimal(50),
             'fat': Decimal(2),
             'carbs': Decimal(10),
@@ -80,13 +82,18 @@ class NewFoodTest(BaseTestCase):
             self.get_response.context['add_food_form'], NewFoodForm
         )
 
+    def test_add_food_uses_correct_srv_form(self):
+        self.assertIsInstance(
+            self.get_response.context['add_food_srv_form'], NewFoodServingForm
+        )
+
     def test_add_food_url_renders_correct_template_as_guest(self):
         url = reverse('add_food')
         self.log_in_user('guest', 'password')
         response = self.client.get(url)
         self.assertTemplateUsed(response, 'meals/bad_raw_url.html')
 
-    def test_add_food_can_save_post(self):
+    def test_add_food_post_saves_food(self):
         NewFoodForm.choices += (('Veggies', 'Veggies',),)
         response = json.loads(
             self.client.post(self.url, self.post).content
@@ -94,6 +101,14 @@ class NewFoodTest(BaseTestCase):
         self.assertEqual(response['status_code'], 201)
         new_foods = Foods.objects.all()
         self.assertEqual(new_foods.count(), 1)
+
+    def test_add_food_post_saves_srv(self):
+        response = json.loads(
+            self.client.post(self.url, self.post).content
+        )
+        new_food = Foods.objects.get(name=self.post['name'])
+        new_srv = Servings.objects.filter(food=new_food)
+        self.assertEqual(new_srv.count(), 1)
 
     def test_add_food_save_sets_user_on_new_food(self):
         response = json.loads(
@@ -110,6 +125,22 @@ class NewFoodTest(BaseTestCase):
         self.assertEqual(response['status_code'], 400)
         new_foods = Foods.objects.all()
         self.assertEqual(new_foods.count(), 0)
+
+    def test_add_food_can_displays_food_form_errors(self):
+        self.post['name'] = ''
+        response = json.loads(
+            self.client.post(self.url, self.post).content
+        )
+        expected_error = 'This field is required.'
+        self.assertTrue(expected_error in response['errors']['name'])
+
+    def test_add_food_can_displays_srv_form_errors(self):
+        self.post['grams'] = 'poo'
+        response = json.loads(
+            self.client.post(self.url, self.post).content
+        ) 
+        expected_error = 'Enter a number.'
+        self.assertTrue(expected_error in response['errors']['grams'])
 
 
 class AddRecipeTest(BaseTestCase):

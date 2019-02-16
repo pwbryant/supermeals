@@ -52,20 +52,41 @@ class RoundedDecimalField(forms.DecimalField):
 # FORMS
 # ==================================================
 
+class NewFoodServingForm(forms.ModelForm):
+
+    class Meta:
+        model = Servings
+        fields = ['grams', 'quantity', 'description']
+        widgets = {
+            'grams': forms.TextInput(
+                attrs={
+                    'id': 'add-food-grams',
+                    'class': 'input__input input__input--sm'
+                }
+            ),
+            'quantity': forms.TextInput(
+                attrs={
+                    'id': 'add-food-unit-quantity',
+                    'class': 'input__input input__input--sm'
+                }
+            ),
+            'description': forms.TextInput(
+                attrs={
+                    'id': 'add-food-unit-desc',
+                    'class': 'input__input input__input--md'
+                }
+            )
+        }
+        labels = {
+            'grams': 'Servings (grams)',
+            'description': 'Servings Unit (ex. cups, tsp, package, etc.)',
+            'quantity': 'Unit Quantity',
+        }
+
 
 class NewFoodForm(forms.ModelForm):
 
     small_input_class = 'input__input input__input--sm'
-    serving = forms.DecimalField(
-        label='Serving Size(in grams)', max_digits=6, decimal_places=2,
-        widget=forms.TextInput(
-            attrs={
-                'id': 'add-food-serving',
-                'class': small_input_class,
-                'placeholder': 'g'
-            }
-        )
-    )
     cals = forms.DecimalField(
         max_digits=6, decimal_places=2, widget=forms.TextInput(
             attrs={
@@ -141,6 +162,8 @@ class NewFoodForm(forms.ModelForm):
             'name': 'Food Name'
         }
 
+    def get_grams(self, grams):
+        self.cleaned_data['grams'] = grams
 
     def save(self):
 
@@ -157,7 +180,7 @@ class NewFoodForm(forms.ModelForm):
             Decimal(self.cleaned_data['carbs']),
             Decimal(self.cleaned_data['sugar']),
             Decimal(self.cleaned_data['protein']),
-            Decimal(self.cleaned_data['serving'])
+            Decimal(self.cleaned_data['grams'])
         )
         food.save()
                     

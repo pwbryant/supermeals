@@ -10,7 +10,7 @@ from decimal import Decimal
 #         INVALID_MACRO_ERROR, OUT_OF_RANGE_MACRO_ERROR, MACROS_DONT_ADD_UP_ERROR
 
 from meals.forms import  MacroMealForm, MacroIngredientForm, MealRecipeForm, \
-    NewFoodForm
+    NewFoodForm, NewFoodServingForm
 from meals.models import Foods, Ingredients, Servings, FoodNotes, FoodGroup, \
     FoodType
 
@@ -58,13 +58,62 @@ class BaseTestCase(TestCase):
 # FORM TESTS
 # ==================================================
 
+class NewFoodServingFormTest(BaseTestCase):
+
+    def setUp(self):
+
+        self.post = {
+            'name': 'Broccoli',
+            'grams': 100,
+            'quantity': 2,
+            'description': 'cup',
+            'cals': 34,
+            'fat': 0.4,
+            'carbs': 1.7,
+            'sugar': 2.6,
+            'protein': 2.8,
+            'food_group': 'Veggies'
+        }
+
+        FoodGroup.objects.create(name='Veggies')
+        FoodType.objects.create(name='food')
+
+    def test_NewFoodServingForm_invalid(self):
+        self.post['grams'] = 'poo'
+        form = NewFoodServingForm(self.post)
+        self.assertFalse(form.is_valid())
+        self.assertIn('Enter a number.', form.errors['grams'])
+
+    def test_NewFoodServingForm_valid(self):
+        form = NewFoodServingForm(self.post)
+        self.assertTrue(form.is_valid())
+
+    def test_NewFoodServingForm_save_saves_serving(self):
+        fd_form = NewFoodForm(self.post)
+        srv_form = NewFoodServingForm(self.post)
+        fd_form.is_valid()
+        srv_form.is_valid()
+
+        fd_form.get_grams(srv_form.cleaned_data['grams'])
+
+        fd_form.save()
+        srv_form.instance.food = fd_form.instance
+        srv_form.save()
+
+        new_srv = Servings.objects.filter(food=fd_form.instance)
+        self.assertEqual(new_srv.count(), 1)
+        
+
+
 class NewFoodFormTest(BaseTestCase):
 
     def setUp(self):
 
         self.post = {
             'name': 'Broccoli',
-            'serving': 100,
+            'grams': 100,
+            'quantity': 2,
+            'description': 'cup',
             'cals': 34,
             'fat': 0.4,
             'carbs': 1.7,
@@ -82,23 +131,40 @@ class NewFoodFormTest(BaseTestCase):
 
     def test_NewFoodForm_invalid(self):
         self.post['name'] = ''
-        self.post['serving'] = 'poo'
         form = NewFoodForm(self.post)
         self.assertFalse(form.is_valid())
         self.assertIn('This field is required.', form.errors['name'])
-        self.assertIn('Enter a number.', form.errors['serving'])
 
-    
+    def test_NewFoodForm_save_saves_food(self):
+        fd_form = NewFoodForm(self.post)
+        srv_form = NewFoodServingForm(self.post)
+        fd_form.is_valid()
+        srv_form.is_valid()
+
+        fd_form.get_grams(srv_form.cleaned_data['grams'])
+
+        fd_form.save()
+
+        new_food = Foods.objects.filter(name=self.post['name'])
+        self.assertEqual(new_food.count(), 1)
+
     def test_NewFoodForm_save_macros_are_calced(self):
         form = NewFoodForm(self.post)
+        srv_form = NewFoodServingForm(self.post)
         form.is_valid()
+        srv_form.is_valid()
+        
+        form.get_grams(srv_form.cleaned_data['grams'])
+
         form.save()
         food = form.instance
 
         def assert_equal(macro):
             self.assertEqual(
                 getattr(food, f'{macro}_per_gram'),
-                calc_macro_per_gram(macro, self.post[macro], self.post['serving'])
+                calc_macro_per_gram(
+                    macro, self.post[macro], self.post['grams']
+                )
             )
 
         assert_equal('cals')

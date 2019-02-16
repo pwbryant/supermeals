@@ -10,8 +10,20 @@
         </div>
 
         <div class='input bm-margin--sm-bottom'>
-            <label for='{{ add_food_form.serving.id_for_label }}' class='input__label'>{{ add_food_form.serving.label }}</label><br>
-            {{ add_food_form.serving }}
+            <label for='{{ add_food_srv_form.grams.id_for_label }}' class='input__label'>{{ add_food_srv_form.grams.label }}</label><br>
+            {{ add_food_srv_form.grams }}
+        </div>
+
+        <div class='l-flex--row-start'>
+            <div class='input bm-margin--sm-bottom l-flex--col-start'>
+                <label for='{{ add_food_srv_form.description.id_for_label }}' class='input__label'>{{ add_food_srv_form.description.label }}</label>
+                {{ add_food_srv_form.description }}
+            </div>
+
+            <div class='input bm-margin--sm-bottom l-flex--col-start'>
+                <label for='{{ add_food_srv_form.quantity.id_for_label }}' class='input__label'>{{ add_food_srv_form.quantity.label }}</label>
+                {{ add_food_srv_form.quantity }}
+            </div>
         </div>
 
         <div class='input bm-margin--sm-bottom'>
@@ -43,7 +55,6 @@
             <label for='{{ add_food_form.food_group.id_for_label }}' class='input__label'>{{ add_food_form.food_group.label }}</label><br>
             {{ add_food_form.food_group }}
         </div>
-
 
         <div class='bm-margin--md-bottom'></div><!-- add some space befor button -->
         <button id='add-food-save' class='btn' type='submit'>Save New Food</button>

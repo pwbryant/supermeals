@@ -32,13 +32,27 @@ class AddFoodTest(FunctionalTest):
         name_input.send_keys('Potato Chips')
 
         serving_label = self.browser.find_elements_by_css_selector(
-            'label[for="add-food-serving"]'
+            'label[for="add-food-grams"]'
         )[0].text
         serving_input = self.browser.find_element_by_id(
-            'add-food-serving'
+            'add-food-grams'
         )
-        self.assertEqual(serving_label, 'Serving Size(in grams)')
+        self.assertEqual(serving_label, 'Servings (grams)')
         serving_input.send_keys('100')
+
+        unit_label = self.browser.find_elements_by_css_selector(
+            'label[for="add-food-unit-desc"]'
+        )[0].text
+        unit_input = self.browser.find_element_by_id('add-food-unit-desc')
+        self.assertEqual(unit_label, 'Servings Unit (ex. cups, tsp, package, etc.)')
+        unit_input.send_keys('cup')
+
+        unit_amt_label = self.browser.find_elements_by_css_selector(
+            'label[for="add-food-unit-quantity"]'
+        )[0].text
+        unit_amt_input = self.browser.find_element_by_id('add-food-unit-quantity')
+        self.assertEqual(unit_amt_label, 'Unit Quantity')
+        unit_amt_input.send_keys('2')
 
         cals_label = self.browser.find_elements_by_css_selector(
             'label[for="add-food-cals"]'
