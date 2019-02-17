@@ -27,9 +27,11 @@ class AddFoodTest(FunctionalTest):
         name_label = self.browser.find_elements_by_css_selector(
             'label[for="add-food-name"]'
         )[0].text
-        name_input = self.browser.find_element_by_id('add-food-name')
         self.assertEqual(name_label, 'Food Name')
-        name_input.send_keys('Potato Chips')
+
+        name_input = ["input[id='add-food-name']"]
+        name_input_value = ['Potato Chips']
+        self.fill_input(name_input, name_input_value)
 
         serving_label = self.browser.find_elements_by_css_selector(
             'label[for="add-food-grams"]'
@@ -37,6 +39,19 @@ class AddFoodTest(FunctionalTest):
         serving_input = self.browser.find_element_by_id(
             'add-food-grams'
         )
+
+        select_option = self.browser.find_elements_by_css_selector(
+            'input[type="checkbox"]'
+        )[0]
+        serving_desc = self.browser.find_element_by_id('add-food-unit-desc')
+        serving_qnty = self.browser.find_element_by_id('add-food-unit-quantity')
+
+        self.assertFalse(serving_desc.is_enabled())
+        self.assertFalse(serving_qnty.is_enabled())
+        select_option.click()
+        self.assertTrue(serving_desc.is_enabled())
+        self.assertTrue(serving_qnty.is_enabled())
+
         self.assertEqual(serving_label, 'Servings (grams)')
         serving_input.send_keys('100')
 
@@ -117,6 +132,23 @@ class AddFoodTest(FunctionalTest):
         self.assertEqual(status.text, '')
 
         # He notices the form has been cleared.
+
+        # He then enters a new food without the serving info and notices that it
+        # still saves
+
+        self.fill_input(name_input, [], clear=True)
+        name_input_value = ['Sweet Potato Chips']
+        self.fill_input(name_input, name_input_value)
+
+        self.fill_input(['input[id="add-food-unit-desc"]'], [], clear=True)
+        self.fill_input(['input[id="add-food-unit-quantity"]'], [], clear=True)
+
+        select_option.click()
+        save_button.click()
+
+        self.assertEqual(status.text, 'Food Saved!')
+        time.sleep(4) # wait for status to dissapear
+        self.assertEqual(status.text, '')
 
         # Joe wants to add another food, Hummus, to the DB, but being piss drunk
         # Joe forgets to add any of the info and just clicks save. He notices

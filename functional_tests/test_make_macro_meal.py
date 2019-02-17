@@ -136,7 +136,6 @@ class MakeMacroMealTest(FunctionalTest):
         # labeled "Calories", "Fat", "Carbs", "Protein".
 
         self.browser.find_element_by_id("create-macro-bars-button").click()
-        #goal_svg = self.browser.find_element_by_id("goal-macros-svg")
         cal_bar = self.browser.find_element_by_id("cals-goal-macro-bar")
         fat_bar = self.browser.find_element_by_id("fat-goal-macro-bar")
         carbs_bar = self.browser.find_element_by_id("carbs-goal-macro-bar")

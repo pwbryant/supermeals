@@ -47,6 +47,12 @@ a {
     cursor: default;
 }
 
+fieldset {
+    padding: 0px;
+    margin: 0px;
+    border: none;
+}
+
 .form-error {
     color: red;
 }

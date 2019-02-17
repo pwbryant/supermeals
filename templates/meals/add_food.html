@@ -14,7 +14,9 @@
             {{ add_food_srv_form.grams }}
         </div>
 
-        <div class='l-flex--row-start'>
+        <input id='add-food-enable-serving' type='checkbox'/>
+        <label for='add-food-enable-serving' class='input__label'>Additional Serving Info **Optional</label>
+        <fieldset id='add-food-serving' class='l-flex--row-start' disabled>
             <div class='input bm-margin--sm-bottom l-flex--col-start'>
                 <label for='{{ add_food_srv_form.description.id_for_label }}' class='input__label'>{{ add_food_srv_form.description.label }}</label>
                 {{ add_food_srv_form.description }}
@@ -24,7 +26,7 @@
                 <label for='{{ add_food_srv_form.quantity.id_for_label }}' class='input__label'>{{ add_food_srv_form.quantity.label }}</label>
                 {{ add_food_srv_form.quantity }}
             </div>
-        </div>
+        </fieldset>
 
         <div class='input bm-margin--sm-bottom'>
             <label for='{{ add_food_form.cals.id_for_label }}' class='input__label'>{{ add_food_form.cals.label }}</label><br>
@@ -66,4 +68,5 @@
 
 <script>
     ADD_FOOD.save_food();
+    ADD_FOOD.enable_serving();
 </script>

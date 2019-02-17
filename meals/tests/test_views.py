@@ -142,6 +142,16 @@ class NewFoodTest(BaseTestCase):
         expected_error = 'Enter a number.'
         self.assertTrue(expected_error in response['errors']['grams'])
 
+    def test_add_food_can_handle_no_serving(self):
+        self.post.pop('quantity')
+        self.post.pop('description')
+        response = json.loads(
+            self.client.post(self.url, self.post).content
+        ) 
+
+        new_foods = Foods.objects.filter(name=self.post['name'])
+        self.assertEqual(new_foods.count(), 1)
+
 
 class AddRecipeTest(BaseTestCase):
 

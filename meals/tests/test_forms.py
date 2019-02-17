@@ -25,7 +25,6 @@ MACRO_FACTORS = {
     'sugar': 4
 }
 
-
 # FUNCTIONS
 # ==================================================
 def validate_and_save_form(form, post):
@@ -102,7 +101,6 @@ class NewFoodServingFormTest(BaseTestCase):
 
         new_srv = Servings.objects.filter(food=fd_form.instance)
         self.assertEqual(new_srv.count(), 1)
-        
 
 
 class NewFoodFormTest(BaseTestCase):

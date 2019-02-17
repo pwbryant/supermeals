@@ -305,20 +305,31 @@ def save_recipe(request):
 def add_food(request):
 
     if request.method == 'POST':
-        form = NewFoodForm(request.POST)
+        fd_form = NewFoodForm(request.POST)
         srv_form = NewFoodServingForm(request.POST)
-        if form.is_valid() and srv_form.is_valid():
-            form.get_grams(srv_form.cleaned_data['grams'])
-            form.instance.user = request.user
-            form.save()
-            srv_form.instance.food = form.instance
-            srv_form.save()
+        if request.POST.get('description'):
+            if fd_form.is_valid() and srv_form.is_valid():
+                fd_form.get_grams(srv_form.cleaned_data['grams'])
+                fd_form.instance.user = request.user
+                fd_form.save()
+                srv_form.instance.food = fd_form.instance
+                srv_form.save()
+                return JsonResponse({'status_code': 201})
 
-            return JsonResponse({'status_code': 201})
+        else:
+            srv_form.is_valid()
+            # Only leave grams errors if they exist
+            srv_form.errors.pop('quantity', None)
+            srv_form.errors.pop('description', None)
+            if fd_form.is_valid() and not srv_form.errors.get('grams'):
+                fd_form.get_grams(srv_form.cleaned_data['grams'])
+                fd_form.instance.user = request.user
+                fd_form.save()
+                return JsonResponse({'status_code': 201})
 
         return JsonResponse({
             'status_code': 400,
-            'errors': {**srv_form.errors, **form.errors}
+            'errors': {**srv_form.errors, **fd_form.errors}
         })
 
     context = {
