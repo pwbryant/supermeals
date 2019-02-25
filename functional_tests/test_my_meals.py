@@ -151,7 +151,73 @@ class MyMealTests(FunctionalTest):
 
         return summary_str
 
-    def test_my_meals(self):
+
+    def test_delete_meal(self):
+
+        user = self.initialize_test(self.USERNAME, self.PASSWORD)
+        self.create_meals(user)
+
+        # Joe wants to lookup a snack he made yesterday so he
+        # clicks on the 'My Meals' tab and select the pretzel and cheese meal
+        self.browser.find_element_by_id('my-meals-tab').click()
+
+        self.browser.find_element_by_id(
+                f'my-meals-easy-picks-meal-{self.pretzels_cheese.id}'
+        ).click()
+
+        # He sees that on the bottom right of the meal modal a delete button
+        # which he clicks.
+        delete_button = self.browser.find_element_by_id('my-meals-delete')
+        self.assertEqual(delete_button.text, 'Delete This')
+        delete_button.click()
+
+        # He sees a dialog pop up asking if he is sure he wants to delete the meal
+        # and he clicks 'Ok'
+        ok_button = self.browser.find_element_by_id('my-meals-ok-delete')
+        ok_button.click()
+
+        # He sees a confirmation message display for 2 seconds
+        confirmation = self.browser.find_element_by_id(
+            'my-meals-delete-confirmation'
+        )
+        self.assertEqual(confirmation.text, 'Deletion Complete')
+        time.sleep(2)
+        self.assertFalse(ok_button.is_displayed())
+        self.assertFalse(delete_button.is_displayed())
+
+        # He notices that the pretzel cheese meal is missing from the easy pick 
+        # area
+
+        
+    def xtest_not_delete_meal(self):
+
+        user = self.initialize_test(self.USERNAME, self.PASSWORD)
+        self.create_meals(user)
+
+        # Joe wants to lookup a snack he made yesterday so he
+        # clicks on the 'My Meals' tab and select the pretzel and cheese meal
+        self.browser.find_element_by_id('my-meals-tab').click()
+
+        self.browser.find_element_by_id(
+                f'my-meals-easy-picks-meal-{self.pretzels_cheese.id}'
+        ).click()
+
+        # He sees that on the bottom right of the meal modal a delete button
+        # which he clicks.
+        delete_button = self.browser.find_element_by_id('my-meals-delete')
+        delete_button.click()
+
+        # He sees a dialog pop up asking if he is sure he wants to delete the meal
+        # and he clicks 'no'
+        cancel_button = self.browser.find_element_by_id('my-meals-cancel-delete')
+        cancel_button.click()
+
+        # He sees the dialog dissappear with the meal modal remaining in place
+        self.assertFalse(cancel_button.is_displayed())
+        self.assertTrue(delete_button.is_displayed())
+
+
+    def xtest_my_meals(self):
 
         user = self.initialize_test(self.USERNAME, self.PASSWORD)
         self.create_meals(user)

@@ -184,6 +184,12 @@ def get_my_meals(request):
     return render(request, TEMPLATES_DIR + 'my_meals.html')
 
 
+@user_is_not_guest
+@login_required
+def delete_my_meals(request):
+    return JsonResponse({'status': 1})
+
+
 @login_required
 def search_foods(request, food_owner):
     """search db

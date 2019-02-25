@@ -8,12 +8,9 @@ let ADD_RECIPE = (function() {
                 e.preventDefault();
                 $('.form-errors').html('');
                 const form_valid = this_add_recipe_obj.add_recipe_validation();
-                console.log('clicked valid', form_valid);
                 if (form_valid) {
                     const post_data = $('#add-recipe-form').serialize();
-                    console.log('post data', post_data)
                     $.post('/meals/save-recipe', post_data, function(data) {
-                        console.log('data', data);
                         if (data['status'] == 'success') {
                             $('#add-recipe-save-status').text('Recipe Saved');
 
@@ -47,10 +44,7 @@ let ADD_RECIPE = (function() {
 
             let is_valid = true;
             $('#add-recipe-form input:visible').each(function(i, e) {
-                
-                console.log('e name', e.name);
                 const error_div = $(`#add-recipe-${e.name.replace(/_/g, '-')}-errors`);
-                console.log(`#add-recipe-${e.name.replace(/_/g, '-')}-errors`);
                 if ($.trim(e.value) == '') {
                     is_valid = false;
                     if (e.name == 'name') {

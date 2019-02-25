@@ -104,6 +104,8 @@ const MY_MEALS_SEARCH = (function() {
             
             // populate modal content
             // modal header
+            console.log('mi', my_meal_info);
+            const meal_id = my_meal_info['ingredients'][0]['id'];
             const meal_name = my_meal_info['ingredients'][0]['name'];
             const notes = my_meal_info['ingredients'][0]['notes__notes'];
             const macros_profile = my_meal_info['macros_profile'];
@@ -137,13 +139,52 @@ const MY_MEALS_SEARCH = (function() {
                 ingredients_html += `<div id='my-meals-modal-notes-body'>${notes}</div></div>`;
             }
 
-            $('.modal-body').html(ingredients_html);
+            $('#my-meals-modal-body').html(ingredients_html);
 
             // acivate modal close when x icon clicked
             $('.close-modal').on('click', function() {
                 $('.modal-body').html('');
                 $('#my-meals-modal-header').html('');
                 modal.style.display = 'none';
+            });
+
+            // activate delete button
+            $('#my-meals-delete').on('click', function() {
+
+                modal.style.display = 'none';
+
+                let delete_modal = document.getElementById('my-meals-confirm-delete');
+                delete_modal.style.display = 'block';
+
+                let delete_form = document.getElementById('my-meals-delete-form');
+                delete_form.innerHTML += `<input id='my-meals-delete-meal-id' type="hidden" name="meal_id" value=${meal_id} />`;
+
+                $('#my-meals-ok-delete').on('click', function() {
+                    const post_data = $('#my-meals-delete-form').serialize();
+                    $.post('meals/my-meals-delete', post_data, function(data) {
+                        console.log('return data', data);
+                        if (data['status'] == 1) {
+                            let confirm_msg = document.getElementById(
+                                'my-meals-delete-confirmation'
+                            );
+                            
+                            confirm_msg.innerHTML = 'Deletion Complete';
+                            setTimeout(function() {
+                                
+                                const meal_id_input = document.getElementById('my-meals-delete-meal-id');
+                                delete_form.removeChild(meal_id_input);
+
+                                confirm_msg.innerHTML = '';
+                                delete_modal.style.display = 'none';
+                            }, 2000);
+                        }
+                    });
+                });
+
+                $('#my-meals-cancel-delete').on('click', function() {
+                    delete_modal.style.display = 'none';
+                    modal.style.display = 'block';
+                });
             });
         }
     }
