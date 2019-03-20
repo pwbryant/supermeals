@@ -152,8 +152,7 @@ class NewFoodTest(BaseTestCase):
         new_foods = Foods.objects.filter(name=self.post['name'])
         self.assertEqual(new_foods.count(), 1)
 
-
-class AddRecipeTest(BaseTestCase):
+class BaseMakeFoodsTest(BaseTestCase):
 
     def setUp(self):
 
@@ -212,6 +211,75 @@ class AddRecipeTest(BaseTestCase):
         # FoodGroup and FoodType creation
         FoodGroup.objects.create(name='My Recipes')
         FoodType.objects.create(name='recipe')
+
+
+class DeleteRecipeTest(BaseMakeFoodsTest):
+
+    def test_delete_recipe_url(self):
+        url = reverse('delete_my_meals')
+        response = self.client.post(url, {})
+        self.assertEqual(response.status_code, 200)
+
+    def test_delete_recipe_withough_meal_returns_status_0(self):
+        url = reverse('delete_my_meals')
+        response = json.loads(self.client.post(url, {}).content)
+        self.assertEqual(response['status'], 0)
+
+    def test_delete_recipe_withough_meal_returns_status_1(self):
+        save_url = reverse('save_recipe')
+        del_url = reverse('delete_my_meals')
+
+        self.client.post(save_url, self.post)
+        main_food = Foods.objects.get(name=self.post['name'])
+
+        response = json.loads(
+                self.client.post(
+                    del_url, {'meal_id': main_food.id}
+                ).content
+        )
+        self.assertEqual(response['status'], 1)
+
+    def test_delete_recipe_deletes_main_food(self):
+        save_url = reverse('save_recipe')
+        del_url = reverse('delete_my_meals')
+
+        self.client.post(save_url, self.post)
+
+        main_food = Foods.objects.get(name=self.post['name'])
+
+        self.client.post(del_url, {'meal_id': main_food.id})
+
+        main_food = Foods.objects.filter(name=self.post['name'])
+        self.assertEqual(main_food.count(), 0)
+
+    def test_delete_recipe_deletes_ingredients(self):
+        save_url = reverse('save_recipe')
+        del_url = reverse('delete_my_meals')
+
+        self.client.post(save_url, self.post)
+
+        main_food_id = Foods.objects.get(name=self.post['name']).id
+
+        self.client.post(del_url, {'meal_id': main_food_id})
+
+        ings = Ingredients.objects.filter(main_food=main_food_id)
+        self.assertEqual(ings.count(), 0)
+
+    def test_delete_recipe_deletes_servings(self):
+        save_url = reverse('save_recipe')
+        del_url = reverse('delete_my_meals')
+
+        self.client.post(save_url, self.post)
+
+        main_food_id = Foods.objects.get(name=self.post['name']).id
+
+        self.client.post(del_url, {'meal_id': main_food_id})
+
+        servings = Servings.objects.filter(food=main_food_id)
+        self.assertEqual(servings.count(), 0)
+
+
+class AddRecipeTest(BaseMakeFoodsTest):
 
     def test_add_recipe_url(self):
         url = reverse('add_recipe')
@@ -642,8 +710,6 @@ class MacroMealMakerTest(BaseTestCase):
 
         ingredient_count = get_ingredient_count(self.request.POST)
         self.assertEqual(ingredient_count, 2)
-
-
 
 
 class MealMakerTest(BaseTestCase):

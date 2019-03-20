@@ -189,7 +189,7 @@ class MyMealTests(FunctionalTest):
         # area
 
         
-    def xtest_not_delete_meal(self):
+    def test_not_delete_meal(self):
 
         user = self.initialize_test(self.USERNAME, self.PASSWORD)
         self.create_meals(user)
@@ -217,7 +217,7 @@ class MyMealTests(FunctionalTest):
         self.assertTrue(delete_button.is_displayed())
 
 
-    def xtest_my_meals(self):
+    def test_my_meals(self):
 
         user = self.initialize_test(self.USERNAME, self.PASSWORD)
         self.create_meals(user)

@@ -21,9 +21,7 @@ const MY_MEALS_SEARCH = (function() {
         },
 
         easy_picks: function() {
-            console.log('easy pick defined');
             $('#my-meals-select').on('change', function() {
-                console.log('select chante');
                 const meal_or_recipe = $('#my-meals-select').find(':selected').val();
                 const search_terms = '_all_';
                 const destination_id = '#my-meals-easy-picks-meals-container'
@@ -38,7 +36,6 @@ const MY_MEALS_SEARCH = (function() {
 			this_obj[meal_storage] = {};
             const search_data = {'search_terms': search_terms};
             $.get(`/meals/search-my-meals/${meal_or_recipe}/`, search_data, function(data) {
-                console.log('response data', data);
                 const search_results = data['search-results'];
 
                 search_results_html = SEARCH.format_food_search_results(
@@ -104,7 +101,6 @@ const MY_MEALS_SEARCH = (function() {
             
             // populate modal content
             // modal header
-            console.log('mi', my_meal_info);
             const meal_id = my_meal_info['ingredients'][0]['id'];
             const meal_name = my_meal_info['ingredients'][0]['name'];
             const notes = my_meal_info['ingredients'][0]['notes__notes'];
@@ -162,15 +158,24 @@ const MY_MEALS_SEARCH = (function() {
                 $('#my-meals-ok-delete').on('click', function() {
                     const post_data = $('#my-meals-delete-form').serialize();
                     $.post('meals/my-meals-delete', post_data, function(data) {
-                        console.log('return data', data);
+                        let confirm_msg = document.getElementById(
+                            'my-meals-delete-confirmation'
+                        );
                         if (data['status'] == 1) {
-                            let confirm_msg = document.getElementById(
-                                'my-meals-delete-confirmation'
-                            );
                             
                             confirm_msg.innerHTML = 'Deletion Complete';
                             setTimeout(function() {
-                                
+                                const meal_id_input = document.getElementById(
+                                    'my-meals-delete-meal-id'
+                                );
+                                delete_form.removeChild(meal_id_input);
+
+                                confirm_msg.innerHTML = '';
+                                delete_modal.style.display = 'none';
+                            }, 2000);
+                        } else {
+                            confirm_msg.innerHTML = 'Deletion Failed. Contact Admin';
+                            setTimeout(function() {
                                 const meal_id_input = document.getElementById('my-meals-delete-meal-id');
                                 delete_form.removeChild(meal_id_input);
 

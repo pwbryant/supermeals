@@ -187,7 +187,13 @@ def get_my_meals(request):
 @user_is_not_guest
 @login_required
 def delete_my_meals(request):
-    return JsonResponse({'status': 1})
+
+    meal_id = request.POST.get('meal_id')
+    if meal_id and meal_id.isdigit():
+        Foods.objects.get(pk=meal_id).delete()
+        return JsonResponse({'status': 1})
+
+    return JsonResponse({'status': 0})
 
 
 @login_required
