@@ -161,9 +161,10 @@ class MyMealTests(FunctionalTest):
         # clicks on the 'My Meals' tab and select the pretzel and cheese meal
         self.browser.find_element_by_id('my-meals-tab').click()
 
-        self.browser.find_element_by_id(
-                f'my-meals-easy-picks-meal-{self.pretzels_cheese.id}'
-        ).click()
+        delete_meal = self.browser.find_element_by_id(
+            f'my-meals-easy-picks-meal-{self.pretzels_cheese.id}'
+        )
+        delete_meal.click()
 
         # He sees that on the bottom right of the meal modal a delete button
         # which he clicks.
@@ -182,11 +183,15 @@ class MyMealTests(FunctionalTest):
         )
         self.assertEqual(confirmation.text, 'Deletion Complete')
         time.sleep(2)
+        ok_button = self.browser.find_element_by_id('my-meals-ok-delete')
+        delete_button = self.browser.find_element_by_id('my-meals-delete')
         self.assertFalse(ok_button.is_displayed())
         self.assertFalse(delete_button.is_displayed())
 
         # He notices that the pretzel cheese meal is missing from the easy pick 
         # area
+        search_results = self.browser.find_elements_by_class_name('search-result')
+        self.assertEqual(len(search_results), 1)
 
         
     def test_not_delete_meal(self):

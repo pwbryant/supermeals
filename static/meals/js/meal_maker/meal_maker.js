@@ -9,15 +9,21 @@ var MM_FUNK = (function() {
     
     const MACRO_NAMES = ['cals', 'fat', 'carbs', 'protein'];
 
+    // if pct 100 and cal goal populated, then activate create macros bar button
     const enable_disable_create_macro_bars_button = function(obj) {
-		var pct_amt = parseFloat($('#goal-meal-macro-percent-total').html());
-		if (pct_amt == 0 && obj.CAL_GOAL != 0) {
+		const pct_amt = parseFloat($('#goal-meal-macro-percent-total').html());
+		if (pct_amt === 0 && obj.CAL_GOAL !== 0) {
 			$('#create-macro-bars-button').attr('disabled',false)
 		} else {
 			$('#create-macro-bars-button').attr('disabled',true)
 		}
 	};
 
+    // adds 'macro'-g keys to macros obj based on macro percentages
+    // args:
+    //     macros_obj: obj containing macros and their percentages
+    // returns:
+    //     macros_ob
     const get_goal_meal_grams= function(macros_obj) { // only let the correct cal input value through
 
         const cals = macros_obj['cals'];
@@ -26,7 +32,7 @@ var MM_FUNK = (function() {
             const macro_factor = MACRO_FACTORS[macro];
             let grams = Math.round(percent / 100 * cals / macro_factor);
             
-            if (isNaN(grams) == false) {
+            if (isNaN(grams) === false) {
                 macros_obj[`${macro}-g`] = grams;
             } else {
                 macros_obj[`${macro}-g`] = '';
@@ -46,9 +52,13 @@ var MM_FUNK = (function() {
         return cals;
     };
 
-	const set_mm_funk_goal_cals = function(obj,cals) {
+    // sets the CAL_GOAL on the MM_FUNK obj
+    // args:
+    //     obj: MM_FUNK obj
+    //     cals: value entered into cal goal input
+	const set_mm_funk_goal_cals = function(obj, cals) {
 
-		if (cals != 'header' && cals != '' && isNaN(cals) == false) {
+		if (cals !== 'header' && cals !== '' && isNaN(cals) === false) {
 			obj.CAL_GOAL = parseFloat(cals);
 		} else { 
             obj.CAL_GOAL = 0;
@@ -58,7 +68,6 @@ var MM_FUNK = (function() {
 	const create_macro_bars_obj = function() {
         let macros_bar_obj = {};
         macros_bar_obj.cal_bar_height = $('#goal-macros-bar-container').height() * .9;
-        console.log('cal bar height',macros_bar_obj.cal_bar_height)
 		MACRO_NAMES.forEach(function(macro) {
             macros_bar_obj[macro] = {'name':macro};
 			if (macro === 'cals') {
@@ -85,7 +94,6 @@ var MM_FUNK = (function() {
 
 	const create_macro_bar = function(macro, macro_bars_obj) {
 
-        console.log(macro_bars_obj.cal_bar_height);
         macro_bars_obj[macro].svg = d3.select('#' + macro + '-bar-svg');
         macro_bars_obj[macro].macro_bar_height = macro_bars_obj.cal_bar_height * macro_bars_obj[macro].ratio;
         macro_bars_obj[macro].macro_y = macro_bars_obj.cal_bar_height - macro_bars_obj[macro].macro_bar_height 
@@ -490,7 +498,6 @@ var MM_FUNK = (function() {
                         'type': input_array[3],
                         'macro_factor':MACRO_FACTORS[macro]
                     };
-                    console.log('hobj',handler_obj);
                     // convert between g and pct
                     let return_id = '#goal-meal-' + macro;
                     if (isNaN(handler_obj['macro_value'])) {
@@ -544,11 +551,9 @@ var MM_FUNK = (function() {
 		},
 		create_macro_button_trigger : function() {
 			mm_funk_obj = this;
-            console.log('trigger set');
 			$('#create-macro-bars-button').on('click',function() {
                 $('#goal-macros-bar-content').html('');//clear bar area
                 const save_meal_button = '<button class="btn">PoopKing</button>'
-                console.log('hello');
                 $('#goal-macros-bar-footer').append(save_meal_button);
 				let macro_bars_obj = create_macro_bars_obj();
                 MACRO_NAMES.forEach(function(macro) {
@@ -559,6 +564,7 @@ var MM_FUNK = (function() {
 			});
 		},
 
+        // handles gram updates when goal cals change
 		goal_cal_inputs_trigger : function() {
 			mm_funk_obj = this;
 			$('.goal-cal-inputs').on('keyup change',function() {
@@ -569,23 +575,27 @@ var MM_FUNK = (function() {
                 });
                 macros_obj['cals'] = parseFloat($.trim(this.value));
                 
-                set_mm_funk_goal_cals(mm_funk_obj,macros_obj['cals']);
+                // set cal goal on MM_FUNK
+                set_mm_funk_goal_cals(mm_funk_obj, macros_obj['cals']);
 
+                // add gram amounts corresponding to marco %s
                 macros_obj = get_goal_meal_grams(macros_obj);
                 
+                // add gram values to g inputs
                 MACRO_NAMES.forEach(function(macro) {
                     const id = `#goal-meal-${macro}-g`;
                     const grams = macros_obj[`${macro}-g`];
                     $(id).val(grams);
                 });
                     
+                // if cals present and total % = 100, then enable create macro bar button
                 enable_disable_create_macro_bars_button(mm_funk_obj);
-
-                if ($(this).attr('id') == 'goal-meal-cals') {
-                    $('#goal-meal-cals-select>option:eq(0)').prop('selected',true);
-                } else {
-                    $('#goal-meal-cals').val('');
-                }
+                
+                // if ($(this).attr('id') === 'goal-meal-cals') {
+                //     $('#goal-meal-cals-select>option:eq(0)').prop('selected', true);
+                // } else {
+                //     $('#goal-meal-cals').val('');
+                // }
 			});
 		},
 

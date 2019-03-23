@@ -9,3 +9,5 @@ supermeals/secret_key.py
 qunit.css
 qunit.js
 .elasticbeanstalk/config.yml
+static/meals/js/d3/
+static/meals/js/jquery/

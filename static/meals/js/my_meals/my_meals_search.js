@@ -164,6 +164,7 @@ const MY_MEALS_SEARCH = (function() {
                         if (data['status'] == 1) {
                             
                             confirm_msg.innerHTML = 'Deletion Complete';
+                            // display confirmation for a brief time
                             setTimeout(function() {
                                 const meal_id_input = document.getElementById(
                                     'my-meals-delete-meal-id'
@@ -172,6 +173,9 @@ const MY_MEALS_SEARCH = (function() {
 
                                 confirm_msg.innerHTML = '';
                                 delete_modal.style.display = 'none';
+
+                                // reload page so meals in side bar are updated
+                                $('#my-meals-tab').click();
                             }, 2000);
                         } else {
                             confirm_msg.innerHTML = 'Deletion Failed. Contact Admin';
