@@ -11,3 +11,4 @@ qunit.js
 .elasticbeanstalk/config.yml
 static/meals/js/d3/
 static/meals/js/jquery/
+.ebextensions/
