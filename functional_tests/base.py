@@ -121,8 +121,8 @@ class FunctionalTest(StaticLiveServerTestCase):
 
 
     def initialize_test(self, username, password):
-        self.browser.get(self.live_server_url)
         user = User.objects.create_user(username=username, password=password)
+        self.browser.get(self.live_server_url)
         self.login_user(username, password)
         return user
 
