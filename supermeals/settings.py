@@ -22,7 +22,7 @@ BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 if 'DJANGO_SECRET_KEY' in os.environ:
     # DEPLOY SETTINGS
     DEBUG = False
-    SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+    SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
     # SESSION_COOKIE_SECURE = True
     # CSRF_COOKIE_SECURE = True
     # SECURE_BROWSER_XSS_FILTER = True
@@ -34,7 +34,6 @@ else:
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-
 # ALLOWED_HOSTS = ['mlab.us-east-2.elasticbeanstalk.com', '127.0.0.1']
 ALLOWED_HOSTS = ['*']
 
@@ -86,34 +85,35 @@ WSGI_APPLICATION = 'supermeals.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-# if 'RDS_DB_NAME' in os.environ:
-if 'RDS_DB_NAME' in os.environ:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.environ['RDS_DB_NAME'],
-            'USER': os.environ['RDS_USERNAME'],
-            'PASSWORD': os.environ['RDS_PASSWORD'],
-            'HOST': os.environ['RDS_HOSTNAME'],
-            'PORT': os.environ['RDS_PORT'],
+# Manually set IS_STAGING on EC2
+IS_STAGING = False
+if 'DJANGO_SECRET_KEY' in os.environ:
+    if IS_STAGING:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql_psycopg2',
+                'NAME': os.environ['STAGE_DB_NAME'],
+                'USER': os.environ['STAGE_DB_USERNAME'],
+                'PASSWORD': os.environ['STAGE_DB_PASSWORD'],
+                'HOST': os.environ['STAGE_DB_HOSTNAME'],
+                'PORT': os.environ['STAGE_DB_PORT'],
+            }
         }
-    }
-elif 'STAGE_DB_NAME' in os.environ:
-    print('stage envs')
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.environ['STAGE_DB_NAME'],
-            'USER': os.environ['STAGE_USERNAME'],
-            'PASSWORD': os.environ['STAGE_PASSWORD'],
-            'HOST': os.environ['STAGE_HOSTNAME'],
-            'PORT': os.environ['STAGE_PORT'],
+    else:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql_psycopg2',
+                'NAME': os.environ['DB_NAME'],
+                'USER': os.environ['DB_USERNAME'],
+                'PASSWORD': os.environ['DB_PASSWORD'],
+                'HOST': os.environ['DB_HOSTNAME'],
+                'PORT': os.environ['DB_PORT'],
+            }
         }
-    }
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'meal_maker',
             'USER': 'paul',
             'PASSWORD': 'password',
@@ -160,12 +160,10 @@ USE_L10N = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'www', 'static')
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, 'static'),
+# )
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = '/'
-
-

@@ -3,8 +3,10 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="ID-edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link href="/static/meals/css/meals.css" rel="stylesheet">
-		<link href="/static/meals/css/authenticate.css" rel="stylesheet">
+
+        {% load static %}
+        <link href="{% static "meals/css/meals.css" %}" rel="stylesheet">
+        <link href="{% static "meals/css/authenticate.css" %}" rel="stylesheet">
 
 		<title>Meal Lab Sign Up</title>
 	</head>
@@ -40,8 +42,8 @@
             </form>
         </div>
 
-		<script src="http://code.jquery.com/jquery.js"></script>
-		<script src="/static/meals.js"></script>
+		<script src="https://code.jquery.com/jquery.js"></script>
+		<!-- <script src="/static/meals.js"></script> -->
 		<script>
 			initialize();
 		</script>

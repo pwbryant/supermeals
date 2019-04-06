@@ -19,7 +19,9 @@ class FormValidation(FunctionalTest):
 
         # He sees a welcome message
         welcome_msg = self.browser.find_element_by_id('login-welcome').text
-        self.assertEqual(welcome_msg, 'The\nMeal Lab')
+        self.assertEqual(
+            welcome_msg, 'Macrobatics\nFind portions of foods you love, which support nutritional goals'
+        )
 
         bad_login_message = (
             'Your username and password didn\'t match. Please try again.'

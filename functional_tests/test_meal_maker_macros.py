@@ -22,7 +22,7 @@ class MakeMacroMealTest(FunctionalTest):
         #He notices an input to enter the desired calories.
         self.check_element_content(
             "label[for='goal-meal-cals']",
-            'css', 'text', 'How many calories in meal?'
+            'css', 'text', 'How many cals in meal?'
         )
         self.check_element_content(
             'goal-meal-cals', 'id', 'placeholder', 'Cals'

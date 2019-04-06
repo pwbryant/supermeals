@@ -12,3 +12,6 @@ qunit.js
 static/meals/js/d3/
 static/meals/js/jquery/
 .ebextensions/
+meals/static/meals/js/d3/
+meals/static/meals/js/d3
+meals/static/meals/js/jquery
