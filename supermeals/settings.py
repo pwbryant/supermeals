@@ -11,27 +11,25 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import json
 
+env = 'local'
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
-
+SECRET_DIR = os.path.join(BASE_DIR, '../secrets.json')
+secrets = json.loads(open(SECRET_DIR).read())
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 # SECURITY WARNING: keep the secret key used in production secret!
 
-if 'DJANGO_SECRET_KEY' in os.environ:
-    # DEPLOY SETTINGS
-    DEBUG = False
-    SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
-    # SESSION_COOKIE_SECURE = True
-    # CSRF_COOKIE_SECURE = True
-    # SECURE_BROWSER_XSS_FILTER = True
-    # SECURE_CONTENT_TYPE_NOSNIFF = True
-    # X_FRAME_OPTIONS = 'DENY'
-else:
-    DEBUG = True
-    SECRET_KEY = '^_2aa*k$wbacum-z^ram)_i54t(c3g@e-2f_z5n@!!6#l3ja%='
-
+# DEPLOY SETTINGS
+DEBUG = False
+SECRET_KEY = secrets[env]['django_secret_key'] 
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# SECURE_BROWSER_XSS_FILTER = True
+# SECURE_CONTENT_TYPE_NOSNIFF = True
+# X_FRAME_OPTIONS = 'DENY'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # ALLOWED_HOSTS = ['mlab.us-east-2.elasticbeanstalk.com', '127.0.0.1']
@@ -86,42 +84,16 @@ WSGI_APPLICATION = 'supermeals.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 # Manually set IS_STAGING on EC2
-IS_STAGING = False
-if 'DJANGO_SECRET_KEY' in os.environ:
-    if IS_STAGING:
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql_psycopg2',
-                'NAME': os.environ['STAGE_DB_NAME'],
-                'USER': os.environ['STAGE_DB_USERNAME'],
-                'PASSWORD': os.environ['STAGE_DB_PASSWORD'],
-                'HOST': os.environ['STAGE_DB_HOSTNAME'],
-                'PORT': os.environ['STAGE_DB_PORT'],
-            }
-        }
-    else:
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql_psycopg2',
-                'NAME': os.environ['DB_NAME'],
-                'USER': os.environ['DB_USERNAME'],
-                'PASSWORD': os.environ['DB_PASSWORD'],
-                'HOST': os.environ['DB_HOSTNAME'],
-                'PORT': os.environ['DB_PORT'],
-            }
-        }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'meal_maker',
-            'USER': 'paul',
-            'PASSWORD': 'password',
-            'HOST': 'localhost',
-            'PORT': '',
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': secrets[env]["db_name"],
+        'USER': secrets[env]["db_username"],
+        'PASSWORD': secrets[env]["db_password"],
+        'HOST': secrets["db_hostname"],
+        'PORT': secrets["db_port"]
     }
-
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
