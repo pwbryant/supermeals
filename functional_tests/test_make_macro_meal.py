@@ -70,10 +70,8 @@ class MakeMacroMealTest(FunctionalTest):
         
         duplicate_food = Foods.objects.create(name='duplicate food')
 
-
     def get_bar_ratio(self, num_height, denom_height):
         return round(float(num_height) / float(denom_height), 2)
-
 
     def move_slider(self, slider_id, ypos):
         slider = self.browser.find_element_by_id(slider_id)
@@ -207,7 +205,7 @@ class MakeMacroMealTest(FunctionalTest):
         # appear with the
         # result text as the header, and "0g" under the bars to the left.
         # The left-most rectangle has a small drag box at the bottom.
-        chickpea_id = '1'
+        chickpea_id = f'{Foods.objects.get(name="Chickpeas").id}'
         search_results[0].find_elements_by_class_name("icon")[0].click()
         food_container = self.browser.find_element_by_id(
             'food-{}-container'.format(chickpea_id)
@@ -240,7 +238,7 @@ class MakeMacroMealTest(FunctionalTest):
             ['carrots']
         )
         search_results[0].find_elements_by_class_name("icon")[0].click()
-        carrot_id = '2'
+        carrot_id = f'{Foods.objects.get(name="Carrots").id}'
         food_container = self.browser.find_element_by_id(
                 'food-{}-container'.format(carrot_id)
         ) 
@@ -267,7 +265,7 @@ class MakeMacroMealTest(FunctionalTest):
             ['bacon']
         )
         search_results[0].find_elements_by_class_name("icon")[0].click()
-        bacon_id = '3'
+        bacon_id = f'{Foods.objects.get(name="Bacon").id}'
 
         self.fill_input(["input[id='meal-maker-search']"],[],clear=True)	
         search_results = self.search_and_results(
@@ -292,7 +290,7 @@ class MakeMacroMealTest(FunctionalTest):
 
         # He adjusts the lettuce bar and notices that, like the bacon, bar the
         # meal bars fill up with the color of the lettuce bar.
-        lettuce_id = '4'
+        lettuce_id = f'{Foods.objects.get(name="Lettuce").id}'
         self.move_slider('food-{}-slider'.format(lettuce_id), test_can_move_dist)
         lettuce_cals_bar = self.browser.find_element_by_id(
             'cals-{}-goal-macro-bar'.format(lettuce_id)
