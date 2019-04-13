@@ -44,6 +44,7 @@ class GuestTest(FunctionalTest):
         self.assertEqual(error, raw_url_error)
 
         self.browser.find_element_by_id('home').click()
+        time.sleep(2)
 
         # He is still curious about his TDEE so he goes to the My Macros tab
         # and fills out the TDEE form
