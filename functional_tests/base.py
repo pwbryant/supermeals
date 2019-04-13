@@ -2,6 +2,7 @@ from selenium import webdriver
 import time
 from decimal import Decimal
 import os
+from datetime import datetime
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.contrib.auth import authenticate, login
@@ -10,6 +11,11 @@ from django.http import HttpRequest
 
 from meals.models import Macros, Servings
 from supermeals.settings import DATABASES as dbs
+
+
+SCREEN_DUMP_LOCATION = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'screendumps'
+)
 
 class FunctionalTest(StaticLiveServerTestCase):
 
@@ -33,8 +39,42 @@ class FunctionalTest(StaticLiveServerTestCase):
 
 
     def tearDown(self):
+        if self._test_has_failed():
+            if not os.path.exists(SCREEN_DUMP_LOCATION):
+                os.makedirs(SCREEN_DUMP_LOCATION)
+            for ix, handle in enumerate(self.browser.window_handles):
+                self._windowid = ix
+                self.browser.switch_to_window(handle)
+                self.take_screenshot()
+                self.dump_html()
         self.browser.quit()
+        super().tearDown()
 
+    def _test_has_failed(self):
+        # slightly obscure but couldn't find a better way!
+        return any(error for (method, error) in self._outcome.errors)
+
+    def take_screenshot(self):
+        filename = self._get_filename() + '.png'
+        print('screenshotting to', filename)
+        self.browser.get_screenshot_as_file(filename)
+
+
+    def dump_html(self):
+        filename = self._get_filename() + '.html'
+        print('dumping page HTML to', filename)
+        with open(filename, 'w') as f:
+            f.write(self.browser.page_source)
+
+    def _get_filename(self):
+        timestamp = datetime.now().isoformat().replace(':', '.')[:19]
+        return '{folder}/{classname}.{method}-window{windowid}-{timestamp}'.format(
+            folder=SCREEN_DUMP_LOCATION,
+            classname=self.__class__.__name__,
+            method=self._testMethodName,
+            windowid=self._windowid,
+            timestamp=timestamp
+        )
 
     def search_and_results(
         self, input_selector, button_id, result_class, term_list):
@@ -47,7 +87,6 @@ class FunctionalTest(StaticLiveServerTestCase):
         search_results = self.browser.find_elements_by_class_name(result_class)
             
         return search_results
-
 
     def setup_and_run_search(self, terms, filters, tab_name):
 
