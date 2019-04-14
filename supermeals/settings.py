@@ -23,7 +23,7 @@ secrets = json.loads(open(SECRET_DIR).read())
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # DEPLOY SETTINGS
-DEBUG = True
+DEBUG = {'true': True, 'false': False}[secrets[env]['debug']]
 SECRET_KEY = secrets[env]['django_secret_key'] 
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
