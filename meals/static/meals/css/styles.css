@@ -42,6 +42,10 @@ a {
     background-color: gray;
     cursor: default;
 }
+ .btn:active {
+    color: #ba3d1e;
+    background-color: #1e9bba;
+ }
 
 .disabled {
     cursor: default;
