@@ -169,7 +169,7 @@ class MyMealTests(FunctionalTest):
         # He sees that on the bottom right of the meal modal a delete button
         # which he clicks.
         delete_button = self.browser.find_element_by_id('my-meals-delete')
-        self.assertEqual(delete_button.text, 'Delete This')
+        self.assertEqual(delete_button.text, 'Delete')
         delete_button.click()
 
         # He sees a dialog pop up asking if he is sure he wants to delete the meal
