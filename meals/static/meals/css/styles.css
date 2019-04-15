@@ -70,6 +70,14 @@ fieldset {
     font-size: 30px;
 }
 
+i.fa {
+    cursor: pointer;
+}
+
+.icon {
+    cursor: pointer;
+}
+
 .input__input {
     border: 1px solid black;
     border-radius: 10px;
@@ -315,6 +323,12 @@ select {
 .l-flex--row-btw {
     display: flex;
     justify-content: space-between;
+    flex-direction: row;
+}
+
+.l-flex--row-end {
+    display: flex;
+    justify-content: end;
     flex-direction: row;
 }
 

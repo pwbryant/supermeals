@@ -354,7 +354,7 @@ var BARS = (function() {
                 food_name = food_name.slice(0,20) + '...';
             }
             food_div += `<div class='food-container-header l-flex--row-btw'>
-                <span>${food_name}</span><i id='exit-${food_id}' class='fa fa-times-circle food-exit'></i>
+                <span>${food_name}</span><i id='exit-${food_id}' class='fa fa-2x fa-times food-exit'></i>
             </div>`;
             food_div += `<div id='food-${food_id}-bars' class='food-container-bars'></div>`;
             food_div += `<div id='food-container-footer-${food_id}' class='food-container-footer bm-margin--md-top'>`;

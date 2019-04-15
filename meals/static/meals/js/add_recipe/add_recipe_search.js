@@ -61,7 +61,7 @@ let ADD_RECIPE_SEARCH = (function() {
                 ingredient_html += `<option value='${e.servings__pk}'>${e.servings__description}</option>`;
             });
 
-            ingredient_html += `</select></div></div><i id='add-recipe-ingredient-exit-${food_id}' class='fa fa-times-circle add-recipe-ingredient-exit'></i></div>`;
+            ingredient_html += `</select></div></div><i id='add-recipe-ingredient-exit-${food_id}' class='fa fa-2x fa-times add-recipe-ingredient-exit'></i></div>`;
 
             ingredient_html += `<div id='add-recipe-ingredient-amount-${food_num}-errors' class='form-errors'></div>`;
 
