@@ -11,25 +11,16 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
-import json
 
-env = 'local'
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
-SECRET_DIR = os.path.join(BASE_DIR, '../secrets.json')
-secrets = json.loads(open(SECRET_DIR).read())
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # DEPLOY SETTINGS
-DEBUG = {'true': True, 'false': False}[secrets[env]['debug']]
-SECRET_KEY = secrets[env]['django_secret_key'] 
-# SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
-# SECURE_BROWSER_XSS_FILTER = True
-# SECURE_CONTENT_TYPE_NOSNIFF = True
-# X_FRAME_OPTIONS = 'DENY'
+DEBUG = os.environ.get('DEBUG', True)
+SECRET_KEY = os.environ.get('SECRET_KEY', 'localsecretkey')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # ALLOWED_HOSTS = ['mlab.us-east-2.elasticbeanstalk.com', '127.0.0.1']
@@ -87,11 +78,11 @@ WSGI_APPLICATION = 'supermeals.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': secrets[env]["db_name"],
-        'USER': secrets[env]["db_username"],
-        'PASSWORD': secrets[env]["db_password"],
-        'HOST': secrets["db_hostname"],
-        'PORT': secrets["db_port"]
+        'NAME': os.environ.get('DB_NAME', 'meal_maker'),
+        'USER': os.environ.get('DB_USER', 'paul'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'password'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', ''),
     }
 }
 
