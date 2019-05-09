@@ -16,7 +16,3 @@ meals/static/meals/js/d3/
 meals/static/meals/js/d3
 meals/static/meals/js/jquery
 functional_tests/screendumps/
-docker
-Dockerfile
-docker-compose.yml
-nginx/
