@@ -4,10 +4,13 @@ services:
     web:
         build:
             context: .
-            dockerfile: Dockerfile
+            dockerfile: ${DOCKERFILE}
+        entrypoint: ${DOCKER_ENTRYPOINT}
         volumes:
             - ${APP_DIR}:${DOCKER_APP_DIR}
             - ${APP_STATIC_DIR}:${DOCKER_APP_STATIC_DIR}
+        env_file:
+            - .env
         expose:
             - "8000"
         environment:
@@ -18,15 +21,19 @@ services:
             - DB_PASSWORD=${DB_PASSWORD}
             - DB_HOST=${DB_HOST}
             - DB_PORT=${DB_PORT}
+        depends_on:
+            - db
+    db:
+        image: postgres:10.1-alpine
+        environment:
+            - POSTGRES_USER=${DB_USER}
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
+            - POSTGRES_DB=${DB_NAME}
     nginx:
         build: ${APP_NGINX_DIR}
         volumes:
             - ${APP_STATIC_DIR}:${DOCKER_APP_STATIC_DIR}
-            - ${DH_PARAM_PATH}:${DH_PARAM_DOCKER_PATH}
-            - ${SSL_FULLCHAIN_PATH}:${SSL_FULLCHAIN_DOCKER_PATH}
-            - ${SSL_PRIVATE_PATH}/:${SSL_PRIVATE_DOCKER_PATH}
         ports:
-            - "80:80"
-            - "443:443"
+            - "${NGINX_PORT_MAP}"
         depends_on:
             - web

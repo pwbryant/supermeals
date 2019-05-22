@@ -10,10 +10,12 @@ RUN apt-get update \
     postgresql-client \
     vim
 
-WORKDIR /svr/www/app
+WORKDIR /srv/www/app
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
 COPY . .
+
+RUN ["chmod", "+x", "/srv/www/app/docker-entrypoint.sh"]
 
 # Server
 EXPOSE 8000
