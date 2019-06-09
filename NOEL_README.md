@@ -11,10 +11,11 @@ want to test the site locally. You shouldn't need to do that because the site is
 macrobatics.xyz.  Use **username: vip**, and **password: vippass** to access the site.  
 
 # Caveat
-This is a personal project spannig over 2 years of on / off dev.  This means there are things needing refactoring,  
-some model changes (Ingredients Model has redundant field in it for example), functions to simplify, more documentation etc.  
-If you are curious about certain design decisions (or lack thereof) I would love to discuss them in more detail.  
-The current site is what I would consider an MVP.
+I consider the site a Minimum Viable Product.  As such, there are still a lot of loose ends.  The sytling,  
+for example, is very much unfinished.  This also means there are things needing refactoring,  
+some model changes (Ingredients Model has redundant field in it for example), more documentation etc.  
+If you are curious about certain design decisions (or lack thereof) I would love to discuss them in more detail. 
+
 
 # Project Purpose
 The idea behind this project was to allow a user to create meals that fit their nutritional goals,  
