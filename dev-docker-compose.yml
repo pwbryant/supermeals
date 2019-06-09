@@ -6,13 +6,15 @@ services:
             context: .
             dockerfile: ${DOCKERFILE}
         entrypoint: ${DOCKER_ENTRYPOINT}
+        stdin_open: true
+        tty: true
         volumes:
             - ${APP_DIR}:${DOCKER_APP_DIR}
             - ${APP_STATIC_DIR}:${DOCKER_APP_STATIC_DIR}
         env_file:
             - .env
-        expose:
-            - "8000"
+        ports:
+            - "8000:8000"
         environment:
             - DEBUG=${DEBUG}
             - SECRET_KEY=${SECRET_KEY}
@@ -23,12 +25,18 @@ services:
             - DB_PORT=${DB_PORT}
         depends_on:
             - db
+
     db:
+        env_file:
+            - .env
         image: postgres:10.1-alpine
         environment:
             - POSTGRES_USER=${DB_USER}
             - POSTGRES_PASSWORD=${DB_PASSWORD}
             - POSTGRES_DB=${DB_NAME}
+        ports:
+            - "5432:5432"
+
     nginx:
         build: ${APP_NGINX_DIR}
         volumes:
@@ -37,3 +45,31 @@ services:
             - "${NGINX_PORT_MAP}"
         depends_on:
             - web
+
+    selenium_hub:
+        container_name: selenium_hub
+        image: selenium/hub
+        ports:
+          - "4444:4444"
+
+    selenium_chrome:
+        container_name: selenium_chrome
+        image: selenium/node-chrome-debug
+        environment:
+            - HUB_PORT_4444_TCP_ADDR=selenium_hub
+            - HUB_PORT_4444_TCP_PORT=4444
+        ports:
+            - "5900:5900"
+        depends_on:
+            - selenium_hub
+
+    selenium_firefox:
+        container_name: selenium_firefox
+        image: selenium/node-firefox-debug
+        environment:
+            - HUB_PORT_4444_TCP_ADDR=selenium_hub
+            - HUB_PORT_4444_TCP_PORT=4444
+        ports:
+            - "5901:5900"
+        depends_on:
+            - selenium_hub

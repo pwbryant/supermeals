@@ -1,8 +1,11 @@
 from selenium import webdriver
+# from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import time
 from decimal import Decimal
 import os
 from datetime import datetime
+# import socket
+# from django.test import TestCase
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.contrib.auth import authenticate, login
@@ -13,10 +16,6 @@ from meals.models import Macros, Servings
 from supermeals.settings import DATABASES as dbs
 
 
-SCREEN_DUMP_LOCATION = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), 'screendumps'
-)
-
 class FunctionalTest(StaticLiveServerTestCase):
 
     USERNAME = 'JoeSchmoe'
@@ -25,54 +24,34 @@ class FunctionalTest(StaticLiveServerTestCase):
     GUESTPASS = 'password'
 
     def setUp(self):
+
+        # if os.environ.get('BROWSER') == 'Firefox':
+        #     self.browser = webdriver.Remote(
+        #         command_executor='http://selenium_hub:4444/wd/hub',
+        #         desired_capabilities=DesiredCapabilities.FIREFOX
+        #     )
+
+        # elif os.environ.get('BROWSER') == 'Chrome':
+        #     self.browser = webdriver.Remote(
+        #         command_executor='http://selenium_hub:4444/wd/hub',
+        #         desired_capabilities=DesiredCapabilities.CHROME
+        #     )
+        # else:
+        self.browser = webdriver.Firefox()
+
+        self.browser.implicitly_wait(10)
+
         Servings.objects.create(
             grams=Decimal(1),
             quantity=Decimal(1),
             description='g'
         )
-        self.browser = webdriver.Firefox()
-        staging_server = os.environ.get('STAGING_SERVER')
-        if staging_server:
-            self.live_server_url = 'http://' + staging_server
 
+        # self.live_server_url = 'http://web:8000'
 
     def tearDown(self):
-        if self._test_has_failed():
-            if not os.path.exists(SCREEN_DUMP_LOCATION):
-                os.makedirs(SCREEN_DUMP_LOCATION)
-            for ix, handle in enumerate(self.browser.window_handles):
-                self._windowid = ix
-                self.browser.switch_to_window(handle)
-                self.take_screenshot()
-                self.dump_html()
         self.browser.quit()
         super().tearDown()
-
-    def _test_has_failed(self):
-        # slightly obscure but couldn't find a better way!
-        return any(error for (method, error) in self._outcome.errors)
-
-    def take_screenshot(self):
-        filename = self._get_filename() + '.png'
-        print('screenshotting to', filename)
-        self.browser.get_screenshot_as_file(filename)
-
-
-    def dump_html(self):
-        filename = self._get_filename() + '.html'
-        print('dumping page HTML to', filename)
-        with open(filename, 'w') as f:
-            f.write(self.browser.page_source)
-
-    def _get_filename(self):
-        timestamp = datetime.now().isoformat().replace(':', '.')[:19]
-        return '{folder}/{classname}.{method}-window{windowid}-{timestamp}'.format(
-            folder=SCREEN_DUMP_LOCATION,
-            classname=self.__class__.__name__,
-            method=self._testMethodName,
-            windowid=self._windowid,
-            timestamp=timestamp
-        )
 
     def search_and_results(
         self, input_selector, button_id, result_class, term_list):
@@ -118,23 +97,22 @@ class FunctionalTest(StaticLiveServerTestCase):
                 if element.get_attribute('type') == 'radio':
                         element.click()
 
-
     def login_user(self, username, password=False):
 
         if "" not in [username, password]:
             
             if username == 'guest':
-                login_button = "input[value='Login As Guest']"
+                select_login_button = "input[value='Login As Guest']"
             else:
                 self.fill_input(
                     ["input[name='username']","input[name='password']"],[username,password]
                 )
-                login_button = "input[value='Login']"
+                select_login_button = "input[value='Login']"
         else:
-            login_button = "input[value='Login']"
+            select_login_button = "input[value='Login']"
 
-        self.browser.find_element_by_css_selector(login_button).click()
-
+        login_button = self.browser.find_element_by_css_selector(select_login_button)
+        login_button.click()
 
     def check_element_content(
         self, selector, selector_type, comparison_type, comparison_text,
@@ -156,14 +134,12 @@ class FunctionalTest(StaticLiveServerTestCase):
 
         self.assertEqual(content,comparison_text)
 
-
     def initialize_test(self, username, password):
         user = User.objects.create_user(username=username, password=password)
         self.browser.get(self.live_server_url)
         self.login_user(username, password)
         return user
 
-            
     def create_default_macro(self,user):
         macro = Macros.objects.create(**{
             "user":user,
@@ -181,7 +157,6 @@ class FunctionalTest(StaticLiveServerTestCase):
 
         return macro
 
-    
     def create_user(self, username, email,  password):
         user = User.objects.create_user(
             username=username, email=email, password=password

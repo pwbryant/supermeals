@@ -20,12 +20,12 @@ BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 
 # DEPLOY SETTINGS
 DEBUG = os.environ.get('DEBUG', True)
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'local-secret-i-dont-care')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # ALLOWED_HOSTS = ['mlab.us-east-2.elasticbeanstalk.com', '127.0.0.1']
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS', 'localhost')]
+ 
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -73,16 +73,15 @@ WSGI_APPLICATION = 'supermeals.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-# Manually set IS_STAGING on EC2
-Docker = True
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.postgresql_psycopg2'),
         'NAME': os.environ.get('DB_NAME', 'meal_maker'),
         'USER': os.environ.get('DB_USER', 'paul'),
         'PASSWORD': os.environ.get('DB_PASSWORD', 'password'),
         'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', ''),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 

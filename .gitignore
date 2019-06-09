@@ -18,3 +18,9 @@ meals/static/meals/js/jquery
 functional_tests/screendumps/
 .env
 static/
+docker-compose.yml
+dev-docker-compose.yml
+letsencrypt/
+nginx/
+Dockerfile
+docker-entrypoint.sh

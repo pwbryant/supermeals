@@ -87,7 +87,6 @@ def make_ingredient_formset(request):
     Parameters
     ----------
     request: HttpRequest object
-        Hold the POST data
 
     Returns
     ----------

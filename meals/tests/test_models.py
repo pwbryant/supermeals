@@ -180,7 +180,7 @@ class FoodsTest(TestCase):
         args = [
             'name', search_terms, 0.001, fields_of_interest
         ]
-        kwargs = {'filters': filters}
+        kwargs = {'food_group_filters': filters}
 
         search_results = Foods.searcher.rank_with_terms_and_filters(
             *args, **kwargs
@@ -199,7 +199,7 @@ class FoodsTest(TestCase):
         args = [
             'name', search_terms, 0.001, fields_of_interest
         ]
-        kwargs = {'filters': filters}
+        kwargs = {'food_group_filters': filters}
 
         search_results = Foods.searcher.rank_with_terms_and_filters(
             *args, **kwargs
@@ -218,7 +218,7 @@ class FoodsTest(TestCase):
         args = [
             'name', search_terms, 0.001, fields_of_interest
         ]
-        kwargs = {'filters': filters}
+        kwargs = {'food_group_filters': filters}
 
         search_results = Foods.searcher.rank_with_terms_and_filters(
             *args, **kwargs

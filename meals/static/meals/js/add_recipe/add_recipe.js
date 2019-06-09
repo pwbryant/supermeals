@@ -11,7 +11,7 @@ let ADD_RECIPE = (function() {
                 if (form_valid) {
                     const post_data = $('#add-recipe-form').serialize();
                     $.post('/meals/save-recipe', post_data, function(data) {
-                        if (data['status'] == 'success') {
+                        if (data['status'] == 201) {
                             $('#add-recipe-save-status').text('Recipe Saved');
 
                             // clear search results
@@ -25,7 +25,7 @@ let ADD_RECIPE = (function() {
                             $('input[type="text"]:visible').val('');
                             $('input:checkbox').removeAttr('checked');
                         }
-                        if (data['status'] == 'failure') {
+                        if (data['status'] == 400) {
                             for (let key in data['errors']) {
                                 const error_id = `#add-recipe-${key.replace(/_/g, '-')}-errors`;
                                 let errors = '';

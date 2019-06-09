@@ -282,19 +282,19 @@ class DeleteRecipeTest(BaseMakeFoodsTest):
 class AddRecipeTest(BaseMakeFoodsTest):
 
     def test_add_recipe_url(self):
-        url = reverse('add_recipe')
+        url = reverse('render_add_recipe')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response,'meals/add_recipe.html')
 
     def test_add_recipe_url_renders_correct_template_as_guest(self):
-        url = reverse('add_recipe')
+        url = reverse('render_add_recipe')
         self.log_in_user('guest', 'password')
         response = self.client.get(url)
         self.assertTemplateUsed(response, 'meals/bad_raw_url.html')
 
     def test_add_recipe_returns_filters(self):
-        url = reverse('add_recipe')
+        url = reverse('render_add_recipe')
         response = self.client.get(url)
 
         self.assertContains(response, self.my_meals_fg.name)
@@ -316,14 +316,14 @@ class AddRecipeTest(BaseMakeFoodsTest):
     def test_save_recipe_returns_success(self):
         url = reverse('save_recipe')
         response = json.loads(self.client.post(url, self.post).content)
-        self.assertEqual(response['status'], 'success')
+        self.assertEqual(response['status'], 201)
 
     def test_save_recipe_returns_failure_when_errors(self):
         url = reverse('save_recipe')
         # trigger duplicate name error
         self.client.post(url, self.post)
         response = json.loads(self.client.post(url, self.post).content)
-        self.assertEqual(response['status'], 'failure')
+        self.assertEqual(response['status'], 400)
         self.assertTrue(response.get('errors'))
 
     def test_save_recipe_creates_recipe_serving(self):

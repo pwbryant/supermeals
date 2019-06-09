@@ -3,13 +3,11 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login
-from django.contrib.auth.views import LoginView
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 
 from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
-        MacroIngredientForm, MealRecipeForm, NewFoodForm, NewFoodServingForm
+        MealRecipeForm, NewFoodForm, NewFoodServingForm
 from meals.models import Macros, Foods, FoodGroup, Ingredients, Servings, \
         FoodNotes, FoodType
 from meals.helpers import make_ingredient_formset, \
@@ -24,7 +22,7 @@ TEMPLATES_DIR = 'meals/'
 
 BAD_REQUEST = 400
 OK = 200
-
+CREATED = 201
 # Create your views here.
 
 @login_required
@@ -58,6 +56,16 @@ def create_account(request):
 
 @login_required
 def get_my_macros(request):
+    """get form and template for my macros tab
+
+    Parameters
+    ----------
+    request: HttpRequest instance
+
+    Returns
+    ----------
+    render response
+    """
 
     form = MakeMacrosForm(unit_type='imperial')
     return render(request, TEMPLATES_DIR + 'my_macros.html', {
@@ -80,7 +88,6 @@ def save_my_macros(request):
     context: dict
         dict with status, form, and unit-type upon
         success or failure
-
     """
 
     macro_form = MakeMacrosForm(request.POST)
@@ -89,7 +96,7 @@ def save_my_macros(request):
         Macros.objects.filter(user=request.user).delete()
         macro_form.instance.user = request.user
         macro_form.save()
-        context['status_code'] = OK 
+        context['status_code'] = OK
 
         return JsonResponse(context)
 
@@ -116,7 +123,7 @@ def get_meal_maker_template(request):
     macro_set = Macros.objects.filter(user=request.user)
     if macro_set:
         macro = macro_set[0]
-        macro_breakdown_dict_list = make_macro_breakdown_dict_list(macro)
+        macro_breakdown_dict_list = make_macro_breakdown_dict_list(macro)# in helpers.py
         tdee = macro.calc_tdee()
         context = {
             'tdee': round(tdee),
@@ -161,11 +168,11 @@ def save_macro_meal(request):
     request.POST._mutable = True
 
     meal_form = MacroMealForm(request.POST)
-    ingredient_formset = make_ingredient_formset(request)
+    ingredient_formset = make_ingredient_formset(request)#in helpers.py
 
     context = {'status': 0, 'errors': ''}
     if meal_form.is_valid() and ingredient_formset.is_valid():
-        save_meal_notes_ingredients(request.user, meal_form, ingredient_formset)
+        save_meal_notes_ingredients(request.user, meal_form, ingredient_formset)#in helpers.py
         context['status'] = 1
 
     else:
@@ -244,6 +251,22 @@ def search_foods(request, food_owner):
 
 @login_required
 def search_my_meals(request, meal_or_recipe):
+    """search db for saved meals
+
+    Fetch a saved meal/recipe along with its attendant
+    ingredients, servings, and notes
+
+    Parameters
+    ----------
+    request: HttpRequest object
+    meal_or_recipe: str
+        search for either meals or recipes
+
+    Returns
+    ----------
+    HttpResponse: HttpResponse instance
+        search results as json
+    """
 
     search_terms = request.GET['search_terms'].split(' ')
 
@@ -252,20 +275,21 @@ def search_my_meals(request, meal_or_recipe):
         'main_food__ingredient__name', 'main_food__amount',
         'main_food__serving__description', 'notes__notes'
     ]
-
     filters = [{'meal': 'My Meals', 'recipe': 'My Recipes'}[meal_or_recipe]]
-
-    args = [
-        'name', search_terms, 0.001, fields_of_interest,
-        ['servings', 'notes'], 20, filters
+    rank_by_field = 'name'
+    rank_threshold = 0.001
+    foreign_key_relations = ['servings', 'notes']
+    record_limit = 20
+    search_args = [
+        rank_by_field, search_terms, rank_threshold, fields_of_interest,
+        foreign_key_relations, record_limit, filters
     ]
-    kwargs = {'query_set': Foods.searcher.filter_on_user(request.user)}
-
-    search_results = Foods.searcher.rank_with_terms_and_filters(*args, **kwargs)
+    search_kwargs = {'query_set': Foods.searcher.filter_on_user(request.user)}
 
     search_results_dict = Foods.searcher.add_nested_ingredients_to_ingredient_dict(
-        Foods.searcher.restructure_ingredients_queryset_to_dict(search_results),
-        fields_of_interest
+        Foods.searcher.restructure_ingredients_queryset_to_dict(
+            Foods.searcher.rank_with_terms_and_filters(*search_args, **search_kwargs)
+        ), fields_of_interest
     )
 
     return HttpResponse(
@@ -278,7 +302,19 @@ def search_my_meals(request, meal_or_recipe):
 
 @user_is_not_guest
 @login_required
-def add_recipe(request):
+def render_add_recipe(request):
+    """render add_recipe.html
+    
+    Adds food groups to context in add_recipe.html
+
+    Parameters
+    ----------
+    request: HttpRequest object
+
+    Returns
+    ----------
+    HttpResponse object with rendered template 
+    """
 
     context = {
         'filters': [
@@ -296,6 +332,22 @@ def add_recipe(request):
 @user_is_not_guest
 @login_required
 def save_recipe(request):
+    """save new recipe
+
+    If post, handle when additional serving info is present / absent
+    and save both food and its potential associated servings. Of note,
+    fd_form needs to be passed grams (.consume_grams())so that it can
+    calculate macros / gram.
+
+    Parameters
+    ----------
+    request: HttpRequest object
+
+    Returns
+    ----------
+    JsonResponse
+        success/failure status/errors
+    """
 
     # request.POST['user'] = request.user
     form = MealRecipeForm(request.POST)
@@ -303,11 +355,11 @@ def save_recipe(request):
     if form.is_valid():
         form.instance.user = request.user
         form.save()
-        context['status'] = 'success'
+        context['status'] = CREATED
 
     else:
         context['errors'] = form.errors
-        context['status'] = 'failure'
+        context['status'] = BAD_REQUEST
 
     return JsonResponse(context)
 
@@ -315,32 +367,47 @@ def save_recipe(request):
 @user_is_not_guest
 @login_required
 def add_food(request):
+    """load page or save new food
+
+    If post, handle when additional serving info is present / absent
+    and save both food and its potential associated servings. Of note,
+    fd_form needs to be passed grams (.consume_grams())so that it can
+    calculate macros / gram.
+
+    Parameters
+    ----------
+    request: HttpRequest object
+
+    Returns
+    ----------
+    JsonResponse / or template render
+    """
 
     if request.method == 'POST':
         fd_form = NewFoodForm(request.POST)
         srv_form = NewFoodServingForm(request.POST)
-        if request.POST.get('description'):
+        if request.POST.get('description'): #indicates additional serving info
             if fd_form.is_valid() and srv_form.is_valid():
-                fd_form.get_grams(srv_form.cleaned_data['grams'])
+                fd_form.consume_grams(srv_form.cleaned_data['grams'])
                 fd_form.instance.user = request.user
                 fd_form.save()
                 srv_form.instance.food = fd_form.instance
                 srv_form.save()
-                return JsonResponse({'status_code': 201})
+                return JsonResponse({'status_code': CREATED})
 
         else:
-            srv_form.is_valid()
-            # Only leave grams errors if they exist
+            srv_form.is_valid() # generate serving errors
+            # Only leave grams errors if they exist,
             srv_form.errors.pop('quantity', None)
             srv_form.errors.pop('description', None)
             if fd_form.is_valid() and not srv_form.errors.get('grams'):
-                fd_form.get_grams(srv_form.cleaned_data['grams'])
+                fd_form.consume_grams(srv_form.cleaned_data['grams']) 
                 fd_form.instance.user = request.user
                 fd_form.save()
-                return JsonResponse({'status_code': 201})
+                return JsonResponse({'status_code': CREATED})
 
         return JsonResponse({
-            'status_code': 400,
+            'status_code': BAD_REQUEST,
             'errors': {**srv_form.errors, **fd_form.errors}
         })
 

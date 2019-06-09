@@ -31,7 +31,6 @@ OUT_OF_RANGE_MACRO_ERROR = 'Macro Percent Out Of Range'
 MACROS_DONT_ADD_UP_ERROR = 'Macro Percentages Do Not Add Up Too 100'
 EMPTY_CALS_ERROR = 'Meal/Snack Calories Missing'
 
-
 # FUNCTIONS
 # ==================================================
 
@@ -84,6 +83,7 @@ class NewFoodServingForm(forms.ModelForm):
         }
 
 
+
 class NewFoodForm(forms.ModelForm):
 
     small_input_class = 'input__input input__input--sm'
@@ -132,6 +132,7 @@ class NewFoodForm(forms.ModelForm):
         )
     )
 
+    # Offical food groups need to be read in
     with open(
             os.path.join(BASE_DIR, 'data', 'meals', 'food_groups.csv'), 'r'
         ) as food_groups_file:
@@ -162,10 +163,23 @@ class NewFoodForm(forms.ModelForm):
             'name': 'Food Name'
         }
 
-    def get_grams(self, grams):
+    def consume_grams(self, grams):
+        """obtain grams for use in macro/gram calculations
+
+        Parameters
+        ----------
+        grams: decimal.Decimal
+        """
+
         self.cleaned_data['grams'] = grams
 
     def save(self):
+        """save new food
+
+        Save new Food along with its associated FoodType and
+        FoodGroup.  Also calc the macros per gram fields from
+        of the form macro input.
+        """
 
         food = self.instance
 
@@ -184,8 +198,6 @@ class NewFoodForm(forms.ModelForm):
         )
         food.save()
                     
-
-
 
 class MealRecipeForm(forms.ModelForm):
 
@@ -209,6 +221,12 @@ class MealRecipeForm(forms.ModelForm):
 
 
     def clean(self):
+        """set all dynamically added ingredients
+        
+        Set all dynamically added form inputs for ingredients
+        to one key in cleaned_data. This makes the ingredients
+        easier to work with later, and allow for checking of duplicates
+        """
 
         self.cleaned_data = super().clean()
         ingredients = set()
@@ -239,6 +257,12 @@ class MealRecipeForm(forms.ModelForm):
 
     
     def save(self):
+        """save new recipe
+
+        Save new recipe as Foods, along with its associated
+        FoodGroup, FoodType, Ingredients, and Servings.  Also
+        sets the macros / gram fields on Foods
+        """
 
         food = self.instance
         food.food_group = FoodGroup.objects.get(name='My Recipes')
@@ -341,13 +365,15 @@ class SignUpForm(forms.models.ModelForm):
 
         #error constants
         error_messages = {
-                'username': {'required': EMPTY_USERNAME_ERROR,'unique':DUPLICATE_USERNAME_ERROR},
+                'username': {
+                    'required': EMPTY_USERNAME_ERROR,
+                    'unique':DUPLICATE_USERNAME_ERROR
+                },
                 'password': {'required': EMPTY_PASSWORD_ERROR}
         }
 
 
 class MakeMacrosForm(forms.models.ModelForm):
-	
 
         data_type='number'
         input_class = 'input__input input__input--sm'

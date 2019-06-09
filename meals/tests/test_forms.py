@@ -93,7 +93,7 @@ class NewFoodServingFormTest(BaseTestCase):
         fd_form.is_valid()
         srv_form.is_valid()
 
-        fd_form.get_grams(srv_form.cleaned_data['grams'])
+        fd_form.consume_grams(srv_form.cleaned_data['grams'])
 
         fd_form.save()
         srv_form.instance.food = fd_form.instance
@@ -139,7 +139,7 @@ class NewFoodFormTest(BaseTestCase):
         fd_form.is_valid()
         srv_form.is_valid()
 
-        fd_form.get_grams(srv_form.cleaned_data['grams'])
+        fd_form.consume_grams(srv_form.cleaned_data['grams'])
 
         fd_form.save()
 
@@ -152,7 +152,7 @@ class NewFoodFormTest(BaseTestCase):
         form.is_valid()
         srv_form.is_valid()
         
-        form.get_grams(srv_form.cleaned_data['grams'])
+        form.consume_grams(srv_form.cleaned_data['grams'])
 
         form.save()
         food = form.instance
