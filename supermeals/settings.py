@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+from dotenv import load_dotenv
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
@@ -18,14 +20,27 @@ BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 # SECURITY WARNING: keep the secret key used in production secret!
 
+# ENV VARS
+load_dotenv()
+envs_path = os.path.join(
+    BASE_DIR, '.envs', os.getenv('ENVS_DIR')
+)
+for env_file in os.listdir(envs_path):
+    if not env_file.endswith('.swp'):
+        load_dotenv(
+            os.path.join(envs_path, env_file)
+        )
+
 # DEPLOY SETTINGS
-DEBUG = os.environ.get('DEBUG', True)
-SECRET_KEY = os.environ.get('SECRET_KEY', 'local-secret-i-dont-care')
+DEBUG = os.getenv('DEBUG')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # ALLOWED_HOSTS = ['mlab.us-east-2.elasticbeanstalk.com', '127.0.0.1']
-ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS', 'localhost')]
- 
+ALLOWED_HOSTS = [
+    host for host in os.getenv('ALLOWED_HOSTS').split()
+]
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -75,13 +90,17 @@ WSGI_APPLICATION = 'supermeals.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
     'default': {
-        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.postgresql_psycopg2'),
-        'NAME': os.environ.get('DB_NAME', 'meal_maker'),
-        'USER': os.environ.get('DB_USER', 'paul'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'password'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 

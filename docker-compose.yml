@@ -1,7 +1,12 @@
 version: '3.6'
 
 services:
+    db:
+        image: postgres
     web:
+        env_file:
+            - .envs/.dev/.postgres
+            - .envs/.dev/.django
         build:
             context: .
             dockerfile: Dockerfile
@@ -9,24 +14,16 @@ services:
             - ${APP_DIR}:${DOCKER_APP_DIR}
             - ${APP_STATIC_DIR}:${DOCKER_APP_STATIC_DIR}
         expose:
-            - "8000"
-        environment:
-            - DEBUG=${DEBUG}
-            - SECRET_KEY=${SECRET_KEY}
-            - DB_NAME=${DB_NAME}
-            - DB_USER=${DB_USER}
-            - DB_PASSWORD=${DB_PASSWORD}
-            - DB_HOST=${DB_HOST}
-            - DB_PORT=${DB_PORT}
+            - 8000
+        depends_on:
+            - db
     nginx:
         build: ${APP_NGINX_DIR}
         volumes:
             - ${APP_STATIC_DIR}:${DOCKER_APP_STATIC_DIR}
             - ${DH_PARAM_PATH}:${DH_PARAM_DOCKER_PATH}
-            - ${SSL_FULLCHAIN_PATH}:${SSL_FULLCHAIN_DOCKER_PATH}
-            - ${SSL_PRIVATE_PATH}/:${SSL_PRIVATE_DOCKER_PATH}
         ports:
-            - "80:80"
-            - "443:443"
+            - 80:80
+            - 443:443
         depends_on:
             - web

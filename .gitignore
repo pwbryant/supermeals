@@ -24,3 +24,4 @@ letsencrypt/
 nginx/
 Dockerfile
 docker-entrypoint.sh
+.envs

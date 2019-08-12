@@ -3,12 +3,13 @@
 
 FROM python:3.6
 
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 # Install Python and Package Libraries
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    libpq-dev \
-    postgresql-client \
-    vim
+# RUN apt-get update \
+#     && apt-get install -y --no-install-recommends \
+#     libpq-dev \
+#     postgresql-client \
 
 WORKDIR /srv/www/app
 COPY requirements.txt ./
@@ -17,5 +18,4 @@ COPY . .
 
 RUN ["chmod", "+x", "/srv/www/app/docker-entrypoint.sh"]
 
-# Server
-EXPOSE 8000
+ENTRYPOINT ["/srv/www/app/docker-entrypoint.sh"]
