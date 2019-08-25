@@ -142,7 +142,10 @@ def save_meal_notes_ingredients(user, meal_form, ingredient_formset):
     for ing_form in ingredient_formset:
         new_ing = ing_form.save(commit=False)
         new_ing.main_food = new_food
-        total_grams += new_ing.amount
+        total_grams += (
+            new_ing.serving.grams / new_ing.serving.quantity
+            * new_ing.amount
+        )
         new_ing.save()
 
     # Add meal servings

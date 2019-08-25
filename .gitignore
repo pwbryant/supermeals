@@ -25,3 +25,4 @@ nginx/
 Dockerfile
 docker-entrypoint.sh
 .envs
+*.swp

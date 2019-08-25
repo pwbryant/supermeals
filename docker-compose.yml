@@ -10,6 +10,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+        command: gunicorn supermeals.wsgi:application --bind 0.0.0.0:8000
         volumes:
             - ${APP_DIR}:${DOCKER_APP_DIR}
             - ${APP_STATIC_DIR}:${DOCKER_APP_STATIC_DIR}
@@ -17,11 +18,14 @@ services:
             - 8000
         depends_on:
             - db
+
     nginx:
         build: ${APP_NGINX_DIR}
         volumes:
             - ${APP_STATIC_DIR}:${DOCKER_APP_STATIC_DIR}
             - ${DH_PARAM_PATH}:${DH_PARAM_DOCKER_PATH}
+            - ${SSL_FULLCHAIN_PATH}:${SSL_FULLCHAIN_DOCKER_PATH}
+            - ${SSL_PRIVATE_PATH}:${SSL_PRIVATE_DOCKER_PATH}
         ports:
             - 80:80
             - 443:443

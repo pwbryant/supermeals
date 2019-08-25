@@ -36,7 +36,7 @@ class SearchFoods(models.Manager):
 
     def rank_with_terms_and_filters(self,
         rank_on_field,
-        rank_by_values, 
+        rank_by_values,
         rank_threshold,
         result_fields,
         relations=None,
@@ -74,7 +74,7 @@ class SearchFoods(models.Manager):
         if query_set is None:
             query_set = self.get_queryset()
 
-        if food_group_filters: 
+        if food_group_filters:
             query_set = query_set.filter(food_group__name__in=food_group_filters)
 
         rank_on_field = SearchVector(rank_on_field)
@@ -92,10 +92,10 @@ class SearchFoods(models.Manager):
         if relations:
             for relation in relations:
                 query_set = query_set.prefetch_related(relation)
-       
+
         if limit:
             query_set = query_set[:limit]
-       
+
         return query_set.values(*result_fields)
 
     def make_query(self, search_terms):
@@ -123,9 +123,8 @@ class SearchFoods(models.Manager):
     def restructure_food_and_servings_queryset(self, search_results):
         """restructure layout of results query
 
-        Rearrange/format/add grams info to search results to make them easier to 
-        work with down stream
-        
+        Rearrange/format/add grams info to search results to make them easier to
+
         Parameters
         ----------
         search_results: QuerySet object
@@ -171,9 +170,9 @@ class SearchFoods(models.Manager):
     def restructure_ingredients_queryset_to_dict(self, query_set):
         """restructure qeury set to dict
 
-        Rearrange/format/add info to meal/ingredients queryset to make them easier to 
+        Rearrange/format/add info to meal/ingredients queryset to make them easier to
         work with down stream
-        
+
         Parameters
         ----------
         query_set: QuerySet object
@@ -260,7 +259,7 @@ class Macros(models.Model):
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES, blank=False)
 
     age = models.IntegerField(blank=False)
-    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=False)	
+    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=False)
     height = models.DecimalField(max_digits=5, decimal_places=2, blank=False)
 
     ACTIVITY_CHOICES = (
@@ -313,15 +312,15 @@ class Macros(models.Model):
 
         # convert kg to lb by dividing by .45359237
         weight_change = (
-            self.change_rate / Decimal('.45359237') * direction_factor * 500 
+            self.change_rate / Decimal('.45359237') * direction_factor * 500
         )
-        
+
         tdee = (
             (Decimal('10') * self.weight) + (Decimal('6.25') * self.height)
             - (Decimal('5') * self.age)
         )
         if self.gender == 'male':
-                tdee += 5 
+                tdee += 5
         else:
                 tdee -= 161
 
@@ -386,13 +385,19 @@ class Foods(models.Model):
     def __repr__(self):
         return '{}'.format(self.name)
 
+    def get_total_grams_of_ingredients(self, ingredients):
+        return sum([
+            i.serving.grams / i.serving.quantity * i.amount
+            for i in ingredients
+        ])
+
     def set_macros_per_gram(self, cals=None, fat=None, carbs=None, sugar=None,
         protein=None, serving_amount=None):
         """calculate the values for the macros / gram fields
 
         Set the macros / gram fields.  If single food call use calc_macro_per_gram(),
         but if food made up of ingredients then use calc_ingredients_macro_per_gram()
-        
+
         Parameters
         ----------
         all args None or decimal.Decimal
@@ -418,8 +423,7 @@ class Foods(models.Model):
 
         else:
             ings = Ingredients.objects.filter(main_food=self)
-            total_grams = sum([ing.serving.grams * ing.amount for ing in ings])
-
+            total_grams = self.get_total_grams_of_ingredients(ings)
             self.cals_per_gram = self.calc_ingredients_macro_per_gram(
                 ings, 'cals', total_grams
             )
@@ -437,11 +441,9 @@ class Foods(models.Model):
             )
 
     def get_macros_profile(self):
-                
+
         ings = Ingredients.objects.filter(main_food=self)
-        total_grams = Decimal(
-            sum([ing.serving.grams * ing.amount for ing in ings])
-        )
+        total_grams = self.get_total_grams_of_ingredients(ings)
         total_cals = Decimal(self.cals_per_gram * total_grams)
 
         macros_dict = {
@@ -461,7 +463,7 @@ class Foods(models.Model):
     def calc_ingredients_macro_per_gram(self, ingredients, macro, total_grams):
         macro_per_gram = sum([
             ing.ingredient.__getattribute__(f'{macro}_per_gram')
-            * ing.serving.grams * ing.amount for ing in ingredients
+            * ing.serving.grams / ing.serving.quantity * ing.amount for ing in ingredients
         ]) / total_grams
 
         return macro_per_gram
@@ -481,7 +483,7 @@ class Foods(models.Model):
 
 class FoodNotes(models.Model):
 
-    notes = models.TextField(blank=False, null=False) 
+    notes = models.TextField(blank=False, null=False)
     food = models.ForeignKey(
         'Foods', related_name='notes', on_delete=models.CASCADE
     )
@@ -508,10 +510,15 @@ class Servings(models.Model):
         if self.food:
             return '{0} - {1}'.format(self.food.name, self.description)
         return '{0}'.format(self.description)
-    
+
+    def __str__(self):
+        if self.food:
+            return '{0} - {1}'.format(self.food.name, self.description)
+        return '{0}'.format(self.description)
+
 
 class Ingredients(models.Model):
-    
+
     main_food = models.ForeignKey(
             'Foods',
             on_delete=models.CASCADE,

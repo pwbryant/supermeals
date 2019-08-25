@@ -136,7 +136,7 @@ class NewFoodForm(forms.ModelForm):
     with open(
             os.path.join(BASE_DIR, 'data', 'meals', 'food_groups.csv'), 'r'
         ) as food_groups_file:
-        
+
         choices = [
             (fd_grp.strip(), fd_grp.strip(),) for fd_grp
             in food_groups_file.readlines()
@@ -197,7 +197,7 @@ class NewFoodForm(forms.ModelForm):
             Decimal(self.cleaned_data['grams'])
         )
         food.save()
-                    
+
 
 class MealRecipeForm(forms.ModelForm):
 
@@ -222,7 +222,7 @@ class MealRecipeForm(forms.ModelForm):
 
     def clean(self):
         """set all dynamically added ingredients
-        
+
         Set all dynamically added form inputs for ingredients
         to one key in cleaned_data. This makes the ingredients
         easier to work with later, and allow for checking of duplicates
@@ -255,7 +255,7 @@ class MealRecipeForm(forms.ModelForm):
 
         self.cleaned_data['ingredients'] = ingredients
 
-    
+
     def save(self):
         """save new recipe
 
@@ -306,7 +306,7 @@ class MacroMealForm(forms.ModelForm):
         model = Foods
         fields = ['name']
 
-        
+
 class MacroIngredientForm(forms.ModelForm):
 
     ingredient_id = forms.IntegerField()
