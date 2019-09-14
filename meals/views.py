@@ -1,10 +1,11 @@
 import json
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect
+from django.views.generic.edit import FormView
 
 from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
         MealRecipeForm, NewFoodForm, NewFoodServingForm
@@ -54,55 +55,32 @@ def create_account(request):
     return render(request, TEMPLATES_DIR + 'sign_up.html', {"form":form})
 
 
-@login_required
-def get_my_macros(request):
-    """get form and template for my macros tab
+class MyMacros(FormView):
 
-    Parameters
-    ----------
-    request: HttpRequest instance
+    form_class = MakeMacrosForm
+    template_name = f"{TEMPLATES_DIR}my_macros.html"
 
-    Returns
-    ----------
-    render response
-    """
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['unit_type'] = 'imperial'
+        return kwargs
 
-    form = MakeMacrosForm(unit_type='imperial')
-    return render(request, TEMPLATES_DIR + 'my_macros.html', {
-        'form':form
-    })
+    def post(self, request, *args, **kwargs):
+        self.user = request.user
+        return super().post(request, *args, **kwargs)
 
-
-@login_required
-def save_my_macros(request):
-    """saves new Macro
-
-    Save new Macro model object
-
-    Parameters
-    ----------
-    request: HttpRequest instance
-
-    Returns
-    ----------
-    context: dict
-        dict with status, form, and unit-type upon
-        success or failure
-    """
-
-    macro_form = MakeMacrosForm(request.POST)
-    context = {}
-    if macro_form.is_valid():
-        Macros.objects.filter(user=request.user).delete()
-        macro_form.instance.user = request.user
-        macro_form.save()
-        context['status_code'] = OK
-
+    def form_valid(self, form):
+        Macros.objects.filter(user=self.user).delete()
+        form.instance.user = self.user
+        form.save()
+        context = {'status_code': OK}
         return JsonResponse(context)
 
-    context['status_code'] = BAD_REQUEST
-    context['errors'] = macro_form.errors
-    return JsonResponse(context)
+    def form_invalid(self, form):
+        context = self.get_context_data(form=form)
+        context['status_code'] = BAD_REQUEST
+        context['errors'] = form.errors
+        return JsonResponse(context)
 
 
 @login_required

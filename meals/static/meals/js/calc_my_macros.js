@@ -73,9 +73,9 @@ var save_my_macros_button_posts_form = function() {
                 post_data += `&height=${ height }`;
             }
 
-			$.post('/meals/save-my-macros',post_data,function(data) {
+			$.post('/meals/my-macros/',post_data,function(data) {
 				if (data['status_code'] == 200) {
-					$('#my-macros-successful-save').html('Macros Successfully Saved! Now Go Make a Meal!');
+					$('#my-macros-successful-save').html('Macros Successfully Saved! Now Go Make a Meal Dummy!');
                     document.getElementById('my-macros-successful-save').scrollIntoView();
 				} else {
                     TMP = data['errors'];
@@ -238,7 +238,6 @@ var choose_macro_handler = function() {
 		type = input_array[1],
 		macro_factor = MACRO_FACTORS[macro];
         let return_value;
-        console.log(tdee_result, input_array, macro_value, macro, type, macro_factor);
 		if (type == 'percent') {
 			return_value = (tdee_result * macro_value / 100.0 / macro_factor).toFixed(0);
 			var return_selector = "input[name='" + macro + "_g']";
@@ -246,7 +245,6 @@ var choose_macro_handler = function() {
 			return_value = (macro_value * macro_factor / tdee_result * 100).toFixed(0);	
 			var return_selector = "input[name='" + macro + "_percent']";
 		}
-        console.log('rv', return_value, return_selector);
 		if (isNaN(macro_value)) {
 			$(return_selector).val("");
 		} else {

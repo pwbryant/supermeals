@@ -3,6 +3,9 @@ version: '3.6'
 services:
     db:
         image: postgres
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+
     web:
         env_file:
             - .envs/.dev/.postgres
@@ -31,3 +34,6 @@ services:
             - 443:443
         depends_on:
             - web
+
+volumes:
+    postgres_data:
