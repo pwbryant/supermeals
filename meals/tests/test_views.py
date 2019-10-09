@@ -17,7 +17,7 @@ from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
     EMPTY_HEIGHT_ERROR
 from meals.models import Macros, Foods, FoodGroup , Servings, Ingredients, \
         FoodNotes, FoodType
-from meals.views import save_my_macros, get_my_meals, \
+from meals.views import MyMacros, \
     get_meal_maker_template, \
     make_macro_breakdown_dict_list, save_macro_meal, search_my_meals
 from meals.helpers import get_ingredient_count

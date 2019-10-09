@@ -1,5 +1,5 @@
 from selenium import webdriver
-# from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import time
 from decimal import Decimal
 import os
@@ -23,21 +23,15 @@ class FunctionalTest(StaticLiveServerTestCase):
     GUESTNAME = 'guest'
     GUESTPASS = 'password'
 
+    host = 'web'
+    port = 8888
     def setUp(self):
 
-        # if os.environ.get('BROWSER') == 'Firefox':
-        #     self.browser = webdriver.Remote(
-        #         command_executor='http://selenium_hub:4444/wd/hub',
-        #         desired_capabilities=DesiredCapabilities.FIREFOX
-        #     )
-
-        # elif os.environ.get('BROWSER') == 'Chrome':
-        #     self.browser = webdriver.Remote(
-        #         command_executor='http://selenium_hub:4444/wd/hub',
-        #         desired_capabilities=DesiredCapabilities.CHROME
-        #     )
-        # else:
-        self.browser = webdriver.Firefox()
+        browser = os.environ.get('BROWSER', 'Firefox')
+        self.browser = webdriver.Remote(
+            command_executor='http://hub:4444/wd/hub',
+            desired_capabilities=DesiredCapabilities.FIREFOX
+        )
 
         self.browser.implicitly_wait(10)
 
@@ -62,7 +56,7 @@ class FunctionalTest(StaticLiveServerTestCase):
         )
         self.browser.find_element_by_id(button_id).click()
         search_results = self.browser.find_elements_by_class_name(result_class)
-            
+
         return search_results
 
     def setup_and_run_search(self, terms, filters, tab_name):
@@ -117,10 +111,10 @@ class FunctionalTest(StaticLiveServerTestCase):
     def check_element_content(
         self, selector, selector_type, comparison_type, comparison_text,
         child=None):
-    
+
         if selector_type == "id":
             element = self.browser.find_element_by_id(selector)
-        
+
         if selector_type == "css":
                 element = self.browser.find_element_by_css_selector(selector)
 
