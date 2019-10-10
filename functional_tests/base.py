@@ -41,8 +41,6 @@ class FunctionalTest(StaticLiveServerTestCase):
             description='g'
         )
 
-        # self.live_server_url = 'http://web:8000'
-
     def tearDown(self):
         self.browser.quit()
         super().tearDown()
