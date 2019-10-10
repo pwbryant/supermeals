@@ -7,11 +7,11 @@ pipeline:
         commands:
             - pip install -r requirements.txt
             - python manage.py migrate
-            - pytest hello --splinter-webdriver=remote --splinter-remote-url=http://hub:4444/wd/hub
+            - pytest meals
             - export BROWSER=chrome
-            - pytest e2e_tests
+            - pytest functional_tests
             - export BROWSER=firefox
-            - pytest e2e_tests
+            - pytest functional_tests
         when:
             branch: [ master ]
             event: [push, pull_request]
