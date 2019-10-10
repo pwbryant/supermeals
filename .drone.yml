@@ -1,0 +1,44 @@
+pipeline:
+    build:
+        name: web
+        image: python:3.7-slim
+        environment:
+            - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+        commands:
+            - pip install -r requirements.txt
+            - python manage.py migrate
+            - pytest hello --splinter-webdriver=remote --splinter-remote-url=http://hub:4444/wd/hub
+            - export BROWSER=chrome
+            - pytest e2e_tests
+            - export BROWSER=firefox
+            - pytest e2e_tests
+        when:
+            branch: [ master ]
+            event: [push, pull_request]
+
+services:
+    db:
+        image: postgres
+        environment:
+            - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+        ports:
+            - 5432:5432
+
+    hub:
+        image: selenium/hub:3.141.59
+        ports:
+            - 4444:4444
+
+    chrome:
+        image: selenium/node-chrome:3.141.59
+        depends_on:
+            - hub
+        environment:
+            - HUB_HOST=hub
+
+    firefox:
+        image: selenium/node-firefox:3.141.59
+        depends_on:
+            - hub
+        environment:
+            - HUB_HOST=hub
