@@ -20,10 +20,10 @@ BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 
 # ENV VARS
 # load_dotenv(dotenv_path=os.getenv('ENV_DIR'))
-env_path = Path(os.getenv('ENV_DIR')) / '.env'
-load_dotenv(dotenv_path=env_path)
+env_path = Path(os.getenv('ENV_DIR'))
+load_dotenv(dotenv_path=env_path / '.env')
 envs_path = os.path.join(
-    BASE_DIR, '.envs', os.getenv('ENVS_DIR')
+    env_path, '.envs', os.getenv('ENVS_DIR')
 )
 for env_file in os.listdir(envs_path):
     if not env_file.endswith('.swp'):
