@@ -12,16 +12,16 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
-# SECURITY WARNING: keep the secret key used in production secret!
 
 # ENV VARS
-load_dotenv()
+# load_dotenv(dotenv_path=os.getenv('ENV_DIR'))
+env_path = Path(os.getenv('ENV_DIR')) / '.env'
+load_dotenv(dotenv_path=env_path)
 envs_path = os.path.join(
     BASE_DIR, '.envs', os.getenv('ENVS_DIR')
 )
@@ -30,6 +30,8 @@ for env_file in os.listdir(envs_path):
         load_dotenv(
             os.path.join(envs_path, env_file)
         )
+        print(os.path.join(envs_path, env_file))
+
 
 # DEPLOY SETTINGS
 DEBUG = os.getenv('DEBUG')

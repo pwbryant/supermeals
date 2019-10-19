@@ -7,9 +7,11 @@ services:
             - postgres_data:/var/lib/postgresql/data
 
     web:
-        env_file:
-            - .envs/.dev/.postgres
-            - .envs/.dev/.django
+        # env_file:
+        #     - .envs/.dev/.postgres
+        #     - .envs/.dev/.django
+        environment:
+            - ENV_DIR=${DOCKER_APP_DIR}
         build:
             context: .
             dockerfile: Dockerfile
