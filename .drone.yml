@@ -4,11 +4,7 @@ pipeline:
         image: python:3.6
         environment:
             - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
-            - ENV_DIR=/
-
-        volumes:
-            - /home/ubuntu:/
-
+            - ENV_DIR=/home/ubuntu
         commands:
             - pip install -r requirements.txt
             - python manage.py migrate
