@@ -4,7 +4,10 @@ pipeline:
         image: python:3.6
         environment:
             - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
-            - ENV_DIR=/home/ubuntu
+            - ENV_DIR=/drone/src/github.com/pwbryant/supermeals
+        volumes:
+            - /home/ubuntu:/drone/src/github.com/pwbryant/supermeals
+
         commands:
             - pip install -r requirements.txt
             - python manage.py migrate
