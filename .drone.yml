@@ -11,7 +11,7 @@ pipeline:
         commands:
             - pip install -r requirements.txt
             - python manage.py migrate
-            - pytest meals
+            # - pytest meals
             # - export BROWSER=chrome
             # - pytest functional_tests
             # - export BROWSER=firefox
