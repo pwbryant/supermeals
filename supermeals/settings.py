@@ -28,7 +28,7 @@ try:
         env_path, '.envs', os.getenv('ENVS_DIR')
     )
 except:
-    raise Exception(f'ENVS_DIR: {os.environ}')
+    raise Exception(f'ENVS_DIR: {os.getcwd()}')
 envs_path = os.path.join(
     env_path, '.envs', os.getenv('ENVS_DIR')
 )

@@ -4,10 +4,10 @@ pipeline:
         image: python:3.6
         environment:
             - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
-            - ENV_DIR=./
+            - ENV_DIR=/
 
         volumes:
-            - /home/ubuntu:./
+            - /home/ubuntu:/
 
         commands:
             - pip install -r requirements.txt
