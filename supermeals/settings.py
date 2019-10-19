@@ -21,10 +21,13 @@ BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 # ENV VARS
 # load_dotenv(dotenv_path=os.getenv('ENV_DIR'))
 env_path = Path(os.getenv('ENV_DIR'))
+if env_path:
+    assert env_path == '/home/ubuntu'
 load_dotenv(dotenv_path=env_path / '.env')
 envs_path = os.path.join(
     env_path, '.envs', os.getenv('ENVS_DIR')
 )
+if env
 for env_file in os.listdir(envs_path):
     if not env_file.endswith('.swp'):
         load_dotenv(
