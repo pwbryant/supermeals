@@ -27,7 +27,6 @@ load_dotenv(dotenv_path=env_path / '.env')
 envs_path = os.path.join(
     env_path, '.envs', os.getenv('ENVS_DIR')
 )
-if env
 for env_file in os.listdir(envs_path):
     if not env_file.endswith('.swp'):
         load_dotenv(
