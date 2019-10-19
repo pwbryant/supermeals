@@ -22,7 +22,11 @@ BASE_DIR = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 # load_dotenv(dotenv_path=os.getenv('ENV_DIR'))
 env_path = Path(os.getenv('ENV_DIR'))
 if env_path:
-    assert env_path == '/home/ubuntu'
+    try:
+        assert env_path == '/home/ubuntu'
+    except:
+        raise Exception(f'env_path: {env_path}')
+
 load_dotenv(dotenv_path=env_path / '.env')
 envs_path = os.path.join(
     env_path, '.envs', os.getenv('ENVS_DIR')
