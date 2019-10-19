@@ -26,6 +26,7 @@ load_dotenv(dotenv_path=env_path / '.env')
 try:
     envs_path = os.path.join(
         env_path, '.envs', os.getenv('ENVS_DIR')
+    )
 except:
     raise Exception(f'ENVS_DIR: {os.getenv("ENVS_DIR")}')
 envs_path = os.path.join(
