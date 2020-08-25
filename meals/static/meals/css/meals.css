@@ -10,6 +10,11 @@
     stroke-width: 2px;
 }
 
+.food-amt {
+    font-size: 15px;
+    width: 50px;
+}
+
 .food-amt-units {
     font-size: 15px;
     height: 80%;

@@ -15,15 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.contrib.auth.views import login, logout
 from django.contrib.auth.models import User
 from meals import views
 from meals import urls as meal_urls
 
 urlpatterns = [
-    url(r'^$', views.home_or_login, name='home_or_login'),
-    url(r'^meals/', include(meal_urls)),
-    url(r'^admin/', admin.site.urls),
-    url(r'^accounts/', include('django.contrib.auth.urls')),
+    url(r"^$", views.home_or_login, name="home_or_login"),
+    url(r"^meals/", include(meal_urls)),
+    # url(r"^admin/", admin.site.urls),
+    url(r"^accounts/", include("django.contrib.auth.urls")),
 ]
-	

@@ -32,8 +32,10 @@ const MY_MEALS_SEARCH = (function() {
             });
         }, 
        
-        my_meals_food_search: function(this_obj, search_terms, meal_or_recipe,  destination_id, meal_storage, result_class) {
-			this_obj[meal_storage] = {};
+        my_meals_food_search: function(
+            this_obj, search_terms, meal_or_recipe,  destination_id, meal_storage, result_class
+        ) {
+            this_obj[meal_storage] = {};
             const search_data = {'search_terms': search_terms};
             $.get(`/meals/search-my-meals/${meal_or_recipe}/`, search_data, function(data) {
                 const search_results = data['search-results'];

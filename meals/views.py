@@ -257,7 +257,7 @@ def search_my_meals(request, meal_or_recipe):
     rank_by_field = 'name'
     rank_threshold = 0.001
     foreign_key_relations = ['servings', 'notes']
-    record_limit = 20
+    record_limit = 200
     search_args = [
         rank_by_field, search_terms, rank_threshold, fields_of_interest,
         foreign_key_relations, record_limit, filters

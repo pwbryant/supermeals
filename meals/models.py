@@ -374,10 +374,10 @@ class Foods(models.Model):
         max_digits=max_digits, decimal_places=decimal_places, blank=False, null=True
     )
     date = models.DateTimeField(auto_now_add=True, null=True)
-    food_type = models.ForeignKey('FoodType', null=True)
-    food_group = models.ForeignKey('FoodGroup', null=True)
+    food_type = models.ForeignKey('FoodType', null=True, on_delete=models.SET_NULL)
+    food_group = models.ForeignKey('FoodGroup', null=True, on_delete=models.SET_NULL)
 
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
     objects = models.Manager()
     searcher = SearchFoods()
