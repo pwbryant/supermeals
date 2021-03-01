@@ -154,3 +154,27 @@ NOTEBOOK_ARGUMENTS = [
     '--port', '8888',
     '--no-browser'
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'timestamp': {
+        'format': '%(asctime)s %(message)s',
+        'datefmt': '%Y-%m-%d %H:%M'
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'werkzeug': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    }
+}

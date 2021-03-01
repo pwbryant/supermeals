@@ -1,13 +1,18 @@
 import os
 from decimal import Decimal
-from supermeals.settings import BASE_DIR
 
 from django import forms
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from meals.models import Macros, Foods, Ingredients, Servings, FoodNotes, \
+
+from supermeals.settings import BASE_DIR
+from .models import (
+    Macros, Foods, Ingredients,
+    Servings, FoodNotes,
     FoodGroup, FoodType
+)
+from .helpers import calc_ingredient_grams
 
 
 #LoginForm/SignUpForm errors
@@ -284,7 +289,11 @@ class MealRecipeForm(forms.ModelForm):
                 serving=serving,
                 amount=amount
             )
-            total_grams += amount
+            total_grams += calc_ingredient_grams(
+                ingredient_amount=amount,
+                ingredient_serving_grams=serving.grams,
+                ingredient_serving_qty=serving.quantity
+            )
 
         Servings.objects.create(
             food=food, description='recipe', grams=total_grams, quantity=1

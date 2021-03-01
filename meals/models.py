@@ -453,19 +453,6 @@ class Foods(models.Model):
                 ings, 'protein', total_grams
             )
 
-    # def get_macros_profile(self, grams=None, per_ingredient=False):
-
-    #     ings = Ingredients.objects.filter(main_food=self)
-
-    #     if ings and not grams:
-    #         grams = self.get_total_grams_of_ingredients(ings)
-    #     elif not ings and not grams:
-    #         raise Exception('You need to provide grams amount.')
-
-    #     macros_dict = create_macros_dict(food=self, grams=grams)
-
-    #     return macros_dict
-
     def get_macros_profile(self, grams=None):
 
         ings = Ingredients.objects.filter(main_food=self)
