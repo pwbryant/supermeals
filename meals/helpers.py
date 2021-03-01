@@ -1,7 +1,7 @@
 from decimal import Decimal
 from django import forms
-from meals.models import FoodGroup, FoodNotes, FoodType, Servings
-from meals.forms import MacroIngredientForm
+from .models import FoodGroup, FoodNotes, FoodType, Servings
+from .forms import MacroIngredientForm
 
 
 def make_macro_breakdown_dict_list(macro=None):
@@ -108,6 +108,28 @@ def make_ingredient_formset(request):
     return ingredient_formset
 
 
+def calc_ingredient_grams(*, ingredient_amount, ingredient_serving_grams, ingredient_serving_qty):
+    return ingredient_serving_grams / ingredient_serving_qty * ingredient_amount
+
+
+def create_macros_dict(*, food, grams):
+    total_cals = Decimal(food.cals_per_gram * grams)
+    macros_dict = {
+        'food_type': food.food_type.name,
+        'total_grams': grams,
+        'cals': total_cals ,
+        'fat':  food.fat_per_gram * grams / Decimal(9.0),
+        'fat_pct':  (food.fat_per_gram * grams / total_cals) * 100,
+        'carbs': food.carbs_per_gram * grams / Decimal(4.0),
+        'carbs_pct': (food.carbs_per_gram * grams / total_cals) * 100,
+        'sugar': food.sugar_per_gram * grams / Decimal(4.0),
+        'sugar_pct': (food.sugar_per_gram * grams / total_cals) * 100,
+        'protein': food.protein_per_gram * grams / Decimal(4.0),
+        'protein_pct': (food.protein_per_gram * grams / total_cals) * 100
+    }
+    return macros_dict
+
+
 def save_meal_notes_ingredients(user, meal_form, ingredient_formset):
     """saves the validated forms
 
@@ -142,9 +164,10 @@ def save_meal_notes_ingredients(user, meal_form, ingredient_formset):
     for ing_form in ingredient_formset:
         new_ing = ing_form.save(commit=False)
         new_ing.main_food = new_food
-        total_grams += (
-            new_ing.serving.grams / new_ing.serving.quantity
-            * new_ing.amount
+        total_grams += calc_ingredient_grams(
+            ingredient_amount=new_ing.amount,
+            ingredient_serving_grams=new_ing.serving.grams,
+            ingredient_serving_qty=new_ing.serving.quantity
         )
         new_ing.save()
 

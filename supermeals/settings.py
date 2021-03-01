@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
+import json
 import os
 
 # from dotenv import load_dotenv
@@ -97,13 +98,13 @@ DATABASES = {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     # }
-    "default": {
-        "ENGINE": get_secret("DB_ENGINE"),
-        "NAME": get_secret("DB_NAME"),
-        "USER": get_secret("DB_USER"),
-        "PASSWORD": get_secret("DB_PASSWORD"),
-        "HOST": get_secret("DB_HOST"),
-        "PORT": get_secret("DB_PORT"),
+    'default': {
+        'ENGINE': get_secret('DB_ENGINE'),
+        'NAME': get_secret('DB_NAME'),
+        'USER': get_secret('DB_USER'),
+        'PASSWORD': get_secret('DB_PASSWORD'),
+        'HOST': get_secret('DB_HOST'),
+        'PORT': get_secret('DB_PORT'),
     }
 }
 
@@ -147,3 +148,9 @@ STATIC_ROOT = Path(BASE_DIR, "static")
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = "/"
+
+NOTEBOOK_ARGUMENTS = [
+    '--ip', '0.0.0.0',
+    '--port', '8888',
+    '--no-browser'
+]

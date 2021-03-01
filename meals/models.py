@@ -1,9 +1,21 @@
+from pdb import set_trace as bp
+from decimal import Decimal
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 
-from decimal import Decimal
+
+def calc_ingredient_grams(**kwargs):
+    from .helpers import calc_ingredient_grams as _calc_ingredient_grams
+    return _calc_ingredient_grams(**kwargs)
+
+
+def create_macros_dict(**kwargs):
+    from .helpers import create_macros_dict as _create_macros_dict
+    return _create_macros_dict(**kwargs)
+
 
 # Fields
 def round_decimal(value, places):
@@ -382,12 +394,15 @@ class Foods(models.Model):
     objects = models.Manager()
     searcher = SearchFoods()
 
-    def __repr__(self):
+    def __str__(self):
         return '{}'.format(self.name)
+
+    def __repr__(self):
+        return self.__str__()
 
     def get_total_grams_of_ingredients(self, ingredients):
         return sum([
-            i.serving.grams / i.serving.quantity * i.amount
+            calc_ingredient_grams(ingredient_amount=i.amount, ingredient_serving_grams=i.serving.grams, ingredient_serving_qty=i.serving.quantity)
             for i in ingredients
         ])
 
@@ -404,7 +419,6 @@ class Foods(models.Model):
         """
 
         if cals:
-
             self.cals_per_gram = self.calc_macro_per_gram(
                 'cals', cals, serving_amount
             )
@@ -420,7 +434,6 @@ class Foods(models.Model):
             self.protein_per_gram = self.calc_macro_per_gram(
                 'protein', protein, serving_amount
             )
-
         else:
             ings = Ingredients.objects.filter(main_food=self)
             total_grams = self.get_total_grams_of_ingredients(ings)
@@ -440,23 +453,28 @@ class Foods(models.Model):
                 ings, 'protein', total_grams
             )
 
-    def get_macros_profile(self):
+    # def get_macros_profile(self, grams=None, per_ingredient=False):
+
+    #     ings = Ingredients.objects.filter(main_food=self)
+
+    #     if ings and not grams:
+    #         grams = self.get_total_grams_of_ingredients(ings)
+    #     elif not ings and not grams:
+    #         raise Exception('You need to provide grams amount.')
+
+    #     macros_dict = create_macros_dict(food=self, grams=grams)
+
+    #     return macros_dict
+
+    def get_macros_profile(self, grams=None):
 
         ings = Ingredients.objects.filter(main_food=self)
-        total_grams = self.get_total_grams_of_ingredients(ings)
-        total_cals = Decimal(self.cals_per_gram * total_grams)
+        if ings and not grams:
+            grams = self.get_total_grams_of_ingredients(ings)
+        elif not ings and not grams:
+            raise Exception('You need to provide grams amount.')
 
-        macros_dict = {
-            'cals': total_cals ,
-            'fat':  self.fat_per_gram * total_grams / Decimal(9.0),
-            'fat_pct':  (self.fat_per_gram * total_grams / total_cals) * 100,
-            'carbs': self.carbs_per_gram * total_grams / Decimal(4.0),
-            'carbs_pct': (self.carbs_per_gram * total_grams / total_cals) * 100,
-            'sugar': self.sugar_per_gram * total_grams / Decimal(4.0),
-            'sugar_pct': (self.sugar_per_gram * total_grams / total_cals) * 100,
-            'protein': self.protein_per_gram * total_grams / Decimal(4.0),
-            'protein_pct': (self.protein_per_gram * total_grams / total_cals) * 100
-        }
+        macros_dict = create_macros_dict(food=self, grams=grams)
 
         return macros_dict
 
@@ -516,7 +534,14 @@ class Servings(models.Model):
             return '{0} - {1}'.format(self.food.name, self.description)
         return '{0}'.format(self.description)
 
+    def __mul__(self, other):
+        pass
+        
+    @property
+    def macros(self):
+       return self.food.get_macros_profile()
 
+        
 class Ingredients(models.Model):
 
     main_food = models.ForeignKey(
@@ -538,7 +563,21 @@ class Ingredients(models.Model):
 
     amount = models.DecimalField(max_digits=6, decimal_places=2)
 
-    def __repr__(self):
+    def __str__(self):
         return '{0} - {1}'.format(
             self.main_food.name, self.ingredient.name
         )
+
+    def __repr__(self):
+        return self.__str__()
+
+    def get_macros_profile(self, grams=None):
+
+        if not grams:
+            grams = calc_ingredient_grams(
+                ingredient_amount=self.amount,
+                ingredient_serving_grams=self.serving.grams,
+                ingredient_serving_qty=self.serving.quantity
+            )
+        macros_dict = create_macros_dict(food=self.ingredient, grams=grams)
+        return macros_dict
