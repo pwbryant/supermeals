@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.contrib.auth.views import login, logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from meals import views
 from meals import urls as meal_urls

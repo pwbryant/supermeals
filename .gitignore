@@ -26,9 +26,5 @@ Dockerfile
 docker-entrypoint.sh
 .envs
 *.swp
-x
-x
-x
-x
-x
 dev_requirements.txt
+*secrets.json

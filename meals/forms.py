@@ -1,11 +1,10 @@
 import os
 from decimal import Decimal
-from supermeals.settings import BASE_DIR
-
 from django import forms
-from django.forms import ModelForm
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.forms import ModelForm
 from meals.models import Macros, Foods, Ingredients, Servings, FoodNotes, \
     FoodGroup, FoodType
 
@@ -134,7 +133,7 @@ class NewFoodForm(forms.ModelForm):
 
     # Offical food groups need to be read in
     with open(
-            os.path.join(BASE_DIR, 'data', 'meals', 'food_groups.csv'), 'r'
+            os.path.join(settings.BASE_DIR, 'data', 'meals', 'food_groups.csv'), 'r'
         ) as food_groups_file:
 
         choices = [
