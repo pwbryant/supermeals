@@ -3,27 +3,26 @@ from django import forms
 from django.contrib.auth.models import User
 
 from decimal import Decimal
+
 # from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
 #         EMPTY_USERNAME_ERROR, EMPTY_PASSWORD_ERROR, EMPTY_AGE_ERROR, \
 #         EMPTY_WEIGHT_ERROR, EMPTY_HEIGHT_ERROR, EMPTY_MACRO_ERROR, \
 #         INVALID_POST_ERROR, DEFAULT_INVALID_INT_ERROR, EMPTY_RATE_ERROR, \
 #         INVALID_MACRO_ERROR, OUT_OF_RANGE_MACRO_ERROR, MACROS_DONT_ADD_UP_ERROR
 
-from meals.forms import  MacroMealForm, MacroIngredientForm, MealRecipeForm, \
-    NewFoodForm, NewFoodServingForm
-from meals.models import Foods, Ingredients, Servings, FoodNotes, FoodGroup, \
-    FoodType
+from meals.forms import (
+    MacroMealForm,
+    MacroIngredientForm,
+    MealRecipeForm,
+    NewFoodForm,
+    NewFoodServingForm,
+)
+from meals.models import Foods, Ingredients, Servings, FoodNotes, FoodGroup, FoodType
 
 # CONSTANTS
 # ==================================================
 
-MACRO_FACTORS = {
-    'cals': 1,
-    'fat': 9,
-    'carbs': 4,
-    'protein': 4,
-    'sugar': 4
-}
+MACRO_FACTORS = {"cals": 1, "fat": 9, "carbs": 4, "protein": 4, "sugar": 4}
 
 # FUNCTIONS
 # ==================================================
@@ -41,14 +40,11 @@ def round_decimal(value, places):
 
 def calc_macro_per_gram(macro, macro_amt, serving_amt):
 
-    return round(
-        Decimal(macro_amt) * MACRO_FACTORS[macro] / Decimal(serving_amt), 4
-    )
+    return round(Decimal(macro_amt) * MACRO_FACTORS[macro] / Decimal(serving_amt), 4)
 
 
 # MISC CLASSES
 class BaseTestCase(TestCase):
-
     def create_user(self, USERNAME, PASSWORD):
         user = User.objects.create_user(username=USERNAME, password=PASSWORD)
         return user
@@ -57,31 +53,31 @@ class BaseTestCase(TestCase):
 # FORM TESTS
 # ==================================================
 
-class NewFoodServingFormTest(BaseTestCase):
 
+class NewFoodServingFormTest(BaseTestCase):
     def setUp(self):
 
         self.post = {
-            'name': 'Broccoli',
-            'grams': 100,
-            'quantity': 2,
-            'description': 'cup',
-            'cals': 34,
-            'fat': 0.4,
-            'carbs': 1.7,
-            'sugar': 2.6,
-            'protein': 2.8,
-            'food_group': 'Veggies'
+            "name": "Broccoli",
+            "grams": 100,
+            "quantity": 2,
+            "description": "cup",
+            "cals": 34,
+            "fat": 0.4,
+            "carbs": 1.7,
+            "sugar": 2.6,
+            "protein": 2.8,
+            "food_group": "Veggies",
         }
 
-        FoodGroup.objects.create(name='Veggies')
-        FoodType.objects.create(name='food')
+        FoodGroup.objects.create(name="Veggies")
+        FoodType.objects.create(name="food")
 
     def test_NewFoodServingForm_invalid(self):
-        self.post['grams'] = 'poo'
+        self.post["grams"] = "poo"
         form = NewFoodServingForm(self.post)
         self.assertFalse(form.is_valid())
-        self.assertIn('Enter a number.', form.errors['grams'])
+        self.assertIn("Enter a number.", form.errors["grams"])
 
     def test_NewFoodServingForm_valid(self):
         form = NewFoodServingForm(self.post)
@@ -93,7 +89,7 @@ class NewFoodServingFormTest(BaseTestCase):
         fd_form.is_valid()
         srv_form.is_valid()
 
-        fd_form.consume_grams(srv_form.cleaned_data['grams'])
+        fd_form.consume_grams(srv_form.cleaned_data["grams"])
 
         fd_form.save()
         srv_form.instance.food = fd_form.instance
@@ -104,34 +100,33 @@ class NewFoodServingFormTest(BaseTestCase):
 
 
 class NewFoodFormTest(BaseTestCase):
-
     def setUp(self):
 
         self.post = {
-            'name': 'Broccoli',
-            'grams': 100,
-            'quantity': 2,
-            'description': 'cup',
-            'cals': 34,
-            'fat': 0.4,
-            'carbs': 1.7,
-            'sugar': 2.6,
-            'protein': 2.8,
-            'food_group': 'Veggies'
+            "name": "Broccoli",
+            "grams": 100,
+            "quantity": 2,
+            "description": "cup",
+            "cals": 34,
+            "fat": 0.4,
+            "carbs": 1.7,
+            "sugar": 2.6,
+            "protein": 2.8,
+            "food_group": "Veggies",
         }
 
-        FoodGroup.objects.create(name='Veggies')
-        FoodType.objects.create(name='food')
+        FoodGroup.objects.create(name="Veggies")
+        FoodType.objects.create(name="food")
 
     def test_NewFoodForm_valid(self):
         form = NewFoodForm(self.post)
         self.assertTrue(form.is_valid())
 
     def test_NewFoodForm_invalid(self):
-        self.post['name'] = ''
+        self.post["name"] = ""
         form = NewFoodForm(self.post)
         self.assertFalse(form.is_valid())
-        self.assertIn('This field is required.', form.errors['name'])
+        self.assertIn("This field is required.", form.errors["name"])
 
     def test_NewFoodForm_save_saves_food(self):
         fd_form = NewFoodForm(self.post)
@@ -139,11 +134,11 @@ class NewFoodFormTest(BaseTestCase):
         fd_form.is_valid()
         srv_form.is_valid()
 
-        fd_form.consume_grams(srv_form.cleaned_data['grams'])
+        fd_form.consume_grams(srv_form.cleaned_data["grams"])
 
         fd_form.save()
 
-        new_food = Foods.objects.filter(name=self.post['name'])
+        new_food = Foods.objects.filter(name=self.post["name"])
         self.assertEqual(new_food.count(), 1)
 
     def test_NewFoodForm_save_macros_are_calced(self):
@@ -151,106 +146,99 @@ class NewFoodFormTest(BaseTestCase):
         srv_form = NewFoodServingForm(self.post)
         form.is_valid()
         srv_form.is_valid()
-        
-        form.consume_grams(srv_form.cleaned_data['grams'])
+
+        form.consume_grams(srv_form.cleaned_data["grams"])
 
         form.save()
         food = form.instance
 
         def assert_equal(macro):
             self.assertEqual(
-                getattr(food, f'{macro}_per_gram'),
-                calc_macro_per_gram(
-                    macro, self.post[macro], self.post['grams']
-                )
+                getattr(food, f"{macro}_per_gram"),
+                calc_macro_per_gram(macro, self.post[macro], self.post["grams"]),
             )
 
-        assert_equal('cals')
-        assert_equal('fat')
-        assert_equal('carbs')
-        assert_equal('protein')
+        assert_equal("cals")
+        assert_equal("fat")
+        assert_equal("carbs")
+        assert_equal("protein")
 
 
 class RecipeFormTest(BaseTestCase):
-
     def setUp(self):
 
         self.peanut_butter = Foods.objects.create(
-            name='Peanut Butter',
+            name="Peanut Butter",
             cals_per_gram=Decimal(5.9),
             fat_per_gram=Decimal(4.491),
             carbs_per_gram=Decimal(0.8732),
             sugar_per_gram=Decimal(0.8732),
-            protein_per_gram=Decimal(0.96)
+            protein_per_gram=Decimal(0.96),
         )
         self.peanut_butter_srv = Servings.objects.create(
-            food=self.peanut_butter, grams=10, quantity=1, description='tbsp'
+            food=self.peanut_butter, grams=10, quantity=1, description="tbsp"
         )
 
         self.bananas = Foods.objects.create(
-            name='Bananas',
+            name="Bananas",
             cals_per_gram=Decimal(0.89),
             fat_per_gram=Decimal(0.0297),
             carbs_per_gram=Decimal(0.9136),
             sugar_per_gram=Decimal(0.9136),
-            protein_per_gram=Decimal(0.0436)
+            protein_per_gram=Decimal(0.0436),
         )
         self.bananas_srv = Servings.objects.create(
-            food=self.bananas, grams=100, quantity=1, description='cup'
+            food=self.bananas, grams=100, quantity=1, description="cup"
         )
 
         self.post = {
             # added long decimals to test that they get rounded
-            'name': 'Peanut Butter Banana Blitz',
-            'notes': 'Blend for 5 minutes.',
-            'ingredient_0': self.bananas.pk,
-            'ingredient_amount_0': '2',
-            'ingredient_unit_0': self.bananas_srv.pk,
-            'ingredient_1': self.peanut_butter.pk,
-            'ingredient_amount_1': '3',
-            'ingredient_unit_1': self.peanut_butter_srv.pk
-            }
+            "name": "Peanut Butter Banana Blitz",
+            "notes": "Blend for 5 minutes.",
+            "ingredient_0": self.bananas.pk,
+            "ingredient_amount_0": "2",
+            "ingredient_unit_0": self.bananas_srv.pk,
+            "ingredient_1": self.peanut_butter.pk,
+            "ingredient_amount_1": "3",
+            "ingredient_unit_1": self.peanut_butter_srv.pk,
+        }
 
         # create a food that should equal the one created after saving
-        self.copy_food = Foods.objects.create(name='copy food')
+        self.copy_food = Foods.objects.create(name="copy food")
         Ingredients.objects.create(
             main_food=self.copy_food,
             ingredient=self.bananas,
             serving=self.bananas_srv,
-            amount=Decimal(self.post['ingredient_amount_0'])
+            amount=Decimal(self.post["ingredient_amount_0"]),
         )
         Ingredients.objects.create(
             main_food=self.copy_food,
             ingredient=self.peanut_butter,
             serving=self.peanut_butter_srv,
-            amount=Decimal(self.post['ingredient_amount_1'])
+            amount=Decimal(self.post["ingredient_amount_1"]),
         )
         self.copy_food.set_macros_per_gram()
         self.copy_food.save()
 
         # FoodGroup and FoodType creation
-        FoodGroup.objects.create(name='My Recipes')
-        FoodType.objects.create(name='recipe')
-
+        FoodGroup.objects.create(name="My Recipes")
+        FoodType.objects.create(name="recipe")
 
     def test_MealRecipeForm_valid(self):
         form = MealRecipeForm(self.post)
         self.assertTrue(form.is_valid())
 
-
     def test_MealRecipeForm_invalid_when_amount_contains_text(self):
-        self.post['ingredient_amount_0'] = 'poop'
+        self.post["ingredient_amount_0"] = "poop"
         form = MealRecipeForm(self.post)
         self.assertFalse(form.is_valid())
-        self.assertIn('Enter a number.', form.errors['ingredient_amount_0'])
-
+        self.assertIn("Enter a number.", form.errors["ingredient_amount_0"])
 
     def test_MealRecipeForm_invalid_when_duplicate_ingredients(self):
-        self.post['ingredient_1'] = self.bananas.pk
+        self.post["ingredient_1"] = self.bananas.pk
         form = MealRecipeForm(self.post)
         self.assertFalse(form.is_valid())
-        self.assertIn('Duplicate Ingredient', form.errors['ingredient_1'])
-
+        self.assertIn("Duplicate Ingredient", form.errors["ingredient_1"])
 
     def test_MealRecipeForm_handles_duplicate_recipies(self):
         validate_and_save_form(MealRecipeForm, self.post)
@@ -258,22 +246,20 @@ class RecipeFormTest(BaseTestCase):
         form = MealRecipeForm(self.post)
         form.is_valid()
 
-        error = 'Foods with this Name already exists.'
-        self.assertIn(error, form.errors['name'])
-
+        error = "Foods with this Name already exists."
+        self.assertIn(error, form.errors["name"])
 
     def test_save_recipe_saves_new_food(self):
         validate_and_save_form(MealRecipeForm, self.post)
-        new_food = Foods.objects.filter(name=self.post['name'])
+        new_food = Foods.objects.filter(name=self.post["name"])
         self.assertEqual(len(new_food), 1)
 
         new_food = new_food[0]
-        self.assertEqual(new_food.name, self.post['name'])
-
+        self.assertEqual(new_food.name, self.post["name"])
 
     def test_MealRecipeForm_saves_new_food_and_calcs_macros(self):
         validate_and_save_form(MealRecipeForm, self.post)
-        new_food = Foods.objects.get(name=self.post['name'])
+        new_food = Foods.objects.get(name=self.post["name"])
 
         # I have to use round_decimal because the max-digit constraint
         # is not enforced on copy_food
@@ -290,112 +276,97 @@ class RecipeFormTest(BaseTestCase):
             new_food.sugar_per_gram, round_decimal(self.copy_food.sugar_per_gram, 4)
         )
         self.assertEqual(
-            new_food.protein_per_gram,
-            round_decimal(self.copy_food.protein_per_gram, 4)
+            new_food.protein_per_gram, round_decimal(self.copy_food.protein_per_gram, 4)
         )
-
 
     def test_test_MealRecipeForm_saves_new_ingredients(self):
         validate_and_save_form(MealRecipeForm, self.post)
 
-        new_food = Foods.objects.get(name=self.post['name'])
+        new_food = Foods.objects.get(name=self.post["name"])
 
-        ingredients = Ingredients.objects.filter(
-            main_food=new_food
-        ).order_by('ingredient__name').values('ingredient__name')
-
-        self.assertEqual(len(ingredients), 2)
-        self.assertEqual(ingredients[0]['ingredient__name'], self.bananas.name)
-        self.assertEqual(
-            ingredients[1]['ingredient__name'], self.peanut_butter.name
+        ingredients = (
+            Ingredients.objects.filter(main_food=new_food)
+            .order_by("ingredient__name")
+            .values("ingredient__name")
         )
 
+        self.assertEqual(len(ingredients), 2)
+        self.assertEqual(ingredients[0]["ingredient__name"], self.bananas.name)
+        self.assertEqual(ingredients[1]["ingredient__name"], self.peanut_butter.name)
 
     def test_test_MealRecipeForm_saves_ingredients_have_correct_servings(self):
         validate_and_save_form(MealRecipeForm, self.post)
 
-        new_food = Foods.objects.get(name=self.post['name'])
+        new_food = Foods.objects.get(name=self.post["name"])
 
-        ingredients = Ingredients.objects.filter(
-            main_food=new_food
-        ).order_by('ingredient__name').values(
-            'serving__description'
+        ingredients = (
+            Ingredients.objects.filter(main_food=new_food)
+            .order_by("ingredient__name")
+            .values("serving__description")
         )
         self.assertEqual(len(ingredients), 2)
         self.assertEqual(
-            ingredients[0]['serving__description'], self.bananas_srv.description
+            ingredients[0]["serving__description"], self.bananas_srv.description
         )
         self.assertEqual(
-            ingredients[1]['serving__description'],
-            self.peanut_butter_srv.description
+            ingredients[1]["serving__description"], self.peanut_butter_srv.description
         )
-
 
     def test_test_MealRecipeForm_saves_notes_if_present(self):
         validate_and_save_form(MealRecipeForm, self.post)
 
-        new_food = Foods.objects.get(name=self.post['name'])
+        new_food = Foods.objects.get(name=self.post["name"])
         notes = FoodNotes.objects.get(food=new_food)
-        self.assertEqual(notes.notes, self.post['notes'])
-
+        self.assertEqual(notes.notes, self.post["notes"])
 
     def test_test_MealRecipeForm_saves_handles_notes_if_not_present(self):
-        self.post['notes'] = ''
+        self.post["notes"] = ""
         validate_and_save_form(MealRecipeForm, self.post)
 
-        new_food = Foods.objects.get(name=self.post['name'])
+        new_food = Foods.objects.get(name=self.post["name"])
         notes = FoodNotes.objects.filter(food=new_food)
         self.assertEqual(len(notes), 0)
 
-
     def test_save_recipe_new_food_has_food_group_my_recipes(self):
         validate_and_save_form(MealRecipeForm, self.post)
-        new_food = Foods.objects.get(name=self.post['name'])
-        food_group_recipe = FoodGroup.objects.get(name='My Recipes')
+        new_food = Foods.objects.get(name=self.post["name"])
+        food_group_recipe = FoodGroup.objects.get(name="My Recipes")
         self.assertEqual(new_food.food_group, food_group_recipe)
-
 
     def test_save_recipe_new_food_has_food_type_recipe(self):
         validate_and_save_form(MealRecipeForm, self.post)
-        new_food = Foods.objects.get(name=self.post['name'])
-        food_type_recipe = FoodType.objects.get(name='recipe')
+        new_food = Foods.objects.get(name=self.post["name"])
+        food_type_recipe = FoodType.objects.get(name="recipe")
         self.assertEqual(new_food.food_type, food_type_recipe)
 
 
 class MacroMealAndIngredientFormTest(TestCase):
-
     def setUp(self):
 
         self.ingredient1 = Foods.objects.create(
-            name='veggie pulled pork',
-            cals_per_gram='1.6456',
-            fat_per_gram='0.3418',
-            carbs_per_gram='0.1519',
-            sugar_per_gram='0.1519',
-            protein_per_gram='1.1646'
+            name="veggie pulled pork",
+            cals_per_gram="1.6456",
+            fat_per_gram="0.3418",
+            carbs_per_gram="0.1519",
+            sugar_per_gram="0.1519",
+            protein_per_gram="1.1646",
         )
 
         self.srv1 = Servings.objects.create(
-            food=self.ingredient1,
-            grams=237,
-            quantity=1,
-            description='bag'
+            food=self.ingredient1, grams=237, quantity=1, description="bag"
         )
 
         self.ingredient2 = Foods.objects.create(
-            name='bbq sauce',
-            cals_per_gram='1.7200',
-            fat_per_gram='0.0567', 
-            carbs_per_gram='1.6308', 
-            sugar_per_gram='1.6308', 
-            protein_per_gram='0.0328' 
+            name="bbq sauce",
+            cals_per_gram="1.7200",
+            fat_per_gram="0.0567",
+            carbs_per_gram="1.6308",
+            sugar_per_gram="1.6308",
+            protein_per_gram="0.0328",
         )
 
         self.srv2 = Servings.objects.create(
-            food=self.ingredient2,
-            grams=17,
-            quantity=1,
-            description='tbsp'
+            food=self.ingredient2, grams=17, quantity=1, description="tbsp"
         )
 
         self.ingredient_form_factory = forms.formset_factory(
@@ -404,54 +375,51 @@ class MacroMealAndIngredientFormTest(TestCase):
 
         self.post = {
             # added long decimals to test that they get rounded
-            'form-TOTAL_FORMS': u'2',
-            'form-INITIAL_FORMS': u'0',
-            'form-MAX_NUM_FORMS': u'',
-            'name': 'veggie pulled pork with bbq sauce',
-            'notes': 'broil in the oven',
-            'form-0-ingredient_id': self.ingredient1.pk,
-            'form-0-amount': '1',
-            'form-0-unit': 'bag',
-            'form-1-ingredient_id': self.ingredient2.pk,
-            'form-1-amount': '4',
-            'form-1-unit': 'tbsp'
+            "form-TOTAL_FORMS": "2",
+            "form-INITIAL_FORMS": "0",
+            "form-MAX_NUM_FORMS": "",
+            "name": "veggie pulled pork with bbq sauce",
+            "notes": "broil in the oven",
+            "form-0-ingredient_id": self.ingredient1.pk,
+            "form-0-amount": "1",
+            "form-0-unit": "bag",
+            "form-1-ingredient_id": self.ingredient2.pk,
+            "form-1-amount": "4",
+            "form-1-unit": "tbsp",
         }
 
         self.bad_post = {
-            'form-TOTAL_FORMS': u'2',
-            'form-INITIAL_FORMS': u'0',
-            'form-MAX_NUM_FORMS': u'',
-            'name': '',
-            'notes': 'broil in the oven',
-            'form-0-ingredient_id': self.ingredient1.pk,
-            'form-0-amount': 'str',
-            'form-0-unit': 'bag',
-            'form-1-ingredient_id': self.ingredient2.pk,
-            'form-1-amount': 'str',
-            'form-1-unit': 'tbsp'
+            "form-TOTAL_FORMS": "2",
+            "form-INITIAL_FORMS": "0",
+            "form-MAX_NUM_FORMS": "",
+            "name": "",
+            "notes": "broil in the oven",
+            "form-0-ingredient_id": self.ingredient1.pk,
+            "form-0-amount": "str",
+            "form-0-unit": "bag",
+            "form-1-ingredient_id": self.ingredient2.pk,
+            "form-1-amount": "str",
+            "form-1-unit": "tbsp",
         }
 
         # k[-1] is the ingredient number
-        self.ingredient_count = len(set(
-            [k[-1] for k in self.post if 'ingredient' in k]
-        ))
+        self.ingredient_count = len(
+            set([k[-1] for k in self.post if "ingredient" in k])
+        )
 
     def test_MacroMealForm_valid(self):
 
         form = MacroMealForm(self.post)
         self.assertTrue(form.is_valid())
 
-
     def test_MacroMealForm_invalid(self):
         form = MacroMealForm(self.bad_post)
         self.assertFalse(form.is_valid())
-
 
     def test_MacroIngredientForm_valid(self):
 
         form_set = self.ingredient_form_factory(self.post)
         self.assertTrue(form_set.is_valid())
-
 
     def test_MacroIngredientForm_invalid(self):
 

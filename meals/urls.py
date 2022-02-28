@@ -18,22 +18,24 @@ from meals import views
 from .views import MyMacros
 
 urlpatterns = [
-    url(r'^add-food/$', views.add_food, name='add_food'),
-    url(r'^add-recipe/$', views.render_add_recipe, name='render_add_recipe'),
-    url(r'^create-account$', views.create_account, name='create_account'),
-    url(r'^meal-maker/$', views.get_meal_maker_template, name='meal_maker'),
-    url(r'^my-macros/$', MyMacros.as_view(), name='my_macros'),
-    url(r'^my-meals/$', views.get_my_meals, name='my_meals'),
-    url(r'^my-meals-delete$', views.delete_my_meals, name='delete_my_meals'),
-    url(r'^save-macro-meal$', views.save_macro_meal, name='save_macro_meal'),
-    url(r'^save-recipe$', views.save_recipe, name='save_recipe'),
+    url(r"^add-food/$", views.add_food, name="add_food"),
+    url(r"^add-recipe/$", views.render_add_recipe, name="render_add_recipe"),
+    url(r"^create-account$", views.create_account, name="create_account"),
+    url(r"^meal-maker/$", views.get_meal_maker_template, name="meal_maker"),
+    url(r"^my-macros/$", MyMacros.as_view(), name="my_macros"),
+    url(r"^my-meals/$", views.get_my_meals, name="my_meals"),
+    url(r"^my-meals-delete$", views.delete_my_meals, name="delete_my_meals"),
+    url(r"^save-macro-meal$", views.save_macro_meal, name="save_macro_meal"),
+    url(r"^save-recipe$", views.save_recipe, name="save_recipe"),
     url(
-        r'^search-foods/(?P<food_owner>user|all)/$',
-        views.search_foods, name='search_foods'
+        r"^search-foods/(?P<food_owner>user|all)/$",
+        views.search_foods,
+        name="search_foods",
     ),
     url(
-        r'^search-my-meals/(?P<meal_or_recipe>meal|recipe)/$',
-        views.search_my_meals, name='search_my_meals'
+        r"^search-my-meals/(?P<meal_or_recipe>meal|recipe)/$",
+        views.search_my_meals,
+        name="search_my_meals",
     ),
-    url(r'^sign-up/$', views.sign_up, name='sign_up'),
+    url(r"^sign-up/$", views.sign_up, name="sign_up"),
 ]

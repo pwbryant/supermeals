@@ -20,37 +20,23 @@ def make_macro_breakdown_dict_list(macro=None):
     """
 
     macros_dict_list = [
-        {
-            'name':'Fat',
-            'percent': 0,
-            'data': 0
-        },
-        {
-            'name':'Carbs',
-            'percent': 0,
-            'data': 0
-        },
-        {
-            'name':'Protein',
-            'percent': 0,
-            'data': 0
-        }
+        {"name": "Fat", "percent": 0, "data": 0},
+        {"name": "Carbs", "percent": 0, "data": 0},
+        {"name": "Protein", "percent": 0, "data": 0},
     ]
 
     if macro:
         fat_pct = macro.fat_percent
         protein_pct = macro.protein_percent
 
-        macros_dict_list[0]['percent'] = round(fat_pct)
-        macros_dict_list[0]['data'] = fat_pct
+        macros_dict_list[0]["percent"] = round(fat_pct)
+        macros_dict_list[0]["data"] = fat_pct
 
-        macros_dict_list[1]['percent'] = 100 - (
-            round(fat_pct) + round(protein_pct)
-        )
-        macros_dict_list[1]['data'] = Decimal(100 - (fat_pct + protein_pct))
+        macros_dict_list[1]["percent"] = 100 - (round(fat_pct) + round(protein_pct))
+        macros_dict_list[1]["data"] = Decimal(100 - (fat_pct + protein_pct))
 
-        macros_dict_list[2]['percent'] = round(protein_pct)
-        macros_dict_list[2]['data'] = protein_pct
+        macros_dict_list[2]["percent"] = round(protein_pct)
+        macros_dict_list[2]["data"] = protein_pct
 
     return macros_dict_list
 
@@ -71,9 +57,7 @@ def get_ingredient_count(post_data):
         count of ingredients in request.POST
     """
 
-    ingredients = len([
-        key[-1] for key in post_data if 'ingredient' in key
-    ])
+    ingredients = len([key[-1] for key in post_data if "ingredient" in key])
 
     return ingredients
 
@@ -96,9 +80,9 @@ def make_ingredient_formset(request):
 
     ingredient_count = get_ingredient_count(request.POST)
     # these keys are needed for all formsets
-    request.POST['form-TOTAL_FORMS'] = str(ingredient_count)
-    request.POST['form-INITIAL_FORMS'] = '0'
-    request.POST['form-MAX_NUM_FORMS'] = ''
+    request.POST["form-TOTAL_FORMS"] = str(ingredient_count)
+    request.POST["form-INITIAL_FORMS"] = "0"
+    request.POST["form-MAX_NUM_FORMS"] = ""
 
     ingredient_form_factory = forms.formset_factory(
         MacroIngredientForm, extra=ingredient_count
@@ -126,32 +110,28 @@ def save_meal_notes_ingredients(user, meal_form, ingredient_formset):
 
     new_food = meal_form.save()
     new_food.user = user
-    if meal_form.cleaned_data.get('notes'):
-        notes = meal_form.cleaned_data.get('notes')
+    if meal_form.cleaned_data.get("notes"):
+        notes = meal_form.cleaned_data.get("notes")
         FoodNotes.objects.create(food=new_food, notes=notes)
 
     # Add meal food type
-    food_type_meal = FoodType.objects.get(name='meal')
+    food_type_meal = FoodType.objects.get(name="meal")
     new_food.food_type = food_type_meal
 
     # Add meal food group
-    food_group_meal = FoodGroup.objects.get(name='My Meals')
+    food_group_meal = FoodGroup.objects.get(name="My Meals")
     new_food.food_group = food_group_meal
 
     total_grams = 0
     for ing_form in ingredient_formset:
         new_ing = ing_form.save(commit=False)
         new_ing.main_food = new_food
-        total_grams += (
-            new_ing.serving.grams / new_ing.serving.quantity
-            * new_ing.amount
-        )
+        total_grams += new_ing.grams
         new_ing.save()
 
     # Add meal servings
     Servings.objects.create(
-        description='meal', quantity=1, grams=Decimal(total_grams),
-        food_id=new_food.id
+        description="meal", quantity=1, grams=Decimal(total_grams), food_id=new_food.id
     )
 
     new_food.set_macros_per_gram()

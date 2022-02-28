@@ -72,10 +72,10 @@ const MY_MEALS_SEARCH = (function() {
         // need to test
         handle_nested_ingredients: function(this_obj, ingredient_info, ingredients_html, indent) {
 
-            const ing_name = ingredient_info['main_food__ingredient__name'];
-            const ing_id = ingredient_info['main_food__ingredient'];
-            const srv_amount = parseFloat(ingredient_info['main_food__amount']);
-            const srv_desc = ingredient_info['main_food__serving__description'];
+            const ing_name = ingredient_info['ingredients__ingredient__name'];
+            const ing_id = ingredient_info['ingredients__ingredient'];
+            const srv_amount = parseFloat(ingredient_info['ingredients__amount']);
+            const srv_desc = ingredient_info['ingredients__serving__description'];
             
             ingredients_html += '<div class="my-meals-ingredient">';
             ingredients_html += `${indent}${ing_name}: ${srv_amount} ${srv_desc}</div>`;

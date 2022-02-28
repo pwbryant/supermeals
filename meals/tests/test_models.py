@@ -2,166 +2,141 @@ from decimal import *
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError,transaction
+from django.db import IntegrityError, transaction
 
 from meals.models import Macros, Foods, Servings, Ingredients, FoodGroup
 
-USERNAME1, PASSWORD1 = 'Joe1', 'joepass1'
-USERNAME2, PASSWORD2 = 'Joe2', 'joepass2'
+USERNAME1, PASSWORD1 = "Joe1", "joepass1"
+USERNAME2, PASSWORD2 = "Joe2", "joepass2"
 MACRO_INIT_FIELD_DICT = {
-    'unit_type':'metric',
-    'gender':'m',
-    'age':35,
-    'weight':200,
-    'height':70,
-    'activity':'none',
-    'direction':'lose',
-    'change_rate':Decimal('5'),
-    'fat_percent':Decimal('35'),
-    'protein_percent':Decimal('25')
+    "unit_type": "metric",
+    "gender": "m",
+    "age": 35,
+    "weight": 200,
+    "height": 70,
+    "activity": "none",
+    "direction": "lose",
+    "change_rate": Decimal("5"),
+    "fat_percent": Decimal("35"),
+    "protein_percent": Decimal("25"),
 }
 
-class BaseTest(TestCase):
 
-	def check_model_validation_error(self,obj,delete_obj=True):
-            with self.assertRaises(ValidationError):
+class BaseTest(TestCase):
+    def check_model_validation_error(self, obj, delete_obj=True):
+        with self.assertRaises(ValidationError):
+            obj.save()
+            obj.full_clean()
+        if delete_obj:
+            obj.user.delete()
+
+    def check_model_integrity_error(self, obj):
+        with transaction.atomic():
+            with self.assertRaises(IntegrityError):
                 obj.save()
                 obj.full_clean()
-            if delete_obj:
-                obj.user.delete()	
 
-	def check_model_integrity_error(self,obj):
-            with transaction.atomic():
-                with self.assertRaises(IntegrityError):
-                    obj.save()
-                    obj.full_clean()
+    def create_broken_field_dict(self, break_field, value, master_dict):
+        broke_dict = master_dict.copy()
+        if User.objects.all().count() != 0:
+            User.objects.all()[0].delete()
 
-	def create_broken_field_dict(self,break_field,value,master_dict):
-            broke_dict = master_dict.copy()
-            if User.objects.all().count() != 0:
-                    User.objects.all()[0].delete()
-                    
-            broke_dict['user'] = User.objects.create_user(username=USERNAME1,password=PASSWORD1)
-            if value == 'remove':
-                    broke_dict.pop(break_field)
-            else:
-                    broke_dict[break_field] = value
+        broke_dict["user"] = User.objects.create_user(
+            username=USERNAME1, password=PASSWORD1
+        )
+        if value == "remove":
+            broke_dict.pop(break_field)
+        else:
+            broke_dict[break_field] = value
 
-            return broke_dict
+        return broke_dict
 
 
 class FoodsTest(TestCase):
-
     def add_ingredients(self, food):
         self.ingredient1 = Ingredients.objects.create(
-            main_food=food,
-            ingredient=self.food1,
-            serving=self.srv1,
-            amount=1
+            main_food=food, ingredient=self.food1, serving=self.srv1, amount=1
         )
 
         self.ingredient2 = Ingredients.objects.create(
-            main_food=food,
-            ingredient=self.food2,
-            serving=self.srv2,
-            amount=4
+            main_food=food, ingredient=self.food2, serving=self.srv2, amount=4
         )
-
 
     def setUp(self):
 
-        self.user = User.objects.create(username='paul', password='password')
-
+        self.user = User.objects.create(username="paul", password="password")
 
         # Food Groups
-        meal_group = FoodGroup.objects.create(
-            name='My Meals'
-        )
-        recipe_group = FoodGroup.objects.create(
-            name='My Recipes'
-        )
+        meal_group = FoodGroup.objects.create(name="My Meals")
+        recipe_group = FoodGroup.objects.create(name="My Recipes")
 
         self.food1 = Foods.objects.create(
-            name='veggie pulled pork',
-            cals_per_gram='1.6456',
-            fat_per_gram='0.3418',
-            carbs_per_gram='0.1519',
-            sugar_per_gram='0.1519',
-            protein_per_gram='1.1646'
+            name="veggie pulled pork",
+            cals_per_gram="1.6456",
+            fat_per_gram="0.3418",
+            carbs_per_gram="0.1519",
+            sugar_per_gram="0.1519",
+            protein_per_gram="1.1646",
         )
 
         self.srv1 = Servings.objects.create(
-            food=self.food1,
-            grams=237,
-            quantity=1,
-            description='bag'
+            food=self.food1, grams=237, quantity=1, description="bag"
         )
 
         self.food2 = Foods.objects.create(
-            name='bbq sauce',
-            cals_per_gram='1.7200',
-            fat_per_gram='0.0567', 
-            carbs_per_gram='1.6308', 
-            sugar_per_gram='1.6308', 
-            protein_per_gram='0.0328' 
+            name="bbq sauce",
+            cals_per_gram="1.7200",
+            fat_per_gram="0.0567",
+            carbs_per_gram="1.6308",
+            sugar_per_gram="1.6308",
+            protein_per_gram="0.0328",
         )
 
         self.srv2 = Servings.objects.create(
-            food=self.food2,
-            grams=17,
-            quantity=1,
-            description='tbsp'
+            food=self.food2, grams=17, quantity=1, description="tbsp"
         )
 
         self.veg_bbq = Foods.objects.create(
-            name='veggie pork with bbq',
-            user=self.user,
-            food_group=meal_group
+            name="veggie pork with bbq", user=self.user, food_group=meal_group
         )
-        self.soup = Foods.objects.create(
-            name='tomato soup',
-            food_group=meal_group
-        )
+        self.soup = Foods.objects.create(name="tomato soup", food_group=meal_group)
         self.grilled_cheese = Foods.objects.create(
-            name='grilled cheese',
-            user=self.user,
-            food_group=recipe_group
+            name="grilled cheese", user=self.user, food_group=recipe_group
         )
-        self.casserole = Foods.objects.create(
-            name='casserole'
-        )
+        self.casserole = Foods.objects.create(name="casserole")
 
         self.add_ingredients(self.veg_bbq)
         self.add_ingredients(self.soup)
         self.add_ingredients(self.grilled_cheese)
         self.add_ingredients(self.casserole)
 
-
     def test_saving_and_retrieving_foods(self):
         Foods.objects.create(
-            name='food name', cals_per_gram=1, fat_per_gram=1,
-            carbs_per_gram=1, sugar_per_gram=1, protein_per_gram=1
+            name="food name",
+            cals_per_gram=1,
+            fat_per_gram=1,
+            carbs_per_gram=1,
+            sugar_per_gram=1,
+            protein_per_gram=1,
         )
-        saved_foods = Foods.objects.filter(name='food name')
-        self.assertEqual(saved_foods.count(),1)
-
+        saved_foods = Foods.objects.filter(name="food name")
+        self.assertEqual(saved_foods.count(), 1)
 
     def test_set_macro_per_gram_method(self):
-        
+
         food = self.veg_bbq
-        
+
         self.assertTrue(food.cals_per_gram is None)
 
         food.set_macros_per_gram()
         food.save()
 
         food = Foods.objects.get(name=food.name)
-        self.assertEqual(food.cals_per_gram, Decimal('1.6622'))
-        self.assertEqual(food.fat_per_gram, Decimal('0.2782'))
-        self.assertEqual(food.carbs_per_gram, Decimal('0.4816'))
-        self.assertEqual(food.sugar_per_gram, Decimal('0.4816'))
-        self.assertEqual(food.protein_per_gram, Decimal('0.9123'))
-
+        self.assertEqual(food.cals_per_gram, Decimal("1.6622"))
+        self.assertEqual(food.fat_per_gram, Decimal("0.2782"))
+        self.assertEqual(food.carbs_per_gram, Decimal("0.4816"))
+        self.assertEqual(food.sugar_per_gram, Decimal("0.4816"))
+        self.assertEqual(food.protein_per_gram, Decimal("0.9123"))
 
     def test_searcher_manager_filter_on_user_gets_user_foods(self):
 
@@ -171,63 +146,49 @@ class FoodsTest(TestCase):
         self.assertIn(self.veg_bbq.pk, ids)
         self.assertIn(self.grilled_cheese.pk, ids)
 
-
     def test_searcher_manager_returns_meals(self):
 
-        search_terms = ['veggie pork bbq']
-        fields_of_interest = ['id']
-        filters = ['My Meals']
-        args = [
-            'name', search_terms, 0.001, fields_of_interest
-        ]
-        kwargs = {'food_group_filters': filters}
+        search_terms = ["veggie pork bbq"]
+        fields_of_interest = ["id"]
+        filters = ["My Meals"]
+        args = ["name", search_terms, 0.001, fields_of_interest]
+        kwargs = {"food_group_filters": filters}
 
-        search_results = Foods.searcher.rank_with_terms_and_filters(
-            *args, **kwargs
-        )
-        main_foods = list(set([sr['id'] for sr in search_results]))
+        search_results = Foods.searcher.rank_with_terms_and_filters(*args, **kwargs)
+        main_foods = list(set([sr["id"] for sr in search_results]))
 
         self.assertEqual(len(main_foods), 1)
         self.assertEqual(main_foods[0], self.veg_bbq.pk)
 
-
     def test_searcher_manager_returns_recipes(self):
 
-        search_terms = ['grilled cheese']
-        fields_of_interest = ['id']
-        filters = ['My Recipes']
-        args = [
-            'name', search_terms, 0.001, fields_of_interest
-        ]
-        kwargs = {'food_group_filters': filters}
+        search_terms = ["grilled cheese"]
+        fields_of_interest = ["id"]
+        filters = ["My Recipes"]
+        args = ["name", search_terms, 0.001, fields_of_interest]
+        kwargs = {"food_group_filters": filters}
 
-        search_results = Foods.searcher.rank_with_terms_and_filters(
-            *args, **kwargs
-        )
-        main_foods = list(set([sr['id'] for sr in search_results]))
+        search_results = Foods.searcher.rank_with_terms_and_filters(*args, **kwargs)
+        main_foods = list(set([sr["id"] for sr in search_results]))
 
         self.assertEqual(len(main_foods), 1)
         self.assertEqual(main_foods[0], self.grilled_cheese.pk)
 
-
     def test_searcher_manager_returns_all_meals(self):
 
-        search_terms = ['_all_']
-        fields_of_interest = ['id']
-        filters = ['My Meals']
-        args = [
-            'name', search_terms, 0.001, fields_of_interest
-        ]
-        kwargs = {'food_group_filters': filters}
+        search_terms = ["_all_"]
+        fields_of_interest = ["id"]
+        filters = ["My Meals"]
+        args = ["name", search_terms, 0.001, fields_of_interest]
+        kwargs = {"food_group_filters": filters}
 
-        search_results = Foods.searcher.rank_with_terms_and_filters(
-            *args, **kwargs
-        )
-        main_foods = list(set([sr['id'] for sr in search_results]))
+        search_results = Foods.searcher.rank_with_terms_and_filters(*args, **kwargs)
+        main_foods = list(set([sr["id"] for sr in search_results]))
 
         self.assertEqual(len(main_foods), 2)
         self.assertIn(self.veg_bbq.pk, main_foods)
         self.assertIn(self.soup.pk, main_foods)
+
 
 c = """
 class MacrosTest(BaseTest):

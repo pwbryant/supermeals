@@ -5,23 +5,16 @@ from meals.models import Foods, FoodGroup, Servings, Ingredients
 
 
 class MakeMacroMealTest(FunctionalTest):
-
     def this_setup(self):
 
-        veg_food_group = FoodGroup.objects.create(
-            name='Veggies',
-            rank=1
-        )
+        veg_food_group = FoodGroup.objects.create(name="Veggies", rank=1)
         # legume_food_group = FoodGroup.objects.create(
         #     name='Legumes',
         #     rank=1
         # )
-        pork_food_group = FoodGroup.objects.create(
-            name='Meat',
-            rank=2
-        )
+        pork_food_group = FoodGroup.objects.create(name="Meat", rank=2)
 
-        names = ['Chickpeas', 'Carrots', 'Bacon', 'Lettuce']
+        names = ["Chickpeas", "Carrots", "Bacon", "Lettuce"]
         cals = [1.3800, 0.3500, 4.6800, 0.1600]
         fat = [0.2223, 0.0117, 3.1581, 0.0198]
         carbs = [0.9148, 0.3296, 0.0680, 0.0904]
@@ -29,7 +22,7 @@ class MakeMacroMealTest(FunctionalTest):
 
         foods = []
         for i, name in enumerate(names):
-            if name == 'Bacon':
+            if name == "Bacon":
                 fd_group = pork_food_group
             else:
                 fd_group = veg_food_group
@@ -40,13 +33,12 @@ class MakeMacroMealTest(FunctionalTest):
                 fat_per_gram=fat[i],
                 carbs_per_gram=carbs[i],
                 protein_per_gram=protein[i],
-                food_group=fd_group
+                food_group=fd_group,
             )
             foods.append(food)
 
         Servings.objects.create(
-            food=foods[2], grams=Decimal(11.5),
-            quantity=Decimal(1), description='slice'
+            food=foods[2], grams=Decimal(11.5), quantity=Decimal(1), description="slice"
         )
 
     def test_make_macro_meal(self):
@@ -64,70 +56,60 @@ class MakeMacroMealTest(FunctionalTest):
                 "input[id='goal-meal-fat-percent']",
                 "input[id='goal-meal-carbs-percent']",
                 "input[id='goal-meal-protein-percent']",
-                "input[id='goal-meal-cals']"
+                "input[id='goal-meal-cals']",
             ],
-            [34, 33, 33, 500]
+            [34, 33, 33, 500],
         )
-        self.browser.find_element_by_id('create-macro-bars-button').click()
+        self.browser.find_element_by_id("create-macro-bars-button").click()
 
         # To the right of that is a an input with the label
         # "Search for ingredients" with a magnifying glass icon button
         self.check_element_content(
-            'label[for="meal-maker-search"]', 'css', 'text',
-            'Search for Ingredients')
+            'label[for="meal-maker-search"]', "css", "text", "Search for Ingredients"
+        )
 
         # He sees that the search filter is pre-selected on 'No Filter'
         # But he knows he wants veggies so he select the Veggie option.
-        no_filter = self.browser.find_element_by_id(
-            'meal-maker-filter-none'
-        )
-        veg_filter = self.browser.find_element_by_id(
-            'meal-maker-filter-veggies'
-        )
-        meat_filter = self.browser.find_element_by_id(
-            'meal-maker-filter-meat'
-        )
+        no_filter = self.browser.find_element_by_id("meal-maker-filter-none")
+        veg_filter = self.browser.find_element_by_id("meal-maker-filter-veggies")
+        meat_filter = self.browser.find_element_by_id("meal-maker-filter-meat")
         # No filter initally checked
-        self.assertTrue(no_filter.get_attribute('checked'))
+        self.assertTrue(no_filter.get_attribute("checked"))
 
         # Food filters check unselect non filter
         veg_filter.click()
         meat_filter.click()
-        self.assertTrue(veg_filter.get_attribute('checked'))
-        self.assertTrue(meat_filter.get_attribute('checked'))
-        self.assertFalse(no_filter.get_attribute('checked'))
+        self.assertTrue(veg_filter.get_attribute("checked"))
+        self.assertTrue(meat_filter.get_attribute("checked"))
+        self.assertFalse(no_filter.get_attribute("checked"))
 
         # No filter click clears the others
         no_filter.click()
-        self.assertFalse(veg_filter.get_attribute('checked'))
-        self.assertFalse(meat_filter.get_attribute('checked'))
+        self.assertFalse(veg_filter.get_attribute("checked"))
+        self.assertFalse(meat_filter.get_attribute("checked"))
 
         # No check boxes at all selects no filter box
         meat_filter.click()
         meat_filter.click()
-        self.assertTrue(no_filter.get_attribute('checked'))
+        self.assertTrue(no_filter.get_attribute("checked"))
 
         # He starts by typeing "chickpeas carrots lettuce bacon" in
         # the search bar and clicks the search icon.
         # And he sees the area below the search
         # bar fill up with those food results
-        search_terms = ['chickpeas carrots lettuce bacon']
+        search_terms = ["chickpeas carrots lettuce bacon"]
 
-        tab_name = 'meal-maker'
-        search_results = self.setup_and_run_search(
-            search_terms, [no_filter], tab_name
-        )
+        tab_name = "meal-maker"
+        search_results = self.setup_and_run_search(search_terms, [no_filter], tab_name)
         self.assertEqual(len(search_results), 4)
 
         search_results = self.setup_and_run_search(
             search_terms, [meat_filter], tab_name
         )
-        self.assertEqual(search_results[0].text, 'Bacon')
+        self.assertEqual(search_results[0].text, "Bacon")
         self.assertEqual(len(search_results), 1)
 
-        search_results = self.setup_and_run_search(
-            search_terms, [veg_filter], tab_name
-        )
+        search_results = self.setup_and_run_search(search_terms, [veg_filter], tab_name)
 
         self.assertEqual(len(search_results), 4)
 

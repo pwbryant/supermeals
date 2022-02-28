@@ -7,41 +7,56 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.generic.edit import FormView
 
-from meals.forms import SignUpForm, MakeMacrosForm, MacroMealForm, \
-        MealRecipeForm, NewFoodForm, NewFoodServingForm
-from meals.models import Macros, Foods, FoodGroup, Ingredients, Servings, \
-        FoodNotes, FoodType
-from meals.helpers import make_ingredient_formset, \
-        save_meal_notes_ingredients, make_macro_breakdown_dict_list
+from meals.forms import (
+    SignUpForm,
+    MakeMacrosForm,
+    MacroMealForm,
+    MealRecipeForm,
+    NewFoodForm,
+    NewFoodServingForm,
+)
+from meals.models import (
+    Macros,
+    Foods,
+    FoodGroup,
+    Ingredients,
+    Servings,
+    FoodNotes,
+    FoodType,
+)
+from meals.helpers import (
+    make_ingredient_formset,
+    save_meal_notes_ingredients,
+    make_macro_breakdown_dict_list,
+)
 
 from meals.decorators import user_is_not_guest
 
 # Constants
-KG_TO_LB = .45359237
-IN_TO_CM = .3937
-TEMPLATES_DIR = 'meals/'
+KG_TO_LB = 0.45359237
+IN_TO_CM = 0.3937
+TEMPLATES_DIR = "meals/"
 
 BAD_REQUEST = 400
 OK = 200
 CREATED = 201
 # Create your views here.
 
+
 @login_required
 def home_or_login(request):
-    return render(request, TEMPLATES_DIR + 'base.html')
+    return render(request, TEMPLATES_DIR + "base.html")
 
 
 def sign_up(request):
-    return render(
-        request, TEMPLATES_DIR + 'sign_up.html', {'form': SignUpForm()}
-    )
+    return render(request, TEMPLATES_DIR + "sign_up.html", {"form": SignUpForm()})
 
 
 def create_account(request):
 
-    username = request.POST.get('username', '')
-    email = request.POST.get('email', '')
-    password = request.POST.get('password', '')
+    username = request.POST.get("username", "")
+    email = request.POST.get("email", "")
+    password = request.POST.get("password", "")
     form = SignUpForm(data=request.POST)
     if form.is_valid():
         user = User()
@@ -50,9 +65,9 @@ def create_account(request):
         user.set_password(password)
         user.save()
         login(request, user)
-        return redirect('/')
+        return redirect("/")
 
-    return render(request, TEMPLATES_DIR + 'sign_up.html', {"form":form})
+    return render(request, TEMPLATES_DIR + "sign_up.html", {"form": form})
 
 
 class MyMacros(FormView):
@@ -62,7 +77,7 @@ class MyMacros(FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['unit_type'] = 'imperial'
+        kwargs["unit_type"] = "imperial"
         return kwargs
 
     def post(self, request, *args, **kwargs):
@@ -73,13 +88,13 @@ class MyMacros(FormView):
         Macros.objects.filter(user=self.user).delete()
         form.instance.user = self.user
         form.save()
-        context = {'status_code': OK}
+        context = {"status_code": OK}
         return JsonResponse(context)
 
     def form_invalid(self, form):
         context = self.get_context_data(form=form)
-        context['status_code'] = BAD_REQUEST
-        context['errors'] = form.errors
+        context["status_code"] = BAD_REQUEST
+        context["errors"] = form.errors
         return JsonResponse(context)
 
 
@@ -101,28 +116,24 @@ def get_meal_maker_template(request):
     macro_set = Macros.objects.filter(user=request.user)
     if macro_set:
         macro = macro_set[0]
-        macro_breakdown_dict_list = make_macro_breakdown_dict_list(macro)# in helpers.py
+        macro_breakdown_dict_list = make_macro_breakdown_dict_list(
+            macro
+        )  # in helpers.py
         tdee = macro.calc_tdee()
-        context = {
-            'tdee': round(tdee),
-            'has_macro': True
-        }
+        context = {"tdee": round(tdee), "has_macro": True}
     else:
         macro_breakdown_dict_list = make_macro_breakdown_dict_list()
-        context = {'has_macro': False}
+        context = {"has_macro": False}
 
-    context['macro_breakdown'] = macro_breakdown_dict_list
-    context['macro_meal_form'] = MacroMealForm()
+    context["macro_breakdown"] = macro_breakdown_dict_list
+    context["macro_meal_form"] = MacroMealForm()
 
     # informal name to use in input id, and to use in label
-    context['filters'] = [
-        {
-            'id_name': fg['name'].lower().replace(' ', '-'),
-            'name': fg['name']
-        } for fg in
-        FoodGroup.objects.all().values('name').distinct()
+    context["filters"] = [
+        {"id_name": fg["name"].lower().replace(" ", "-"), "name": fg["name"]}
+        for fg in FoodGroup.objects.all().values("name").distinct()
     ]
-    return render(request, TEMPLATES_DIR + 'meal_maker.html', context)
+    return render(request, TEMPLATES_DIR + "meal_maker.html", context)
 
 
 @user_is_not_guest
@@ -146,19 +157,21 @@ def save_macro_meal(request):
     request.POST._mutable = True
 
     meal_form = MacroMealForm(request.POST)
-    ingredient_formset = make_ingredient_formset(request)#in helpers.py
+    ingredient_formset = make_ingredient_formset(request)  # in helpers.py
 
-    context = {'status': 0, 'errors': ''}
+    context = {"status": 0, "errors": ""}
     if meal_form.is_valid() and ingredient_formset.is_valid():
-        save_meal_notes_ingredients(request.user, meal_form, ingredient_formset)#in helpers.py
-        context['status'] = 1
+        save_meal_notes_ingredients(
+            request.user, meal_form, ingredient_formset
+        )  # in helpers.py
+        context["status"] = 1
 
     else:
-        context['status'] = 0
-        meal_error_dict = dict([
-            (k, [e for e in v]) for k, v in meal_form.errors.items()
-        ])
-        context['errors'] = json.dumps(meal_error_dict)
+        context["status"] = 0
+        meal_error_dict = dict(
+            [(k, [e for e in v]) for k, v in meal_form.errors.items()]
+        )
+        context["errors"] = json.dumps(meal_error_dict)
 
     return JsonResponse(context)
 
@@ -166,19 +179,19 @@ def save_macro_meal(request):
 @user_is_not_guest
 @login_required
 def get_my_meals(request):
-    return render(request, TEMPLATES_DIR + 'my_meals.html')
+    return render(request, TEMPLATES_DIR + "my_meals.html")
 
 
 @user_is_not_guest
 @login_required
 def delete_my_meals(request):
 
-    meal_id = request.POST.get('meal_id')
+    meal_id = request.POST.get("meal_id")
     if meal_id and meal_id.isdigit():
         Foods.objects.get(pk=meal_id).delete()
-        return JsonResponse({'status': 1})
+        return JsonResponse({"status": 1})
 
-    return JsonResponse({'status': 0})
+    return JsonResponse({"status": 0})
 
 
 @login_required
@@ -200,20 +213,24 @@ def search_foods(request, food_owner):
         search results as json
     """
 
-    search_terms = request.GET['search_terms'].split(' ')
-    filters = request.GET.getlist('filters[]')
+    search_terms = request.GET["search_terms"].split(" ")
+    filters = request.GET.getlist("filters[]")
     fields_of_interest = [
-        'id', 'name', 'cals_per_gram', 'fat_per_gram', 'carbs_per_gram',
-        'protein_per_gram', 'servings__pk', 'servings__description',
-        'servings__grams', 'servings__quantity'
+        "id",
+        "name",
+        "cals_per_gram",
+        "fat_per_gram",
+        "carbs_per_gram",
+        "protein_per_gram",
+        "servings__pk",
+        "servings__description",
+        "servings__grams",
+        "servings__quantity",
     ]
 
-    args = [
-        'name', search_terms, 0.001, fields_of_interest,
-        ['servings'], 50, filters
-    ]
+    args = ["name", search_terms, 0.001, fields_of_interest, ["servings"], 50, filters]
 
-    if food_owner == 'user':
+    if food_owner == "user":
         args.append(Foods.searcher.filter_on_user(request.user))
 
     search_results = Foods.searcher.restructure_food_and_servings_queryset(
@@ -221,9 +238,8 @@ def search_foods(request, food_owner):
     )
 
     return HttpResponse(
-        json.dumps(
-            {'search-results':search_results}, cls=DjangoJSONEncoder
-        ), content_type='application/json'
+        json.dumps({"search-results": search_results}, cls=DjangoJSONEncoder),
+        content_type="application/json",
     )
 
 
@@ -246,35 +262,44 @@ def search_my_meals(request, meal_or_recipe):
         search results as json
     """
 
-    search_terms = request.GET['search_terms'].split(' ')
+    search_terms = request.GET["search_terms"].split(" ")
 
     fields_of_interest = [
-        'main_food', 'main_food__ingredient', 'id', 'name',
-        'main_food__ingredient__name', 'main_food__amount',
-        'main_food__serving__description', 'notes__notes'
+        "ingredients",
+        "ingredients__ingredient",
+        "id",
+        "name",
+        "ingredients__ingredient__name",
+        "ingredients__amount",
+        "ingredients__serving__description",
+        "notes__notes",
     ]
-    filters = [{'meal': 'My Meals', 'recipe': 'My Recipes'}[meal_or_recipe]]
-    rank_by_field = 'name'
+    filters = [{"meal": "My Meals", "recipe": "My Recipes"}[meal_or_recipe]]
+    rank_by_field = "name"
     rank_threshold = 0.001
-    foreign_key_relations = ['servings', 'notes']
+    foreign_key_relations = ["servings", "notes"]
     record_limit = 20
     search_args = [
-        rank_by_field, search_terms, rank_threshold, fields_of_interest,
-        foreign_key_relations, record_limit, filters
+        rank_by_field,
+        search_terms,
+        rank_threshold,
+        fields_of_interest,
+        foreign_key_relations,
+        record_limit,
+        filters,
     ]
-    search_kwargs = {'query_set': Foods.searcher.filter_on_user(request.user)}
+    search_kwargs = {"query_set": Foods.searcher.filter_on_user(request.user)}
 
     search_results_dict = Foods.searcher.add_nested_ingredients_to_ingredient_dict(
         Foods.searcher.restructure_ingredients_queryset_to_dict(
             Foods.searcher.rank_with_terms_and_filters(*search_args, **search_kwargs)
-        ), fields_of_interest
+        ),
+        fields_of_interest,
     )
 
     return HttpResponse(
-        json.dumps(
-            {'search-results': search_results_dict}, cls=DjangoJSONEncoder
-        ),
-        content_type='application/json'
+        json.dumps({"search-results": search_results_dict}, cls=DjangoJSONEncoder),
+        content_type="application/json",
     )
 
 
@@ -282,7 +307,7 @@ def search_my_meals(request, meal_or_recipe):
 @login_required
 def render_add_recipe(request):
     """render add_recipe.html
-    
+
     Adds food groups to context in add_recipe.html
 
     Parameters
@@ -291,20 +316,17 @@ def render_add_recipe(request):
 
     Returns
     ----------
-    HttpResponse object with rendered template 
+    HttpResponse object with rendered template
     """
 
     context = {
-        'filters': [
-            {
-                'id_name': fg['name'].lower().replace(' ', '-'),
-                'name': fg['name']
-            } for fg in
-            FoodGroup.objects.all().values('name')
+        "filters": [
+            {"id_name": fg["name"].lower().replace(" ", "-"), "name": fg["name"]}
+            for fg in FoodGroup.objects.all().values("name")
         ]
     }
 
-    return render(request, TEMPLATES_DIR + 'add_recipe.html', context)
+    return render(request, TEMPLATES_DIR + "add_recipe.html", context)
 
 
 @user_is_not_guest
@@ -333,11 +355,11 @@ def save_recipe(request):
     if form.is_valid():
         form.instance.user = request.user
         form.save()
-        context['status'] = CREATED
+        context["status"] = CREATED
 
     else:
-        context['errors'] = form.errors
-        context['status'] = BAD_REQUEST
+        context["errors"] = form.errors
+        context["status"] = BAD_REQUEST
 
     return JsonResponse(context)
 
@@ -361,36 +383,37 @@ def add_food(request):
     JsonResponse / or template render
     """
 
-    if request.method == 'POST':
+    if request.method == "POST":
         fd_form = NewFoodForm(request.POST)
         srv_form = NewFoodServingForm(request.POST)
-        if request.POST.get('description'): #indicates additional serving info
+        if request.POST.get("description"):  # indicates additional serving info
             if fd_form.is_valid() and srv_form.is_valid():
-                fd_form.consume_grams(srv_form.cleaned_data['grams'])
+                fd_form.consume_grams(srv_form.cleaned_data["grams"])
                 fd_form.instance.user = request.user
                 fd_form.save()
                 srv_form.instance.food = fd_form.instance
                 srv_form.save()
-                return JsonResponse({'status_code': CREATED})
-
+                return JsonResponse({"status_code": CREATED})
         else:
-            srv_form.is_valid() # generate serving errors
+            srv_form.is_valid()  # generate serving errors
             # Only leave grams errors if they exist,
-            srv_form.errors.pop('quantity', None)
-            srv_form.errors.pop('description', None)
-            if fd_form.is_valid() and not srv_form.errors.get('grams'):
-                fd_form.consume_grams(srv_form.cleaned_data['grams']) 
+            srv_form.errors.pop("quantity", None)
+            srv_form.errors.pop("description", None)
+            if fd_form.is_valid() and not srv_form.errors.get("grams"):
+                fd_form.consume_grams(srv_form.cleaned_data["grams"])
                 fd_form.instance.user = request.user
                 fd_form.save()
-                return JsonResponse({'status_code': CREATED})
+                return JsonResponse({"status_code": CREATED})
 
-        return JsonResponse({
-            'status_code': BAD_REQUEST,
-            'errors': {**srv_form.errors, **fd_form.errors}
-        })
+        return JsonResponse(
+            {
+                "status_code": BAD_REQUEST,
+                "errors": {**srv_form.errors, **fd_form.errors},
+            }
+        )
 
     context = {
-        'add_food_form': NewFoodForm(),
-        'add_food_srv_form': NewFoodServingForm()
+        "add_food_form": NewFoodForm(),
+        "add_food_srv_form": NewFoodServingForm(),
     }
-    return render(request, TEMPLATES_DIR + 'add_food.html', context)
+    return render(request, TEMPLATES_DIR + "add_food.html", context)
