@@ -109,6 +109,8 @@ var BARS = (function() {
                     bars_obj.create_food_goal_macros_bars(macro, food_macros_obj);
                     //create_food_labels(food_macros_obj);
                 });
+
+                bars_obj.create_food_amt_text_input_listener(food_macros_obj);
 			});
 		},
 
@@ -288,7 +290,7 @@ var BARS = (function() {
         // tested
         add_scales_to_food_macros_obj : function(food_macros_obj) {
 
-            food_macros_obj['cal_to_goal_cal_height_scale']= d3
+            food_macros_obj['cal_to_goal_cal_height_scale'] = d3
                 .scaleLinear()
                 .domain([0,food_macros_obj.cal_bar_height])
                 .range([0,food_macros_obj.goal_cal_bar_height]);
@@ -297,8 +299,10 @@ var BARS = (function() {
             food_macros_obj['servings_scales'] = {}
             food_macros_obj['servings_scales']['cal_bar_height_to_unit_scale_0'] = d3
                 .scaleLinear()
-                .domain([0,food_macros_obj.cal_bar_height])
-                .range([0,food_g_in_goal_cals]);
+                .domain([0, food_macros_obj.cal_bar_height])
+                .range([0, food_g_in_goal_cals]);
+
+            food_macros_obj['servings_scales']['cal_bar_unit_to_height_scale_0'] = food_macros_obj['servings_scales']['cal_bar_height_to_unit_scale_0'].invert;
 
             food_macros_obj['servings'].forEach(function(servings_obj, i) {
                 const servings_g = parseFloat(servings_obj['servings__grams']);
@@ -308,17 +312,17 @@ var BARS = (function() {
                     .scaleLinear()
                     .domain([0,food_macros_obj.cal_bar_height])
                     .range([0,servings_in_food_g]);
-                 
 
+                food_macros_obj['servings_scales'][`cal_bar_unit_to_height_scale_${i+1}`] = food_macros_obj['servings_scales'][`cal_bar_height_to_unit_scale_${i+1}`].invert;
             });
 
-            food_macros_obj['cal_bar_height_to_unit_scale']= food_macros_obj['servings_scales']['cal_bar_height_to_unit_scale_0'];
+            food_macros_obj['cal_bar_height_to_unit_scale'] = food_macros_obj['servings_scales']['cal_bar_height_to_unit_scale_0'];
+            food_macros_obj['cal_bar_unit_to_height_scale'] = food_macros_obj['cal_bar_height_to_unit_scale'].invert;
 
-            food_macros_obj['food_cal_bar_height_to_goal_cal_scale']= d3
+            food_macros_obj['food_cal_bar_height_to_goal_cal_scale'] = d3
                 .scaleLinear()
                 .domain([0,food_macros_obj.cal_bar_height])
                 .range([0,food_macros_obj.cal_goal]);
-
         },
         
         // tested in FT
@@ -333,13 +337,27 @@ var BARS = (function() {
                 const slider_height = food_macros_obj.cal_bar_height - slider.attr('y');
                 const new_scale = food_macros_obj['servings_scales'][`cal_bar_height_to_unit_scale_${unit_value}`];
                 food_macros_obj['cal_bar_height_to_unit_scale'] = new_scale;
+                food_macros_obj['cal_bar_unit_to_height_scale'] = new_scale.invert;
                 
-                d3.select(food_amt_id)
-                    .text(function(d) {
-                        d.food_amt = new_scale(slider_height);
-                        // round to 2 decimal places
-                        return Math.round(d.food_amt * 100) / 100;
-                    });
+
+//                 d3.select(food_amt_id)
+//                     .text(function(d) {
+//                         d.food_amt = new_scale(slider_height);
+//                         // round to 2 decimal places
+//                         return Math.round(d.food_amt * 100) / 100;
+//                     });
+
+                console.log('fmo fa', food_macros_obj.food_amt)
+                console.log('new food amt', food_macros_obj.food_amt)
+                $(`#food-amt-${food_macros_obj.id}`).val(function(i, val) {
+                    if ($.isNumeric(val)) {
+                        console.log('val', val);
+                        const new_food_amt = new_scale(val);
+                        food_macros_obj.food_amt = new_food_amt;
+                        console.log('nf', new_food_amt)
+                        return Math.round(new_food_amt * 100) / 100;
+                    }
+                });
                 
             });
         },
@@ -360,7 +378,7 @@ var BARS = (function() {
             food_div += `<div id='food-container-footer-${food_id}' class='food-container-footer bm-margin--md-top'>`;
 
 
-            food_div += `<span id='food-amt-${food_id}' class='food-amt'></span>`;
+            food_div += `<input id='food-amt-${food_id}' class='food-amt' type='text' value='0'/>`;
             food_div += `<select id='food-amt-units-${food_id}' class='food-amt-units'>`;
             food_macros_obj['servings'].forEach(function(obj, i) {
                 food_div += `<option value='${i+1}'>${obj.servings__description}</option>`;
@@ -485,13 +503,48 @@ var BARS = (function() {
                     .on('drag', function(d) {
                         if (d.cal_bar_height != d.cal_bar_height_to_unit_scale.domain()[1]) {
                         }
-                        const y_delta = bars_obj.dragged(d,this);
-                        bars_obj.update_food_amt_label(y_delta, d);
-                        bars_obj.move_these_macro_bars(y_delta, d);
-                        bars_obj.move_other_macro_bars(y_delta, d);
-                        bars_obj.update_macro_amt_labels(y_delta, d);
+                        const y_delta = bars_obj.dragged(d, this);
+                        bars_obj.update_food_macros(y_delta, d);
                     })
                     .on('end', bars_obj.dragended));
+        },
+
+        update_food_macros: function(y_delta, food_macros_obj) {
+            bars_obj.update_food_amt_label(y_delta, food_macros_obj);
+            bars_obj.move_these_macro_bars(y_delta, food_macros_obj);
+            bars_obj.move_other_macro_bars(y_delta, food_macros_obj);
+            bars_obj.update_macro_amt_labels(y_delta, food_macros_obj);
+        },
+
+        create_food_amt_text_input_listener: function(food_macros_obj) {
+            $(`#food-amt-${food_macros_obj.id}`).on('change paste keyup', function(i, e) {
+                const inputText = $(this).val();
+                if ($.isNumeric(inputText)) {
+                    const inputNumber = parseFloat(inputText);
+                    const amtBarHeight = food_macros_obj['cal_bar_unit_to_height_scale'](inputNumber);
+                    const newSliderY = food_macros_obj['cal_bar_height'] - amtBarHeight;
+                    const currentSliderY = food_macros_obj['slider_y'];
+                    const heightDiff = currentSliderY - newSliderY;
+                    const sliderId = `#food-${food_macros_obj.id}-slider`;
+                    bars_obj.move_slider(sliderId, newSliderY);
+                    bars_obj.move_these_macro_bars(-heightDiff, food_macros_obj);
+                    bars_obj.move_other_macro_bars(-heightDiff, food_macros_obj);
+                    bars_obj.update_macro_amt_labels(-heightDiff, food_macros_obj);
+                }
+            });
+        },
+
+        move_slider: function(sliderId, yPosition) {
+            d3.select(sliderId).attr('y', function(foodMacrosObj) {
+                if (yPosition < 0) {
+                    foodMacrosObj.slider_y = 0;
+                } else if (yPosition > foodMacrosObj.cal_bar_height) {
+                    foodMacrosObj.slider_y = foodMacrosObj.cal_bar_height;
+                } else {
+                    foodMacrosObj.slider_y = yPosition;
+                }
+                return foodMacrosObj.slider_y;
+            });
         },
 
         // tested in Functional Tests
@@ -524,23 +577,27 @@ var BARS = (function() {
             // food_amt is negative y_delat due to nature of
             // d3 y values
             const food_amt_delta = -1 * food_macros_obj['cal_bar_height_to_unit_scale'](y_delta);
-
-            d3.select(`#food-amt-${food_macros_obj.id}`)
-                .text(function(d) {
-                    d.food_amt += food_amt_delta;
-                    return Math.round(d.food_amt * 100) / 100;
-                });
+            $(`#food-amt-${food_macros_obj.id}`).val(function(i, val) {
+                if ($.isNumeric(val)) {
+                    const currentVal = parseFloat(val);
+                    return Math.round((currentVal + food_amt_delta) * 100) / 100;
+                }
+            });
+            food_macros_obj.food_amt += food_amt_delta;
+            // d3.select(`#food-amt-${food_macros_obj.id}`)
+            //     .value(function(d) {
+            //         d.food_amt += food_amt_delta;
+            //         return Math.round(d.food_amt * 100) / 100;
+            //     });
 
         },
 
         // tested in Functional Tests
         move_these_macro_bars : function(y_delta, food_macros_obj) {
-            
             const cal_goal_y_delta = food_macros_obj.cal_to_goal_cal_height_scale(y_delta);
             MACRO_NAMES.forEach(function(macro) {
                 const bar_id = `#${macro}-${food_macros_obj.id}-goal-macro-bar`; 
                 d3.select(bar_id).attr('y', function(d) {
-
                     d.food_goal_y += (cal_goal_y_delta * food_macros_obj[macro].macro_to_cal_ratio);
                     return d.food_goal_y;
                 });
