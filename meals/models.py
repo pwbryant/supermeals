@@ -596,6 +596,10 @@ class Servings(models.Model):
         "Foods", on_delete=models.CASCADE, related_name="servings", null=True
     )
 
+    @property
+    def grams_per_serving_unit(self):
+        return self.grams / self.quantity
+
     def __repr__(self):
         if self.food:
             return "{0} - {1}".format(self.food.name, self.description)
@@ -629,7 +633,7 @@ class Ingredients(models.Model):
     @property
     def grams(self):
         serving = self.get_serving()
-        return self.amount * (serving.grams / serving.quantity)
+        return self.amount * serving.grams_per_serving_unit
 
     def get_serving(self):
         return self.serving

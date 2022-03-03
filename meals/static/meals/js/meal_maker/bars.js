@@ -329,36 +329,20 @@ var BARS = (function() {
         change_unit_scales_trigger: function() {
             $('.food-amt-units').on('change', function() {
                 const food_id = this.id.split('-')[3];
-                const food_amt_id = `#food-amt-${food_id}`;
                 const food_slider_id = `#food-${food_id}-slider`;
-                const unit_value = this.value;
                 const slider = d3.select(`${food_slider_id}`);
                 const food_macros_obj = slider.data()[0];
                 const slider_height = food_macros_obj.cal_bar_height - slider.attr('y');
+                const unit_value = this.value;
                 const new_scale = food_macros_obj['servings_scales'][`cal_bar_height_to_unit_scale_${unit_value}`];
                 food_macros_obj['cal_bar_height_to_unit_scale'] = new_scale;
                 food_macros_obj['cal_bar_unit_to_height_scale'] = new_scale.invert;
-                
 
-//                 d3.select(food_amt_id)
-//                     .text(function(d) {
-//                         d.food_amt = new_scale(slider_height);
-//                         // round to 2 decimal places
-//                         return Math.round(d.food_amt * 100) / 100;
-//                     });
-
-                console.log('fmo fa', food_macros_obj.food_amt)
-                console.log('new food amt', food_macros_obj.food_amt)
-                $(`#food-amt-${food_macros_obj.id}`).val(function(i, val) {
-                    if ($.isNumeric(val)) {
-                        console.log('val', val);
-                        const new_food_amt = new_scale(val);
-                        food_macros_obj.food_amt = new_food_amt;
-                        console.log('nf', new_food_amt)
-                        return Math.round(new_food_amt * 100) / 100;
-                    }
-                });
-                
+                const food_amt_id = `#food-amt-${food_id}`;
+                var food_amt_input = d3.select(food_amt_id);
+                const new_food_amt = new_scale(slider_height);
+                $(food_amt_id).val(Math.round(new_food_amt * 100) / 100)
+                food_amt_input.data()[0].food_amt = new_food_amt;
             });
         },
             
@@ -576,20 +560,17 @@ var BARS = (function() {
         update_food_amt_label : function(y_delta, food_macros_obj) {
             // food_amt is negative y_delat due to nature of
             // d3 y values
+            const food_amt_input_id = `#food-amt-${food_macros_obj.id}`;
+            var food_amt_input = d3.select(food_amt_input_id);
             const food_amt_delta = -1 * food_macros_obj['cal_bar_height_to_unit_scale'](y_delta);
-            $(`#food-amt-${food_macros_obj.id}`).val(function(i, val) {
+
+            $(food_amt_input_id).val(function(i, val) {
                 if ($.isNumeric(val)) {
                     const currentVal = parseFloat(val);
                     return Math.round((currentVal + food_amt_delta) * 100) / 100;
                 }
             });
-            food_macros_obj.food_amt += food_amt_delta;
-            // d3.select(`#food-amt-${food_macros_obj.id}`)
-            //     .value(function(d) {
-            //         d.food_amt += food_amt_delta;
-            //         return Math.round(d.food_amt * 100) / 100;
-            //     });
-
+            food_amt_input.data()[0].food_amt += food_amt_delta;
         },
 
         // tested in Functional Tests
