@@ -362,7 +362,7 @@ var BARS = (function() {
             food_div += `<div id='food-container-footer-${food_id}' class='food-container-footer bm-margin--md-top'>`;
 
 
-            food_div += `<input id='food-amt-${food_id}' class='food-amt' type='text' value='0'/>`;
+            food_div += `<input id='food-amt-${food_id}' class='food-amt' type='number'/>`;
             food_div += `<select id='food-amt-units-${food_id}' class='food-amt-units'>`;
             food_macros_obj['servings'].forEach(function(obj, i) {
                 food_div += `<option value='${i+1}'>${obj.servings__description}</option>`;
@@ -503,6 +503,7 @@ var BARS = (function() {
         create_food_amt_text_input_listener: function(food_macros_obj) {
             $(`#food-amt-${food_macros_obj.id}`).on('change paste keyup', function(i, e) {
                 const inputText = $(this).val();
+
                 if ($.isNumeric(inputText)) {
                     const inputNumber = parseFloat(inputText);
                     const amtBarHeight = food_macros_obj['cal_bar_unit_to_height_scale'](inputNumber);
@@ -514,6 +515,8 @@ var BARS = (function() {
                     bars_obj.move_these_macro_bars(-heightDiff, food_macros_obj);
                     bars_obj.move_other_macro_bars(-heightDiff, food_macros_obj);
                     bars_obj.update_macro_amt_labels(-heightDiff, food_macros_obj);
+
+                    d3.select(`#food-amt-${food_macros_obj.id}`).data()[0].food_amt = inputNumber;
                 }
             });
         },
