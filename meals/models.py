@@ -2,9 +2,10 @@ from collections import namedtuple
 from decimal import Decimal
 
 from django.db import models
-from django.contrib.auth.models import User
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.conf import settings
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
+from django.core.validators import MaxValueValidator, MinValueValidator
+
 
 
 # Fields
@@ -255,7 +256,7 @@ class SearchFoods(models.Manager):
 # Create your models here.
 class Macros(models.Model):
 
-    user = models.OneToOneField("auth.User", on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     UNIT_CHOICES = (
         (
             "imperial",
@@ -443,7 +444,7 @@ class Foods(models.Model):
     food_type = models.ForeignKey("FoodType", null=True, on_delete=models.SET_NULL)
     food_group = models.ForeignKey("FoodGroup", null=True, on_delete=models.SET_NULL)
 
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
 
     objects = models.Manager()
     searcher = SearchFoods()

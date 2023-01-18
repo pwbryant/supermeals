@@ -52,7 +52,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
+
+    # local apps
+    "accounts",
     "meals",
+
+    # 3rd party
     "django_extensions",
     "widget_tweaks",
 ]
@@ -150,3 +155,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = "/"
+
+
+AUTH_USER_MODEL = "accounts.MacroUser"
