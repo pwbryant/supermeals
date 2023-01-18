@@ -14,10 +14,6 @@
         <div class="signup-container" >
             <form id='create-account-form' method="POST" action="/meals/create-account">
                 <div class="content-box auth-form-content">   
-                    <div id="username-input" class="input l-flex--col-start">
-                        <label class="input__label">{{ form.username.label }}:</label>
-                        {{ form.username }}
-                    </div>
                     <div id="email-input" class="input l-flex--col-start">
                         <label class="input__label">{{ form.email.label }}:</label>
                         {{ form.email }}
@@ -33,7 +29,7 @@
                     {% csrf_token %}
                     {% if form.errors %}
                         <div class='has-error'>
-                            <span class='help-block'>{{ form.username.errors }}</span>
+                            <span class='help-block'>{{ form.email.errors }}</span>
                             <span class='help-block'>{{ form.password.errors }}</span>
                         </div>
                     {% endif %}

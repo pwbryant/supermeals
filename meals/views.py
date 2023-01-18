@@ -1,6 +1,6 @@
 import json
-from django.contrib.auth.models import User
-from django.contrib.auth import login
+
+from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, JsonResponse
@@ -32,6 +32,9 @@ from meals.helpers import (
 
 from meals.decorators import user_is_not_guest
 
+
+User = get_user_model()
+
 # Constants
 KG_TO_LB = 0.45359237
 IN_TO_CM = 0.3937
@@ -54,13 +57,11 @@ def sign_up(request):
 
 def create_account(request):
 
-    username = request.POST.get("username", "")
     email = request.POST.get("email", "")
     password = request.POST.get("password", "")
     form = SignUpForm(data=request.POST)
     if form.is_valid():
         user = User()
-        user.username = username
         user.email = email
         user.set_password(password)
         user.save()

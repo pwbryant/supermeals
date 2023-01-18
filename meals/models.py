@@ -27,7 +27,7 @@ class SearchFoods(models.Manager):
 
         Parameters
         ----------
-        user: User object
+        user: MacroUser instance
 
         Returns
         ----------
@@ -374,7 +374,7 @@ class Macros(models.Model):
         return tdee
 
     def __repr__(self):
-        return f"{self.user.username}'s Macro Info"
+        return f"{self.user.email}'s Macro Info"
 
     def __str__(self):
         return self.__repr__()
