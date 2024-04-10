@@ -1,9 +1,9 @@
-{% ifnotequal request.user.username 'guest' %}
+{% if request.user.username != 'guest' %}
 
     <input id='is-guest' type='hidden' value='false' />
 {% else %}
     <input id='is-guest' type='hidden' value='true' />
-{% endifnotequal %}
+{% endif %}
 
 <div id='meal-maker-side-bar' class='sidebar'>
     {% if tdee %}
