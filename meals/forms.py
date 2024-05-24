@@ -113,17 +113,17 @@ class NewFoodForm(forms.ModelForm):
             }
         ),
     )
-    sugar = forms.DecimalField(
-        max_digits=6,
-        decimal_places=2,
-        widget=forms.TextInput(
-            attrs={
-                "id": "add-food-sugar",
-                "class": small_input_class,
-                "placeholder": "g",
-            }
-        ),
-    )
+    #sugar = forms.DecimalField(
+    #    max_digits=6,
+    #    decimal_places=2,
+    #    widget=forms.TextInput(
+    #        attrs={
+    #            "id": "add-food-sugar",
+    #            "class": small_input_class,
+    #            "placeholder": "g",
+    #        }
+    #    ),
+    #)
     protein = forms.DecimalField(
         max_digits=6,
         decimal_places=2,
@@ -194,7 +194,7 @@ class NewFoodForm(forms.ModelForm):
             cals=Decimal(self.cleaned_data["cals"]),
             fat=Decimal(self.cleaned_data["fat"]),
             carbs=Decimal(self.cleaned_data["carbs"]),
-            sugar=Decimal(self.cleaned_data["sugar"]),
+            #sugar=Decimal(self.cleaned_data["sugar"]),
             protein=Decimal(self.cleaned_data["protein"]),
             serving_amount=Decimal(self.cleaned_data["grams"]),
         )

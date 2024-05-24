@@ -415,7 +415,8 @@ class FoodGroup(models.Model):
         super().save(*args, **kwargs)
 
 
-FoodMacros = namedtuple("FoodMacros", "cals, fat, carbs, sugar, protein")
+#FoodMacros = namedtuple("FoodMacros", "cals, fat, carbs, sugar, protein")
+FoodMacros = namedtuple("FoodMacros", "cals, fat, carbs, protein")
 
 
 class Foods(models.Model):
@@ -437,9 +438,9 @@ class Foods(models.Model):
     protein_per_gram = models.DecimalField(
         max_digits=max_digits, decimal_places=decimal_places, blank=False, null=True
     )
-    sugar_per_gram = models.DecimalField(
-        max_digits=max_digits, decimal_places=decimal_places, blank=False, null=True
-    )
+    #sugar_per_gram = models.DecimalField(
+    #    max_digits=max_digits, decimal_places=decimal_places, blank=False, null=True
+    #)
     date = models.DateTimeField(auto_now_add=True, null=True)
     food_type = models.ForeignKey("FoodType", null=True, on_delete=models.SET_NULL)
     food_group = models.ForeignKey("FoodGroup", null=True, on_delete=models.SET_NULL)
@@ -477,9 +478,9 @@ class Foods(models.Model):
     def carbs(self, as_cals=True):
         return self.grams * self.carbs_per_gram
 
-    @property
-    def sugar(self, as_cals=True):
-        return self.grams * self.sugar_per_gram
+    #@property
+    #def sugar(self, as_cals=True):
+    #    return self.grams * self.sugar_per_gram
 
     @property
     def protein(self):
@@ -490,10 +491,12 @@ class Foods(models.Model):
         cals = self.cals
         fat = self.fat / 9
         carbs = self.carbs / 4
-        sugar = self.sugar / 4
+        #sugar = self.sugar / 4
         protein = self.protein / 4
         macros = FoodMacros(
-            cals=cals, fat=fat, carbs=carbs, sugar=sugar, protein=protein
+            cals=cals, fat=fat, carbs=carbs,
+            #sugar=sugar,
+            protein=protein
         )
         return macros
 
@@ -502,7 +505,7 @@ class Foods(models.Model):
         cals=None,
         fat=None,
         carbs=None,
-        sugar=None,
+        #sugar=None,
         protein=None,
         serving_amount=None,
     ):
@@ -522,9 +525,9 @@ class Foods(models.Model):
             self.carbs_per_gram = self.calc_macro_per_gram(
                 "carbs", carbs, serving_amount
             )
-            self.sugar_per_gram = self.calc_macro_per_gram(
-                "sugar", sugar, serving_amount
-            )
+            #self.sugar_per_gram = self.calc_macro_per_gram(
+            #    "sugar", sugar, serving_amount
+            #)
             self.protein_per_gram = self.calc_macro_per_gram(
                 "protein", protein, serving_amount
             )
@@ -533,7 +536,7 @@ class Foods(models.Model):
             self.cals_per_gram = self.calc_ingredients_macro_per_gram("cals")
             self.fat_per_gram = self.calc_ingredients_macro_per_gram("fat")
             self.carbs_per_gram = self.calc_ingredients_macro_per_gram("carbs")
-            self.sugar_per_gram = self.calc_ingredients_macro_per_gram("sugar")
+            #self.sugar_per_gram = self.calc_ingredients_macro_per_gram("sugar")
             self.protein_per_gram = self.calc_ingredients_macro_per_gram("protein")
 
     def get_macros_profile(self):
@@ -545,8 +548,8 @@ class Foods(models.Model):
             "fat_pct": (self.fat_per_gram * grams / total_cals) * 100,
             "carbs": self.carbs_per_gram * grams / 4,
             "carbs_pct": (self.carbs_per_gram * grams / total_cals) * 100,
-            "sugar": self.sugar_per_gram * grams / 4,
-            "sugar_pct": (self.sugar_per_gram * grams / total_cals) * 100,
+            #"sugar": self.sugar_per_gram * grams / 4,
+            #"sugar_pct": (self.sugar_per_gram * grams / total_cals) * 100,
             "protein": self.protein_per_gram * grams / 4,
             "protein_pct": (self.protein_per_gram * grams / total_cals) * 100,
         }
@@ -568,7 +571,11 @@ class Foods(models.Model):
         return macro_per_gram
 
     def calc_macro_per_gram(self, macro, macro_amount, serving_amount):
-        macro_multipliers = {"cals": 1, "fat": 9, "carbs": 4, "sugar": 4, "protein": 4}
+        macro_multipliers = {
+            "cals": 1, "fat": 9, "carbs": 4,
+            #"sugar": 4,
+            "protein": 4
+        }
         macro_per_gram = macro_amount * macro_multipliers[macro] / serving_amount
 
         return macro_per_gram
