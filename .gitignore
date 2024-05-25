@@ -1,3 +1,5 @@
+logs/
+venv/
 virtualenv/
 tmp/
 __pycache__
