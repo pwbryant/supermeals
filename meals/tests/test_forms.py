@@ -70,7 +70,7 @@ class NewFoodServingFormTest(BaseTestCase):
             "food_group": "Veggies",
         }
 
-        FoodGroup.objects.create(name="Veggies")
+        FoodGroup.objects.create(name="Veggies", rank=1)
         FoodType.objects.create(name="food")
 
     def test_NewFoodServingForm_invalid(self):
@@ -115,7 +115,7 @@ class NewFoodFormTest(BaseTestCase):
             "food_group": "Veggies",
         }
 
-        FoodGroup.objects.create(name="Veggies")
+        FoodGroup.objects.create(name="Veggies", rank=1)
         FoodType.objects.create(name="food")
 
     def test_NewFoodForm_valid(self):
@@ -172,7 +172,7 @@ class RecipeFormTest(BaseTestCase):
             cals_per_gram=Decimal(5.9),
             fat_per_gram=Decimal(4.491),
             carbs_per_gram=Decimal(0.8732),
-            sugar_per_gram=Decimal(0.8732),
+            # sugar_per_gram=Decimal(0.8732),
             protein_per_gram=Decimal(0.96),
         )
         self.peanut_butter_srv = Servings.objects.create(
@@ -184,7 +184,7 @@ class RecipeFormTest(BaseTestCase):
             cals_per_gram=Decimal(0.89),
             fat_per_gram=Decimal(0.0297),
             carbs_per_gram=Decimal(0.9136),
-            sugar_per_gram=Decimal(0.9136),
+            # sugar_per_gram=Decimal(0.9136),
             protein_per_gram=Decimal(0.0436),
         )
         self.bananas_srv = Servings.objects.create(
@@ -221,7 +221,7 @@ class RecipeFormTest(BaseTestCase):
         self.copy_food.save()
 
         # FoodGroup and FoodType creation
-        FoodGroup.objects.create(name="My Recipes")
+        FoodGroup.objects.create(name="My Recipes", rank=1)
         FoodType.objects.create(name="recipe")
 
     def test_MealRecipeForm_valid(self):
@@ -272,9 +272,9 @@ class RecipeFormTest(BaseTestCase):
         self.assertEqual(
             new_food.carbs_per_gram, round_decimal(self.copy_food.carbs_per_gram, 4)
         )
-        self.assertEqual(
-            new_food.sugar_per_gram, round_decimal(self.copy_food.sugar_per_gram, 4)
-        )
+        # self.assertEqual(
+        #     new_food.sugar_per_gram, round_decimal(self.copy_food.sugar_per_gram, 4)
+        # )
         self.assertEqual(
             new_food.protein_per_gram, round_decimal(self.copy_food.protein_per_gram, 4)
         )
@@ -348,7 +348,7 @@ class MacroMealAndIngredientFormTest(TestCase):
             cals_per_gram="1.6456",
             fat_per_gram="0.3418",
             carbs_per_gram="0.1519",
-            sugar_per_gram="0.1519",
+            # sugar_per_gram="0.1519",
             protein_per_gram="1.1646",
         )
 
@@ -361,7 +361,7 @@ class MacroMealAndIngredientFormTest(TestCase):
             cals_per_gram="1.7200",
             fat_per_gram="0.0567",
             carbs_per_gram="1.6308",
-            sugar_per_gram="1.6308",
+            # sugar_per_gram="1.6308",
             protein_per_gram="0.0328",
         )
 

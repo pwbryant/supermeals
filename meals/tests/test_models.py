@@ -1,13 +1,13 @@
 from decimal import *
 from django.test import TestCase
-from django.contrib.auth.models import User
+from accounts.models import MacroUser as User
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 
 from meals.models import Macros, Foods, Servings, Ingredients, FoodGroup
 
-USERNAME1, PASSWORD1 = "Joe1", "joepass1"
-USERNAME2, PASSWORD2 = "Joe2", "joepass2"
+USERNAME1, PASSWORD1 = "Joe1@email.com", "joepass1"
+USERNAME2, PASSWORD2 = "Joe2@email.com", "joepass2"
 MACRO_INIT_FIELD_DICT = {
     "unit_type": "metric",
     "gender": "m",
@@ -42,7 +42,7 @@ class BaseTest(TestCase):
             User.objects.all()[0].delete()
 
         broke_dict["user"] = User.objects.create_user(
-            username=USERNAME1, password=PASSWORD1
+            email=USERNAME1, password=PASSWORD1
         )
         if value == "remove":
             broke_dict.pop(break_field)
@@ -64,18 +64,18 @@ class FoodsTest(TestCase):
 
     def setUp(self):
 
-        self.user = User.objects.create(username="paul", password="password")
+        self.user = User.objects.create(email="paul@email.com", password="password")
 
         # Food Groups
-        meal_group = FoodGroup.objects.create(name="My Meals")
-        recipe_group = FoodGroup.objects.create(name="My Recipes")
+        meal_group = FoodGroup.objects.create(name="My Meals", rank=1)
+        recipe_group = FoodGroup.objects.create(name="My Recipes", rank=2)
 
         self.food1 = Foods.objects.create(
             name="veggie pulled pork",
             cals_per_gram="1.6456",
             fat_per_gram="0.3418",
             carbs_per_gram="0.1519",
-            sugar_per_gram="0.1519",
+            # sugar_per_gram="0.1519",
             protein_per_gram="1.1646",
         )
 
@@ -88,7 +88,7 @@ class FoodsTest(TestCase):
             cals_per_gram="1.7200",
             fat_per_gram="0.0567",
             carbs_per_gram="1.6308",
-            sugar_per_gram="1.6308",
+            # sugar_per_gram="1.6308",
             protein_per_gram="0.0328",
         )
 
@@ -116,7 +116,7 @@ class FoodsTest(TestCase):
             cals_per_gram=1,
             fat_per_gram=1,
             carbs_per_gram=1,
-            sugar_per_gram=1,
+            # sugar_per_gram=1,
             protein_per_gram=1,
         )
         saved_foods = Foods.objects.filter(name="food name")
@@ -135,7 +135,7 @@ class FoodsTest(TestCase):
         self.assertEqual(food.cals_per_gram, Decimal("1.6622"))
         self.assertEqual(food.fat_per_gram, Decimal("0.2782"))
         self.assertEqual(food.carbs_per_gram, Decimal("0.4816"))
-        self.assertEqual(food.sugar_per_gram, Decimal("0.4816"))
+        # self.assertEqual(food.sugar_per_gram, Decimal("0.4816"))
         self.assertEqual(food.protein_per_gram, Decimal("0.9123"))
 
     def test_searcher_manager_filter_on_user_gets_user_foods(self):

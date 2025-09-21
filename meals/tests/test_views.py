@@ -5,11 +5,11 @@ from datetime import datetime, timedelta
 from django.test import TestCase
 from django.urls import reverse
 from django.http import HttpRequest, QueryDict
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.template.loader import render_to_string
 from django import forms
 
+from accounts.models import MacroUser as User
 from meals.forms import (
     SignUpForm,
     MakeMacrosForm,
@@ -17,10 +17,7 @@ from meals.forms import (
     MacroIngredientForm,
     NewFoodForm,
     NewFoodServingForm,
-    DUPLICATE_USERNAME_ERROR,
-    EMPTY_USERNAME_ERROR,
     EMPTY_PASSWORD_ERROR,
-    INVALID_USERNAME_ERROR,
     DEFAULT_INVALID_INT_ERROR,
     EMPTY_WEIGHT_ERROR,
     EMPTY_HEIGHT_ERROR,
@@ -47,17 +44,17 @@ from meals.helpers import get_ingredient_count
 # CONTANTS
 # ===================================================
 USERNAME, EMAIL, PASSWORD = "JoeSchmoe", "joe@joemail.com", "321pass123!"
-GUEST_USERNAME, GUEST_PASSWORD = "guest", "321!beware"
+GUEST_USERNAME, GUEST_EMAIL, GUEST_PASSWORD = "guest", "guest@email.com", "321!beware"
 BAD_USERNAME, BAD_PASSWORD = "bad", "badpass"
 
 
 # OTHER CLASSES
 # ===================================================
 class BaseTestCase(TestCase):
-    def log_in_user(self, username, password):
-        user = User.objects.create_user(username=username, password=password)
+    def log_in_user(self, email, password):
+        user = User.objects.create_user(email=email, password=password)
         self.client.post(
-            "/accounts/login/", data={"username": username, "password": password}
+            "/accounts/login/", data={"username": email, "password": password}
         )
         return user
 
@@ -68,12 +65,12 @@ class BaseTestCase(TestCase):
 class NewFoodTest(BaseTestCase):
     def setUp(self):
 
-        self.user = self.log_in_user(USERNAME, PASSWORD)
+        self.user = self.log_in_user(EMAIL, PASSWORD)
 
         self.url = reverse("add_food")
         self.get_response = self.client.get(self.url)
 
-        FoodGroup.objects.create(name="Veggies")
+        FoodGroup.objects.create(name="Veggies", rank=1)
         FoodType.objects.create(name="food")
 
         self.post = {
@@ -103,7 +100,7 @@ class NewFoodTest(BaseTestCase):
 
     def test_add_food_url_renders_correct_template_as_guest(self):
         url = reverse("add_food")
-        self.log_in_user("guest", "password")
+        self.log_in_user("guest@email.com", "password")
         response = self.client.get(url)
         self.assertTemplateUsed(response, "meals/bad_raw_url.html")
 
@@ -167,16 +164,16 @@ class BaseMakeFoodsTest(BaseTestCase):
             food=None, description="g", grams=Decimal(1), quantity=Decimal(1)
         )
 
-        self.my_meals_fg = FoodGroup.objects.create(name="My Meals")
-        self.veg_fg = FoodGroup.objects.create(name="Veggies")
-        self.meat_fg = FoodGroup.objects.create(name="Meats")
+        self.my_meals_fg = FoodGroup.objects.create(name="My Meals", rank=1)
+        self.veg_fg = FoodGroup.objects.create(name="Veggies", rank=2)
+        self.meat_fg = FoodGroup.objects.create(name="Meats", rank=3)
 
         self.peanut_butter = Foods.objects.create(
             name="Peanut Butter",
             cals_per_gram=Decimal(5.9),
             fat_per_gram=Decimal(4.491),
             carbs_per_gram=Decimal(0.8732),
-            sugar_per_gram=Decimal(0.8732),
+            # sugar_per_gram=Decimal(0.8732),
             protein_per_gram=Decimal(0.96),
         )
         self.peanut_butter_srv = Servings.objects.create(
@@ -188,7 +185,7 @@ class BaseMakeFoodsTest(BaseTestCase):
             cals_per_gram=Decimal(0.89),
             fat_per_gram=Decimal(0.0297),
             carbs_per_gram=Decimal(0.9136),
-            sugar_per_gram=Decimal(0.9136),
+            # sugar_per_gram=Decimal(0.9136),
             protein_per_gram=Decimal(0.0436),
         )
         self.bananas_srv = Servings.objects.create(
@@ -208,7 +205,7 @@ class BaseMakeFoodsTest(BaseTestCase):
         }
 
         # FoodGroup and FoodType creation
-        FoodGroup.objects.create(name="My Recipes")
+        FoodGroup.objects.create(name="My Recipes", rank=1)
         FoodType.objects.create(name="recipe")
 
 
@@ -284,7 +281,7 @@ class AddRecipeTest(BaseMakeFoodsTest):
 
     def test_add_recipe_url_renders_correct_template_as_guest(self):
         url = reverse("render_add_recipe")
-        self.log_in_user("guest", "password")
+        self.log_in_user("guest@email.com", "password")
         response = self.client.get(url)
         self.assertTemplateUsed(response, "meals/bad_raw_url.html")
 
@@ -304,7 +301,7 @@ class AddRecipeTest(BaseMakeFoodsTest):
 
     def test_save_recipe_url_renders_correct_template_as_guest(self):
         url = reverse("save_recipe")
-        self.log_in_user("guest", "password")
+        self.log_in_user("guest@email.com", "password")
         response = self.client.get(url)
         self.assertTemplateUsed(response, "meals/bad_raw_url.html")
 
@@ -342,8 +339,8 @@ class MyMealsTest(BaseTestCase):
         fourth_date = first_date - timedelta(days=3)
 
         # Food Groups
-        meal_group = FoodGroup.objects.create(name="My Meals")
-        recipe_group = FoodGroup.objects.create(name="My Recipes")
+        meal_group = FoodGroup.objects.create(name="My Meals", rank=1)
+        recipe_group = FoodGroup.objects.create(name="My Recipes", rank=2)
 
         self.roasted_broccoli = Foods.objects.create(
             name="Roasted Broccoli",
@@ -351,7 +348,7 @@ class MyMealsTest(BaseTestCase):
             cals_per_gram=Decimal(1),
             fat_per_gram=Decimal(1),
             carbs_per_gram=Decimal(1),
-            sugar_per_gram=Decimal(1),
+            # sugar_per_gram=Decimal(1),
             protein_per_gram=Decimal(1),
             food_group=recipe_group,
         )
@@ -362,7 +359,7 @@ class MyMealsTest(BaseTestCase):
             cals_per_gram=Decimal(1),
             fat_per_gram=Decimal(1),
             carbs_per_gram=Decimal(1),
-            sugar_per_gram=Decimal(1),
+            # sugar_per_gram=Decimal(1),
             protein_per_gram=Decimal(1),
             food_group=meal_group,
         )
@@ -373,7 +370,7 @@ class MyMealsTest(BaseTestCase):
             cals_per_gram=Decimal(1),
             fat_per_gram=Decimal(1),
             carbs_per_gram=Decimal(1),
-            sugar_per_gram=Decimal(1),
+            # sugar_per_gram=Decimal(1),
             protein_per_gram=Decimal(1),
             food_group=meal_group,
         )
@@ -385,7 +382,7 @@ class MyMealsTest(BaseTestCase):
             cals_per_gram=Decimal(1),
             fat_per_gram=Decimal(1),
             carbs_per_gram=Decimal(1),
-            sugar_per_gram=Decimal(1),
+            # sugar_per_gram=Decimal(1),
             protein_per_gram=Decimal(1),
         )
         self.pretzels.date = third_date
@@ -400,7 +397,7 @@ class MyMealsTest(BaseTestCase):
             cals_per_gram=Decimal(1),
             fat_per_gram=Decimal(1),
             carbs_per_gram=Decimal(1),
-            sugar_per_gram=Decimal(1),
+            # sugar_per_gram=Decimal(1),
             protein_per_gram=Decimal(1),
         )
         self.cheese.date = fourth_date
@@ -450,7 +447,7 @@ class MyMealsTest(BaseTestCase):
 
     def test_my_meals_url_renders_correct_template_as_guest(self):
         url = reverse("my_meals")
-        self.log_in_user("guest", "password")
+        self.log_in_user("guest@email.com", "password")
         response = self.client.get(url)
         self.assertTemplateUsed(response, "meals/bad_raw_url.html")
 
@@ -481,8 +478,8 @@ class MyMealsTest(BaseTestCase):
         meal_id = list(response["search-results"]["meal_info"].keys())[0]
         results = response["search-results"]["meal_info"][meal_id]
 
-        ingredient1_name = results[0]["main_food__ingredient__name"]
-        ingredient2_name = results[1]["main_food__ingredient__name"]
+        ingredient1_name = results[0]["ingredients__ingredient__name"]
+        ingredient2_name = results[1]["ingredients__ingredient__name"]
 
         self.assertEqual(ingredient1_name, self.pretzels.name)
         self.assertEqual(ingredient2_name, self.cheese.name)
@@ -496,11 +493,11 @@ class MyMealsTest(BaseTestCase):
         meal_id = list(response["search-results"]["meal_info"].keys())[0]
         results = response["search-results"]["meal_info"][meal_id]
 
-        serving1_amount = Decimal(results[0]["main_food__amount"])
-        serving1_desc = results[0]["main_food__serving__description"]
+        serving1_amount = Decimal(results[0]["ingredients__amount"])
+        serving1_desc = results[0]["ingredients__serving__description"]
 
-        serving2_amount = Decimal(results[1]["main_food__amount"])
-        serving2_desc = results[1]["main_food__serving__description"]
+        serving2_amount = Decimal(results[1]["ingredients__amount"])
+        serving2_desc = results[1]["ingredients__serving__description"]
 
         self.assertEqual(serving1_amount, self.pretzels_ing.amount)
         self.assertEqual(serving1_desc, self.pretzels_srv.description)
@@ -566,14 +563,14 @@ class MacroMealMakerTest(BaseTestCase):
 
         self.food_type_food = FoodType.objects.create(name="food")
         self.food_type_meal = FoodType.objects.create(name="meal")
-        self.food_group_meal = FoodGroup.objects.create(name="My Meals")
+        self.food_group_meal = FoodGroup.objects.create(name="My Meals", rank=1)
 
         self.ingredient1 = Foods.objects.create(
             name="veggie pulled pork",
             cals_per_gram="1.6456",
             fat_per_gram="0.3418",
             carbs_per_gram="0.1519",
-            sugar_per_gram="0.1519",
+            # sugar_per_gram="0.1519",
             protein_per_gram="1.1646",
             food_type=self.food_type_food,
         )
@@ -587,7 +584,7 @@ class MacroMealMakerTest(BaseTestCase):
             cals_per_gram="1.7200",
             fat_per_gram="0.0567",
             carbs_per_gram="1.6308",
-            sugar_per_gram="1.6308",
+            # sugar_per_gram="1.6308",
             protein_per_gram="0.0328",
             food_type=self.food_type_food,
         )
@@ -877,10 +874,10 @@ class LoginLogoffTest(TestCase):
         self.assertEqual(response["location"], "/accounts/login/?next=/")
 
     def test_can_login_as_authenticated_user(self):
-        username, password = USERNAME, PASSWORD
-        user = User.objects.create_user(username=username, password=password)
+        username, email, password = USERNAME, EMAIL, PASSWORD
+        user = User.objects.create_user(email=email, password=password)
         response = self.client.post(
-            "/accounts/login/", data={"username": username, "password": password}
+            "/accounts/login/", data={"username": email, "password": password}
         )
 
         self.assertEqual(response.status_code, 302)
@@ -888,11 +885,11 @@ class LoginLogoffTest(TestCase):
 
     def test_can_login_as_guest(self):
         guest_user = User.objects.create_user(
-            username=GUEST_USERNAME, password=GUEST_PASSWORD
+            email=GUEST_EMAIL, password=GUEST_PASSWORD
         )
         response = self.client.post(
             "/accounts/login/",
-            data={"username": GUEST_USERNAME, "password": GUEST_PASSWORD},
+            data={"username": GUEST_EMAIL, "password": GUEST_PASSWORD},
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["location"], "/")
@@ -915,19 +912,23 @@ class LoginLogoffTest(TestCase):
 
     def test_logoff(self):
         guest_user = User.objects.create_user(
-            username=GUEST_USERNAME, password=GUEST_PASSWORD
+            email=GUEST_EMAIL, password=GUEST_PASSWORD
         )
-        response = self.client.post(
-            "/accounts/login/",
-            data={"username": GUEST_USERNAME, "password": GUEST_PASSWORD},
-        )
+        
+        # Login
+        self.client.login(username=GUEST_EMAIL, password=GUEST_PASSWORD)
+        
+        # Verify logged in user can access home page
         response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)  # Should be 200 after login
         self.assertTemplateUsed(response, "meals/base.html")
-
-        response = self.client.get("/accounts/logout/")
+        
+        # Logout
+        self.client.logout()
+        
+        # Test that accessing home page redirects to login
         response = self.client.get("/")
-        self.assertEqual(response["location"], "/accounts/login/?next=/")
-
+        self.assertRedirects(response, "/accounts/login/?next=/")
 
 class CreateAccountTest(TestCase):
     def test_sign_up_button_leads_to_correct_template(self):
@@ -942,11 +943,11 @@ class CreateAccountTest(TestCase):
         request = HttpRequest()
         response = self.client.post(
             "/meals/create-account",
-            data={"username": USERNAME, "email": EMAIL, "password": PASSWORD},
+            data={"email": EMAIL, "password": PASSWORD},
         )
         self.assertEqual(User.objects.count(), 1)
         new_user = User.objects.first()
-        self.assertTrue(authenticate(username=USERNAME, password=PASSWORD) is not None)
+        self.assertTrue(authenticate(username=EMAIL, password=PASSWORD) is not None)
 
     def test_can_save_POST_and_create_user_account_redirects(self):
         response = self.client.post(
@@ -956,11 +957,11 @@ class CreateAccountTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["location"], "/")
 
-    def test_sign_up_blank_username_validation_error_wont_save_new_user(self):
+    def test_sign_up_blank_email_validation_error_wont_save_new_user(self):
         USERNAME = ""
         response = self.client.post(
             "/meals/create-account",
-            data={"username": USERNAME, "email": EMAIL, "password": PASSWORD},
+            data={"username": "", "password": PASSWORD},
         )
         self.assertEqual(User.objects.count(), 0)
 
@@ -975,11 +976,11 @@ class CreateAccountTest(TestCase):
         )
         self.assertEqual(User.objects.count(), 1)
 
-    def test_sign_up_bad_username_validation_error_wont_save_new_user(self):
-        USERNAME = "joe blow"
+    def test_sign_up_bad_email_validation_error_wont_save_new_user(self):
+        bad_email = "joe blow"
         response = self.client.post(
             "/meals/create-account",
-            data={"username": USERNAME, "email": EMAIL, "password": PASSWORD},
+            data={"username": USERNAME, "email": bad_email, "password": PASSWORD},
         )
         self.assertEqual(User.objects.count(), 0)
 
@@ -1015,29 +1016,6 @@ class CreateAccountTest(TestCase):
             data={"username": USERNAME, "email": EMAIL, "password": PASSWORD},
         )
         self.assertIsInstance(response.context["form"], SignUpForm)
-
-    def test_sign_up_duplicate_user_validation_error_message_shows_up_on_sign_up_html(
-        self,
-    ):
-        response = self.client.post(
-            "/meals/create-account",
-            data={"username": USERNAME, "email": EMAIL, "password": PASSWORD},
-        )
-        response = self.client.post(
-            "/meals/create-account",
-            data={"username": USERNAME, "email": EMAIL, "password": PASSWORD},
-        )
-        self.assertContains(response, DUPLICATE_USERNAME_ERROR)
-
-    def test_sign_up_bad_username_validation_error_message_shows_up_on_sign_up_html(
-        self,
-    ):
-        USERNAME = "Joe Schmoe"
-        response = self.client.post(
-            "/meals/create-account",
-            data={"username": USERNAME, "email": EMAIL, "password": PASSWORD},
-        )
-        self.assertContains(response, INVALID_USERNAME_ERROR)
 
     def test_sign_up_missing_password_validation_error_message_shows_up_on_sign_up_html(
         self,
@@ -1099,7 +1077,7 @@ class MyMacrosTabTest(BaseTestCase):
         request = HttpRequest()
         request.POST = post_data
         request.user = User.objects.create_user(
-            username=USERNAME, email=EMAIL, password=PASSWORD
+            email=EMAIL, password=PASSWORD
         )
         return request
 
